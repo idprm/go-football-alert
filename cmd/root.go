@@ -32,6 +32,10 @@ func init() {
 	 * Listener service
 	 */
 	rootCmd.AddCommand(listenerCmd)
+	/**
+	 * Scraper service
+	 */
+	rootCmd.AddCommand(scraperCmd)
 }
 
 func Execute() error {
