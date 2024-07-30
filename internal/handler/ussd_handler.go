@@ -30,8 +30,12 @@ func (h *UssdHandler) Callback(c *fiber.Ctx) error {
 		98. Accueil
 	`
 	layerInternational := `Foot international Credit Goal Mercedi 24 Juil. \n
-		no match \n
-		0. Prec`
+		1. CCgypte - Dominican Republic \n
+		2. Guinea - Nouvelle Zeelande \n
+		3. Japon - Paraguay \n
+		4. Irag - Ukraine \n
+		5. France - Etats Unis \n
+		0. Suiv`
 
 	layerEuro := `Foot Europe Credit Goal Mercedi 24 Juil. \n
 		no match \n
