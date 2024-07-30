@@ -19,6 +19,7 @@ var (
 	PATH_STATIC string = getEnv("PATH_STATIC")
 	PATH_IMAGE  string = getEnv("PATH_IMAGE")
 )
+
 var (
 	rootCmd = &cobra.Command{
 		Use:   "cobra-cli",

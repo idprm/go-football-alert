@@ -4,7 +4,6 @@ import (
 	"log"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/idprm/go-football-alert/internal/domain/model"
 	"github.com/idprm/go-football-alert/internal/services"
 )
 
@@ -19,7 +18,7 @@ func NewUssdHandler(ussdService services.IUssdService) *UssdHandler {
 }
 
 func (h *UssdHandler) Callback(c *fiber.Ctx) error {
-	req := new(model.AfricasTalkingRequest)
+	req := c.FormValue("text")
 
 	layer1 := `Credit Goal Gagnez des lots a chaque but de votre equipe \n
 		1. Foot International \n
@@ -37,14 +36,18 @@ func (h *UssdHandler) Callback(c *fiber.Ctx) error {
 		5. France - Etats Unis \n
 		0. Suiv`
 
-	if req.IsFirst() {
-		return c.Status(fiber.StatusOK).SendString(layer1)
-	}
-	if req.IsOne() {
+	layer3 := `Foot international Credit Goal Mercedi 24 Juil. \n
+		1. Japon - Paraguay \n
+		0. Suiv`
+
+	if req == "1" {
 		return c.Status(fiber.StatusOK).SendString(layer2)
 	}
-	if req.IsTwo() {
+	if req == "2" {
 		return c.Status(fiber.StatusOK).SendString(layer2)
+	}
+	if req == "3" {
+		return c.Status(fiber.StatusOK).SendString(layer3)
 	}
 	return c.Status(fiber.StatusOK).SendString(layer1)
 }
