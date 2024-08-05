@@ -32,6 +32,12 @@ var listenerCmd = &cobra.Command{
 		// TODO: Add migrations
 		db.AutoMigrate(
 			&entity.Ussd{},
+			&entity.League{},
+			&entity.Season{},
+			&entity.Team{},
+			&entity.Fixture{},
+			&entity.Home{},
+			&entity.Away{},
 		)
 
 		r := routeUrlListener(db)

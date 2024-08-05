@@ -5,17 +5,17 @@ import (
 	"github.com/idprm/go-football-alert/internal/domain/repository"
 )
 
-type ServiceService struct {
-	serviceRepo repository.IServiceRepository
+type SubscriptionService struct {
+	subscriptionRepo repository.ISubscriptionRepository
 }
 
-func NewServiceService(serviceRepo repository.IServiceRepository) *ServiceService {
-	return &ServiceService{
-		serviceRepo: serviceRepo,
+func NewSubscriptionService(subscriptionRepo repository.ISubscriptionRepository) *SubscriptionService {
+	return &SubscriptionService{
+		subscriptionRepo: subscriptionRepo,
 	}
 }
 
-type IServiceService interface {
+type ISubscriptionService interface {
 	IsHome(string) bool
 	GetAll() (*[]entity.Service, error)
 	GetAllPaginate(int, int) (*[]entity.Service, error)

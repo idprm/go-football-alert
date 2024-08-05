@@ -13,7 +13,9 @@ jobs:
       matrix:
         include:
           - dockerfile: ./Dockerfile.listener
-            image: idprm/ussd-listener-service
+            image: idprm/fb-alert-listener-service
+          - dockerfile: ./Dockerfile.scraper
+            image: idprm/fb-alert-scraper-service
 
     permissions:
       contents: read

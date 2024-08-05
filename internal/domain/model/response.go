@@ -1,5 +1,11 @@
 package model
 
+type ApiFbResponse struct {
+	League  *LeagueResponse    `json:"league"`
+	Country *CountryResponse   `json:"country"`
+	Seasson *[]SeassonResponse `json:"seasons"`
+}
+
 type LeagueResponse struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
