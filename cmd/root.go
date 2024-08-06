@@ -10,14 +10,17 @@ import (
 )
 
 var (
-	APP_URL     string = getEnv("APP_URL")
-	APP_PORT    string = getEnv("APP_PORT")
-	API_VERSION string = getEnv("API_VERSION")
-	URI_MYSQL   string = getEnv("URI_MYSQL")
-	URI_REDIS   string = getEnv("URI_REDIS")
-	AUTH_SECRET string = getEnv("AUTH_SECRET")
-	PATH_STATIC string = getEnv("PATH_STATIC")
-	PATH_IMAGE  string = getEnv("PATH_IMAGE")
+	APP_URL           string = getEnv("APP_URL")
+	APP_PORT          string = getEnv("APP_PORT")
+	API_VERSION       string = getEnv("API_VERSION")
+	URI_MYSQL         string = getEnv("URI_MYSQL")
+	URI_REDIS         string = getEnv("URI_REDIS")
+	AUTH_SECRET       string = getEnv("AUTH_SECRET")
+	PATH_STATIC       string = getEnv("PATH_STATIC")
+	PATH_IMAGE        string = getEnv("PATH_IMAGE")
+	API_FOOTBALL_URL  string = getEnv("API_FOOTBALL_URL")
+	API_FOOTBALL_KEY  string = getEnv("API_FOOTBALL_KEY")
+	API_FOOTBALL_HOST string = getEnv("API_FOOTBALL_HOST")
 )
 
 var (

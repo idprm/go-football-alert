@@ -8,6 +8,13 @@ var scraperCmd = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		// connect db
+		db, err := connectDb()
+		if err != nil {
+			panic(err)
+		}
+
+		p := NewProcessor(db)
+		p.Scraping()
 
 	},
 }

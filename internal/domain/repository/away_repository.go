@@ -18,7 +18,7 @@ func NewAwayRepository(db *gorm.DB) *AwayRepository {
 type IAwayRepository interface {
 	CountByTeamId(int) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
-	GetByTeamId(string) (*entity.Away, error)
+	GetByTeamId(int) (*entity.Away, error)
 	Save(*entity.Away) (*entity.Away, error)
 	Update(*entity.Away) (*entity.Away, error)
 	Delete(*entity.Away) error
