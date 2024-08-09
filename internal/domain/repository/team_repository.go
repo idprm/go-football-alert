@@ -1,6 +1,9 @@
 package repository
 
-import "gorm.io/gorm"
+import (
+	"github.com/idprm/go-football-alert/internal/domain/entity"
+	"gorm.io/gorm"
+)
 
 type TeamRepository struct {
 	db *gorm.DB
@@ -13,4 +16,62 @@ func NewTeamRepository(db *gorm.DB) *TeamRepository {
 }
 
 type ITeamRepository interface {
+	Count(string) (int64, error)
+	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
+	Get(string) (*entity.Team, error)
+	Save(*entity.Team) (*entity.Team, error)
+	Update(*entity.Team) (*entity.Team, error)
+	Delete(*entity.Team) error
+}
+
+func (r *TeamRepository) Count(slug string) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Team{}).Where("slug = ?", slug).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *TeamRepository) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {
+	var teams []*entity.Team
+	err := r.db.Scopes(Paginate(teams, pagination, r.db)).Find(&teams).Error
+	if err != nil {
+		return nil, err
+	}
+	pagination.Rows = teams
+	return pagination, nil
+}
+
+func (r *TeamRepository) Get(slug string) (*entity.Team, error) {
+	var c entity.Team
+	err := r.db.Where("slug = ?", slug).Take(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return &c, nil
+}
+
+func (r *TeamRepository) Save(c *entity.Team) (*entity.Team, error) {
+	err := r.db.Create(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
+func (r *TeamRepository) Update(c *entity.Team) (*entity.Team, error) {
+	err := r.db.Where("id = ?", c.ID).Updates(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
+func (r *TeamRepository) Delete(c *entity.Team) error {
+	err := r.db.Delete(&c, c.ID).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }

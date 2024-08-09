@@ -16,12 +16,35 @@ func NewLeagueService(leagueRepo repository.ILeagueRepository) *LeagueService {
 }
 
 type ILeagueService interface {
-	IsHome(string) bool
-	GetAll() (*[]entity.League, error)
+	IsLeague(string) bool
 	GetAllPaginate(int, int) (*[]entity.League, error)
-	GetById(int) (*entity.League, error)
-	GetBySlug(string) (*entity.League, error)
+	Get(string) (*entity.League, error)
 	Save(*entity.League) (*entity.League, error)
 	Update(*entity.League) (*entity.League, error)
 	Delete(*entity.League) error
+}
+
+func (s *LeagueService) IsLeague(key string) bool {
+	count, _ := s.leagueRepo.Count(key)
+	return count > 0
+}
+
+func (s *LeagueService) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {
+	return s.leagueRepo.GetAllPaginate(pagination)
+}
+
+func (s *LeagueService) Get(slug string) (*entity.League, error) {
+	return s.leagueRepo.Get(slug)
+}
+
+func (s *LeagueService) Save(a *entity.League) (*entity.League, error) {
+	return s.leagueRepo.Save(a)
+}
+
+func (s *LeagueService) Update(a *entity.League) (*entity.League, error) {
+	return s.leagueRepo.Update(a)
+}
+
+func (s *LeagueService) Delete(a *entity.League) error {
+	return s.leagueRepo.Delete(a)
 }

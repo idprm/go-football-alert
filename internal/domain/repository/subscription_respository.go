@@ -1,6 +1,9 @@
 package repository
 
-import "gorm.io/gorm"
+import (
+	"github.com/idprm/go-football-alert/internal/domain/entity"
+	"gorm.io/gorm"
+)
 
 type SubscriptionRepository struct {
 	db *gorm.DB
@@ -13,4 +16,62 @@ func NewSubscriptionRepository(db *gorm.DB) *SubscriptionRepository {
 }
 
 type ISubscriptionRepository interface {
+	Count(int, string) (int64, error)
+	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
+	Get(int, string) (*entity.Subscription, error)
+	Save(*entity.Subscription) (*entity.Subscription, error)
+	Update(*entity.Subscription) (*entity.Subscription, error)
+	Delete(*entity.Subscription) error
+}
+
+func (r *SubscriptionRepository) Count(serviceId int, msisdn string) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Subscription{}).Where("service_id = ?", serviceId).Where("msisdn = ?", msisdn).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *SubscriptionRepository) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {
+	var subscriptions []*entity.Subscription
+	err := r.db.Scopes(Paginate(subscriptions, pagination, r.db)).Find(&subscriptions).Error
+	if err != nil {
+		return nil, err
+	}
+	pagination.Rows = subscriptions
+	return pagination, nil
+}
+
+func (r *SubscriptionRepository) Get(serviceId int, msisdn string) (*entity.Subscription, error) {
+	var c entity.Subscription
+	err := r.db.Where("service_id = ?", serviceId).Where("msisdn = ?", msisdn).Take(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return &c, nil
+}
+
+func (r *SubscriptionRepository) Save(c *entity.Subscription) (*entity.Subscription, error) {
+	err := r.db.Create(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
+func (r *SubscriptionRepository) Update(c *entity.Subscription) (*entity.Subscription, error) {
+	err := r.db.Where("id = ?", c.ID).Updates(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
+func (r *SubscriptionRepository) Delete(c *entity.Subscription) error {
+	err := r.db.Delete(&c, c.ID).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }

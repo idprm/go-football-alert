@@ -1,6 +1,9 @@
 package repository
 
-import "gorm.io/gorm"
+import (
+	"github.com/idprm/go-football-alert/internal/domain/entity"
+	"gorm.io/gorm"
+)
 
 type TransactionRepository struct {
 	db *gorm.DB
@@ -13,4 +16,62 @@ func NewTransactionRepository(db *gorm.DB) *TransactionRepository {
 }
 
 type ITransactionRepository interface {
+	Count(int, int) (int64, error)
+	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
+	Get(int, int) (*entity.Transaction, error)
+	Save(*entity.Transaction) (*entity.Transaction, error)
+	Update(*entity.Transaction) (*entity.Transaction, error)
+	Delete(*entity.Transaction) error
+}
+
+func (r *TransactionRepository) Count(slug string) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Transaction{}).Where("slug = ?", slug).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *TransactionRepository) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {
+	var transactions []*entity.Transaction
+	err := r.db.Scopes(Paginate(transactions, pagination, r.db)).Find(&transactions).Error
+	if err != nil {
+		return nil, err
+	}
+	pagination.Rows = transactions
+	return pagination, nil
+}
+
+func (r *TransactionRepository) Get(slug string) (*entity.Transaction, error) {
+	var c entity.Transaction
+	err := r.db.Where("slug = ?", slug).Take(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return &c, nil
+}
+
+func (r *TransactionRepository) Save(c *entity.Transaction) (*entity.Transaction, error) {
+	err := r.db.Create(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
+func (r *TransactionRepository) Update(c *entity.Transaction) (*entity.Transaction, error) {
+	err := r.db.Where("id = ?", c.ID).Updates(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
+func (r *TransactionRepository) Delete(c *entity.Transaction) error {
+	err := r.db.Delete(&c, c.ID).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }
