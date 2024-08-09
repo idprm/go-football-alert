@@ -16,12 +16,35 @@ func NewFixtureService(fixtureRepo repository.IFixtureRepository) *FixtureServic
 }
 
 type IFixtureService interface {
-	IsAway(string) bool
-	GetAll() (*[]entity.Fixture, error)
-	GetAllPaginate(int, int) (*[]entity.Fixture, error)
-	GetById(int) (*entity.Fixture, error)
-	GetBySlug(string) (*entity.Fixture, error)
+	IsFixture(int, int) bool
+	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
+	Get(int, int) (*entity.Fixture, error)
 	Save(*entity.Fixture) (*entity.Fixture, error)
 	Update(*entity.Fixture) (*entity.Fixture, error)
 	Delete(*entity.Fixture) error
+}
+
+func (s *FixtureService) IsFixture(homeId, awayId int) bool {
+	count, _ := s.fixtureRepo.Count(homeId, awayId)
+	return count > 0
+}
+
+func (s *FixtureService) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {
+	return s.fixtureRepo.GetAllPaginate(pagination)
+}
+
+func (s *FixtureService) Get(homeId, awayId int) (*entity.Fixture, error) {
+	return s.fixtureRepo.Get(homeId, awayId)
+}
+
+func (s *FixtureService) Save(a *entity.Fixture) (*entity.Fixture, error) {
+	return s.fixtureRepo.Save(a)
+}
+
+func (s *FixtureService) Update(a *entity.Fixture) (*entity.Fixture, error) {
+	return s.fixtureRepo.Update(a)
+}
+
+func (s *FixtureService) Delete(a *entity.Fixture) error {
+	return s.fixtureRepo.Delete(a)
 }
