@@ -57,4 +57,6 @@ func (p *Processor) Scraping() {
 		predictionService,
 		newsService,
 	)
+
+	h.Fixtures()
 }

@@ -16,12 +16,35 @@ func NewPredictionService(predictionRepo repository.IPredictionRepository) *Pred
 }
 
 type IPredictionService interface {
-	IsHome(string) bool
-	GetAll() (*[]entity.Prediction, error)
-	GetAllPaginate(int, int) (*[]entity.Prediction, error)
-	GetById(int) (*entity.Prediction, error)
-	GetBySlug(string) (*entity.Prediction, error)
+	IsPrediction(int) bool
+	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
+	Get(int) (*entity.Prediction, error)
 	Save(*entity.Prediction) (*entity.Prediction, error)
 	Update(*entity.Prediction) (*entity.Prediction, error)
 	Delete(*entity.Prediction) error
+}
+
+func (s *PredictionService) IsPrediction(fixtureId int) bool {
+	count, _ := s.predictionRepo.Count(fixtureId)
+	return count > 0
+}
+
+func (s *PredictionService) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {
+	return s.predictionRepo.GetAllPaginate(pagination)
+}
+
+func (s *PredictionService) Get(fixtureId int) (*entity.Prediction, error) {
+	return s.predictionRepo.Get(fixtureId)
+}
+
+func (s *PredictionService) Save(a *entity.Prediction) (*entity.Prediction, error) {
+	return s.predictionRepo.Save(a)
+}
+
+func (s *PredictionService) Update(a *entity.Prediction) (*entity.Prediction, error) {
+	return s.predictionRepo.Update(a)
+}
+
+func (s *PredictionService) Delete(a *entity.Prediction) error {
+	return s.predictionRepo.Delete(a)
 }

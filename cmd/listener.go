@@ -57,6 +57,61 @@ func routeUrlListener(db *gorm.DB) *fiber.App {
 	app.Static(PATH_STATIC, path+"/public")
 	app.Use(cors.New())
 
+	// leagueService       services.ILeagueService
+	// seasonService       services.ISeasonService
+	// teamService         services.ITeamService
+	// fixtureService      services.IFixtureService
+	// homeService         services.IHomeService
+	// awayService         services.IAwayService
+	// livescoreService    services.ILiveScoreService
+	// predictionService   services.IPredictionService
+	// newsService         services.INewsService
+	// scheduleService     services.IScheduleService
+	// serviceService      services.IServiceService
+	// contentService      services.IContentService
+	// subscriptionService services.ISubscriptionService
+	// transactionService  services.ITransactionService
+	// rewardService       services.IRewardService
+
+	leagueRepo := repository.NewLeagueRepository(db)
+	leagueService := services.NewLeagueService(leagueRepo)
+
+	seasonRepo := repository.NewSeasonRepository(db)
+	seasonService := services.NewSeasonService(seasonRepo)
+
+	teamRepo := repository.NewTeamRepository(db)
+	teamService := services.NewTeamService(teamRepo)
+
+	fixtureRepo := repository.NewFixtureRepository(db)
+	fixtureService := services.NewFixtureService(fixtureRepo)
+
+	homeRepo := repository.NewHomeRepository(db)
+	homeService := services.NewHomeService(homeRepo)
+
+	awayRepo := repository.NewAwayRepository(db)
+	awayService := services.NewAwayService(awayRepo)
+
+	livescoreRepo := repository.NewLiveScoreRepository(db)
+	livescoreService := services.NewLiveScoreService(livescoreRepo)
+
+	predictionRepo := repository.NewPredictionRepository(db)
+	predictionService := services.NewPredictionService(predictionRepo)
+
+	newsRepo := repository.NewNewsRepository(db)
+	newsService := services.NewNewsService(newsRepo)
+
+	scheduleRepo := repository.NewNewsRepository(db)
+	scheduleService := services.NewScheduleService(scheduleRepo)
+
+	h := handler.NewListenerHandler(
+		leagueService,
+		seasonService,
+		teamService,
+		fixtureService,
+		homeService,
+		awayService,
+	)
+
 	ussdRepo := repository.NewUssdRepository(db)
 	ussdService := services.NewUssdService(ussdRepo)
 	ussdHandler := handler.NewUssdHandler(ussdService)
@@ -67,6 +122,8 @@ func routeUrlListener(db *gorm.DB) *fiber.App {
 	ussd := v1.Group("ussd")
 	ussd.Post("/callback", ussdHandler.Callback)
 	ussd.Post("/event", ussdHandler.Event)
+
+	// API
 
 	return app
 }

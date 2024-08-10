@@ -24,7 +24,7 @@ type IAwayService interface {
 	Delete(*entity.Away) error
 }
 
-func (s *AwayService) IsPostBySlug(teamId int) bool {
+func (s *AwayService) IsAwayTeamId(teamId int) bool {
 	count, _ := s.awayRepo.CountByTeamId(teamId)
 	return count > 0
 }

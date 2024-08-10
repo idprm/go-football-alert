@@ -9,19 +9,44 @@ type SubscriptionService struct {
 	subscriptionRepo repository.ISubscriptionRepository
 }
 
-func NewSubscriptionService(subscriptionRepo repository.ISubscriptionRepository) *SubscriptionService {
+func NewSubscriptionService(
+	subscriptionRepo repository.ISubscriptionRepository,
+) *SubscriptionService {
 	return &SubscriptionService{
 		subscriptionRepo: subscriptionRepo,
 	}
 }
 
 type ISubscriptionService interface {
-	IsHome(string) bool
-	GetAll() (*[]entity.Service, error)
-	GetAllPaginate(int, int) (*[]entity.Service, error)
-	GetById(int) (*entity.Service, error)
-	GetBySlug(string) (*entity.Service, error)
-	Save(*entity.Service) (*entity.Service, error)
-	Update(*entity.Service) (*entity.Service, error)
-	Delete(*entity.Service) error
+	IsSubscription(int, string) bool
+	GetAllPaginate(int, int) (*[]entity.Subscription, error)
+	Get(int, string) (*entity.Subscription, error)
+	Save(*entity.Subscription) (*entity.Subscription, error)
+	Update(*entity.Subscription) (*entity.Subscription, error)
+	Delete(*entity.Subscription) error
+}
+
+func (s *SubscriptionService) IsSubscription(serviceId int, msisdn string) bool {
+	count, _ := s.subscriptionRepo.Count(serviceId, msisdn)
+	return count > 0
+}
+
+func (s *SubscriptionService) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {
+	return s.subscriptionRepo.GetAllPaginate(pagination)
+}
+
+func (s *SubscriptionService) Get(serviceId int, msisdn string) (*entity.Subscription, error) {
+	return s.subscriptionRepo.Get(serviceId, msisdn)
+}
+
+func (s *SubscriptionService) Save(a *entity.Subscription) (*entity.Subscription, error) {
+	return s.subscriptionRepo.Save(a)
+}
+
+func (s *SubscriptionService) Update(a *entity.Subscription) (*entity.Subscription, error) {
+	return s.subscriptionRepo.Update(a)
+}
+
+func (s *SubscriptionService) Delete(a *entity.Subscription) error {
+	return s.subscriptionRepo.Delete(a)
 }

@@ -18,7 +18,7 @@ func NewServiceRepository(db *gorm.DB) *ServiceRepository {
 type IServiceRepository interface {
 	Count(string) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
-	Get(int, int) (*entity.Service, error)
+	Get(string) (*entity.Service, error)
 	Save(*entity.Service) (*entity.Service, error)
 	Update(*entity.Service) (*entity.Service, error)
 	Delete(*entity.Service) error

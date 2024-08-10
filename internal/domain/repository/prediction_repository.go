@@ -16,9 +16,9 @@ func NewPredictionRepository(db *gorm.DB) *PredictionRepository {
 }
 
 type IPredictionRepository interface {
-	Count(int, int) (int64, error)
+	Count(int) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
-	Get(int, int) (*entity.Prediction, error)
+	Get(int) (*entity.Prediction, error)
 	Save(*entity.Prediction) (*entity.Prediction, error)
 	Update(*entity.Prediction) (*entity.Prediction, error)
 	Delete(*entity.Prediction) error

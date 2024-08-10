@@ -9,24 +9,24 @@ type LiveScoreRepository struct {
 	db *gorm.DB
 }
 
-func NewLivescoreRepository(db *gorm.DB) *LiveScoreRepository {
+func NewLiveScoreRepository(db *gorm.DB) *LiveScoreRepository {
 	return &LiveScoreRepository{
 		db: db,
 	}
 }
 
 type ILiveScoreRepository interface {
-	Count(int, int) (int64, error)
+	Count(int) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
-	Get(int, int) (*entity.Livescore, error)
+	Get(int) (*entity.Livescore, error)
 	Save(*entity.Livescore) (*entity.Livescore, error)
 	Update(*entity.Livescore) (*entity.Livescore, error)
 	Delete(*entity.Livescore) error
 }
 
-func (r *LiveScoreRepository) Count(fixtureId, teamId int) (int64, error) {
+func (r *LiveScoreRepository) Count(fixtureId int) (int64, error) {
 	var count int64
-	err := r.db.Model(&entity.Livescore{}).Where("fixture_id = ?", fixtureId).Where("team_id = ?", teamId).Count(&count).Error
+	err := r.db.Model(&entity.Livescore{}).Where("fixture_id = ?", fixtureId).Count(&count).Error
 	if err != nil {
 		return count, err
 	}
@@ -43,9 +43,9 @@ func (r *LiveScoreRepository) GetAllPaginate(pagination *entity.Pagination) (*en
 	return pagination, nil
 }
 
-func (r *LiveScoreRepository) Get(fixtureId, teamId int) (*entity.Livescore, error) {
+func (r *LiveScoreRepository) Get(fixtureId int) (*entity.Livescore, error) {
 	var c entity.Livescore
-	err := r.db.Where("fixture_id = ?", fixtureId).Where("team_id = ?", teamId).Take(&c).Error
+	err := r.db.Where("fixture_id = ?", fixtureId).Take(&c).Error
 	if err != nil {
 		return nil, err
 	}

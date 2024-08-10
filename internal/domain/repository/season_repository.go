@@ -16,17 +16,17 @@ func NewSeasonRepository(db *gorm.DB) *SeasonRepository {
 }
 
 type ISeasonRepository interface {
-	Count(int, int) (int64, error)
+	Count(string) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
-	Get(int, int) (*entity.Season, error)
+	Get(string) (*entity.Season, error)
 	Save(*entity.Season) (*entity.Season, error)
 	Update(*entity.Season) (*entity.Season, error)
 	Delete(*entity.Season) error
 }
 
-func (r *SeasonRepository) Count(fixtureId, subscriptionId int) (int64, error) {
+func (r *SeasonRepository) Count(slug string) (int64, error) {
 	var count int64
-	err := r.db.Model(&entity.Season{}).Where("fixture_id = ?", fixtureId).Where("subscription_id = ?", subscriptionId).Count(&count).Error
+	err := r.db.Model(&entity.Season{}).Where("slug = ?", slug).Count(&count).Error
 	if err != nil {
 		return count, err
 	}
@@ -43,9 +43,9 @@ func (r *SeasonRepository) GetAllPaginate(pagination *entity.Pagination) (*entit
 	return pagination, nil
 }
 
-func (r *SeasonRepository) Get(fixtureId, subscriptionId int) (*entity.Season, error) {
+func (r *SeasonRepository) Get(slug string) (*entity.Season, error) {
 	var c entity.Season
-	err := r.db.Where("fixture_id = ?", fixtureId).Where("subscription_id = ?", subscriptionId).Take(&c).Error
+	err := r.db.Where("slug = ?", slug).Take(&c).Error
 	if err != nil {
 		return nil, err
 	}

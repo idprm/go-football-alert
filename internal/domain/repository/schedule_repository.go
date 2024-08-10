@@ -16,17 +16,26 @@ func NewScheduleRepository(db *gorm.DB) *ScheduleRepository {
 }
 
 type IScheduleRepository interface {
-	Count(int, int) (int64, error)
+	CountUnlocked(string, string) (int64, error)
+	CountLocked(string, string) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
-	Get(int, int) (*entity.Schedule, error)
+	Get(string, string) (*entity.Schedule, error)
 	Save(*entity.Schedule) (*entity.Schedule, error)
-	Update(*entity.Schedule) (*entity.Schedule, error)
-	Delete(*entity.Schedule) error
+	Update(*entity.Schedule) error
 }
 
-func (r *ScheduleRepository) Count(fixtureId, subscriptionId int) (int64, error) {
+func (r *ScheduleRepository) CountUnlocked(key, hour string) (int64, error) {
 	var count int64
-	err := r.db.Model(&entity.Schedule{}).Where("fixture_id = ?", fixtureId).Where("subscription_id = ?", subscriptionId).Count(&count).Error
+	err := r.db.Model(&entity.Schedule{}).Where("name = ?", key).Where("publish_at = ?", hour).Where("is_unlocked = ?", true).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *ScheduleRepository) CountLocked(key, hour string) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Schedule{}).Where("name = ?", key).Where("unlocked_at = ?", hour).Where("is_unlocked = ?", false).Count(&count).Error
 	if err != nil {
 		return count, err
 	}
@@ -43,9 +52,9 @@ func (r *ScheduleRepository) GetAllPaginate(pagination *entity.Pagination) (*ent
 	return pagination, nil
 }
 
-func (r *ScheduleRepository) Get(fixtureId, subscriptionId int) (*entity.Schedule, error) {
+func (r *ScheduleRepository) Get(key, hour string) (*entity.Schedule, error) {
 	var c entity.Schedule
-	err := r.db.Where("fixture_id = ?", fixtureId).Where("subscription_id = ?", subscriptionId).Take(&c).Error
+	err := r.db.Where("name = ?", key).Where("hour = ?", hour).Take(&c).Error
 	if err != nil {
 		return nil, err
 	}
@@ -60,16 +69,8 @@ func (r *ScheduleRepository) Save(c *entity.Schedule) (*entity.Schedule, error) 
 	return c, nil
 }
 
-func (r *ScheduleRepository) Update(c *entity.Schedule) (*entity.Schedule, error) {
+func (r *ScheduleRepository) Update(c *entity.Schedule) error {
 	err := r.db.Where("id = ?", c.ID).Updates(&c).Error
-	if err != nil {
-		return nil, err
-	}
-	return c, nil
-}
-
-func (r *ScheduleRepository) Delete(c *entity.Schedule) error {
-	err := r.db.Delete(&c, c.ID).Error
 	if err != nil {
 		return err
 	}

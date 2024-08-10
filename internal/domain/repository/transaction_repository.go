@@ -16,17 +16,17 @@ func NewTransactionRepository(db *gorm.DB) *TransactionRepository {
 }
 
 type ITransactionRepository interface {
-	Count(int, int) (int64, error)
+	Count(int, string, string) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
-	Get(int, int) (*entity.Transaction, error)
+	Get(int, string, string) (*entity.Transaction, error)
 	Save(*entity.Transaction) (*entity.Transaction, error)
 	Update(*entity.Transaction) (*entity.Transaction, error)
 	Delete(*entity.Transaction) error
 }
 
-func (r *TransactionRepository) Count(slug string) (int64, error) {
+func (r *TransactionRepository) Count(serviceId int, msisdn, date string) (int64, error) {
 	var count int64
-	err := r.db.Model(&entity.Transaction{}).Where("slug = ?", slug).Count(&count).Error
+	err := r.db.Model(&entity.Transaction{}).Where("service_id = ?", serviceId).Where("msisdn = ?", msisdn).Where("DATE(created_at) = DATE(?)", date).Count(&count).Error
 	if err != nil {
 		return count, err
 	}
@@ -43,9 +43,9 @@ func (r *TransactionRepository) GetAllPaginate(pagination *entity.Pagination) (*
 	return pagination, nil
 }
 
-func (r *TransactionRepository) Get(slug string) (*entity.Transaction, error) {
+func (r *TransactionRepository) Get(serviceId string, msisdn, date string) (*entity.Transaction, error) {
 	var c entity.Transaction
-	err := r.db.Where("slug = ?", slug).Take(&c).Error
+	err := r.db.Where("service_id = ?", serviceId).Where("msisdn = ?", msisdn).Where("DATE(created_at) = DATE(?)", date).Take(&c).Error
 	if err != nil {
 		return nil, err
 	}

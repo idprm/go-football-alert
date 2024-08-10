@@ -17,7 +17,7 @@ func NewLeagueService(leagueRepo repository.ILeagueRepository) *LeagueService {
 
 type ILeagueService interface {
 	IsLeague(string) bool
-	GetAllPaginate(int, int) (*[]entity.League, error)
+	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	Get(string) (*entity.League, error)
 	Save(*entity.League) (*entity.League, error)
 	Update(*entity.League) (*entity.League, error)

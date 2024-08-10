@@ -16,12 +16,35 @@ func NewServiceService(serviceRepo repository.IServiceRepository) *ServiceServic
 }
 
 type IServiceService interface {
-	IsHome(string) bool
-	GetAll() (*[]entity.Service, error)
+	IsService(string) bool
 	GetAllPaginate(int, int) (*[]entity.Service, error)
-	GetById(int) (*entity.Service, error)
-	GetBySlug(string) (*entity.Service, error)
+	Get(string) (*entity.Service, error)
 	Save(*entity.Service) (*entity.Service, error)
 	Update(*entity.Service) (*entity.Service, error)
 	Delete(*entity.Service) error
+}
+
+func (s *ServiceService) IsService(code string) bool {
+	count, _ := s.serviceRepo.Count(code)
+	return count > 0
+}
+
+func (s *ServiceService) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {
+	return s.serviceRepo.GetAllPaginate(pagination)
+}
+
+func (s *ServiceService) Get(code string) (*entity.Service, error) {
+	return s.serviceRepo.Get(code)
+}
+
+func (s *ServiceService) Save(a *entity.Service) (*entity.Service, error) {
+	return s.serviceRepo.Save(a)
+}
+
+func (s *ServiceService) Update(a *entity.Service) (*entity.Service, error) {
+	return s.serviceRepo.Update(a)
+}
+
+func (s *ServiceService) Delete(a *entity.Service) error {
+	return s.serviceRepo.Delete(a)
 }
