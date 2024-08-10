@@ -19,7 +19,7 @@ type IScheduleService interface {
 	IsUnlocked(string, string) bool
 	IsLocked(string, string) bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
-	Get(int, int) (*entity.Schedule, error)
+	Get(string, string) (*entity.Schedule, error)
 	Save(*entity.Schedule) (*entity.Schedule, error)
 	Update(*entity.Schedule) error
 }

@@ -100,8 +100,23 @@ func routeUrlListener(db *gorm.DB) *fiber.App {
 	newsRepo := repository.NewNewsRepository(db)
 	newsService := services.NewNewsService(newsRepo)
 
-	scheduleRepo := repository.NewNewsRepository(db)
+	scheduleRepo := repository.NewScheduleRepository(db)
 	scheduleService := services.NewScheduleService(scheduleRepo)
+
+	serviceRepo := repository.NewServiceRepository(db)
+	serviceService := services.NewServiceService(serviceRepo)
+
+	contentRepo := repository.NewContentRepository(db)
+	contentService := services.NewContentService(contentRepo)
+
+	subscriptionRepo := repository.NewSubscriptionRepository(db)
+	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+
+	transactionRepo := repository.NewTransactionRepository(db)
+	transactionService := services.NewTransactionService(transactionRepo)
+
+	rewardRepo := repository.NewRewardRepository(db)
+	rewardService := services.NewRewardService(rewardRepo)
 
 	h := handler.NewListenerHandler(
 		leagueService,
@@ -110,6 +125,15 @@ func routeUrlListener(db *gorm.DB) *fiber.App {
 		fixtureService,
 		homeService,
 		awayService,
+		livescoreService,
+		predictionService,
+		newsService,
+		scheduleService,
+		serviceService,
+		contentService,
+		subscriptionService,
+		transactionService,
+		rewardService,
 	)
 
 	ussdRepo := repository.NewUssdRepository(db)
@@ -117,6 +141,9 @@ func routeUrlListener(db *gorm.DB) *fiber.App {
 	ussdHandler := handler.NewUssdHandler(ussdService)
 
 	v1 := app.Group(API_VERSION)
+
+	leagues := v1.Group("leagues")
+	leagues.Get("/", h.USSD)
 
 	// callback
 	ussd := v1.Group("ussd")

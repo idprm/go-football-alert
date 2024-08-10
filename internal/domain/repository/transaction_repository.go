@@ -43,7 +43,7 @@ func (r *TransactionRepository) GetAllPaginate(pagination *entity.Pagination) (*
 	return pagination, nil
 }
 
-func (r *TransactionRepository) Get(serviceId string, msisdn, date string) (*entity.Transaction, error) {
+func (r *TransactionRepository) Get(serviceId int, msisdn, date string) (*entity.Transaction, error) {
 	var c entity.Transaction
 	err := r.db.Where("service_id = ?", serviceId).Where("msisdn = ?", msisdn).Where("DATE(created_at) = DATE(?)", date).Take(&c).Error
 	if err != nil {

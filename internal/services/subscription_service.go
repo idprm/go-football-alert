@@ -19,7 +19,7 @@ func NewSubscriptionService(
 
 type ISubscriptionService interface {
 	IsSubscription(int, string) bool
-	GetAllPaginate(int, int) (*[]entity.Subscription, error)
+	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	Get(int, string) (*entity.Subscription, error)
 	Save(*entity.Subscription) (*entity.Subscription, error)
 	Update(*entity.Subscription) (*entity.Subscription, error)

@@ -37,7 +37,7 @@ func (p *Processor) Scraping() {
 	teamRepo := repository.NewTeamRepository(p.db)
 	teamService := services.NewTeamService(teamRepo)
 
-	liveScoreRepo := repository.NewLivescoreRepository(p.db)
+	liveScoreRepo := repository.NewLiveScoreRepository(p.db)
 	liveScoreService := services.NewLiveScoreService(liveScoreRepo)
 
 	predictionRepo := repository.NewPredictionRepository(p.db)

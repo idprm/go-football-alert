@@ -24,7 +24,7 @@ type IContentService interface {
 	Delete(*entity.Content) error
 }
 
-func (s *ContentService) IsPostBySlug(servceId int, key string) bool {
+func (s *ContentService) IsContent(servceId int, key string) bool {
 	count, _ := s.contentRepo.Count(servceId, key)
 	return count > 0
 }

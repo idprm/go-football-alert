@@ -17,7 +17,7 @@ func NewServiceService(serviceRepo repository.IServiceRepository) *ServiceServic
 
 type IServiceService interface {
 	IsService(string) bool
-	GetAllPaginate(int, int) (*[]entity.Service, error)
+	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	Get(string) (*entity.Service, error)
 	Save(*entity.Service) (*entity.Service, error)
 	Update(*entity.Service) (*entity.Service, error)

@@ -16,11 +16,9 @@ func NewTransactionService(transactionRepo repository.ITransactionRepository) *T
 }
 
 type ITransactionService interface {
-	IsHome(string) bool
-	GetAll() (*[]entity.Transaction, error)
-	GetAllPaginate(int, int) (*[]entity.Transaction, error)
-	GetById(int) (*entity.Transaction, error)
-	GetBySlug(string) (*entity.Transaction, error)
+	IsTransaction(int, string, string) bool
+	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
+	Get(int, string, string) (*entity.Transaction, error)
 	Save(*entity.Transaction) (*entity.Transaction, error)
 	Update(*entity.Transaction) (*entity.Transaction, error)
 	Delete(*entity.Transaction) error
