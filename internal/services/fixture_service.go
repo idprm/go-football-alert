@@ -17,6 +17,7 @@ func NewFixtureService(fixtureRepo repository.IFixtureRepository) *FixtureServic
 
 type IFixtureService interface {
 	IsFixture(int, int) bool
+	IsFixtureByPrimaryId(int) bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	Get(int, int) (*entity.Fixture, error)
 	Save(*entity.Fixture) (*entity.Fixture, error)
@@ -26,6 +27,11 @@ type IFixtureService interface {
 
 func (s *FixtureService) IsFixture(homeId, awayId int) bool {
 	count, _ := s.fixtureRepo.Count(homeId, awayId)
+	return count > 0
+}
+
+func (s *FixtureService) IsFixtureByPrimaryId(primaryId int) bool {
+	count, _ := s.fixtureRepo.CountByPrimaryId(primaryId)
 	return count > 0
 }
 

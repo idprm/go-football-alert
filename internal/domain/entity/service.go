@@ -5,3 +5,15 @@ type Service struct {
 	Name string `gorm:"size:50;not null" json:"name"`
 	Code string `gorm:"size:15;not null" json:"code"`
 }
+
+func (e *Service) GetId() int {
+	return e.ID
+}
+
+func (e *Service) GetName() string {
+	return e.Name
+}
+
+func (e *Service) GetCode() string {
+	return e.Code
+}

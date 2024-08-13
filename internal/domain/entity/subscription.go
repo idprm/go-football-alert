@@ -6,3 +6,15 @@ type Subscription struct {
 	Service   *Service `json:"service"`
 	Msisdn    string   `gorm:"size:15;not null" json:"msisdn"`
 }
+
+func (e *Subscription) GetId() int64 {
+	return e.ID
+}
+
+func (e *Subscription) GetServiceId() int {
+	return e.ServiceID
+}
+
+func (e *Subscription) GetMsisdn() string {
+	return e.Msisdn
+}

@@ -38,6 +38,14 @@ var listenerCmd = &cobra.Command{
 			&entity.Fixture{},
 			&entity.Home{},
 			&entity.Away{},
+			&entity.Prediction{},
+			&entity.News{},
+			&entity.Schedule{},
+			&entity.Service{},
+			&entity.Content{},
+			&entity.Subscription{},
+			&entity.Transaction{},
+			&entity.Reward{},
 		)
 
 		r := routeUrlListener(db)

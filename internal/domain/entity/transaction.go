@@ -8,3 +8,19 @@ type Transaction struct {
 	Service        *Service      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"service,omitempty"`
 	Msisdn         string        `gorm:"size:15;not null" json:"msisdn"`
 }
+
+func (e *Transaction) GetId() int64 {
+	return e.ID
+}
+
+func (e *Transaction) GetSubscriptionId() int64 {
+	return e.SubscriptionID
+}
+
+func (e *Transaction) GetServiceId() int {
+	return e.ServiceID
+}
+
+func (e *Transaction) GetMsisdn() string {
+	return e.Msisdn
+}

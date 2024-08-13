@@ -17,6 +17,7 @@ func NewHomeRepository(db *gorm.DB) *HomeRepository {
 
 type IHomeRepository interface {
 	Count(int, int) (int64, error)
+	CountByPrimaryId(int) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	Get(int, int) (*entity.Home, error)
 	Save(*entity.Home) (*entity.Home, error)
@@ -27,6 +28,15 @@ type IHomeRepository interface {
 func (r *HomeRepository) Count(fixtureId, teamId int) (int64, error) {
 	var count int64
 	err := r.db.Model(&entity.Home{}).Where("fixture_id = ?", fixtureId).Where("team_id = ?", teamId).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *HomeRepository) CountByPrimaryId(primaryId int) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Home{}).Where("primary_id = ?", primaryId).Count(&count).Error
 	if err != nil {
 		return count, err
 	}

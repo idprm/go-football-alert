@@ -9,3 +9,15 @@ type Reward struct {
 	Msisdn         string        `gorm:"size:15;not null" json:"msisdn"`
 	Amount         float64       `gorm:"size:8;default:0" json:"amount"`
 }
+
+func (e *Reward) GetId() int64 {
+	return e.ID
+}
+
+func (e *Reward) GetFixtureId() int64 {
+	return e.FixtureID
+}
+
+func (e *Reward) GetSubscriptionId() int64 {
+	return e.SubscriptionID
+}

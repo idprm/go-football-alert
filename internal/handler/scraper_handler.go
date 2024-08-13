@@ -1,8 +1,11 @@
 package handler
 
 import (
+	"encoding/json"
 	"log"
 
+	"github.com/idprm/go-football-alert/internal/domain/entity"
+	"github.com/idprm/go-football-alert/internal/domain/model"
 	"github.com/idprm/go-football-alert/internal/providers/apifb"
 	"github.com/idprm/go-football-alert/internal/services"
 )
@@ -61,5 +64,31 @@ func (h *ScraperHandler) Fixtures() {
 	if err != nil {
 		log.Println(err.Error())
 	}
-	log.Println(f)
+
+	var resp model.FixturesResponse
+	json.Unmarshal(f, &resp)
+
+	if !h.fixtureService.IsFixtureByPrimaryId(resp.ID) {
+
+		if !h.homeService.IsHomeByPrimaryId(resp.Teams.Home.ID) {
+			h.homeService.Save(
+				&entity.Home{
+					PrimaryID: int64(resp.Teams.Home.ID),
+					FixtureID: 1,
+					TeamID:    1,
+					Goal:      0,
+					IsWinner:  resp.Teams.Home.Winner,
+				})
+		}
+
+		h.fixtureService.Save(
+			&entity.Fixture{
+				PrimaryID: int64(resp.ID),
+				Timezone:  resp.TimeZone,
+				Date:      resp.Date,
+				TimeStamp: resp.Timestamp,
+			},
+		)
+	}
+
 }

@@ -17,6 +17,7 @@ func NewHomeService(homeRepo repository.IHomeRepository) *HomeService {
 
 type IHomeService interface {
 	IsHome(int, int) bool
+	IsHomeByPrimaryId(int) bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	Get(int, int) (*entity.Home, error)
 	Save(*entity.Home) (*entity.Home, error)
@@ -26,6 +27,11 @@ type IHomeService interface {
 
 func (s *HomeService) IsHome(fixtureId, teamId int) bool {
 	count, _ := s.homeRepo.Count(fixtureId, teamId)
+	return count > 0
+}
+
+func (s *HomeService) IsHomeByPrimaryId(primaryId int) bool {
+	count, _ := s.homeRepo.CountByPrimaryId(primaryId)
 	return count > 0
 }
 

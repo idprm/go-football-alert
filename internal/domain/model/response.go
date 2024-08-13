@@ -38,8 +38,32 @@ type CoverageResponse struct {
 }
 
 type FixturesResponse struct {
-	Events             bool `json:"events"`
-	Lineups            bool `json:"lineups"`
-	StatisticsFixtures bool `json:"statistics_fixtures"`
-	StatisticsPlayers  bool `json:"statistics_players"`
+	ID                 int          `json:"id"`
+	TimeZone           string       `json:"timezone"`
+	Date               string       `json:"date"`
+	Timestamp          int          `json:"timestamp"`
+	Events             bool         `json:"events"`
+	Lineups            bool         `json:"lineups"`
+	StatisticsFixtures bool         `json:"statistics_fixtures"`
+	StatisticsPlayers  bool         `json:"statistics_players"`
+	Teams              TeamResponse `json:"teams"`
+}
+
+type TeamResponse struct {
+	Home HomeResponse `json:"home"`
+	Away AwayResponse `json:"away"`
+}
+
+type HomeResponse struct {
+	ID     int    `json:"id"`
+	Name   string `json:"name"`
+	Logo   string `json:"logo"`
+	Winner bool   `json:"winner"`
+}
+
+type AwayResponse struct {
+	ID     int    `json:"id"`
+	Name   string `json:"name"`
+	Logo   string `json:"logo"`
+	Winner bool   `json:"winner"`
 }

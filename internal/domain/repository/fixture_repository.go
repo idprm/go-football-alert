@@ -17,6 +17,7 @@ func NewFixtureRepository(db *gorm.DB) *FixtureRepository {
 
 type IFixtureRepository interface {
 	Count(int, int) (int64, error)
+	CountByPrimaryId(int) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	Get(int, int) (*entity.Fixture, error)
 	Save(*entity.Fixture) (*entity.Fixture, error)
@@ -27,6 +28,15 @@ type IFixtureRepository interface {
 func (r *FixtureRepository) Count(homeId, awayId int) (int64, error) {
 	var count int64
 	err := r.db.Model(&entity.Fixture{}).Where("home_id = ?", homeId).Where("away_id = ?", awayId).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *FixtureRepository) CountByPrimaryId(primaryId int) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Fixture{}).Where("primary_id = ?", primaryId).Count(&count).Error
 	if err != nil {
 		return count, err
 	}
