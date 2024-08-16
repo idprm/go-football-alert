@@ -2,6 +2,8 @@ package entity
 
 type Transaction struct {
 	ID             int64         `gorm:"primaryKey" json:"id"`
+	CountryID      int           `json:"country_id"`
+	Country        *Country      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"country,omitempty"`
 	SubscriptionID int64         `json:"subscription_id"`
 	Subscription   *Subscription `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"subscription,omitempty"`
 	ServiceID      int           `json:"service_id"`

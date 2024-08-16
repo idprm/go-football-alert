@@ -40,6 +40,7 @@ var listenerCmd = &cobra.Command{
 			&entity.Away{},
 			&entity.Prediction{},
 			&entity.News{},
+			&entity.Country{},
 			&entity.Schedule{},
 			&entity.Service{},
 			&entity.Content{},
