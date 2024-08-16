@@ -175,15 +175,15 @@ func routeUrlListener(db *gorm.DB) *fiber.App {
 	news.Post("/", h.USSD)
 	news.Put("/:id", h.USSD)
 
-	// landing page
-	p := v1.Group("p")
-	p.Get("sub", h.Sub)
-	p.Get("unsub", h.UnSub)
-
 	// callback
 	ussd := v1.Group("ussd")
 	ussd.Post("callback", ussdHandler.Callback)
 	ussd.Post("event", ussdHandler.Event)
+
+	// landing page
+	p := v1.Group("p")
+	p.Get("sub", h.Sub)
+	p.Get("unsub", h.UnSub)
 
 	return app
 }
