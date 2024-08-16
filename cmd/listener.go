@@ -64,23 +64,8 @@ func routeUrlListener(db *gorm.DB) *fiber.App {
 	}
 
 	app.Static(PATH_STATIC, path+"/public")
-	app.Use(cors.New())
 
-	// leagueService       services.ILeagueService
-	// seasonService       services.ISeasonService
-	// teamService         services.ITeamService
-	// fixtureService      services.IFixtureService
-	// homeService         services.IHomeService
-	// awayService         services.IAwayService
-	// livescoreService    services.ILiveScoreService
-	// predictionService   services.IPredictionService
-	// newsService         services.INewsService
-	// scheduleService     services.IScheduleService
-	// serviceService      services.IServiceService
-	// contentService      services.IContentService
-	// subscriptionService services.ISubscriptionService
-	// transactionService  services.ITransactionService
-	// rewardService       services.IRewardService
+	app.Use(cors.New())
 
 	leagueRepo := repository.NewLeagueRepository(db)
 	leagueService := services.NewLeagueService(leagueRepo)
@@ -154,12 +139,51 @@ func routeUrlListener(db *gorm.DB) *fiber.App {
 	leagues := v1.Group("leagues")
 	leagues.Get("/", h.USSD)
 
+	fixtures := v1.Group("fixtures")
+	fixtures.Get("/", h.USSD)
+	fixtures.Get("/:id", h.USSD)
+	fixtures.Post("/", h.USSD)
+	fixtures.Put("/:id", h.USSD)
+
+	teams := v1.Group("teams")
+	teams.Get("/", h.USSD)
+	teams.Get("/:id", h.USSD)
+	teams.Post("/", h.USSD)
+	teams.Put("/:id", h.USSD)
+
+	home := v1.Group("home")
+	home.Get("/", h.USSD)
+	home.Get("/:id", h.USSD)
+	home.Post("/", h.USSD)
+	home.Put("/:id", h.USSD)
+
+	away := v1.Group("home")
+	away.Get("/", h.USSD)
+	away.Get("/:id", h.USSD)
+	away.Post("/", h.USSD)
+	away.Put("/:id", h.USSD)
+
+	predictions := v1.Group("predictions")
+	predictions.Get("/", h.USSD)
+	predictions.Get("/:id", h.USSD)
+	predictions.Post("/", h.USSD)
+	predictions.Put("/:id", h.USSD)
+
+	news := v1.Group("news")
+	news.Get("/", h.USSD)
+	news.Get("/:id", h.USSD)
+	news.Post("/", h.USSD)
+	news.Put("/:id", h.USSD)
+
+	// landing page
+	p := v1.Group("p")
+	p.Get("sub", h.Sub)
+	p.Get("unsub", h.UnSub)
+
 	// callback
 	ussd := v1.Group("ussd")
-	ussd.Post("/callback", ussdHandler.Callback)
-	ussd.Post("/event", ussdHandler.Event)
-
-	// API
+	ussd.Post("callback", ussdHandler.Callback)
+	ussd.Post("event", ussdHandler.Event)
 
 	return app
 }

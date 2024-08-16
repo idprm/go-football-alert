@@ -63,3 +63,11 @@ func NewListenerHandler(
 func (h *ListenerHandler) USSD(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
 }
+
+func (h *ListenerHandler) Sub(c *fiber.Ctx) error {
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
+}
+
+func (h *ListenerHandler) UnSub(c *fiber.Ctx) error {
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
+}

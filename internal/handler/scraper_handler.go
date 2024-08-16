@@ -74,7 +74,6 @@ func (h *ScraperHandler) Fixtures() {
 			h.homeService.Save(
 				&entity.Home{
 					PrimaryID: int64(resp.Teams.Home.ID),
-					FixtureID: 1,
 					TeamID:    1,
 					Goal:      0,
 					IsWinner:  resp.Teams.Home.Winner,

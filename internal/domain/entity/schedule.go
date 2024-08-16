@@ -4,6 +4,8 @@ import "time"
 
 type Schedule struct {
 	ID         int       `gorm:"primaryKey" json:"id"`
+	CountryID  int       `json:"country_id"`
+	Country    *Country  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"country,omitempty"`
 	Name       string    `json:"name"`
 	PublishAt  time.Time `json:"publish_at"`
 	UnlockedAt time.Time `json:"unlocked_at"`
