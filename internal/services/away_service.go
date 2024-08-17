@@ -17,6 +17,7 @@ func NewAwayService(awayRepo repository.IAwayRepository) *AwayService {
 
 type IAwayService interface {
 	IsAwayTeamId(int) bool
+	IsAwayByPrimaryId(int) bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetByTeamId(int) (*entity.Away, error)
 	Save(*entity.Away) (*entity.Away, error)
@@ -26,6 +27,11 @@ type IAwayService interface {
 
 func (s *AwayService) IsAwayTeamId(teamId int) bool {
 	count, _ := s.awayRepo.CountByTeamId(teamId)
+	return count > 0
+}
+
+func (s *AwayService) IsAwayByPrimaryId(primaryId int) bool {
+	count, _ := s.awayRepo.CountByPrimaryId(primaryId)
 	return count > 0
 }
 

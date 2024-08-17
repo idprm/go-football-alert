@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/idprm/go-football-alert/internal/domain/entity"
 	"github.com/idprm/go-football-alert/internal/domain/model"
 	"github.com/idprm/go-football-alert/internal/providers/apifb"
 	"github.com/idprm/go-football-alert/internal/services"
@@ -64,30 +63,82 @@ func (h *ScraperHandler) Fixtures() {
 	if err != nil {
 		log.Println(err.Error())
 	}
+	log.Println(string(f))
 
-	var resp model.FixturesResponse
+	var resp model.FixtureResult
 	json.Unmarshal(f, &resp)
 
-	if !h.fixtureService.IsFixtureByPrimaryId(resp.ID) {
+	log.Println(resp.Results)
+	log.Println(resp.Response.Fixtures)
 
-		if !h.homeService.IsHomeByPrimaryId(resp.Teams.Home.ID) {
-			h.homeService.Save(
-				&entity.Home{
-					PrimaryID: int64(resp.Teams.Home.ID),
-					TeamID:    1,
-					Goal:      0,
-					IsWinner:  resp.Teams.Home.Winner,
-				})
-		}
+	// log.Println(resp.FixturesResponse)
+	// for index, element := range resp.Response.ResponseFixtures {
+	// 	log.Println(index)
+	// 	log.Panicln(element)
+	// }
 
-		h.fixtureService.Save(
-			&entity.Fixture{
-				PrimaryID: int64(resp.ID),
-				Timezone:  resp.TimeZone,
-				Date:      resp.Date,
-				TimeStamp: resp.Timestamp,
-			},
-		)
-	}
+	// if !h.fixtureService.IsFixtureByPrimaryId(resp.ID) {
+
+	// 	if !h.homeService.IsHomeByPrimaryId(resp.Teams.Home.ID) {
+	// 		if !h.teamService.IsTeam(slug.Make(resp.Teams.Home.Name)) {
+	// 			h.teamService.Save(
+	// 				&entity.Team{
+	// 					Name: resp.Teams.Home.Name,
+	// 					Slug: slug.Make(resp.Teams.Home.Name),
+	// 					Logo: resp.Teams.Home.Logo,
+	// 				},
+	// 			)
+	// 		}
+
+	// 		team, err := h.teamService.Get(slug.Make(resp.Teams.Home.Name))
+	// 		if err != nil {
+	// 			log.Println(err.Error())
+	// 		}
+
+	// 		h.homeService.Save(
+	// 			&entity.Home{
+	// 				PrimaryID: int64(resp.Teams.Home.ID),
+	// 				TeamID:    team.GetId(),
+	// 				Goal:      0,
+	// 				IsWinner:  resp.Teams.Home.Winner,
+	// 			},
+	// 		)
+	// 	}
+
+	// 	if !h.awayService.IsAwayByPrimaryId(resp.Teams.Away.ID) {
+	// 		if !h.teamService.IsTeam(slug.Make(resp.Teams.Away.Name)) {
+	// 			h.teamService.Save(
+	// 				&entity.Team{
+	// 					Name: resp.Teams.Away.Name,
+	// 					Slug: slug.Make(resp.Teams.Away.Name),
+	// 					Logo: resp.Teams.Away.Logo,
+	// 				},
+	// 			)
+	// 		}
+
+	// 		team, err := h.teamService.Get(slug.Make(resp.Teams.Away.Name))
+	// 		if err != nil {
+	// 			log.Println(err.Error())
+	// 		}
+
+	// 		h.awayService.Save(
+	// 			&entity.Away{
+	// 				PrimaryID: int64(resp.Teams.Away.ID),
+	// 				TeamID:    team.GetId(),
+	// 				Goal:      0,
+	// 				IsWinner:  resp.Teams.Away.Winner,
+	// 			},
+	// 		)
+	// 	}
+
+	// 	h.fixtureService.Save(
+	// 		&entity.Fixture{
+	// 			PrimaryID: int64(resp.ID),
+	// 			Timezone:  resp.TimeZone,
+	// 			Date:      resp.Date,
+	// 			TimeStamp: resp.Timestamp,
+	// 		},
+	// 	)
+	// }
 
 }

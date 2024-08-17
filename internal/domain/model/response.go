@@ -6,13 +6,6 @@ type ApiFbResponse struct {
 	Seasson *[]SeassonResponse `json:"seasons"`
 }
 
-type LeagueResponse struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
-	Type string `json:"type"`
-	Logo string `json:"logo"`
-}
-
 type CountryResponse struct {
 	Name string `json:"name"`
 	Code string `json:"code"`
@@ -37,16 +30,22 @@ type CoverageResponse struct {
 	Odds        bool `json:"odds"`
 }
 
+type FixtureResult struct {
+	Results  int                 `json:"results"`
+	Response ResponseFixturesAPI `json:"response"`
+}
+
+type ResponseFixturesAPI struct {
+	Fixtures FixturesResponse `json:"fixture"`
+	Teams    TeamResponse     `json:"teams"`
+	League   LeagueResponse   `json:"league"`
+}
+
 type FixturesResponse struct {
-	ID                 int          `json:"id"`
-	TimeZone           string       `json:"timezone"`
-	Date               string       `json:"date"`
-	Timestamp          int          `json:"timestamp"`
-	Events             bool         `json:"events"`
-	Lineups            bool         `json:"lineups"`
-	StatisticsFixtures bool         `json:"statistics_fixtures"`
-	StatisticsPlayers  bool         `json:"statistics_players"`
-	Teams              TeamResponse `json:"teams"`
+	ID        int    `json:"id"`
+	TimeZone  string `json:"timezone"`
+	Date      string `json:"date"`
+	Timestamp int    `json:"timestamp"`
 }
 
 type TeamResponse struct {
@@ -66,4 +65,14 @@ type AwayResponse struct {
 	Name   string `json:"name"`
 	Logo   string `json:"logo"`
 	Winner bool   `json:"winner"`
+}
+
+type LeagueResponse struct {
+	ID      int    `json:"id"`
+	Name    string `json:"name"`
+	Country string `json:"country"`
+	Logo    string `json:"logo"`
+	Flag    string `json:"flag"`
+	Season  int    `json:"season"`
+	Round   string `json:"round"`
 }

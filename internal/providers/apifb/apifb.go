@@ -98,7 +98,10 @@ func (p *ApiFb) GetFixtures() ([]byte, error) {
 	}
 
 	q := req.URL.Query()
-	q.Add("live", "all")
+	// q.Add("live", "all")
+	q.Add("date", "2024-08-17")
+	// primary league
+	// q.Add("league", "39")
 	req.URL.RawQuery = q.Encode()
 	req.Header.Set("x-rapidapi-key", API_FOOTBALL_KEY)
 	req.Header.Set("x-rapidapi-host", API_FOOTBALL_HOST)

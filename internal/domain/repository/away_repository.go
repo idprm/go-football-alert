@@ -17,6 +17,7 @@ func NewAwayRepository(db *gorm.DB) *AwayRepository {
 
 type IAwayRepository interface {
 	CountByTeamId(int) (int64, error)
+	CountByPrimaryId(int) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetByTeamId(int) (*entity.Away, error)
 	Save(*entity.Away) (*entity.Away, error)
@@ -27,6 +28,15 @@ type IAwayRepository interface {
 func (r *AwayRepository) CountByTeamId(teamId int) (int64, error) {
 	var count int64
 	err := r.db.Model(&entity.Away{}).Where("team_id = ?", teamId).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *AwayRepository) CountByPrimaryId(primaryId int) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Away{}).Where("primary_id = ?", primaryId).Count(&count).Error
 	if err != nil {
 		return count, err
 	}
