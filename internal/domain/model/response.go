@@ -31,8 +31,8 @@ type CoverageResponse struct {
 }
 
 type FixtureResult struct {
-	Results  int                 `json:"results"`
-	Response ResponseFixturesAPI `json:"response"`
+	Results  int                   `json:"results"`
+	Response []ResponseFixturesAPI `json:"response"`
 }
 
 type ResponseFixturesAPI struct {

@@ -20,6 +20,7 @@ type IAwayRepository interface {
 	CountByPrimaryId(int) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetByTeamId(int) (*entity.Away, error)
+	GetByPrimaryId(int) (*entity.Away, error)
 	Save(*entity.Away) (*entity.Away, error)
 	Update(*entity.Away) (*entity.Away, error)
 	Delete(*entity.Away) error
@@ -56,6 +57,15 @@ func (r *AwayRepository) GetAllPaginate(pagination *entity.Pagination) (*entity.
 func (r *AwayRepository) GetByTeamId(teamId int) (*entity.Away, error) {
 	var away entity.Away
 	err := r.db.Where("team_id = ?", teamId).Preload("Team").Take(&away).Error
+	if err != nil {
+		return nil, err
+	}
+	return &away, nil
+}
+
+func (r *AwayRepository) GetByPrimaryId(primaryId int) (*entity.Away, error) {
+	var away entity.Away
+	err := r.db.Where("primary_id = ?", primaryId).Preload("Team").Take(&away).Error
 	if err != nil {
 		return nil, err
 	}

@@ -17,8 +17,10 @@ func NewLeagueRepository(db *gorm.DB) *LeagueRepository {
 
 type ILeagueRepository interface {
 	Count(string) (int64, error)
+	CountByPrimaryId(int) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	Get(string) (*entity.League, error)
+	GetByPrimaryId(int) (*entity.League, error)
 	Save(*entity.League) (*entity.League, error)
 	Update(*entity.League) (*entity.League, error)
 	Delete(*entity.League) error
@@ -27,6 +29,15 @@ type ILeagueRepository interface {
 func (r *LeagueRepository) Count(slug string) (int64, error) {
 	var count int64
 	err := r.db.Model(&entity.League{}).Where("slug = ?", slug).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *LeagueRepository) CountByPrimaryId(primaryId int) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.League{}).Where("primary_id = ?", primaryId).Count(&count).Error
 	if err != nil {
 		return count, err
 	}
@@ -46,6 +57,15 @@ func (r *LeagueRepository) GetAllPaginate(pagination *entity.Pagination) (*entit
 func (r *LeagueRepository) Get(slug string) (*entity.League, error) {
 	var c entity.League
 	err := r.db.Where("slug = ?", slug).Take(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return &c, nil
+}
+
+func (r *LeagueRepository) GetByPrimaryId(primaryId int) (*entity.League, error) {
+	var c entity.League
+	err := r.db.Where("primary_id = ?", primaryId).Take(&c).Error
 	if err != nil {
 		return nil, err
 	}

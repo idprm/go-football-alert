@@ -3,8 +3,10 @@ package entity
 type League struct {
 	ID        int64  `gorm:"primaryKey" json:"id"`
 	PrimaryID int64  `json:"primary_id"`
-	Name      string `gorm:"size:100" json:"name"`
+	Name      string `gorm:"size:110" json:"name"`
 	Slug      string `gorm:"size:110" json:"slug"`
+	Logo      string `gorm:"size:110" json:"logo"`
+	Country   string `gorm:"size:110" json:"country"`
 }
 
 func (e *League) GetId() int64 {
@@ -17,4 +19,12 @@ func (e *League) GetName() string {
 
 func (e *League) GetSlug() string {
 	return e.Slug
+}
+
+func (e *League) GetLogo() string {
+	return e.Logo
+}
+
+func (e *League) GetCountry() string {
+	return e.Country
 }

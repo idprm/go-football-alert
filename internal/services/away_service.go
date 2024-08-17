@@ -20,6 +20,7 @@ type IAwayService interface {
 	IsAwayByPrimaryId(int) bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetByTeamId(int) (*entity.Away, error)
+	GetByPrimaryId(int) (*entity.Away, error)
 	Save(*entity.Away) (*entity.Away, error)
 	Update(*entity.Away) (*entity.Away, error)
 	Delete(*entity.Away) error
@@ -41,6 +42,10 @@ func (s *AwayService) GetAllPaginate(pagination *entity.Pagination) (*entity.Pag
 
 func (s *AwayService) GetByTeamId(teamId int) (*entity.Away, error) {
 	return s.awayRepo.GetByTeamId(teamId)
+}
+
+func (s *AwayService) GetByPrimaryId(primaryId int) (*entity.Away, error) {
+	return s.awayRepo.GetByPrimaryId(primaryId)
 }
 
 func (s *AwayService) Save(a *entity.Away) (*entity.Away, error) {

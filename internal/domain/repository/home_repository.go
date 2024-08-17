@@ -20,6 +20,7 @@ type IHomeRepository interface {
 	CountByPrimaryId(int) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	Get(int, int) (*entity.Home, error)
+	GetByPrimaryId(int) (*entity.Home, error)
 	Save(*entity.Home) (*entity.Home, error)
 	Update(*entity.Home) (*entity.Home, error)
 	Delete(*entity.Home) error
@@ -56,6 +57,15 @@ func (r *HomeRepository) GetAllPaginate(pagination *entity.Pagination) (*entity.
 func (r *HomeRepository) Get(fixtureId, teamId int) (*entity.Home, error) {
 	var c entity.Home
 	err := r.db.Where("fixture_id = ?", fixtureId).Where("team_id = ?", teamId).Preload("Fixture").Preload("Team").Take(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return &c, nil
+}
+
+func (r *HomeRepository) GetByPrimaryId(primaryId int) (*entity.Home, error) {
+	var c entity.Home
+	err := r.db.Where("primary_id = ?", primaryId).Preload("Team").Take(&c).Error
 	if err != nil {
 		return nil, err
 	}
