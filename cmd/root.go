@@ -3,6 +3,7 @@ package cmd
 import (
 	"log"
 	"os"
+	"time"
 
 	"github.com/spf13/cobra"
 	"gorm.io/driver/mysql"
@@ -12,6 +13,7 @@ import (
 var (
 	APP_URL           string = getEnv("APP_URL")
 	APP_PORT          string = getEnv("APP_PORT")
+	APP_TZ            string = getEnv("APP_TZ")
 	API_VERSION       string = getEnv("API_VERSION")
 	URI_MYSQL         string = getEnv("URI_MYSQL")
 	URI_REDIS         string = getEnv("URI_REDIS")
@@ -32,6 +34,9 @@ var (
 )
 
 func init() {
+	// setup timezone
+	loc, _ := time.LoadLocation(APP_TZ)
+	time.Local = loc
 	/**
 	 * Listener service
 	 */

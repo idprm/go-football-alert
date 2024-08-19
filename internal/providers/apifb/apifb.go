@@ -99,7 +99,7 @@ func (p *ApiFb) GetFixtures() ([]byte, error) {
 
 	q := req.URL.Query()
 	// q.Add("live", "all")
-	q.Add("date", "2024-08-17")
+	q.Add("date", time.Now().Format("2006-01-02"))
 	// primary league
 	// q.Add("league", "39")
 	req.URL.RawQuery = q.Encode()

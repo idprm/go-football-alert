@@ -16,17 +16,17 @@ func NewNewsRepository(db *gorm.DB) *NewsRepository {
 }
 
 type INewsRepository interface {
-	Count(int, int) (int64, error)
+	Count(string, string) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
-	Get(int, int) (*entity.News, error)
+	Get(string, string) (*entity.News, error)
 	Save(*entity.News) (*entity.News, error)
 	Update(*entity.News) (*entity.News, error)
 	Delete(*entity.News) error
 }
 
-func (r *NewsRepository) Count(fixtureId, teamId int) (int64, error) {
+func (r *NewsRepository) Count(slug, pubAt string) (int64, error) {
 	var count int64
-	err := r.db.Model(&entity.News{}).Where("fixture_id = ?", fixtureId).Where("team_id = ?", teamId).Count(&count).Error
+	err := r.db.Model(&entity.News{}).Where("slug = ?", slug).Where("DATE(publish_at) = DATE(?)", pubAt).Count(&count).Error
 	if err != nil {
 		return count, err
 	}
@@ -43,9 +43,9 @@ func (r *NewsRepository) GetAllPaginate(pagination *entity.Pagination) (*entity.
 	return pagination, nil
 }
 
-func (r *NewsRepository) Get(fixtureId, teamId int) (*entity.News, error) {
+func (r *NewsRepository) Get(slug, pubAt string) (*entity.News, error) {
 	var c entity.News
-	err := r.db.Where("fixture_id = ?", fixtureId).Where("team_id = ?", teamId).Take(&c).Error
+	err := r.db.Where("slug = ?", slug).Where("DATE(publish_at) = DATE(?)", pubAt).Take(&c).Error
 	if err != nil {
 		return nil, err
 	}

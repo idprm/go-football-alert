@@ -2,12 +2,15 @@ package handler
 
 import (
 	"encoding/json"
+	"encoding/xml"
 	"log"
+	"time"
 
 	"github.com/gosimple/slug"
 	"github.com/idprm/go-football-alert/internal/domain/entity"
 	"github.com/idprm/go-football-alert/internal/domain/model"
 	"github.com/idprm/go-football-alert/internal/providers/apifb"
+	"github.com/idprm/go-football-alert/internal/providers/maxifoot"
 	"github.com/idprm/go-football-alert/internal/services"
 )
 
@@ -70,101 +73,129 @@ func (h *ScraperHandler) Fixtures() {
 	var resp model.FixtureResult
 	json.Unmarshal(f, &resp)
 
-	for _, element := range resp.Response {
-		log.Println(element.Fixtures.ID)
+	for _, el := range resp.Response {
+		log.Println(el.Fixtures.ID)
 
-		if !h.fixtureService.IsFixtureByPrimaryId(element.Fixtures.ID) {
+		if !h.fixtureService.IsFixtureByPrimaryId(el.Fixtures.ID) {
 
-			if !h.homeService.IsHomeByPrimaryId(element.Teams.Home.ID) {
-				if !h.teamService.IsTeam(slug.Make(element.Teams.Home.Name)) {
+			if !h.homeService.IsHomeByPrimaryId(el.Teams.Home.ID) {
+				if !h.teamService.IsTeam(slug.Make(el.Teams.Home.Name)) {
 					h.teamService.Save(
 						&entity.Team{
-							Name: element.Teams.Home.Name,
-							Slug: slug.Make(element.Teams.Home.Name),
-							Logo: element.Teams.Home.Logo,
+							Name: el.Teams.Home.Name,
+							Slug: slug.Make(el.Teams.Home.Name),
+							Logo: el.Teams.Home.Logo,
 						},
 					)
 				}
 
-				team, err := h.teamService.Get(slug.Make(element.Teams.Home.Name))
+				team, err := h.teamService.Get(slug.Make(el.Teams.Home.Name))
 				if err != nil {
 					log.Println(err.Error())
 				}
 
 				h.homeService.Save(
 					&entity.Home{
-						PrimaryID: int64(element.Teams.Home.ID),
+						PrimaryID: int64(el.Teams.Home.ID),
 						TeamID:    team.GetId(),
 						Goal:      0,
-						IsWinner:  element.Teams.Home.Winner,
+						IsWinner:  el.Teams.Home.Winner,
 					},
 				)
 			}
 
-			if !h.awayService.IsAwayByPrimaryId(element.Teams.Away.ID) {
-				if !h.teamService.IsTeam(slug.Make(element.Teams.Away.Name)) {
+			if !h.awayService.IsAwayByPrimaryId(el.Teams.Away.ID) {
+				if !h.teamService.IsTeam(slug.Make(el.Teams.Away.Name)) {
 					h.teamService.Save(
 						&entity.Team{
-							Name: element.Teams.Away.Name,
-							Slug: slug.Make(element.Teams.Away.Name),
-							Logo: element.Teams.Away.Logo,
+							Name: el.Teams.Away.Name,
+							Slug: slug.Make(el.Teams.Away.Name),
+							Logo: el.Teams.Away.Logo,
 						},
 					)
 				}
 
-				team, err := h.teamService.Get(slug.Make(element.Teams.Away.Name))
+				team, err := h.teamService.Get(slug.Make(el.Teams.Away.Name))
 				if err != nil {
 					log.Println(err.Error())
 				}
 
 				h.awayService.Save(
 					&entity.Away{
-						PrimaryID: int64(element.Teams.Away.ID),
+						PrimaryID: int64(el.Teams.Away.ID),
 						TeamID:    team.GetId(),
 						Goal:      0,
-						IsWinner:  element.Teams.Away.Winner,
+						IsWinner:  el.Teams.Away.Winner,
 					},
 				)
 			}
 		}
 
-		home, err := h.homeService.GetByPrimaryId(element.Teams.Home.ID)
+		home, err := h.homeService.GetByPrimaryId(el.Teams.Home.ID)
 		if err != nil {
 			log.Println(err.Error())
 		}
 
-		away, err := h.awayService.GetByPrimaryId(element.Teams.Away.ID)
+		away, err := h.awayService.GetByPrimaryId(el.Teams.Away.ID)
 		if err != nil {
 			log.Println(err.Error())
 		}
 
-		if !h.leagueService.IsLeagueByPrimaryId(element.League.ID) {
+		if !h.leagueService.IsLeagueByPrimaryId(el.League.ID) {
 			h.leagueService.Save(
 				&entity.League{
-					PrimaryID: int64(element.League.ID),
-					Name:      element.League.Name,
-					Slug:      slug.Make(element.League.Name),
-					Logo:      element.League.Logo,
-					Country:   element.League.Country,
+					PrimaryID: int64(el.League.ID),
+					Name:      el.League.Name,
+					Slug:      slug.Make(el.League.Name),
+					Logo:      el.League.Logo,
+					Country:   el.League.Country,
 				},
 			)
 		}
 
-		league, err := h.leagueService.GetByPrimaryId(element.League.ID)
+		league, err := h.leagueService.GetByPrimaryId(el.League.ID)
 		if err != nil {
 			log.Println(err.Error())
 		}
 
 		h.fixtureService.Save(
 			&entity.Fixture{
-				PrimaryID: int64(element.Fixtures.ID),
-				Timezone:  element.Fixtures.TimeZone,
-				Date:      element.Fixtures.Date,
-				TimeStamp: element.Fixtures.Timestamp,
+				PrimaryID: int64(el.Fixtures.ID),
+				Timezone:  el.Fixtures.TimeZone,
+				Date:      el.Fixtures.Date,
+				TimeStamp: el.Fixtures.Timestamp,
 				LeagueID:  league.ID,
 				HomeID:    home.ID,
 				AwayID:    away.ID,
 			},
 		)
+	}
+}
+
+func (h *ScraperHandler) News() {
+	mf := maxifoot.NewMaxifoot()
+	n, err := mf.GetNews()
+	if err != nil {
+		log.Println(err.Error())
+	}
+	var resp model.MaxfootRSSResponse
+	xml.Unmarshal(n, &resp)
+	log.Println()
+
+	for _, el := range resp.Channel.Item {
+
+		d, _ := time.Parse("Mon, 02 Jan 2006 15:04:05 +0200", el.PubDate)
+
+		if !h.newsService.IsNews(slug.Make(el.Title), d.Format("2006-01-02")) {
+			h.newsService.Save(
+				&entity.News{
+					Title:       el.Title,
+					Slug:        slug.Make(el.Title),
+					Description: el.Description,
+					PublishAt:   d,
+				},
+			)
+		}
+
 	}
 }

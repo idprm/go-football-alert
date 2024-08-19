@@ -76,3 +76,16 @@ type LeagueResponse struct {
 	Season  int    `json:"season"`
 	Round   string `json:"round"`
 }
+
+type MaxfootRSSResponse struct {
+	Channel struct {
+		Item []MaxfootItem `xml:"item"`
+	} `xml:"channel"`
+}
+
+type MaxfootItem struct {
+	Title       string `xml:"title"`
+	Link        string `xml:"link"`
+	Description string `xml:"description"`
+	PubDate     string `xml:"pubDate"`
+}

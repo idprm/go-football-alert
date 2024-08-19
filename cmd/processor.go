@@ -58,5 +58,6 @@ func (p *Processor) Scraping() {
 		newsService,
 	)
 
-	h.Fixtures()
+	//h.Fixtures()
+	h.News()
 }
