@@ -1,8 +1,12 @@
 package cmd
 
 import (
-	"github.com/idprm/go-football-alert/internal/logger"
+	"time"
+
+	"github.com/idprm/go-football-alert/internal/domain/repository"
+	"github.com/idprm/go-football-alert/internal/services"
 	"github.com/spf13/cobra"
+	"gorm.io/gorm"
 )
 
 var publisherScrapingCmd = &cobra.Command{
@@ -17,28 +21,34 @@ var publisherScrapingCmd = &cobra.Command{
 		}
 
 		/**
-		 * connect redis
+		 * Looping schedule
 		 */
-		rds, err := connectRedis()
-		if err != nil {
-			panic(err)
+		timeDuration := time.Duration(1)
+
+		for {
+			timeNow := time.Now().Format("15:04")
+
+			scheduleRepo := repository.NewScheduleRepository(db)
+			scheduleService := services.NewScheduleService(scheduleRepo)
+
+			if scheduleService.IsUnlocked(ACT_SCRAPING, timeNow) {
+
+				// scheduleService.Update(false, ACT_CSV)
+
+				go func() {
+					scraping(db)
+				}()
+			}
+
+			if scheduleService.IsUnlocked(ACT_SCRAPING, timeNow) {
+				// scheduleService.Update(true, ACT_CSV)
+			}
+
+			time.Sleep(timeDuration * time.Minute)
 		}
-
-		/**
-		 * connect rabbitmq
-		 */
-		rmq, err := connectRabbitMq()
-		if err != nil {
-			panic(err)
-		}
-
-		/**
-		 * SETUP LOG
-		 */
-		logger := logger.NewLogger()
-
-		p := NewProcessor(db, rds, rmq, logger)
-		p.Scraping()
-
 	},
+}
+
+func scraping(db *gorm.DB) {
+
 }

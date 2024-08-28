@@ -52,6 +52,7 @@ const (
 	ACT_MO                string = "MO"
 	ACT_RENEWAL           string = "RENEWAL"
 	ACT_RETRY             string = "RETRY"
+	ACT_SCRAPING          string = "SCRAPING"
 )
 
 var (
