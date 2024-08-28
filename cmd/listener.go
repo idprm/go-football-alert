@@ -9,10 +9,13 @@ import (
 	"github.com/idprm/go-football-alert/internal/domain/entity"
 	"github.com/idprm/go-football-alert/internal/domain/repository"
 	"github.com/idprm/go-football-alert/internal/handler"
+	"github.com/idprm/go-football-alert/internal/logger"
 	"github.com/idprm/go-football-alert/internal/services"
+	"github.com/redis/go-redis/v9"
 	"github.com/spf13/cobra"
+	"github.com/wiliehidayat87/rmqp"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
+	loggerDb "gorm.io/gorm/logger"
 )
 
 var listenerCmd = &cobra.Command{
@@ -34,8 +37,21 @@ var listenerCmd = &cobra.Command{
 			panic(err)
 		}
 
+		/**
+		 * connect redis
+		 */
+		rds, err := connectRedis()
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * setup log
+		 */
+		logger := logger.NewLogger()
+
 		// DEBUG ON CONSOLE
-		db.Logger = logger.Default.LogMode(logger.Info)
+		db.Logger = loggerDb.Default.LogMode(loggerDb.Info)
 
 		// TODO: Add migrations
 		db.AutoMigrate(
@@ -62,13 +78,13 @@ var listenerCmd = &cobra.Command{
 		 */
 		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_MO_EXCHANGE, true, RMQ_MO_QUEUE)
 
-		r := routeUrlListener(db)
+		r := routeUrlListener(db, rds, rmq, logger)
 		log.Fatal(r.Listen(":" + APP_PORT))
 
 	},
 }
 
-func routeUrlListener(db *gorm.DB) *fiber.App {
+func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *logger.Logger) *fiber.App {
 	app := fiber.New()
 
 	path, err := os.Getwd()
@@ -125,7 +141,9 @@ func routeUrlListener(db *gorm.DB) *fiber.App {
 	rewardRepo := repository.NewRewardRepository(db)
 	rewardService := services.NewRewardService(rewardRepo)
 
-	h := handler.NewListenerHandler(
+	h := handler.NewIncomingHandler(
+		rmq,
+		logger,
 		leagueService,
 		seasonService,
 		teamService,
@@ -147,8 +165,9 @@ func routeUrlListener(db *gorm.DB) *fiber.App {
 	ussdService := services.NewUssdService(ussdRepo)
 	ussdHandler := handler.NewUssdHandler(ussdService)
 
-	v1 := app.Group(API_VERSION)
+	app.Post("/mo", h.MessageOriginated)
 
+	v1 := app.Group(API_VERSION)
 	leagues := v1.Group("leagues")
 	leagues.Get("/", h.USSD)
 

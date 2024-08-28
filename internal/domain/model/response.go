@@ -1,5 +1,12 @@
 package model
 
+type WebResponse struct {
+	Error       bool   `json:"error"`
+	StatusCode  int    `json:"status_code"`
+	Message     string `json:"message"`
+	RedirectUrl string `json:"redirect_url"`
+}
+
 type ApiFbResponse struct {
 	League  *LeagueResponse    `json:"league"`
 	Country *CountryResponse   `json:"country"`

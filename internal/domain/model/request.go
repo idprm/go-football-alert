@@ -1,5 +1,15 @@
 package model
 
+type MORequest struct {
+	Msisdn string `validate:"required" json:"msisdn"`
+}
+
+type ErrorResponse struct {
+	FailedField string `json:"failed_field" xml:"failed_field"`
+	Tag         string `json:"tag" xml:"tag"`
+	Value       string `json:"value" xml:"value"`
+}
+
 // Read the variables sent via POST from our API
 type AfricasTalkingRequest struct {
 	SessionId   string `form:"sessionId" json:"session_id"`

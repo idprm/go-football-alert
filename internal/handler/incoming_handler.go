@@ -1,9 +1,16 @@
 package handler
 
 import (
+	"encoding/json"
+
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"github.com/idprm/go-football-alert/internal/domain/model"
+	"github.com/idprm/go-football-alert/internal/logger"
 	"github.com/idprm/go-football-alert/internal/services"
 	"github.com/idprm/go-football-alert/internal/utils"
+	"github.com/sirupsen/logrus"
+	"github.com/wiliehidayat87/rmqp"
 )
 
 var (
@@ -27,7 +34,15 @@ var (
 	API_FOOTBALL_HOST string = utils.GetEnv("API_FOOTBALL_HOST")
 )
 
-type ListenerHandler struct {
+var (
+	RMQ_DATA_TYPE   string = "application/json"
+	RMQ_MO_EXCHANGE string = "E_MO"
+	RMQ_MO_QUEUE    string = "Q_MO"
+)
+
+type IncomingHandler struct {
+	rmq                 rmqp.AMQP
+	logger              *logger.Logger
 	leagueService       services.ILeagueService
 	seasonService       services.ISeasonService
 	teamService         services.ITeamService
@@ -45,7 +60,9 @@ type ListenerHandler struct {
 	rewardService       services.IRewardService
 }
 
-func NewListenerHandler(
+func NewIncomingHandler(
+	rmq rmqp.AMQP,
+	logger *logger.Logger,
 	leagueService services.ILeagueService,
 	seasonService services.ISeasonService,
 	teamService services.ITeamService,
@@ -61,8 +78,10 @@ func NewListenerHandler(
 	subscriptionService services.ISubscriptionService,
 	transactionService services.ITransactionService,
 	rewardService services.IRewardService,
-) *ListenerHandler {
-	return &ListenerHandler{
+) *IncomingHandler {
+	return &IncomingHandler{
+		rmq:                 rmq,
+		logger:              logger,
 		leagueService:       leagueService,
 		seasonService:       seasonService,
 		teamService:         teamService,
@@ -82,14 +101,75 @@ func NewListenerHandler(
 
 }
 
-func (h *ListenerHandler) USSD(c *fiber.Ctx) error {
+var validate = validator.New()
+
+func ValidateStruct(data interface{}) []*model.ErrorResponse {
+	var errors []*model.ErrorResponse
+	err := validate.Struct(data)
+	if err != nil {
+		for _, err := range err.(validator.ValidationErrors) {
+			var element model.ErrorResponse
+			element.FailedField = err.StructNamespace()
+			element.Tag = err.Tag()
+			element.Value = err.Param()
+			errors = append(errors, &element)
+		}
+	}
+	return errors
+}
+
+func (h *IncomingHandler) USSD(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
 }
 
-func (h *ListenerHandler) Sub(c *fiber.Ctx) error {
+func (h *IncomingHandler) Sub(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
 }
 
-func (h *ListenerHandler) UnSub(c *fiber.Ctx) error {
+func (h *IncomingHandler) UnSub(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
+}
+
+func (h *IncomingHandler) MessageOriginated(c *fiber.Ctx) error {
+	l := h.logger.Init("mo", true)
+
+	req := new(model.MORequest)
+
+	err := c.BodyParser(req)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusBadRequest,
+				Message:    err.Error(),
+			},
+		)
+	}
+
+	jsonData, err := json.Marshal(req)
+	if err != nil {
+		return c.Status(fiber.StatusBadGateway).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusBadGateway,
+				Message:    err.Error(),
+			},
+		)
+	}
+
+	l.WithFields(logrus.Fields{"request": req}).Info("MO")
+
+	h.rmq.IntegratePublish(
+		RMQ_MO_EXCHANGE,
+		RMQ_MO_QUEUE,
+		RMQ_DATA_TYPE, "", string(jsonData),
+	)
+
+	return c.Status(fiber.StatusOK).JSON(
+		&model.WebResponse{
+			Error:      false,
+			StatusCode: fiber.StatusOK,
+			Message:    "Successful",
+		},
+	)
 }
