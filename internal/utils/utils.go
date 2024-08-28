@@ -3,7 +3,14 @@ package utils
 import (
 	"log"
 	"os"
+
+	"github.com/google/uuid"
 )
+
+func GenerateTrxId() string {
+	id := uuid.New()
+	return id.String()
+}
 
 func GetEnv(key string) string {
 	value := os.Getenv(key)

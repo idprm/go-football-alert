@@ -14,8 +14,10 @@ jobs:
         include:
           - dockerfile: ./Dockerfile.listener
             image: idprm/fb-alert-listener-service
-          - dockerfile: ./Dockerfile.scraper
-            image: idprm/fb-alert-scraper-service
+          - dockerfile: ./Dockerfile.mo
+            image: idprm/fb-alert-mo-service
+          - dockerfile: ./Dockerfile.pub_scraping
+            image: idprm/fb-alert-pub-scraping-service
 
     permissions:
       contents: read

@@ -1,20 +1,47 @@
 package cmd
 
 import (
+	"sync"
+
 	"github.com/idprm/go-football-alert/internal/domain/repository"
 	"github.com/idprm/go-football-alert/internal/handler"
+	"github.com/idprm/go-football-alert/internal/logger"
 	"github.com/idprm/go-football-alert/internal/services"
+	"github.com/redis/go-redis/v9"
+	"github.com/wiliehidayat87/rmqp"
 	"gorm.io/gorm"
 )
 
 type Processor struct {
-	db *gorm.DB
+	db     *gorm.DB
+	rds    *redis.Client
+	rmq    rmqp.AMQP
+	logger *logger.Logger
 }
 
-func NewProcessor(db *gorm.DB) *Processor {
+func NewProcessor(
+	db *gorm.DB,
+	rds *redis.Client,
+	rmq rmqp.AMQP,
+	logger *logger.Logger,
+) *Processor {
 	return &Processor{
-		db: db,
+		db:     db,
+		rds:    rds,
+		rmq:    rmq,
+		logger: logger,
 	}
+}
+
+func (p *Processor) MO(wg *sync.WaitGroup, message []byte) {
+	/**
+	 * -. Filter REG / UNREG
+	 * -. Check Blacklist
+	 * -. Check Active Sub
+	 * -. MT API
+	 * -. Save Sub
+	 * -/ Save Transaction
+	 */
 }
 
 func (p *Processor) Scraping() {
@@ -58,6 +85,6 @@ func (p *Processor) Scraping() {
 		newsService,
 	)
 
-	//h.Fixtures()
+	h.Fixtures()
 	h.News()
 }

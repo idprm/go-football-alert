@@ -26,6 +26,14 @@ var listenerCmd = &cobra.Command{
 			panic(err)
 		}
 
+		/**
+		 * connect rabbitmq
+		 */
+		rmq, err := connectRabbitMq()
+		if err != nil {
+			panic(err)
+		}
+
 		// DEBUG ON CONSOLE
 		db.Logger = logger.Default.LogMode(logger.Info)
 
@@ -48,6 +56,11 @@ var listenerCmd = &cobra.Command{
 			&entity.Transaction{},
 			&entity.Reward{},
 		)
+
+		/**
+		 * Setup channel
+		 */
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_MO_EXCHANGE, true, RMQ_MO_QUEUE)
 
 		r := routeUrlListener(db)
 		log.Fatal(r.Listen(":" + APP_PORT))
