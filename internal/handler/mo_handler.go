@@ -115,6 +115,7 @@ func (h *MOHandler) Firstpush() {
 				TotalFirstpush:       sub.TotalFirstpush + 1,
 				TotalAmountFirstpush: service.GetPrice(),
 				LatestPayload:        string(resp),
+				UpdatedAt:            time.Now(),
 			},
 		)
 
@@ -132,6 +133,7 @@ func (h *MOHandler) Firstpush() {
 				StatusDetail:   "",
 				Subject:        SUBJECT_FIRSTPUSH,
 				Payload:        string(resp),
+				CreatedAt:      time.Now(),
 			},
 		)
 
@@ -143,6 +145,7 @@ func (h *MOHandler) Firstpush() {
 				Keyword:   h.req.GetKeyword(),
 				Subject:   SUBJECT_FIRSTPUSH,
 				Status:    STATUS_SUCCESS,
+				CreatedAt: time.Now(),
 			},
 		)
 	} else {
@@ -159,6 +162,7 @@ func (h *MOHandler) Firstpush() {
 				TotalFailed:   sub.TotalFailed + 1,
 				IsRetry:       true,
 				LatestPayload: string(resp),
+				UpdatedAt:     time.Now(),
 			},
 		)
 
@@ -175,6 +179,7 @@ func (h *MOHandler) Firstpush() {
 				StatusDetail:   "",
 				Subject:        SUBJECT_FIRSTPUSH,
 				Payload:        string(resp),
+				CreatedAt:      time.Now(),
 			},
 		)
 
@@ -186,6 +191,7 @@ func (h *MOHandler) Firstpush() {
 				Keyword:   h.req.GetKeyword(),
 				Subject:   SUBJECT_FIRSTPUSH,
 				Status:    STATUS_FAILED,
+				CreatedAt: time.Now(),
 			},
 		)
 	}
@@ -211,6 +217,7 @@ func (h *MOHandler) Firstpush() {
 		Subject:        SUBJECT_FP_SMS,
 		IpAddress:      h.req.GetIpAddress(),
 		Payload:        string(sms),
+		CreatedAt:      time.Now(),
 	}
 	if utils.IsSMSSuccess(respKannel.Message) {
 		msg.SetStatus(STATUS_SUCCESS)
@@ -227,6 +234,7 @@ func (h *MOHandler) Firstpush() {
 			ServiceID: service.GetId(),
 			Msisdn:    h.req.GetMsisdn(),
 			TotalSub:  sub.TotalSub + 1,
+			UpdatedAt: time.Now(),
 		},
 	)
 
@@ -251,6 +259,7 @@ func (h *MOHandler) Unsub() {
 			IpAddress:     h.req.GetIpAddress(),
 			IsRetry:       false,
 			IsActive:      false,
+			UpdatedAt:     time.Now(),
 		},
 	)
 
@@ -265,6 +274,7 @@ func (h *MOHandler) Unsub() {
 			ServiceID:  service.GetId(),
 			Msisdn:     h.req.GetMsisdn(),
 			TotalUnsub: sub.TotalUnsub + 1,
+			UpdatedAt:  time.Now(),
 		},
 	)
 
@@ -280,6 +290,7 @@ func (h *MOHandler) Unsub() {
 			StatusDetail:   "",
 			Subject:        SUBJECT_UNSUB,
 			Payload:        "",
+			CreatedAt:      time.Now(),
 		},
 	)
 
@@ -292,6 +303,7 @@ func (h *MOHandler) Unsub() {
 			Subject:   SUBJECT_UNSUB,
 			Status:    STATUS_SUCCESS,
 			IpAddress: h.req.GetIpAddress(),
+			CreatedAt: time.Now(),
 		},
 	)
 }

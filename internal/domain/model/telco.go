@@ -38,7 +38,7 @@ type (
 				ExpDate       string `xml:"ExpDate"`
 				FaultCode     string `xml:"faultcode"`
 				FaultString   string `xml:"faultstring"`
-			} `xml:"xsd:DeductFeeResponse"`
+			} `xml:"DeductFeeResponse"`
 		} `xml:"soapenv:Body"`
 	}
 )

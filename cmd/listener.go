@@ -253,6 +253,7 @@ func seederDB(db *gorm.DB) {
 			Name:       "FB 100",
 			Code:       "FB100",
 			Package:    "1",
+			Price:      100,
 			RenewalDay: 1,
 			TrialDay:   0,
 			UrlTelco:   "http://172.17.111.40:8080/services/OrangeService.OrangeServiceHttpSoap11Endpoint/",
