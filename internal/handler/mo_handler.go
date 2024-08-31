@@ -207,27 +207,27 @@ func (h *MOHandler) Firstpush() {
 	var respKannel *model.KannelResponse
 	json.Unmarshal(sms, &respKannel)
 
-	msg := &entity.Transaction{
-		TrxId:          trxId,
-		CountryID:      service.GetCountryId(),
-		SubscriptionID: sub.GetId(),
-		ServiceID:      subscription.GetServiceId(),
-		Msisdn:         subscription.GetMsisdn(),
-		Amount:         0,
-		StatusCode:     "",
-		StatusDetail:   "",
-		Subject:        SUBJECT_FP_SMS,
-		IpAddress:      h.req.GetIpAddress(),
-		Payload:        string(sms),
-		CreatedAt:      time.Now(),
-	}
-	if utils.IsSMSSuccess(respKannel.Message) {
-		msg.SetStatus(STATUS_SUCCESS)
-		h.transactionService.Save(msg)
-	} else {
-		msg.SetStatus(STATUS_FAILED)
-		h.transactionService.Save(msg)
-	}
+	// msg := &entity.Transaction{
+	// 	TrxId:          trxId,
+	// 	CountryID:      service.GetCountryId(),
+	// 	SubscriptionID: sub.GetId(),
+	// 	ServiceID:      subscription.GetServiceId(),
+	// 	Msisdn:         subscription.GetMsisdn(),
+	// 	Amount:         0,
+	// 	StatusCode:     "",
+	// 	StatusDetail:   "",
+	// 	Subject:        SUBJECT_FP_SMS,
+	// 	IpAddress:      h.req.GetIpAddress(),
+	// 	Payload:        string(sms),
+	// 	CreatedAt:      time.Now(),
+	// }
+	// if utils.IsSMSSuccess(respKannel.Message) {
+	// 	msg.SetStatus(STATUS_SUCCESS)
+	// 	h.transactionService.Save(msg)
+	// } else {
+	// 	msg.SetStatus(STATUS_FAILED)
+	// 	h.transactionService.Save(msg)
+	// }
 
 	// count total sub
 	h.subscriptionService.Update(
