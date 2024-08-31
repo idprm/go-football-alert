@@ -24,9 +24,9 @@ type IContentRepository interface {
 	Delete(*entity.Content) error
 }
 
-func (r *ContentRepository) Count(serviceId int, key string) (int64, error) {
+func (r *ContentRepository) Count(serviceId int, name string) (int64, error) {
 	var count int64
-	err := r.db.Model(&entity.Content{}).Where("service_id = ?", serviceId).Where("key = ?", key).Count(&count).Error
+	err := r.db.Model(&entity.Content{}).Where("service_id = ?", serviceId).Where("name = ?", name).Count(&count).Error
 	if err != nil {
 		return count, err
 	}
@@ -43,9 +43,9 @@ func (r *ContentRepository) GetAllPaginate(pagination *entity.Pagination) (*enti
 	return pagination, nil
 }
 
-func (r *ContentRepository) Get(serviceId int, key string) (*entity.Content, error) {
+func (r *ContentRepository) Get(serviceId int, name string) (*entity.Content, error) {
 	var content entity.Content
-	err := r.db.Where("service_id = ?", serviceId).Where("key = ?", key).Preload("Service").Take(&content).Error
+	err := r.db.Where("service_id = ?", serviceId).Where("name = ?", name).Preload("Service").Take(&content).Error
 	if err != nil {
 		return nil, err
 	}

@@ -175,8 +175,8 @@ func (h *MOHandler) Firstpush() {
 				Msisdn:         h.req.GetMsisdn(),
 				Keyword:        h.req.GetKeyword(),
 				Status:         STATUS_FAILED,
-				StatusCode:     "",
-				StatusDetail:   "",
+				StatusCode:     respDeduct.GetFaultCode(),
+				StatusDetail:   respDeduct.GetFaultString(),
 				Subject:        SUBJECT_FIRSTPUSH,
 				Payload:        string(resp),
 				CreatedAt:      time.Now(),
@@ -212,8 +212,8 @@ func (h *MOHandler) Firstpush() {
 		ServiceID:      subscription.GetServiceId(),
 		Msisdn:         subscription.GetMsisdn(),
 		Amount:         0,
-		StatusCode:     "-",
-		StatusDetail:   "-",
+		StatusCode:     respKannel.RequestId,
+		StatusDetail:   respKannel.Message,
 		Subject:        SUBJECT_FP_SMS,
 		IpAddress:      h.req.GetIpAddress(),
 		Payload:        string(sms),
@@ -333,5 +333,8 @@ func (h *MOHandler) getService() (*entity.Service, error) {
 }
 
 func (h *MOHandler) getContentFirstpush(serviceId int) (*entity.Content, error) {
+	if !h.contentService.IsContent(serviceId, MT_FIRSTPUSH) {
+		return &entity.Content{}, nil
+	}
 	return h.contentService.Get(serviceId, MT_FIRSTPUSH)
 }

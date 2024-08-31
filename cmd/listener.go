@@ -268,12 +268,12 @@ func seederDB(db *gorm.DB) {
 	var contents = []entity.Content{
 		{
 			ServiceID: 1,
-			Key:       ACT_FIRSTPUSH,
+			Name:      ACT_FIRSTPUSH,
 			Value:     "Test",
 		},
 		{
 			ServiceID: 1,
-			Key:       ACT_RENEWAL,
+			Name:      ACT_RENEWAL,
 			Value:     "Test",
 		},
 	}

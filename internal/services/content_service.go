@@ -24,8 +24,8 @@ type IContentService interface {
 	Delete(*entity.Content) error
 }
 
-func (s *ContentService) IsContent(servceId int, key string) bool {
-	count, _ := s.contentRepo.Count(servceId, key)
+func (s *ContentService) IsContent(serviceId int, key string) bool {
+	count, _ := s.contentRepo.Count(serviceId, key)
 	return count > 0
 }
 
@@ -33,8 +33,8 @@ func (s *ContentService) GetAllPaginate(pagination *entity.Pagination) (*entity.
 	return s.contentRepo.GetAllPaginate(pagination)
 }
 
-func (s *ContentService) Get(servceId int, key string) (*entity.Content, error) {
-	return s.contentRepo.Get(servceId, key)
+func (s *ContentService) Get(serviceId int, key string) (*entity.Content, error) {
+	return s.contentRepo.Get(serviceId, key)
 }
 
 func (s *ContentService) Save(a *entity.Content) (*entity.Content, error) {
