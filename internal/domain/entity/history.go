@@ -3,17 +3,19 @@ package entity
 import "time"
 
 type History struct {
-	ID        int64     `gorm:"primaryKey" json:"id"`
-	CountryID int       `json:"country_id"`
-	Country   *Country  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"country,omitempty"`
-	ServiceID int       `json:"service_id"`
-	Service   *Service  `json:"service"`
-	Msisdn    string    `gorm:"size:15;not null" json:"msisdn"`
-	Keyword   string    `json:"keyword"`
-	Subject   string    `json:"subject"`
-	Status    string    `json:"status"`
-	IpAddress string    `json:"ip_address"`
-	CreatedAt time.Time `json:"created_at"`
+	ID             int64         `gorm:"primaryKey" json:"id"`
+	CountryID      int           `json:"country_id"`
+	Country        *Country      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"country,omitempty"`
+	SubscriptionID int64         `json:"subscription_id"`
+	Subscription   *Subscription `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"subscription,omitempty"`
+	ServiceID      int           `json:"service_id"`
+	Service        *Service      `json:"service"`
+	Msisdn         string        `gorm:"size:15;not null" json:"msisdn"`
+	Keyword        string        `json:"keyword"`
+	Subject        string        `json:"subject"`
+	Status         string        `json:"status"`
+	IpAddress      string        `json:"ip_address"`
+	CreatedAt      time.Time     `json:"created_at"`
 }
 
 func (e *History) GetId() int64 {
@@ -22,6 +24,10 @@ func (e *History) GetId() int64 {
 
 func (e *History) GetCountryId() int {
 	return e.CountryID
+}
+
+func (e *History) GetSubscriptionId() int64 {
+	return e.SubscriptionID
 }
 
 func (e *History) GetServiceId() int {

@@ -139,13 +139,14 @@ func (h *MOHandler) Firstpush() {
 
 		h.historyService.Save(
 			&entity.History{
-				CountryID: service.GetCountryId(),
-				ServiceID: service.GetId(),
-				Msisdn:    h.req.GetMsisdn(),
-				Keyword:   h.req.GetKeyword(),
-				Subject:   SUBJECT_FIRSTPUSH,
-				Status:    STATUS_SUCCESS,
-				CreatedAt: time.Now(),
+				CountryID:      service.GetCountryId(),
+				SubscriptionID: sub.GetId(),
+				ServiceID:      service.GetId(),
+				Msisdn:         h.req.GetMsisdn(),
+				Keyword:        h.req.GetKeyword(),
+				Subject:        SUBJECT_FIRSTPUSH,
+				Status:         STATUS_SUCCESS,
+				CreatedAt:      time.Now(),
 			},
 		)
 	} else {
@@ -185,13 +186,14 @@ func (h *MOHandler) Firstpush() {
 
 		h.historyService.Save(
 			&entity.History{
-				CountryID: service.GetCountryId(),
-				ServiceID: service.GetId(),
-				Msisdn:    h.req.GetMsisdn(),
-				Keyword:   h.req.GetKeyword(),
-				Subject:   SUBJECT_FIRSTPUSH,
-				Status:    STATUS_FAILED,
-				CreatedAt: time.Now(),
+				CountryID:      service.GetCountryId(),
+				SubscriptionID: sub.GetId(),
+				ServiceID:      service.GetId(),
+				Msisdn:         h.req.GetMsisdn(),
+				Keyword:        h.req.GetKeyword(),
+				Subject:        SUBJECT_FIRSTPUSH,
+				Status:         STATUS_FAILED,
+				CreatedAt:      time.Now(),
 			},
 		)
 	}
@@ -296,14 +298,15 @@ func (h *MOHandler) Unsub() {
 
 	h.historyService.Save(
 		&entity.History{
-			CountryID: service.GetCountryId(),
-			ServiceID: service.GetId(),
-			Msisdn:    h.req.GetMsisdn(),
-			Keyword:   h.req.GetKeyword(),
-			Subject:   SUBJECT_UNSUB,
-			Status:    STATUS_SUCCESS,
-			IpAddress: h.req.GetIpAddress(),
-			CreatedAt: time.Now(),
+			CountryID:      service.GetCountryId(),
+			SubscriptionID: sub.GetId(),
+			ServiceID:      service.GetId(),
+			Msisdn:         h.req.GetMsisdn(),
+			Keyword:        h.req.GetKeyword(),
+			Subject:        SUBJECT_UNSUB,
+			Status:         STATUS_SUCCESS,
+			IpAddress:      h.req.GetIpAddress(),
+			CreatedAt:      time.Now(),
 		},
 	)
 }
