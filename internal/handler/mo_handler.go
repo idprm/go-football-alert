@@ -97,7 +97,54 @@ func (h *MOHandler) Firstpush() {
 	var respDeduct *model.DeductResponse
 	xml.Unmarshal(utils.EscapeChar(resp), &respDeduct)
 
-	if !respDeduct.IsFailed() {
+	if respDeduct.IsFailed() {
+		h.subscriptionService.Update(
+			&entity.Subscription{
+				CountryID:     service.GetCountryId(),
+				ServiceID:     service.GetId(),
+				Msisdn:        h.req.GetMsisdn(),
+				LatestTrxId:   trxId,
+				LatestSubject: SUBJECT_FIRSTPUSH,
+				LatestStatus:  STATUS_FAILED,
+				RenewalAt:     time.Now().AddDate(0, 0, 1),
+				RetryAt:       time.Now(),
+				TotalFailed:   sub.TotalFailed + 1,
+				IsRetry:       true,
+				LatestPayload: string(resp),
+				UpdatedAt:     time.Now(),
+			},
+		)
+
+		h.transactionService.Save(
+			&entity.Transaction{
+				TrxId:          trxId,
+				CountryID:      service.GetCountryId(),
+				SubscriptionID: sub.GetId(),
+				ServiceID:      service.GetId(),
+				Msisdn:         h.req.GetMsisdn(),
+				Keyword:        h.req.GetKeyword(),
+				Status:         STATUS_FAILED,
+				StatusCode:     respDeduct.GetFaultCode(),
+				StatusDetail:   respDeduct.GetFaultString(),
+				Subject:        SUBJECT_FIRSTPUSH,
+				Payload:        string(resp),
+				CreatedAt:      time.Now(),
+			},
+		)
+
+		h.historyService.Save(
+			&entity.History{
+				CountryID:      service.GetCountryId(),
+				SubscriptionID: sub.GetId(),
+				ServiceID:      service.GetId(),
+				Msisdn:         h.req.GetMsisdn(),
+				Keyword:        h.req.GetKeyword(),
+				Subject:        SUBJECT_FIRSTPUSH,
+				Status:         STATUS_FAILED,
+				CreatedAt:      time.Now(),
+			},
+		)
+	} else {
 		h.subscriptionService.Update(
 			&entity.Subscription{
 				CountryID:            service.GetCountryId(),
@@ -145,53 +192,6 @@ func (h *MOHandler) Firstpush() {
 				Keyword:        h.req.GetKeyword(),
 				Subject:        SUBJECT_FIRSTPUSH,
 				Status:         STATUS_SUCCESS,
-				CreatedAt:      time.Now(),
-			},
-		)
-	} else {
-		h.subscriptionService.Update(
-			&entity.Subscription{
-				CountryID:     service.GetCountryId(),
-				ServiceID:     service.GetId(),
-				Msisdn:        h.req.GetMsisdn(),
-				LatestTrxId:   trxId,
-				LatestSubject: SUBJECT_FIRSTPUSH,
-				LatestStatus:  STATUS_FAILED,
-				RenewalAt:     time.Now().AddDate(0, 0, 1),
-				RetryAt:       time.Now(),
-				TotalFailed:   sub.TotalFailed + 1,
-				IsRetry:       true,
-				LatestPayload: string(resp),
-				UpdatedAt:     time.Now(),
-			},
-		)
-
-		h.transactionService.Save(
-			&entity.Transaction{
-				TrxId:          trxId,
-				CountryID:      service.GetCountryId(),
-				SubscriptionID: sub.GetId(),
-				ServiceID:      service.GetId(),
-				Msisdn:         h.req.GetMsisdn(),
-				Keyword:        h.req.GetKeyword(),
-				Status:         STATUS_FAILED,
-				StatusCode:     respDeduct.GetFaultCode(),
-				StatusDetail:   respDeduct.GetFaultString(),
-				Subject:        SUBJECT_FIRSTPUSH,
-				Payload:        string(resp),
-				CreatedAt:      time.Now(),
-			},
-		)
-
-		h.historyService.Save(
-			&entity.History{
-				CountryID:      service.GetCountryId(),
-				SubscriptionID: sub.GetId(),
-				ServiceID:      service.GetId(),
-				Msisdn:         h.req.GetMsisdn(),
-				Keyword:        h.req.GetKeyword(),
-				Subject:        SUBJECT_FIRSTPUSH,
-				Status:         STATUS_FAILED,
 				CreatedAt:      time.Now(),
 			},
 		)
