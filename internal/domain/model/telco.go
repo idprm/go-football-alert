@@ -36,9 +36,11 @@ type (
 				BeforeBalance string `xml:"BeforeBalance"`
 				AfterBalance  string `xml:"AfterBalance"`
 				ExpDate       string `xml:"ExpDate"`
-				FaultCode     string `xml:"faultcode"`
-				FaultString   string `xml:"faultstring"`
 			} `xml:"DeductFeeResponse"`
+			Fault struct {
+				FaultCode   string `xml:"faultcode"`
+				FaultString string `xml:"faultstring"`
+			} `xml:"soapenv:Fault"`
 		} `xml:"soapenv:Body"`
 	}
 )
@@ -108,13 +110,13 @@ func (m *DeductResponse) GetExpDate() string {
 }
 
 func (m *DeductResponse) GetFaultCode() string {
-	return m.Body.DeductFeeResponse.FaultCode
+	return m.Body.Fault.FaultCode
 }
 
 func (m *DeductResponse) GetFaultString() string {
-	return m.Body.DeductFeeResponse.FaultString
+	return m.Body.Fault.FaultString
 }
 
 func (m *DeductResponse) IsFailed() bool {
-	return m.Body.DeductFeeResponse.FaultCode != "" || m.Body.DeductFeeResponse.FaultString != ""
+	return m.Body.Fault.FaultCode != "" || m.Body.Fault.FaultString != ""
 }
