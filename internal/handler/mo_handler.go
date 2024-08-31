@@ -120,17 +120,18 @@ func (h *MOHandler) Firstpush() {
 
 		h.transactionService.Save(
 			&entity.Transaction{
-				TrxId:        trxId,
-				CountryID:    service.GetCountryId(),
-				ServiceID:    service.GetId(),
-				Msisdn:       h.req.GetMsisdn(),
-				Keyword:      h.req.GetKeyword(),
-				Amount:       service.GetPrice(),
-				Status:       STATUS_SUCCESS,
-				StatusCode:   "",
-				StatusDetail: "",
-				Subject:      SUBJECT_FIRSTPUSH,
-				Payload:      string(resp),
+				TrxId:          trxId,
+				CountryID:      service.GetCountryId(),
+				SubscriptionID: sub.GetId(),
+				ServiceID:      service.GetId(),
+				Msisdn:         h.req.GetMsisdn(),
+				Keyword:        h.req.GetKeyword(),
+				Amount:         service.GetPrice(),
+				Status:         STATUS_SUCCESS,
+				StatusCode:     "",
+				StatusDetail:   "",
+				Subject:        SUBJECT_FIRSTPUSH,
+				Payload:        string(resp),
 			},
 		)
 
@@ -163,16 +164,17 @@ func (h *MOHandler) Firstpush() {
 
 		h.transactionService.Save(
 			&entity.Transaction{
-				TrxId:        trxId,
-				CountryID:    service.GetCountryId(),
-				ServiceID:    service.GetId(),
-				Msisdn:       h.req.GetMsisdn(),
-				Keyword:      h.req.GetKeyword(),
-				Status:       STATUS_FAILED,
-				StatusCode:   "",
-				StatusDetail: "",
-				Subject:      SUBJECT_FIRSTPUSH,
-				Payload:      string(resp),
+				TrxId:          trxId,
+				CountryID:      service.GetCountryId(),
+				SubscriptionID: sub.GetId(),
+				ServiceID:      service.GetId(),
+				Msisdn:         h.req.GetMsisdn(),
+				Keyword:        h.req.GetKeyword(),
+				Status:         STATUS_FAILED,
+				StatusCode:     "",
+				StatusDetail:   "",
+				Subject:        SUBJECT_FIRSTPUSH,
+				Payload:        string(resp),
 			},
 		)
 
@@ -198,16 +200,17 @@ func (h *MOHandler) Firstpush() {
 	json.Unmarshal(sms, &respKannel)
 
 	msg := &entity.Transaction{
-		TrxId:        trxId,
-		CountryID:    service.GetCountryId(),
-		ServiceID:    subscription.GetServiceId(),
-		Msisdn:       subscription.GetMsisdn(),
-		Amount:       0,
-		StatusCode:   "-",
-		StatusDetail: "-",
-		Subject:      SUBJECT_FP_SMS,
-		IpAddress:    h.req.GetIpAddress(),
-		Payload:      string(sms),
+		TrxId:          trxId,
+		CountryID:      service.GetCountryId(),
+		SubscriptionID: sub.GetId(),
+		ServiceID:      subscription.GetServiceId(),
+		Msisdn:         subscription.GetMsisdn(),
+		Amount:         0,
+		StatusCode:     "-",
+		StatusDetail:   "-",
+		Subject:        SUBJECT_FP_SMS,
+		IpAddress:      h.req.GetIpAddress(),
+		Payload:        string(sms),
 	}
 	if utils.IsSMSSuccess(respKannel.Message) {
 		msg.SetStatus(STATUS_SUCCESS)
@@ -267,15 +270,16 @@ func (h *MOHandler) Unsub() {
 
 	h.transactionService.Save(
 		&entity.Transaction{
-			TrxId:        trxId,
-			CountryID:    service.GetCountryId(),
-			ServiceID:    service.GetId(),
-			Msisdn:       h.req.GetMsisdn(),
-			Status:       STATUS_SUCCESS,
-			StatusCode:   "",
-			StatusDetail: "",
-			Subject:      SUBJECT_UNSUB,
-			Payload:      "",
+			TrxId:          trxId,
+			CountryID:      service.GetCountryId(),
+			SubscriptionID: sub.GetId(),
+			ServiceID:      service.GetId(),
+			Msisdn:         h.req.GetMsisdn(),
+			Status:         STATUS_SUCCESS,
+			StatusCode:     "",
+			StatusDetail:   "",
+			Subject:        SUBJECT_UNSUB,
+			Payload:        "",
 		},
 	)
 

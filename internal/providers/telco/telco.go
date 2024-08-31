@@ -48,7 +48,7 @@ func (p *Telco) DeductFee() ([]byte, error) {
 	reqXml.SetTransactionSN("123455")
 	reqXml.SetTransactionDesc("OFCTEST")
 	reqXml.SetChannelID("ESERV")
-	reqXml.SetMsisdn("22390662894")
+	reqXml.SetMsisdn(p.subscription.GetMsisdn())
 	reqXml.SetAccountCode("")
 	reqXml.SetAcctResCode("1")
 	reqXml.SetDeductBalance(strconv.FormatFloat(p.service.GetPrice(), 'f', 6, 64))
