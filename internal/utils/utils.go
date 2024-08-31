@@ -3,6 +3,7 @@ package utils
 import (
 	"log"
 	"os"
+	"strings"
 
 	"github.com/google/uuid"
 )
@@ -18,4 +19,15 @@ func GetEnv(key string) string {
 		log.Panicf("Error %v", key)
 	}
 	return value
+}
+
+func EscapeChar(res []byte) []byte {
+	response := string(res)
+	r := strings.NewReplacer("&lt;", "<", "&gt;", ">")
+	result := r.Replace(response)
+	return []byte(result)
+}
+
+func IsSMSSuccess(v string) bool {
+	return strings.HasPrefix(v, "Success")
 }

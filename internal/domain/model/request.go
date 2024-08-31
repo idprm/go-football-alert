@@ -1,7 +1,63 @@
 package model
 
+import "strings"
+
+const (
+	MO_REG       string = "REG"
+	MO_UNREG     string = "UNREG"
+	VALID_PREFIX string = "_"
+)
+
 type MORequest struct {
-	Msisdn string `validate:"required" json:"msisdn"`
+	SMS       string `validate:"required" json:"sms" xml:"sms"`
+	Msisdn    string `validate:"required" json:"msisdn" xml:"msisdn"`
+	IpAddress string `query:"ip_address" json:"ip_address"`
+}
+
+func (s *MORequest) GetKeyword() string {
+	return strings.ToUpper(s.SMS)
+}
+
+func (s *MORequest) GetMsisdn() string {
+	return s.Msisdn
+}
+
+func (s *MORequest) GetSubKeyword() string {
+	message := strings.ToUpper(s.SMS)
+	index := strings.Split(message, " ")
+
+	if index[0] == MO_REG || index[0] == MO_UNREG {
+		if strings.Contains(message, MO_REG) || strings.Contains(message, MO_UNREG) {
+			if len(index) > 1 {
+				return index[1]
+			}
+			return ""
+		}
+		return ""
+	}
+	return ""
+}
+
+func (s *MORequest) IsREG() bool {
+	message := strings.ToUpper(s.SMS)
+	index := strings.Split(message, " ")
+	if index[0] == MO_REG && (strings.Contains(message, MO_REG)) {
+		return true
+	}
+	return false
+}
+
+func (s *MORequest) IsUNREG() bool {
+	message := strings.ToUpper(s.SMS)
+	index := strings.Split(message, " ")
+	if index[0] == MO_UNREG && (strings.Contains(message, MO_UNREG)) {
+		return true
+	}
+	return false
+}
+
+func (s *MORequest) GetIpAddress() string {
+	return s.IpAddress
 }
 
 type ErrorResponse struct {

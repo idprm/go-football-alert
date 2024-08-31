@@ -110,3 +110,7 @@ func (m *DeductResponse) GetFaultCode() string {
 func (m *DeductResponse) GetFaultString() string {
 	return m.Body.DeductFeeResponse.FaultString
 }
+
+func (m *DeductResponse) IsFailed() bool {
+	return m.Body.DeductFeeResponse.FaultCode != "" || m.Body.DeductFeeResponse.FaultString != ""
+}

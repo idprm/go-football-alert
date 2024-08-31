@@ -77,11 +77,13 @@ func init() {
 	 * Consumer service
 	 */
 	rootCmd.AddCommand(consumerMOCmd)
+	rootCmd.AddCommand(consumerRenewalCmd)
 
 	/**
 	 * Publisher Scraping service
 	 */
 	rootCmd.AddCommand(publisherScrapingCmd)
+	rootCmd.AddCommand(publisherRenewalCmd)
 }
 
 func Execute() error {

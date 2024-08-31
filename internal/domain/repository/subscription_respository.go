@@ -17,16 +17,27 @@ func NewSubscriptionRepository(db *gorm.DB) *SubscriptionRepository {
 
 type ISubscriptionRepository interface {
 	Count(int, string) (int64, error)
+	CountActive(int, string) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	Get(int, string) (*entity.Subscription, error)
 	Save(*entity.Subscription) (*entity.Subscription, error)
 	Update(*entity.Subscription) (*entity.Subscription, error)
 	Delete(*entity.Subscription) error
+	Renewal() (*[]entity.Subscription, error)
 }
 
 func (r *SubscriptionRepository) Count(serviceId int, msisdn string) (int64, error) {
 	var count int64
 	err := r.db.Model(&entity.Subscription{}).Where("service_id = ?", serviceId).Where("msisdn = ?", msisdn).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *SubscriptionRepository) CountActive(serviceId int, msisdn string) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Subscription{}).Where("service_id = ?", serviceId).Where("msisdn = ?", msisdn).Where("is_active = ?", true).Count(&count).Error
 	if err != nil {
 		return count, err
 	}
@@ -74,4 +85,14 @@ func (r *SubscriptionRepository) Delete(c *entity.Subscription) error {
 		return err
 	}
 	return nil
+}
+
+func (r *SubscriptionRepository) Renewal() (*[]entity.Subscription, error) {
+	var sub []entity.Subscription
+	err := r.db.Where("is_active = ?", true).Find(&sub).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &sub, nil
 }

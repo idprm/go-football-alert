@@ -1,8 +1,12 @@
 package cmd
 
 import (
+	"encoding/json"
+	"log"
 	"sync"
 
+	"github.com/idprm/go-football-alert/internal/domain/entity"
+	"github.com/idprm/go-football-alert/internal/domain/model"
 	"github.com/idprm/go-football-alert/internal/domain/repository"
 	"github.com/idprm/go-football-alert/internal/handler"
 	"github.com/idprm/go-football-alert/internal/logger"
@@ -42,6 +46,84 @@ func (p *Processor) MO(wg *sync.WaitGroup, message []byte) {
 	 * -. Save Sub
 	 * -/ Save Transaction
 	 */
+	serviceRepo := repository.NewServiceRepository(p.db)
+	serviceService := services.NewServiceService(serviceRepo)
+	contentRepo := repository.NewContentRepository(p.db)
+	contentService := services.NewContentService(contentRepo)
+	subscriptionRepo := repository.NewSubscriptionRepository(p.db)
+	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+	transactionRepo := repository.NewTransactionRepository(p.db)
+	transactionService := services.NewTransactionService(transactionRepo)
+	historyRepo := repository.NewHistoryRepository(p.db)
+	historyService := services.NewHistoryService(historyRepo)
+
+	var req *model.MORequest
+	json.Unmarshal([]byte(message), &req)
+
+	h := handler.NewMOHandler(
+		p.rmq,
+		p.logger,
+		serviceService,
+		contentService,
+		subscriptionService,
+		transactionService,
+		historyService,
+		req,
+	)
+
+	if h.IsService() {
+		// filter REG
+		if req.IsREG() {
+			if !h.IsActiveSub() {
+				h.Firstpush()
+			} else {
+				// already reg
+				log.Println("ALREADY_REG")
+			}
+		}
+		if req.IsUNREG() {
+			// active sub
+			if h.IsActiveSub() {
+				// unsub
+				h.Unsub()
+			}
+		}
+	}
+
+	wg.Done()
+}
+
+func (p *Processor) Renewal(wg *sync.WaitGroup, message []byte) {
+	/**
+	 * load repo
+	 */
+	serviceRepo := repository.NewServiceRepository(p.db)
+	serviceService := services.NewServiceService(serviceRepo)
+	contentRepo := repository.NewContentRepository(p.db)
+	contentService := services.NewContentService(contentRepo)
+	subscriptionRepo := repository.NewSubscriptionRepository(p.db)
+	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+	transactionRepo := repository.NewTransactionRepository(p.db)
+	transactionService := services.NewTransactionService(transactionRepo)
+
+	// parsing json to string
+	var sub *entity.Subscription
+	json.Unmarshal(message, &sub)
+
+	h := handler.NewRenewalHandler(
+		p.rmq,
+		p.logger,
+		sub,
+		serviceService,
+		contentService,
+		subscriptionService,
+		transactionService,
+	)
+
+	// Dailypush MT API
+	h.Dailypush()
+
+	wg.Done()
 }
 
 func (p *Processor) Scraping() {

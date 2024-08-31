@@ -2,89 +2,102 @@ package telco
 
 import (
 	"bytes"
-	"encoding/json"
-	"errors"
+	"encoding/xml"
 	"io"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/idprm/go-football-alert/internal/domain/entity"
 	"github.com/idprm/go-football-alert/internal/domain/model"
 	"github.com/idprm/go-football-alert/internal/logger"
+	"github.com/sirupsen/logrus"
 )
 
 type Telco struct {
-	logger  *logger.Logger
-	service *entity.Service
+	logger       *logger.Logger
+	service      *entity.Service
+	subscription *entity.Subscription
 }
 
 func NewTelco(
 	logger *logger.Logger,
 	service *entity.Service,
+	subscription *entity.Subscription,
 ) *Telco {
 	return &Telco{
-		logger:  logger,
-		service: service,
+		logger:       logger,
+		service:      service,
+		subscription: subscription,
 	}
 }
 
 type ITelco interface {
-	Token() ([]byte, error)
-	Charge() ([]byte, error)
+	DeductFee() ([]byte, error)
 }
 
-func (p *Telco) Token() ([]byte, error) {
-	dataJson, err := json.Marshal(p)
-	if err != nil {
-		return nil, errors.New(err.Error())
-	}
+func (p *Telco) DeductFee() ([]byte, error) {
+	l := p.logger.Init("mt", true)
+	start := time.Now()
 
-	req, err := http.NewRequest(http.MethodPost, "", bytes.NewBuffer(dataJson))
+	var reqXml model.DeductRequest
+
+	reqXml.SetUsername("ESERV")
+	reqXml.SetPassword("WS0001")
+	reqXml.SetTransactionSN("123455")
+	reqXml.SetTransactionDesc("OFCTEST")
+	reqXml.SetChannelID("ESERV")
+	reqXml.SetMsisdn("22390662894")
+	reqXml.SetAccountCode("")
+	reqXml.SetAcctResCode("1")
+	reqXml.SetDeductBalance("100")
+
+	payload, err := xml.Marshal(&reqXml)
 	if err != nil {
 		return nil, err
 	}
 
-	now := time.Now()
-	timeStamp := strconv.Itoa(int(now.Unix()))
+	req, err := http.NewRequest(http.MethodPost, p.service.GetUrlTelco(), bytes.NewBuffer(payload))
+	if err != nil {
+		return nil, err
+	}
 
-	req.Header.Add("Accept-Charset", "utf-8")
-	req.Header.Add("X-Api-Key", "")
-	req.Header.Add("X-Signature", "")
-	req.Header.Add("X-Trxtime", timeStamp)
+	req.Header.Set("Content-Type", "text/xml; charset=utf-8")
 
 	tr := &http.Transport{
-		MaxIdleConns:       40,
-		IdleConnTimeout:    60 * time.Second,
+		MaxIdleConns:       10,
+		IdleConnTimeout:    30 * time.Second,
 		DisableCompression: true,
 	}
 
 	client := &http.Client{
-		Timeout:   60 * time.Second,
+		Timeout:   30 * time.Second,
 		Transport: tr,
 	}
 
+	p.logger.Writer(req)
+
+	l.WithFields(logrus.Fields{"request": req}).Info("CHARGE")
+
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, errors.New(err.Error())
+		return nil, err
 	}
-
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, errors.New(err.Error())
-	}
-
-	return body, nil
-}
-
-func (p *Telco) Charge() ([]byte, error) {
-	l := p.logger.Init("mt", true)
-	var reqXml model.DeductRequest
-
-	req, err := http.NewRequest(http.MethodPost, p.service.GetUrlTelco(), bytes.NewBuffer(reqXml))
-	if err != nil {
 		return nil, err
 	}
+
+	p.logger.Writer(string(body))
+	duration := time.Since(start).Milliseconds()
+
+	l.WithFields(
+		logrus.Fields{
+			"msisdn":   p.subscription.GetMsisdn(),
+			"response": string(body),
+			"duration": duration,
+		}).Info("CHARGE")
+
+	return body, nil
 }

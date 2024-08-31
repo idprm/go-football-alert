@@ -35,9 +35,20 @@ var (
 )
 
 var (
-	RMQ_DATA_TYPE   string = "application/json"
-	RMQ_MO_EXCHANGE string = "E_MO"
-	RMQ_MO_QUEUE    string = "Q_MO"
+	RMQ_DATA_TYPE     string = "application/json"
+	RMQ_MO_EXCHANGE   string = "E_MO"
+	RMQ_MO_QUEUE      string = "Q_MO"
+	MT_FIRSTPUSH      string = "FIRSTPUSH"
+	MT_RENEWAL        string = "RENEWAL"
+	MT_UNSUB          string = "UNSUB"
+	STATUS_SUCCESS    string = "SUCCESS"
+	STATUS_FAILED     string = "FAILED"
+	SUBJECT_FIRSTPUSH string = "FIRSTPUSH"
+	SUBJECT_DAILYPUSH string = "DAILYPUSH"
+	SUBJECT_FP_SMS    string = "FP_SMS"
+	SUBJECT_DP_SMS    string = "DP_SMS"
+	SUBJECT_RENEWAL   string = "RENEWAL"
+	SUBJECT_UNSUB     string = "UNSUB"
 )
 
 type IncomingHandler struct {

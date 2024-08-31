@@ -1,12 +1,19 @@
 package entity
 
+import "time"
+
 type History struct {
-	ID        int64    `gorm:"primaryKey" json:"id"`
-	CountryID int      `json:"country_id"`
-	Country   *Country `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"country,omitempty"`
-	ServiceID int      `json:"service_id"`
-	Service   *Service `json:"service"`
-	Msisdn    string   `gorm:"size:15;not null" json:"msisdn"`
+	ID        int64     `gorm:"primaryKey" json:"id"`
+	CountryID int       `json:"country_id"`
+	Country   *Country  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"country,omitempty"`
+	ServiceID int       `json:"service_id"`
+	Service   *Service  `json:"service"`
+	Msisdn    string    `gorm:"size:15;not null" json:"msisdn"`
+	Keyword   string    `json:"keyword"`
+	Subject   string    `json:"subject"`
+	Status    string    `json:"status"`
+	IpAddress string    `json:"ip_address"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 func (e *History) GetId() int64 {
