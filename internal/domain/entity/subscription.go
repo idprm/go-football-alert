@@ -19,11 +19,11 @@ type Subscription struct {
 	LatestSubject        string    `json:"latest_subject,omitempty"`
 	LatestStatus         string    `json:"latest_status,omitempty"`
 	LatestPayload        string    `json:"latest_payload,omitempty"`
-	RenewalAt            time.Time `json:"renewal_at,omitempty"`
-	UnsubAt              time.Time `json:"unsub_at,omitempty"`
-	ChargeAt             time.Time `json:"charge_at,omitempty"`
-	RetryAt              time.Time `json:"retry_at,omitempty"`
-	TrialAt              time.Time `json:"trial_at,omitempty"`
+	RenewalAt            time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"renewal_at,omitempty"`
+	UnsubAt              time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"unsub_at,omitempty"`
+	ChargeAt             time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"charge_at,omitempty"`
+	RetryAt              time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"retry_at,omitempty"`
+	TrialAt              time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"trial_at,omitempty"`
 	FirstSuccessAt       time.Time `json:"first_success_at,omitempty"`
 	TotalSuccess         int       `json:"total_success,omitempty"`
 	TotalFailed          int       `json:"total_failed,omitempty"`
@@ -39,7 +39,7 @@ type Subscription struct {
 	IsTrial              bool      `json:"is_trial,omitempty"`
 	IsActive             bool      `json:"is_active,omitempty"`
 	CreatedAt            time.Time `json:"created_at"`
-	UpdatedAt            time.Time `json:"updated_at"`
+	UpdatedAt            time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"updated_at"`
 }
 
 func (e *Subscription) GetId() int64 {

@@ -5,6 +5,7 @@ import (
 	"encoding/xml"
 	"io"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/idprm/go-football-alert/internal/domain/entity"
@@ -41,15 +42,16 @@ func (p *Telco) DeductFee() ([]byte, error) {
 
 	var reqXml model.DeductRequest
 
-	reqXml.SetUsername("ESERV")
-	reqXml.SetPassword("WS0001")
+	reqXml.SetSoap("http://schemas.xmlsoap.org/soap/envelope/")
+	reqXml.SetUsername(p.service.GetUserTelco())
+	reqXml.SetPassword(p.service.GetPassTelco())
 	reqXml.SetTransactionSN("123455")
 	reqXml.SetTransactionDesc("OFCTEST")
 	reqXml.SetChannelID("ESERV")
 	reqXml.SetMsisdn("22390662894")
 	reqXml.SetAccountCode("")
 	reqXml.SetAcctResCode("1")
-	reqXml.SetDeductBalance("100")
+	reqXml.SetDeductBalance(strconv.FormatFloat(p.service.GetPrice(), 'f', 6, 64))
 
 	payload, err := xml.Marshal(&reqXml)
 	if err != nil {

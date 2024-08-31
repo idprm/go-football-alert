@@ -75,9 +75,12 @@ func (h *MOHandler) Firstpush() {
 	}
 
 	if h.IsSub() {
+		subscription.UpdatedAt = time.Now()
 		h.subscriptionService.Update(subscription)
 
 	} else {
+		subscription.CreatedAt = time.Now()
+		subscription.UpdatedAt = time.Now()
 		h.subscriptionService.Save(subscription)
 	}
 

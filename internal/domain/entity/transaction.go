@@ -23,7 +23,7 @@ type Transaction struct {
 	IpAddress      string        `json:"ip_address,omitempty"`
 	Payload        string        `json:"payload,omitempty"`
 	CreatedAt      time.Time     `json:"created_at"`
-	UpdatedAt      time.Time     `json:"updated_at"`
+	UpdatedAt      time.Time     `gorm:"type:TIMESTAMP;null;default:null" json:"updated_at"`
 }
 
 func (e *Transaction) GetId() int64 {

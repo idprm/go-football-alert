@@ -43,6 +43,10 @@ type (
 	}
 )
 
+func (e *DeductRequest) SetSoap(v string) {
+	e.Soapenv = v
+}
+
 func (m *DeductRequest) SetUsername(v string) {
 	m.Header.AuthHeader.Username = v
 }
