@@ -313,7 +313,7 @@ func (h *MOHandler) IsActiveSub() bool {
 	if err != nil {
 		log.Println(err)
 	}
-	return h.subscriptionService.IsSubscription(service.GetId(), h.req.GetMsisdn())
+	return h.subscriptionService.IsActiveSubscription(service.GetId(), h.req.GetMsisdn())
 }
 
 func (h *MOHandler) IsSub() bool {
