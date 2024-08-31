@@ -6,6 +6,7 @@ import (
 
 	"github.com/idprm/go-football-alert/internal/logger"
 	"github.com/spf13/cobra"
+	loggerDb "gorm.io/gorm/logger"
 )
 
 var consumerMOCmd = &cobra.Command{
@@ -36,6 +37,9 @@ var consumerMOCmd = &cobra.Command{
 		if err != nil {
 			panic(err)
 		}
+
+		// DEBUG ON CONSOLE
+		db.Logger = loggerDb.Default.LogMode(loggerDb.Info)
 
 		/**
 		 * SETUP LOG
@@ -111,6 +115,9 @@ var consumerRenewalCmd = &cobra.Command{
 		if err != nil {
 			panic(err)
 		}
+
+		// DEBUG ON CONSOLE
+		db.Logger = loggerDb.Default.LogMode(loggerDb.Info)
 
 		/**
 		 * SETUP LOG

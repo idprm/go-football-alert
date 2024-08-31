@@ -96,9 +96,11 @@ func (p *Telco) DeductFee() ([]byte, error) {
 
 	l.WithFields(
 		logrus.Fields{
-			"msisdn":   p.subscription.GetMsisdn(),
-			"response": string(body),
-			"duration": duration,
+			"msisdn":      p.subscription.GetMsisdn(),
+			"response":    string(body),
+			"status_code": resp.StatusCode,
+			"status_text": http.StatusText(resp.StatusCode),
+			"duration":    duration,
 		}).Info("CHARGE")
 
 	return body, nil
