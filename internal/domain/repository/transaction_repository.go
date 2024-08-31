@@ -61,7 +61,7 @@ func (r *TransactionRepository) Save(c *entity.Transaction) (*entity.Transaction
 }
 
 func (r *TransactionRepository) Update(c *entity.Transaction) (*entity.Transaction, error) {
-	err := r.db.Where("id = ?", c.ID).Updates(&c).Error
+	err := r.db.Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Updates(&c).Error
 	if err != nil {
 		return nil, err
 	}
