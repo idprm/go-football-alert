@@ -38,7 +38,13 @@ type IKannel interface {
 func (p *Kannel) SMS() ([]byte, error) {
 	l := p.logger.Init("mt", true)
 	start := time.Now()
-
+	p.service.SetUrlMT(
+		p.service.UserMT,
+		p.service.PassMT,
+		p.subscription.GetMsisdn(),
+		"6699",
+		p.content.GetValue(),
+	)
 	req, err := http.NewRequest(http.MethodGet, p.service.GetUrlMT(), nil)
 	if err != nil {
 		return nil, err
