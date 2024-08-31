@@ -50,6 +50,7 @@ const (
 	RMQ_TRAFFIC_EXCHANGE  string = "E_TRAFFIC"
 	RMQ_TRAFFIC_QUEUE     string = "Q_TRAFFIC"
 	ACT_MO                string = "MO"
+	ACT_FIRSTPUSH         string = "FIRSTPUSH"
 	ACT_RENEWAL           string = "RENEWAL"
 	ACT_RETRY             string = "RETRY"
 	ACT_SCRAPING          string = "SCRAPING"

@@ -74,6 +74,11 @@ var listenerCmd = &cobra.Command{
 		)
 
 		/**
+		 * Seeder
+		 **/
+		seederDB(db)
+
+		/**
 		 * Setup channel
 		 */
 		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_MO_EXCHANGE, true, RMQ_MO_QUEUE)
@@ -218,4 +223,79 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	p.Get("unsub", h.UnSub)
 
 	return app
+}
+
+func seederDB(db *gorm.DB) {
+	var country []entity.Country
+	var service []entity.Service
+	var content []entity.Content
+
+	var countries = []entity.Country{
+		{
+			ID:       1,
+			Name:     "MALI",
+			Code:     "223",
+			TimeZone: "GMT",
+		},
+		{
+			ID:       2,
+			Name:     "GUINEE",
+			Code:     "224",
+			TimeZone: "GMT",
+		},
+	}
+
+	var services = []entity.Service{
+		{
+			ID:         1,
+			CountryID:  1,
+			Category:   "FB-ALERT",
+			Name:       "FB 100",
+			Code:       "FB100",
+			Package:    "1",
+			RenewalDay: 1,
+			TrialDay:   0,
+			UrlTelco:   "http://172.17.111.40:8080/services/OrangeService.OrangeServiceHttpSoap11Endpoint/",
+			UserTelco:  "ESERV",
+			PassTelco:  "WS0001",
+			UrlMT:      "http://10.106.0.3/",
+			UserMT:     "admin",
+			PassMT:     "admin",
+		},
+	}
+
+	var contents = []entity.Content{
+		{
+			ServiceID: 1,
+			Key:       ACT_FIRSTPUSH,
+			Value:     "Test",
+		},
+		{
+			ServiceID: 1,
+			Key:       ACT_RENEWAL,
+			Value:     "Test",
+		},
+	}
+
+	if db.Find(&country).RowsAffected == 0 {
+		for i, _ := range countries {
+			db.Model(&entity.Country{}).Create(&countries[i])
+		}
+		log.Println("countries migrated")
+	}
+
+	if db.Find(&service).RowsAffected == 0 {
+		for i, _ := range services {
+			db.Model(&entity.Service{}).Create(&services[i])
+		}
+		log.Println("services migrated")
+	}
+
+	if db.Find(&content).RowsAffected == 0 {
+		for i, _ := range contents {
+			db.Model(&entity.Content{}).Create(&contents[i])
+		}
+		log.Println("contents migrated")
+	}
+
 }
