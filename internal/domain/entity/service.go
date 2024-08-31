@@ -6,6 +6,7 @@ type Service struct {
 	Country   *Country `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"country,omitempty"`
 	Name      string   `gorm:"size:50;not null" json:"name"`
 	Code      string   `gorm:"size:15;not null" json:"code"`
+	UrlTelco  string   `gorm:"size:350;not null" json:"url_telco"`
 }
 
 func (e *Service) GetId() int {
@@ -18,4 +19,8 @@ func (e *Service) GetName() string {
 
 func (e *Service) GetCode() string {
 	return e.Code
+}
+
+func (e *Service) GetUrlTelco() string {
+	return e.UrlTelco
 }

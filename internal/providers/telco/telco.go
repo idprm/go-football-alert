@@ -8,16 +8,30 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/idprm/go-football-alert/internal/domain/entity"
+	"github.com/idprm/go-football-alert/internal/domain/model"
+	"github.com/idprm/go-football-alert/internal/logger"
 )
 
 type Telco struct {
+	logger  *logger.Logger
+	service *entity.Service
 }
 
-func NewTelco() *Telco {
-	return &Telco{}
+func NewTelco(
+	logger *logger.Logger,
+	service *entity.Service,
+) *Telco {
+	return &Telco{
+		logger:  logger,
+		service: service,
+	}
 }
 
 type ITelco interface {
+	Token() ([]byte, error)
+	Charge() ([]byte, error)
 }
 
 func (p *Telco) Token() ([]byte, error) {
@@ -63,4 +77,14 @@ func (p *Telco) Token() ([]byte, error) {
 	}
 
 	return body, nil
+}
+
+func (p *Telco) Charge() ([]byte, error) {
+	l := p.logger.Init("mt", true)
+	var reqXml model.DeductRequest
+
+	req, err := http.NewRequest(http.MethodPost, p.service.GetUrlTelco(), bytes.NewBuffer(reqXml))
+	if err != nil {
+		return nil, err
+	}
 }
