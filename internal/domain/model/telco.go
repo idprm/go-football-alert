@@ -10,7 +10,7 @@ type (
 			AuthHeader struct {
 				Username string `xml:"Username"`
 				Password string `xml:"Password"`
-			} `xml:"xsd:AuthHeader"`
+			} `xml:"AuthHeader"`
 		} `xml:"soapenv:Header"`
 		Body struct {
 			DeductFee struct {
@@ -21,7 +21,7 @@ type (
 				AccountCode     string `xml:"AccountCode"`
 				AcctResCode     string `xml:"AcctResCode"`
 				DeductBalance   string `xml:"DeductBalance"`
-			} `xml:"xsd:DeductFeeRequest"`
+			} `xml:"DeductFeeRequest"`
 		} `xml:"soapenv:Body"`
 	}
 
