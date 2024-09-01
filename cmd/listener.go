@@ -147,6 +147,9 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	rewardRepo := repository.NewRewardRepository(db)
 	rewardService := services.NewRewardService(rewardRepo)
 
+	ussdRepo := repository.NewUssdRepository(db)
+	ussdService := services.NewUssdService(ussdRepo)
+
 	h := handler.NewIncomingHandler(
 		rmq,
 		logger,
@@ -167,9 +170,9 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 		rewardService,
 	)
 
-	ussdRepo := repository.NewUssdRepository(db)
-	ussdService := services.NewUssdService(ussdRepo)
 	ussdHandler := handler.NewUssdHandler(ussdService)
+
+	newsHandler := handler.NewNewsHandler(newsService)
 
 	app.Post("/mo", h.MessageOriginated)
 
@@ -208,7 +211,7 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	predictions.Put("/:id", h.USSD)
 
 	news := v1.Group("news")
-	news.Get("/", h.USSD)
+	news.Get("/", newsHandler.USSD)
 	news.Get("/:id", h.USSD)
 	news.Post("/", h.USSD)
 	news.Put("/:id", h.USSD)

@@ -76,13 +76,15 @@ func (e *Service) GetUrlMT() string {
 	return e.UrlMT
 }
 
-func (e *Service) SetUrlMT(username, password, from, to, content string) {
+func (e *Service) SetUrlMT(smsc, username, password, from, to, content string) {
+
 	replacer := strings.NewReplacer(
+		"{smsc}", url.QueryEscape(smsc),
 		"{username}", url.QueryEscape(username),
 		"{password}", url.QueryEscape(password),
 		"{from}", url.QueryEscape(from),
 		"{to}", url.QueryEscape(to),
-		"{content}", url.QueryEscape(content))
+		"{text}", url.QueryEscape(content))
 
 	e.UrlMT = replacer.Replace(e.UrlMT)
 }

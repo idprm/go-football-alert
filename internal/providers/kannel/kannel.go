@@ -37,8 +37,10 @@ type IKannel interface {
 
 func (p *Kannel) SMS() ([]byte, error) {
 	l := p.logger.Init("mt", true)
+
 	start := time.Now()
 	p.service.SetUrlMT(
+		"MOBIMIUM",
 		p.service.UserMT,
 		p.service.PassMT,
 		p.subscription.GetMsisdn(),
