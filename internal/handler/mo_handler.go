@@ -248,7 +248,7 @@ func (h *MOHandler) Unsub() {
 	}
 	trxId := utils.GenerateTrxId()
 
-	content, err := h.getContentFirstpush(service.GetId())
+	content, err := h.getContentUnsub(service.GetId())
 	if err != nil {
 		log.Println(err)
 	}
