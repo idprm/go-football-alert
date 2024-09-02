@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"log"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/idprm/go-football-alert/internal/services"
 )
@@ -106,9 +104,4 @@ func (h *UssdHandler) Callback(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).SendString(layerMatch1_5)
 	}
 	return c.Status(fiber.StatusOK).SendString(layerFirst)
-}
-
-func (h *UssdHandler) Event(c *fiber.Ctx) error {
-	log.Println(c.Body())
-	return c.Status(fiber.StatusOK).SendString("OK")
 }

@@ -170,56 +170,54 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 		rewardService,
 	)
 
+	leagueHandler := handler.NewLeagueHandler(leagueService)
+	teamHandler := handler.NewTeamHandler(teamService)
+	fixtureHandler := handler.NewFixtureHandler(fixtureService)
+	predictionHandler := handler.NewPredictionHandler(predictionService)
 	ussdHandler := handler.NewUssdHandler(ussdService)
-
 	newsHandler := handler.NewNewsHandler(newsService)
 
 	app.Post("/mo", h.MessageOriginated)
 
 	v1 := app.Group(API_VERSION)
 	leagues := v1.Group("leagues")
-	leagues.Get("/", h.USSD)
-
-	fixtures := v1.Group("fixtures")
-	fixtures.Get("/", h.USSD)
-	fixtures.Get("/:id", h.USSD)
-	fixtures.Post("/", h.USSD)
-	fixtures.Put("/:id", h.USSD)
+	leagues.Get("/", leagueHandler.GetAllPaginate)
+	leagues.Get("/:slug", leagueHandler.GetBySlug)
+	leagues.Post("/", leagueHandler.Save)
+	leagues.Put("/:id", leagueHandler.Update)
+	leagues.Delete("/:id", leagueHandler.Delete)
 
 	teams := v1.Group("teams")
-	teams.Get("/", h.USSD)
-	teams.Get("/:id", h.USSD)
-	teams.Post("/", h.USSD)
-	teams.Put("/:id", h.USSD)
+	teams.Get("/", teamHandler.GetAllPaginate)
+	teams.Get("/:slug", teamHandler.GetBySlug)
+	teams.Post("/", teamHandler.Save)
+	teams.Put("/:id", teamHandler.Update)
+	teams.Delete("/:id", teamHandler.Delete)
 
-	home := v1.Group("home")
-	home.Get("/", h.USSD)
-	home.Get("/:id", h.USSD)
-	home.Post("/", h.USSD)
-	home.Put("/:id", h.USSD)
-
-	away := v1.Group("home")
-	away.Get("/", h.USSD)
-	away.Get("/:id", h.USSD)
-	away.Post("/", h.USSD)
-	away.Put("/:id", h.USSD)
+	fixtures := v1.Group("fixtures")
+	fixtures.Get("/", fixtureHandler.GetAllPaginate)
+	fixtures.Get("/:slug", fixtureHandler.GetBySlug)
+	fixtures.Post("/", fixtureHandler.Save)
+	fixtures.Put("/:id", fixtureHandler.Update)
+	fixtures.Delete("/:id", fixtureHandler.Delete)
 
 	predictions := v1.Group("predictions")
-	predictions.Get("/", h.USSD)
-	predictions.Get("/:id", h.USSD)
-	predictions.Post("/", h.USSD)
-	predictions.Put("/:id", h.USSD)
+	predictions.Get("/", predictionHandler.GetAllPaginate)
+	predictions.Get("/:slug", predictionHandler.GetBySlug)
+	predictions.Post("/", predictionHandler.Save)
+	predictions.Put("/:id", predictionHandler.Update)
+	predictions.Delete("/:id", predictionHandler.Delete)
 
 	news := v1.Group("news")
-	news.Get("/", newsHandler.USSD)
-	news.Get("/:id", h.USSD)
-	news.Post("/", h.USSD)
-	news.Put("/:id", h.USSD)
+	news.Get("/", newsHandler.GetAllPaginate)
+	news.Get("/:slug", newsHandler.GetBySlug)
+	news.Post("/", newsHandler.Save)
+	news.Put("/:id", newsHandler.Delete)
 
 	// callback
 	ussd := v1.Group("ussd")
 	ussd.Post("callback", ussdHandler.Callback)
-	ussd.Post("event", ussdHandler.Event)
+	// ussd.Post("event", ussdHandler.Event)
 
 	// landing page
 	p := v1.Group("p")
@@ -227,80 +225,4 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	p.Get("unsub", h.UnSub)
 
 	return app
-}
-
-func seederDB(db *gorm.DB) {
-	var country []entity.Country
-	var service []entity.Service
-	var content []entity.Content
-
-	var countries = []entity.Country{
-		{
-			ID:       1,
-			Name:     "MALI",
-			Code:     "223",
-			TimeZone: "GMT",
-		},
-		{
-			ID:       2,
-			Name:     "GUINEE",
-			Code:     "224",
-			TimeZone: "GMT",
-		},
-	}
-
-	var services = []entity.Service{
-		{
-			ID:         1,
-			CountryID:  1,
-			Category:   "FB-ALERT",
-			Name:       "FB 100",
-			Code:       "FB100",
-			Package:    "1",
-			Price:      100,
-			RenewalDay: 1,
-			TrialDay:   0,
-			UrlTelco:   "http://172.17.111.40:8080/services/OrangeService.OrangeServiceHttpSoap11Endpoint/",
-			UserTelco:  "ESERV",
-			PassTelco:  "WS0001",
-			UrlMT:      "http://10.106.0.3/",
-			UserMT:     "admin",
-			PassMT:     "admin",
-		},
-	}
-
-	var contents = []entity.Content{
-		{
-			ServiceID: 1,
-			Name:      ACT_FIRSTPUSH,
-			Value:     "Test",
-		},
-		{
-			ServiceID: 1,
-			Name:      ACT_RENEWAL,
-			Value:     "Test",
-		},
-	}
-
-	if db.Find(&country).RowsAffected == 0 {
-		for i, _ := range countries {
-			db.Model(&entity.Country{}).Create(&countries[i])
-		}
-		log.Println("countries migrated")
-	}
-
-	if db.Find(&service).RowsAffected == 0 {
-		for i, _ := range services {
-			db.Model(&entity.Service{}).Create(&services[i])
-		}
-		log.Println("services migrated")
-	}
-
-	if db.Find(&content).RowsAffected == 0 {
-		for i, _ := range contents {
-			db.Model(&entity.Content{}).Create(&contents[i])
-		}
-		log.Println("contents migrated")
-	}
-
 }

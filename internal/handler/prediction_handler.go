@@ -7,19 +7,19 @@ import (
 	"github.com/idprm/go-football-alert/internal/services"
 )
 
-type TransactionHandler struct {
-	transactionService services.ITransactionService
+type PredictionHandler struct {
+	predictionService services.IPredictionService
 }
 
-func NewTransactionHandler(
-	transactionService services.ITransactionService,
-) *TransactionHandler {
-	return &TransactionHandler{
-		transactionService: transactionService,
+func NewPredictionHandler(
+	predictionService services.IPredictionService,
+) *PredictionHandler {
+	return &PredictionHandler{
+		predictionService: predictionService,
 	}
 }
 
-func (h *TransactionHandler) GetAllPaginate(c *fiber.Ctx) error {
+func (h *PredictionHandler) GetAllPaginate(c *fiber.Ctx) error {
 	req := new(entity.Pagination)
 
 	err := c.QueryParser(req)
@@ -33,7 +33,7 @@ func (h *TransactionHandler) GetAllPaginate(c *fiber.Ctx) error {
 		)
 	}
 
-	transactions, err := h.transactionService.GetAllPaginate(req)
+	predictions, err := h.predictionService.GetAllPaginate(req)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
 			&model.WebResponse{
@@ -43,21 +43,21 @@ func (h *TransactionHandler) GetAllPaginate(c *fiber.Ctx) error {
 			},
 		)
 	}
-	return c.Status(fiber.StatusOK).JSON(transactions)
+	return c.Status(fiber.StatusOK).JSON(predictions)
 }
 
-func (h *TransactionHandler) GetBySlug(c *fiber.Ctx) error {
+func (h *PredictionHandler) GetBySlug(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
 }
 
-func (h *TransactionHandler) Save(c *fiber.Ctx) error {
+func (h *PredictionHandler) Save(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
 }
 
-func (h *TransactionHandler) Update(c *fiber.Ctx) error {
+func (h *PredictionHandler) Update(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
 }
 
-func (h *TransactionHandler) Delete(c *fiber.Ctx) error {
+func (h *PredictionHandler) Delete(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
 }
