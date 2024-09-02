@@ -22,6 +22,9 @@ type Service struct {
 	UrlMT      string   `gorm:"size:350;not null" json:"url_mt"`
 	UserMT     string   `gorm:"size:100;not null" json:"user_mt"`
 	PassMT     string   `gorm:"size:100;not null" json:"pass_mt"`
+	ScSubMT    string   `gorm:"size:15;not null" json:"sc_sub_mt"`
+	ScUnsubMT  string   `gorm:"size:15;not null" json:"sc_unsub_mt"`
+	UssdCode   string   `gorm:"size:15;not null" json:"ussd_code"`
 }
 
 func (e *Service) GetId() int {

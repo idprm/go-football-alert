@@ -32,10 +32,10 @@ func NewKannel(
 }
 
 type IKannel interface {
-	SMS() ([]byte, error)
+	SMS(string) ([]byte, error)
 }
 
-func (p *Kannel) SMS() ([]byte, error) {
+func (p *Kannel) SMS(sc string) ([]byte, error) {
 	l := p.logger.Init("mt", true)
 
 	start := time.Now()
@@ -43,10 +43,11 @@ func (p *Kannel) SMS() ([]byte, error) {
 		"MOBIMIUM",
 		p.service.UserMT,
 		p.service.PassMT,
+		sc,
 		p.subscription.GetMsisdn(),
-		"6699",
 		p.content.GetValue(),
 	)
+
 	req, err := http.NewRequest(http.MethodGet, p.service.GetUrlMT(), nil)
 	if err != nil {
 		return nil, err

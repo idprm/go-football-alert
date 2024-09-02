@@ -198,7 +198,7 @@ func (h *MOHandler) Firstpush() {
 	}
 
 	k := kannel.NewKannel(h.logger, service, content, subscription)
-	sms, err := k.SMS()
+	sms, err := k.SMS(service.ScSubMT)
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -248,6 +248,11 @@ func (h *MOHandler) Unsub() {
 	}
 	trxId := utils.GenerateTrxId()
 
+	content, err := h.getContentFirstpush(service.GetId())
+	if err != nil {
+		log.Println(err)
+	}
+
 	h.subscriptionService.Update(
 		&entity.Subscription{
 			CountryID:     service.GetCountryId(),
@@ -269,6 +274,15 @@ func (h *MOHandler) Unsub() {
 	if err != nil {
 		log.Println(err)
 	}
+
+	k := kannel.NewKannel(h.logger, service, content, sub)
+	sms, err := k.SMS(service.ScUnsubMT)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	var respKannel *model.KannelResponse
+	json.Unmarshal(sms, &respKannel)
 
 	h.subscriptionService.Update(
 		&entity.Subscription{
@@ -342,4 +356,11 @@ func (h *MOHandler) getContentFirstpush(serviceId int) (*entity.Content, error) 
 		return &entity.Content{}, nil
 	}
 	return h.contentService.Get(serviceId, MT_FIRSTPUSH)
+}
+
+func (h *MOHandler) getContentUnsub(serviceId int) (*entity.Content, error) {
+	if !h.contentService.IsContent(serviceId, MT_UNSUB) {
+		return &entity.Content{}, nil
+	}
+	return h.contentService.Get(serviceId, MT_UNSUB)
 }

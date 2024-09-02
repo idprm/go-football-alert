@@ -223,10 +223,6 @@ var publisherPredictionCmd = &cobra.Command{
 	},
 }
 
-func scraping(db *gorm.DB) {
-
-}
-
 func populateRenewal(db *gorm.DB, rmq rmqp.AMQP) {
 	subscriptionRepo := repository.NewSubscriptionRepository(db)
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
@@ -303,4 +299,8 @@ func populatePrediction(db *gorm.DB, rmq rmqp.AMQP) {
 
 		time.Sleep(100 * time.Microsecond)
 	}
+}
+
+func scraping(db *gorm.DB) {
+
 }

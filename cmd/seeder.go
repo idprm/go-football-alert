@@ -41,9 +41,12 @@ func seederDB(db *gorm.DB) {
 			UrlTelco:   "http://172.17.111.40:8080/services/OrangeService.OrangeServiceHttpSoap11Endpoint/",
 			UserTelco:  "ESERV",
 			PassTelco:  "WS0001",
-			UrlMT:      "http://localhost:4445/cgi-bin/sendsms?smsc=MOBIMIUM&username={username}&password={password}&from={from}&to={to}&text={text}",
+			UrlMT:      "http://10.106.0.3:4445/cgi-bin/sendsms?smsc=MOBIMIUM&username={username}&password={password}&from={from}&to={to}&text={text}",
 			UserMT:     "send",
 			PassMT:     "sendsms",
+			ScSubMT:    "37405",
+			ScUnsubMT:  "37484",
+			UssdCode:   "#101#36#",
 		},
 	}
 
