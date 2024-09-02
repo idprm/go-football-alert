@@ -35,25 +35,31 @@ var (
 )
 
 const (
-	RMQ_EXCHANGE_TYPE     string = "direct"
-	RMQ_DATA_TYPE         string = "application/json"
-	RMQ_MO_EXCHANGE       string = "E_MO"
-	RMQ_MO_QUEUE          string = "Q_MO"
-	RMQ_RENEWAL_EXCHANGE  string = "E_RENEWAL"
-	RMQ_RENEWAL_QUEUE     string = "Q_RENEWAL"
-	RMQ_RETRY_EXCHANGE    string = "E_RETRY"
-	RMQ_RETRY_QUEUE       string = "Q_RETRY"
-	RMQ_NOTIF_EXCHANGE    string = "E_NOTIF"
-	RMQ_NOTIF_QUEUE       string = "Q_NOTIF"
-	RMQ_POSTBACK_EXCHANGE string = "E_POSTBACK"
-	RMQ_POSTBACK_QUEUE    string = "Q_POSTBACK"
-	RMQ_TRAFFIC_EXCHANGE  string = "E_TRAFFIC"
-	RMQ_TRAFFIC_QUEUE     string = "Q_TRAFFIC"
-	ACT_MO                string = "MO"
-	ACT_FIRSTPUSH         string = "FIRSTPUSH"
-	ACT_RENEWAL           string = "RENEWAL"
-	ACT_RETRY             string = "RETRY"
-	ACT_SCRAPING          string = "SCRAPING"
+	RMQ_EXCHANGE_TYPE       string = "direct"
+	RMQ_DATA_TYPE           string = "application/json"
+	RMQ_MO_EXCHANGE         string = "E_MO"
+	RMQ_MO_QUEUE            string = "Q_MO"
+	RMQ_RENEWAL_EXCHANGE    string = "E_RENEWAL"
+	RMQ_RENEWAL_QUEUE       string = "Q_RENEWAL"
+	RMQ_RETRY_EXCHANGE      string = "E_RETRY"
+	RMQ_RETRY_QUEUE         string = "Q_RETRY"
+	RMQ_NOTIF_EXCHANGE      string = "E_NOTIF"
+	RMQ_NOTIF_QUEUE         string = "Q_NOTIF"
+	RMQ_POSTBACK_EXCHANGE   string = "E_POSTBACK"
+	RMQ_POSTBACK_QUEUE      string = "Q_POSTBACK"
+	RMQ_TRAFFIC_EXCHANGE    string = "E_TRAFFIC"
+	RMQ_TRAFFIC_QUEUE       string = "Q_TRAFFIC"
+	RMQ_NEWS_EXCHANGE       string = "E_NEWS"
+	RMQ_NEWS_QUEUE          string = "Q_NEWS"
+	RMQ_PREDICTION_EXCHANGE string = "E_PREDICTION"
+	RMQ_PREDICTION_QUEUE    string = "Q_PREDICTION"
+	ACT_MO                  string = "MO"
+	ACT_FIRSTPUSH           string = "FIRSTPUSH"
+	ACT_RENEWAL             string = "RENEWAL"
+	ACT_RETRY               string = "RETRY"
+	ACT_NEWS                string = "NEWS"
+	ACT_PREDICTION          string = "PREDICTION"
+	ACT_SCRAPING            string = "SCRAPING"
 )
 
 var (
@@ -79,12 +85,16 @@ func init() {
 	 */
 	rootCmd.AddCommand(consumerMOCmd)
 	rootCmd.AddCommand(consumerRenewalCmd)
+	rootCmd.AddCommand(consumerNewsCmd)
+	rootCmd.AddCommand(consumerPredictionCmd)
 
 	/**
 	 * Publisher Scraping service
 	 */
 	rootCmd.AddCommand(publisherScrapingCmd)
 	rootCmd.AddCommand(publisherRenewalCmd)
+	rootCmd.AddCommand(publisherNewsCmd)
+	rootCmd.AddCommand(publisherPredictionCmd)
 }
 
 func Execute() error {

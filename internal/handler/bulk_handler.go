@@ -7,7 +7,7 @@ import (
 	"github.com/wiliehidayat87/rmqp"
 )
 
-type RenewalHandler struct {
+type BulkHandler struct {
 	rmq                 rmqp.AMQP
 	logger              *logger.Logger
 	sub                 *entity.Subscription
@@ -15,9 +15,10 @@ type RenewalHandler struct {
 	contentService      services.IContentService
 	subscriptionService services.ISubscriptionService
 	transactionService  services.ITransactionService
+	newsService         services.INewsService
 }
 
-func NewRenewalHandler(
+func NewBulkHandler(
 	rmq rmqp.AMQP,
 	logger *logger.Logger,
 	sub *entity.Subscription,
@@ -25,8 +26,9 @@ func NewRenewalHandler(
 	contentService services.IContentService,
 	subscriptionService services.ISubscriptionService,
 	transactionService services.ITransactionService,
-) *RenewalHandler {
-	return &RenewalHandler{
+	newsService services.INewsService,
+) *BulkHandler {
+	return &BulkHandler{
 		rmq:                 rmq,
 		logger:              logger,
 		sub:                 sub,
@@ -34,29 +36,14 @@ func NewRenewalHandler(
 		contentService:      contentService,
 		subscriptionService: subscriptionService,
 		transactionService:  transactionService,
+		newsService:         newsService,
 	}
 }
 
-func (h *RenewalHandler) Dailypush() {
-	if h.subscriptionService.IsActiveSubscription(h.sub.GetServiceId(), h.sub.GetMsisdn()) {
-		// service, err := h.serviceService.GetById(h.sub.GetServiceId())
-		// if err != nil {
-		// 	log.Println(err.Error())
-		// }
+func (h *BulkHandler) News() {
 
-		// content, err = h.getContentRenewal(h.sub.GetServiceId())
-		// if err != nil {
-		// 	log.Println(err.Error())
-		// }
-	}
 }
 
-func (h *RenewalHandler) getContentRenewal(serviceId int) (*entity.Content, error) {
-	// if data not exist in table contents
-	if !h.contentService.IsContent(serviceId, MT_RENEWAL) {
-		return &entity.Content{
-			Value: "SAMPLE_TEXT",
-		}, nil
-	}
-	return h.contentService.Get(serviceId, MT_RENEWAL)
+func (h *BulkHandler) Prediction() {
+
 }

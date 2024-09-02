@@ -93,39 +93,6 @@ func (p *Processor) MO(wg *sync.WaitGroup, message []byte) {
 	wg.Done()
 }
 
-func (p *Processor) Renewal(wg *sync.WaitGroup, message []byte) {
-	/**
-	 * load repo
-	 */
-	serviceRepo := repository.NewServiceRepository(p.db)
-	serviceService := services.NewServiceService(serviceRepo)
-	contentRepo := repository.NewContentRepository(p.db)
-	contentService := services.NewContentService(contentRepo)
-	subscriptionRepo := repository.NewSubscriptionRepository(p.db)
-	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
-	transactionRepo := repository.NewTransactionRepository(p.db)
-	transactionService := services.NewTransactionService(transactionRepo)
-
-	// parsing json to string
-	var sub *entity.Subscription
-	json.Unmarshal(message, &sub)
-
-	h := handler.NewRenewalHandler(
-		p.rmq,
-		p.logger,
-		sub,
-		serviceService,
-		contentService,
-		subscriptionService,
-		transactionService,
-	)
-
-	// Dailypush MT API
-	h.Dailypush()
-
-	wg.Done()
-}
-
 func (p *Processor) Scraping() {
 
 	leagueRepo := repository.NewLeagueRepository(p.db)
@@ -169,4 +136,109 @@ func (p *Processor) Scraping() {
 
 	h.Fixtures()
 	h.News()
+}
+
+func (p *Processor) Renewal(wg *sync.WaitGroup, message []byte) {
+	/**
+	 * load repo
+	 */
+	serviceRepo := repository.NewServiceRepository(p.db)
+	serviceService := services.NewServiceService(serviceRepo)
+	contentRepo := repository.NewContentRepository(p.db)
+	contentService := services.NewContentService(contentRepo)
+	subscriptionRepo := repository.NewSubscriptionRepository(p.db)
+	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+	transactionRepo := repository.NewTransactionRepository(p.db)
+	transactionService := services.NewTransactionService(transactionRepo)
+
+	// parsing json to string
+	var sub *entity.Subscription
+	json.Unmarshal(message, &sub)
+
+	h := handler.NewRenewalHandler(
+		p.rmq,
+		p.logger,
+		sub,
+		serviceService,
+		contentService,
+		subscriptionService,
+		transactionService,
+	)
+
+	// Dailypush MT API
+	h.Dailypush()
+
+	wg.Done()
+}
+
+func (p *Processor) News(wg *sync.WaitGroup, message []byte) {
+	/**
+	 * load repo
+	 */
+	serviceRepo := repository.NewServiceRepository(p.db)
+	serviceService := services.NewServiceService(serviceRepo)
+	contentRepo := repository.NewContentRepository(p.db)
+	contentService := services.NewContentService(contentRepo)
+	subscriptionRepo := repository.NewSubscriptionRepository(p.db)
+	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+	transactionRepo := repository.NewTransactionRepository(p.db)
+	transactionService := services.NewTransactionService(transactionRepo)
+	newsRepo := repository.NewNewsRepository(p.db)
+	newsService := services.NewNewsService(newsRepo)
+
+	// parsing json to string
+	var sub *entity.Subscription
+	json.Unmarshal(message, &sub)
+
+	h := handler.NewBulkHandler(
+		p.rmq,
+		p.logger,
+		sub,
+		serviceService,
+		contentService,
+		subscriptionService,
+		transactionService,
+		newsService,
+	)
+
+	// Send the news
+	h.News()
+
+	wg.Done()
+}
+
+func (p *Processor) Prediction(wg *sync.WaitGroup, message []byte) {
+	/**
+	 * load repo
+	 */
+	serviceRepo := repository.NewServiceRepository(p.db)
+	serviceService := services.NewServiceService(serviceRepo)
+	contentRepo := repository.NewContentRepository(p.db)
+	contentService := services.NewContentService(contentRepo)
+	subscriptionRepo := repository.NewSubscriptionRepository(p.db)
+	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+	transactionRepo := repository.NewTransactionRepository(p.db)
+	transactionService := services.NewTransactionService(transactionRepo)
+	newsRepo := repository.NewNewsRepository(p.db)
+	newsService := services.NewNewsService(newsRepo)
+
+	// parsing json to string
+	var sub *entity.Subscription
+	json.Unmarshal(message, &sub)
+
+	h := handler.NewBulkHandler(
+		p.rmq,
+		p.logger,
+		sub,
+		serviceService,
+		contentService,
+		subscriptionService,
+		transactionService,
+		newsService,
+	)
+
+	// Send the prediction
+	h.Prediction()
+
+	wg.Done()
 }

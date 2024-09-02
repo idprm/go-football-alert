@@ -52,17 +52,13 @@ var publisherScrapingCmd = &cobra.Command{
 	},
 }
 
-func scraping(db *gorm.DB) {
-
-}
-
 var publisherRenewalCmd = &cobra.Command{
 	Use:   "pub_renewal",
 	Short: "Renewal CLI",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		/**
-		 * connect pgsql
+		 * connect mysql
 		 */
 		db, err := connectDb()
 		if err != nil {
@@ -113,7 +109,125 @@ var publisherRenewalCmd = &cobra.Command{
 	},
 }
 
-func populateRenewal(db *gorm.DB, queue rmqp.AMQP) {
+var publisherNewsCmd = &cobra.Command{
+	Use:   "pub_news",
+	Short: "Publisher News CLI",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		/**
+		 * connect mysql
+		 */
+		db, err := connectDb()
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * connect rabbitmq
+		 */
+		rmq, err := connectRabbitMq()
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * SETUP CHANNEL
+		 */
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_NEWS_EXCHANGE, true, RMQ_NEWS_QUEUE)
+
+		/**
+		 * Looping schedule
+		 */
+		timeDuration := time.Duration(1)
+
+		for {
+			timeNow := time.Now().Format("15:04")
+
+			scheduleRepo := repository.NewScheduleRepository(db)
+			scheduleService := services.NewScheduleService(scheduleRepo)
+
+			if scheduleService.IsUnlocked(ACT_NEWS, timeNow) {
+
+				scheduleService.Update(
+					&entity.Schedule{
+						Name:       ACT_NEWS,
+						IsUnlocked: false,
+					},
+				)
+
+				go func() {
+					populateNews(db, rmq)
+				}()
+			}
+
+			time.Sleep(timeDuration * time.Minute)
+
+		}
+	},
+}
+
+var publisherPredictionCmd = &cobra.Command{
+	Use:   "pub_prediction",
+	Short: "Publisher Prediction CLI",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		/**
+		 * connect mysql
+		 */
+		db, err := connectDb()
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * connect rabbitmq
+		 */
+		rmq, err := connectRabbitMq()
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * SETUP CHANNEL
+		 */
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_PREDICTION_EXCHANGE, true, RMQ_PREDICTION_QUEUE)
+
+		/**
+		 * Looping schedule
+		 */
+		timeDuration := time.Duration(1)
+
+		for {
+			timeNow := time.Now().Format("15:04")
+
+			scheduleRepo := repository.NewScheduleRepository(db)
+			scheduleService := services.NewScheduleService(scheduleRepo)
+
+			if scheduleService.IsUnlocked(ACT_PREDICTION, timeNow) {
+
+				scheduleService.Update(
+					&entity.Schedule{
+						Name:       ACT_PREDICTION,
+						IsUnlocked: false,
+					},
+				)
+
+				go func() {
+					populatePrediction(db, rmq)
+				}()
+			}
+
+			time.Sleep(timeDuration * time.Minute)
+
+		}
+	},
+}
+
+func scraping(db *gorm.DB) {
+
+}
+
+func populateRenewal(db *gorm.DB, rmq rmqp.AMQP) {
 	subscriptionRepo := repository.NewSubscriptionRepository(db)
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
 
@@ -133,7 +247,59 @@ func populateRenewal(db *gorm.DB, queue rmqp.AMQP) {
 
 		json, _ := json.Marshal(sub)
 
-		queue.IntegratePublish(RMQ_RENEWAL_EXCHANGE, RMQ_RENEWAL_QUEUE, RMQ_DATA_TYPE, "", string(json))
+		rmq.IntegratePublish(RMQ_RENEWAL_EXCHANGE, RMQ_RENEWAL_QUEUE, RMQ_DATA_TYPE, "", string(json))
+
+		time.Sleep(100 * time.Microsecond)
+	}
+}
+
+func populateNews(db *gorm.DB, rmq rmqp.AMQP) {
+	subscriptionRepo := repository.NewSubscriptionRepository(db)
+	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+
+	subs := subscriptionService.Renewal()
+
+	for _, s := range *subs {
+		var sub entity.Subscription
+
+		sub.ID = s.ID
+		sub.ServiceID = s.ServiceID
+		sub.Msisdn = s.Msisdn
+		sub.Channel = s.Channel
+		sub.LatestKeyword = s.LatestKeyword
+		sub.LatestSubject = s.LatestSubject
+		sub.IpAddress = s.IpAddress
+		sub.CreatedAt = s.CreatedAt
+
+		json, _ := json.Marshal(sub)
+
+		rmq.IntegratePublish(RMQ_NEWS_EXCHANGE, RMQ_NEWS_QUEUE, RMQ_DATA_TYPE, "", string(json))
+
+		time.Sleep(100 * time.Microsecond)
+	}
+}
+
+func populatePrediction(db *gorm.DB, rmq rmqp.AMQP) {
+	subscriptionRepo := repository.NewSubscriptionRepository(db)
+	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+
+	subs := subscriptionService.Renewal()
+
+	for _, s := range *subs {
+		var sub entity.Subscription
+
+		sub.ID = s.ID
+		sub.ServiceID = s.ServiceID
+		sub.Msisdn = s.Msisdn
+		sub.Channel = s.Channel
+		sub.LatestKeyword = s.LatestKeyword
+		sub.LatestSubject = s.LatestSubject
+		sub.IpAddress = s.IpAddress
+		sub.CreatedAt = s.CreatedAt
+
+		json, _ := json.Marshal(sub)
+
+		rmq.IntegratePublish(RMQ_PREDICTION_EXCHANGE, RMQ_PREDICTION_QUEUE, RMQ_DATA_TYPE, "", string(json))
 
 		time.Sleep(100 * time.Microsecond)
 	}

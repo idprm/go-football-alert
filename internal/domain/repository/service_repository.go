@@ -17,8 +17,10 @@ func NewServiceRepository(db *gorm.DB) *ServiceRepository {
 
 type IServiceRepository interface {
 	Count(string) (int64, error)
+	CountById(int) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	Get(string) (*entity.Service, error)
+	GetById(int) (*entity.Service, error)
 	Save(*entity.Service) (*entity.Service, error)
 	Update(*entity.Service) (*entity.Service, error)
 	Delete(*entity.Service) error
@@ -27,6 +29,15 @@ type IServiceRepository interface {
 func (r *ServiceRepository) Count(code string) (int64, error) {
 	var count int64
 	err := r.db.Model(&entity.Service{}).Where("code = ?", code).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *ServiceRepository) CountById(id int) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Service{}).Where("id = ?", id).Count(&count).Error
 	if err != nil {
 		return count, err
 	}
@@ -46,6 +57,15 @@ func (r *ServiceRepository) GetAllPaginate(pagination *entity.Pagination) (*enti
 func (r *ServiceRepository) Get(code string) (*entity.Service, error) {
 	var c entity.Service
 	err := r.db.Where("code = ?", code).Take(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return &c, nil
+}
+
+func (r *ServiceRepository) GetById(id int) (*entity.Service, error) {
+	var c entity.Service
+	err := r.db.Where("id = ?", id).Take(&c).Error
 	if err != nil {
 		return nil, err
 	}
