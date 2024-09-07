@@ -93,7 +93,7 @@ var publisherCreditCmd = &cobra.Command{
 		/**
 		 * SETUP CHANNEL
 		 */
-		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_PREDICTION_EXCHANGE, true, RMQ_PREDICTION_QUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_CREDIT_EXCHANGE, true, RMQ_CREDIT_QUEUE)
 
 		/**
 		 * Looping schedule
@@ -106,17 +106,17 @@ var publisherCreditCmd = &cobra.Command{
 			scheduleRepo := repository.NewScheduleRepository(db)
 			scheduleService := services.NewScheduleService(scheduleRepo)
 
-			if scheduleService.IsUnlocked(ACT_PREDICTION, timeNow) {
+			if scheduleService.IsUnlocked(ACT_CREDIT_GOAL, timeNow) {
 
 				scheduleService.Update(
 					&entity.Schedule{
-						Name:       ACT_PREDICTION,
+						Name:       ACT_CREDIT_GOAL,
 						IsUnlocked: false,
 					},
 				)
 
 				go func() {
-					populatePrediction(db, rmq)
+					populateGoalCredit(db, rmq)
 				}()
 			}
 
@@ -338,6 +338,32 @@ func populatePrediction(db *gorm.DB, rmq rmqp.AMQP) {
 		json, _ := json.Marshal(sub)
 
 		rmq.IntegratePublish(RMQ_PREDICTION_EXCHANGE, RMQ_PREDICTION_QUEUE, RMQ_DATA_TYPE, "", string(json))
+
+		time.Sleep(100 * time.Microsecond)
+	}
+}
+
+func populateGoalCredit(db *gorm.DB, rmq rmqp.AMQP) {
+	subscriptionRepo := repository.NewSubscriptionRepository(db)
+	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+
+	subs := subscriptionService.Renewal()
+
+	for _, s := range *subs {
+		var sub entity.Subscription
+
+		sub.ID = s.ID
+		sub.ServiceID = s.ServiceID
+		sub.Msisdn = s.Msisdn
+		sub.Channel = s.Channel
+		sub.LatestKeyword = s.LatestKeyword
+		sub.LatestSubject = s.LatestSubject
+		sub.IpAddress = s.IpAddress
+		sub.CreatedAt = s.CreatedAt
+
+		json, _ := json.Marshal(sub)
+
+		rmq.IntegratePublish(RMQ_CREDIT_EXCHANGE, RMQ_CREDIT_QUEUE, RMQ_DATA_TYPE, "", string(json))
 
 		time.Sleep(100 * time.Microsecond)
 	}
