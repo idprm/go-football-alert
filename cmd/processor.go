@@ -227,6 +227,8 @@ func (p *Processor) CreditGoal(wg *sync.WaitGroup, message []byte) {
 	transactionService := services.NewTransactionService(transactionRepo)
 	rewardRepo := repository.NewRewardRepository(p.db)
 	rewardService := services.NewRewardService(rewardRepo)
+	summaryRepo := repository.NewSummaryRepository(p.db)
+	summaryService := services.NewSummaryService(summaryRepo)
 
 	// parsing json to string
 	var sub *entity.Subscription
@@ -241,6 +243,7 @@ func (p *Processor) CreditGoal(wg *sync.WaitGroup, message []byte) {
 		subscriptionService,
 		transactionService,
 		rewardService,
+		summaryService,
 	)
 
 	// send credit goal

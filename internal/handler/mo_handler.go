@@ -359,6 +359,10 @@ func (h *MOHandler) Unsub() {
 
 }
 
+func (h *MOHandler) Prediction() {
+
+}
+
 func (h *MOHandler) IsActiveSub() bool {
 	service, err := h.getService()
 	if err != nil {

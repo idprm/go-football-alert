@@ -170,7 +170,6 @@ func (h *RenewalHandler) Dailypush() {
 
 		var respKannel *model.KannelResponse
 		json.Unmarshal(sms, &respKannel)
-
 	}
 }
 

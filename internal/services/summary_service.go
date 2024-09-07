@@ -49,15 +49,17 @@ func (s *SummaryService) Save(a *entity.Summary) (*entity.Summary, error) {
 		}
 		return s.summaryRepo.Update(
 			&entity.Summary{
-				ServiceID:          a.ServiceID,
-				CreatedAt:          a.CreatedAt,
-				TotalSub:           summ.TotalSub + a.TotalSub,
-				TotalUnsub:         summ.TotalUnsub + a.TotalUnsub,
-				TotalRenewal:       summ.TotalRenewal + a.TotalRenewal,
-				TotalActiveSub:     summ.TotalActiveSub + a.TotalActiveSub,
-				TotalChargeSuccess: summ.TotalChargeSuccess + a.TotalChargeSuccess,
-				TotalChargeFailed:  summ.TotalChargeFailed + a.TotalChargeFailed,
-				TotalRevenue:       summ.TotalRevenue + a.TotalRevenue,
+				ServiceID:             a.ServiceID,
+				CreatedAt:             a.CreatedAt,
+				TotalSub:              summ.TotalSub + a.TotalSub,
+				TotalUnsub:            summ.TotalUnsub + a.TotalUnsub,
+				TotalRenewal:          summ.TotalRenewal + a.TotalRenewal,
+				TotalActiveSub:        summ.TotalActiveSub + a.TotalActiveSub,
+				TotalChargeSuccess:    summ.TotalChargeSuccess + a.TotalChargeSuccess,
+				TotalChargeFailed:     summ.TotalChargeFailed + a.TotalChargeFailed,
+				TotalRevenue:          summ.TotalRevenue + a.TotalRevenue,
+				TotalCreditGoal:       summ.TotalCreditGoal + a.TotalCreditGoal,
+				TotalAmountCreditGoal: summ.TotalAmountCreditGoal + a.TotalAmountCreditGoal,
 			},
 		)
 	}
