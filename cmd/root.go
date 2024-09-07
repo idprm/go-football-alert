@@ -49,16 +49,22 @@ const (
 	RMQ_POSTBACK_QUEUE      string = "Q_POSTBACK"
 	RMQ_TRAFFIC_EXCHANGE    string = "E_TRAFFIC"
 	RMQ_TRAFFIC_QUEUE       string = "Q_TRAFFIC"
-	RMQ_NEWS_EXCHANGE       string = "E_NEWS"
-	RMQ_NEWS_QUEUE          string = "Q_NEWS"
 	RMQ_PREDICTION_EXCHANGE string = "E_PREDICTION"
 	RMQ_PREDICTION_QUEUE    string = "Q_PREDICTION"
+	RMQ_CREDIT_EXCHANGE     string = "E_CREDIT"
+	RMQ_CREDIT_QUEUE        string = "Q_CREDIT"
+	RMQ_NEWS_EXCHANGE       string = "E_NEWS"
+	RMQ_NEWS_QUEUE          string = "Q_NEWS"
 	ACT_MO                  string = "MO"
 	ACT_FIRSTPUSH           string = "FIRSTPUSH"
 	ACT_RENEWAL             string = "RENEWAL"
 	ACT_RETRY               string = "RETRY"
-	ACT_NEWS                string = "NEWS"
 	ACT_PREDICTION          string = "PREDICTION"
+	ACT_SUB                 string = "SUB"
+	ACT_UNSUB               string = "UNSUB"
+	ACT_CREDIT_GOAL         string = "CREDIT_GOAL"
+	ACT_USER_LOSES          string = "USER_LOSES"
+	ACT_NEWS                string = "NEWS"
 	ACT_SCRAPING            string = "SCRAPING"
 )
 
@@ -85,8 +91,9 @@ func init() {
 	 */
 	rootCmd.AddCommand(consumerMOCmd)
 	rootCmd.AddCommand(consumerRenewalCmd)
-	rootCmd.AddCommand(consumerNewsCmd)
 	rootCmd.AddCommand(consumerPredictionCmd)
+	rootCmd.AddCommand(consumerCreditGoalCmd)
+	rootCmd.AddCommand(consumerNewsCmd)
 
 	/**
 	 * Publisher Scraping service
@@ -94,6 +101,7 @@ func init() {
 	rootCmd.AddCommand(publisherScrapingCmd)
 	rootCmd.AddCommand(publisherRenewalCmd)
 	rootCmd.AddCommand(publisherNewsCmd)
+	rootCmd.AddCommand(publisherCreditCmd)
 	rootCmd.AddCommand(publisherPredictionCmd)
 }
 

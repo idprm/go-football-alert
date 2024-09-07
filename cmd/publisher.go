@@ -12,6 +12,120 @@ import (
 	"gorm.io/gorm"
 )
 
+var publisherPredictionCmd = &cobra.Command{
+	Use:   "pub_prediction",
+	Short: "Publisher Prediction CLI",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		/**
+		 * connect mysql
+		 */
+		db, err := connectDb()
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * connect rabbitmq
+		 */
+		rmq, err := connectRabbitMq()
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * SETUP CHANNEL
+		 */
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_PREDICTION_EXCHANGE, true, RMQ_PREDICTION_QUEUE)
+
+		/**
+		 * Looping schedule
+		 */
+		timeDuration := time.Duration(1)
+
+		for {
+			timeNow := time.Now().Format("15:04")
+
+			scheduleRepo := repository.NewScheduleRepository(db)
+			scheduleService := services.NewScheduleService(scheduleRepo)
+
+			if scheduleService.IsUnlocked(ACT_PREDICTION, timeNow) {
+
+				scheduleService.Update(
+					&entity.Schedule{
+						Name:       ACT_PREDICTION,
+						IsUnlocked: false,
+					},
+				)
+
+				go func() {
+					populatePrediction(db, rmq)
+				}()
+			}
+
+			time.Sleep(timeDuration * time.Minute)
+
+		}
+	},
+}
+
+var publisherCreditCmd = &cobra.Command{
+	Use:   "pub_credit_goal",
+	Short: "Publisher Credit CLI",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		/**
+		 * connect mysql
+		 */
+		db, err := connectDb()
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * connect rabbitmq
+		 */
+		rmq, err := connectRabbitMq()
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * SETUP CHANNEL
+		 */
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_PREDICTION_EXCHANGE, true, RMQ_PREDICTION_QUEUE)
+
+		/**
+		 * Looping schedule
+		 */
+		timeDuration := time.Duration(1)
+
+		for {
+			timeNow := time.Now().Format("15:04")
+
+			scheduleRepo := repository.NewScheduleRepository(db)
+			scheduleService := services.NewScheduleService(scheduleRepo)
+
+			if scheduleService.IsUnlocked(ACT_PREDICTION, timeNow) {
+
+				scheduleService.Update(
+					&entity.Schedule{
+						Name:       ACT_PREDICTION,
+						IsUnlocked: false,
+					},
+				)
+
+				go func() {
+					populatePrediction(db, rmq)
+				}()
+			}
+
+			time.Sleep(timeDuration * time.Minute)
+
+		}
+	},
+}
+
 var publisherScrapingCmd = &cobra.Command{
 	Use:   "pub_scraping",
 	Short: "Publisher Scraping Service CLI",
@@ -36,7 +150,12 @@ var publisherScrapingCmd = &cobra.Command{
 
 			if scheduleService.IsUnlocked(ACT_SCRAPING, timeNow) {
 
-				// scheduleService.Update(false, ACT_CSV)
+				scheduleService.Update(
+					&entity.Schedule{
+						Name:       ACT_SCRAPING,
+						IsUnlocked: false,
+					},
+				)
 
 				go func() {
 					scraping(db)
@@ -44,7 +163,13 @@ var publisherScrapingCmd = &cobra.Command{
 			}
 
 			if scheduleService.IsUnlocked(ACT_SCRAPING, timeNow) {
-				// scheduleService.Update(true, ACT_CSV)
+				scheduleService.Update(
+					&entity.Schedule{
+						Name:       ACT_SCRAPING,
+						IsUnlocked: true,
+					},
+				)
+
 			}
 
 			time.Sleep(timeDuration * time.Minute)
@@ -166,63 +291,6 @@ var publisherNewsCmd = &cobra.Command{
 	},
 }
 
-var publisherPredictionCmd = &cobra.Command{
-	Use:   "pub_prediction",
-	Short: "Publisher Prediction CLI",
-	Long:  ``,
-	Run: func(cmd *cobra.Command, args []string) {
-		/**
-		 * connect mysql
-		 */
-		db, err := connectDb()
-		if err != nil {
-			panic(err)
-		}
-
-		/**
-		 * connect rabbitmq
-		 */
-		rmq, err := connectRabbitMq()
-		if err != nil {
-			panic(err)
-		}
-
-		/**
-		 * SETUP CHANNEL
-		 */
-		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_PREDICTION_EXCHANGE, true, RMQ_PREDICTION_QUEUE)
-
-		/**
-		 * Looping schedule
-		 */
-		timeDuration := time.Duration(1)
-
-		for {
-			timeNow := time.Now().Format("15:04")
-
-			scheduleRepo := repository.NewScheduleRepository(db)
-			scheduleService := services.NewScheduleService(scheduleRepo)
-
-			if scheduleService.IsUnlocked(ACT_PREDICTION, timeNow) {
-
-				scheduleService.Update(
-					&entity.Schedule{
-						Name:       ACT_PREDICTION,
-						IsUnlocked: false,
-					},
-				)
-
-				go func() {
-					populatePrediction(db, rmq)
-				}()
-			}
-
-			time.Sleep(timeDuration * time.Minute)
-
-		}
-	},
-}
-
 func populateRenewal(db *gorm.DB, rmq rmqp.AMQP) {
 	subscriptionRepo := repository.NewSubscriptionRepository(db)
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
@@ -249,32 +317,6 @@ func populateRenewal(db *gorm.DB, rmq rmqp.AMQP) {
 	}
 }
 
-func populateNews(db *gorm.DB, rmq rmqp.AMQP) {
-	subscriptionRepo := repository.NewSubscriptionRepository(db)
-	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
-
-	subs := subscriptionService.Renewal()
-
-	for _, s := range *subs {
-		var sub entity.Subscription
-
-		sub.ID = s.ID
-		sub.ServiceID = s.ServiceID
-		sub.Msisdn = s.Msisdn
-		sub.Channel = s.Channel
-		sub.LatestKeyword = s.LatestKeyword
-		sub.LatestSubject = s.LatestSubject
-		sub.IpAddress = s.IpAddress
-		sub.CreatedAt = s.CreatedAt
-
-		json, _ := json.Marshal(sub)
-
-		rmq.IntegratePublish(RMQ_NEWS_EXCHANGE, RMQ_NEWS_QUEUE, RMQ_DATA_TYPE, "", string(json))
-
-		time.Sleep(100 * time.Microsecond)
-	}
-}
-
 func populatePrediction(db *gorm.DB, rmq rmqp.AMQP) {
 	subscriptionRepo := repository.NewSubscriptionRepository(db)
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
@@ -296,6 +338,32 @@ func populatePrediction(db *gorm.DB, rmq rmqp.AMQP) {
 		json, _ := json.Marshal(sub)
 
 		rmq.IntegratePublish(RMQ_PREDICTION_EXCHANGE, RMQ_PREDICTION_QUEUE, RMQ_DATA_TYPE, "", string(json))
+
+		time.Sleep(100 * time.Microsecond)
+	}
+}
+
+func populateNews(db *gorm.DB, rmq rmqp.AMQP) {
+	subscriptionRepo := repository.NewSubscriptionRepository(db)
+	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+
+	subs := subscriptionService.Renewal()
+
+	for _, s := range *subs {
+		var sub entity.Subscription
+
+		sub.ID = s.ID
+		sub.ServiceID = s.ServiceID
+		sub.Msisdn = s.Msisdn
+		sub.Channel = s.Channel
+		sub.LatestKeyword = s.LatestKeyword
+		sub.LatestSubject = s.LatestSubject
+		sub.IpAddress = s.IpAddress
+		sub.CreatedAt = s.CreatedAt
+
+		json, _ := json.Marshal(sub)
+
+		rmq.IntegratePublish(RMQ_NEWS_EXCHANGE, RMQ_NEWS_QUEUE, RMQ_DATA_TYPE, "", string(json))
 
 		time.Sleep(100 * time.Microsecond)
 	}

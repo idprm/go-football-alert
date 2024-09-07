@@ -24,6 +24,7 @@ type MOHandler struct {
 	subscriptionService services.ISubscriptionService
 	transactionService  services.ITransactionService
 	historyService      services.IHistoryService
+	summaryService      services.ISummaryService
 	req                 *model.MORequest
 }
 
@@ -35,6 +36,7 @@ func NewMOHandler(
 	subscriptionService services.ISubscriptionService,
 	transactionService services.ITransactionService,
 	historyService services.IHistoryService,
+	summaryService services.ISummaryService,
 	req *model.MORequest,
 ) *MOHandler {
 	return &MOHandler{
@@ -45,6 +47,7 @@ func NewMOHandler(
 		subscriptionService: subscriptionService,
 		transactionService:  transactionService,
 		historyService:      historyService,
+		summaryService:      summaryService,
 		req:                 req,
 	}
 }
@@ -61,6 +64,11 @@ func (h *MOHandler) Firstpush() {
 	}
 
 	trxId := utils.GenerateTrxId()
+
+	summary := &entity.Summary{
+		ServiceID: service.GetId(),
+		CreatedAt: time.Now(),
+	}
 
 	subscription := &entity.Subscription{
 		CountryID:     service.GetCountryId(),
@@ -144,6 +152,10 @@ func (h *MOHandler) Firstpush() {
 				CreatedAt:      time.Now(),
 			},
 		)
+
+		// setter summary
+		summary.SetTotalChargeFailed(1)
+
 	} else {
 		h.subscriptionService.Update(
 			&entity.Subscription{
@@ -195,7 +207,15 @@ func (h *MOHandler) Firstpush() {
 				CreatedAt:      time.Now(),
 			},
 		)
+
+		summary.SetTotalChargeSuccess(1)
+		summary.SetTotalRevenue(service.GetPrice())
 	}
+
+	// setter summary
+	summary.SetTotalSub(1)
+	// summary save
+	h.summaryService.Save(summary)
 
 	k := kannel.NewKannel(h.logger, service, content, subscription)
 	sms, err := k.SMS(service.ScSubMT)
@@ -246,11 +266,17 @@ func (h *MOHandler) Unsub() {
 	if err != nil {
 		log.Println(err)
 	}
-	trxId := utils.GenerateTrxId()
 
 	content, err := h.getContentUnsub(service.GetId())
 	if err != nil {
 		log.Println(err)
+	}
+
+	trxId := utils.GenerateTrxId()
+
+	summary := &entity.Summary{
+		ServiceID: service.GetId(),
+		CreatedAt: time.Now(),
 	}
 
 	h.subscriptionService.Update(
@@ -325,6 +351,12 @@ func (h *MOHandler) Unsub() {
 			CreatedAt:      time.Now(),
 		},
 	)
+
+	// setter summary
+	summary.SetTotalUnsub(1)
+	// save summary
+	h.summaryService.Save(summary)
+
 }
 
 func (h *MOHandler) IsActiveSub() bool {

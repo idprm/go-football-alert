@@ -72,6 +72,7 @@ var listenerCmd = &cobra.Command{
 			&entity.Transaction{},
 			&entity.History{},
 			&entity.Reward{},
+			&entity.Summary{},
 		)
 
 		/**

@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"log"
+	"time"
 
 	"github.com/idprm/go-football-alert/internal/domain/entity"
 	"gorm.io/gorm"
@@ -11,6 +12,7 @@ func seederDB(db *gorm.DB) {
 	var country []entity.Country
 	var service []entity.Service
 	var content []entity.Content
+	var schedule []entity.Schedule
 
 	var countries = []entity.Country{
 		{
@@ -18,12 +20,14 @@ func seederDB(db *gorm.DB) {
 			Name:     "MALI",
 			Code:     "223",
 			TimeZone: "GMT",
+			Currency: "CFA",
 		},
 		{
 			ID:       2,
 			Name:     "GUINEE",
 			Code:     "224",
 			TimeZone: "GMT",
+			Currency: "GNF",
 		},
 	}
 
@@ -54,12 +58,68 @@ func seederDB(db *gorm.DB) {
 		{
 			ServiceID: 1,
 			Name:      ACT_FIRSTPUSH,
-			Value:     "Test",
+			Value:     "Test Firstpush",
 		},
 		{
 			ServiceID: 1,
 			Name:      ACT_RENEWAL,
-			Value:     "Test",
+			Value:     "Test Renewal",
+		},
+		{
+			ServiceID: 1,
+			Name:      ACT_PREDICTION,
+			Value:     "Credit Goal: {home}-{away}! Gagnez {credit}F credit a chaque but de votre equipe si elle gagne le match! Envoyes {home-code} ou {away-code} par SMS au {sdc}. {price}{currency}/sms",
+		},
+		{
+			ServiceID: 1,
+			Name:      ACT_SUB,
+			Value:     "Votre participation a ete enregistree. Si {team} gagne et marque des buts lors du prochain match, vous recevrez {price}{currency} deb bonus par but. {price}{currency}/souscription",
+		},
+		{
+			ServiceID: 1,
+			Name:      ACT_CREDIT_GOAL,
+			Value:     "Credit Goal: Felicitations! Le score final du match {home}-{away} est {score}. Votre compte va etre credite dans un delai de 72H de {price}{currency}",
+		},
+		{
+			ServiceID: 1,
+			Name:      ACT_USER_LOSES,
+			Value:     "Test User Loses",
+		},
+		{
+			ServiceID: 1,
+			Name:      ACT_UNSUB,
+			Value:     "Test Unsub",
+		},
+	}
+
+	var schedules = []entity.Schedule{
+		{
+			CountryID:  1,
+			Name:       ACT_RENEWAL,
+			PublishAt:  time.Now(),
+			UnlockedAt: time.Now(),
+			IsUnlocked: false,
+		},
+		{
+			CountryID:  1,
+			Name:       ACT_PREDICTION,
+			PublishAt:  time.Now(),
+			UnlockedAt: time.Now(),
+			IsUnlocked: false,
+		},
+		{
+			CountryID:  1,
+			Name:       ACT_CREDIT_GOAL,
+			PublishAt:  time.Now(),
+			UnlockedAt: time.Now(),
+			IsUnlocked: false,
+		},
+		{
+			CountryID:  1,
+			Name:       ACT_NEWS,
+			PublishAt:  time.Now(),
+			UnlockedAt: time.Now(),
+			IsUnlocked: false,
 		},
 	}
 
@@ -82,5 +142,12 @@ func seederDB(db *gorm.DB) {
 			db.Model(&entity.Content{}).Create(&contents[i])
 		}
 		log.Println("contents migrated")
+	}
+
+	if db.Find(&schedule).RowsAffected == 0 {
+		for i, _ := range schedules {
+			db.Model(&entity.Schedule{}).Create(&schedules[i])
+		}
+		log.Println("schedules migrated")
 	}
 }
