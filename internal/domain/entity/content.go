@@ -5,7 +5,7 @@ type Content struct {
 	ServiceID int      `json:"service_id"`
 	Service   *Service `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"service,omitempty"`
 	Name      string   `gorm:"size:50" json:"name"`
-	Value     string   `gorm:"size:150" json:"value"`
+	Value     string   `gorm:"size:250" json:"value"`
 }
 
 func (e *Content) GetId() int {
