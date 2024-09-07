@@ -1,6 +1,8 @@
 package services
 
 import (
+	"log"
+
 	"github.com/idprm/go-football-alert/internal/domain/entity"
 	"github.com/idprm/go-football-alert/internal/domain/repository"
 )
@@ -25,12 +27,18 @@ type IScheduleService interface {
 }
 
 func (s *ScheduleService) IsUnlocked(key, hour string) bool {
-	count, _ := s.scheduleRepo.CountUnlocked(key, hour)
+	count, err := s.scheduleRepo.CountUnlocked(key, hour)
+	if err != nil {
+		log.Println(err.Error())
+	}
 	return count > 0
 }
 
 func (s *ScheduleService) IsLocked(key, hour string) bool {
-	count, _ := s.scheduleRepo.CountLocked(key, hour)
+	count, err := s.scheduleRepo.CountLocked(key, hour)
+	if err != nil {
+		log.Println(err.Error())
+	}
 	return count > 0
 }
 

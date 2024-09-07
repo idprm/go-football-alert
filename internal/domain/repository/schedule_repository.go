@@ -26,7 +26,7 @@ type IScheduleRepository interface {
 
 func (r *ScheduleRepository) CountUnlocked(key, hour string) (int64, error) {
 	var count int64
-	err := r.db.Model(&entity.Schedule{}).Where("name = ?", key).Where("DATE_FORMAT(publish_at, '%H:%i') = DATE_FORMAT(?, '%H:%i')", hour).Where("is_unlocked = ?", true).Count(&count).Error
+	err := r.db.Model(&entity.Schedule{}).Where("name = ?", key).Where("DATE_FORMAT(publish_at, '%H:%i') = ?", hour).Where("is_unlocked = ?", true).Count(&count).Error
 	if err != nil {
 		return count, err
 	}
@@ -35,7 +35,7 @@ func (r *ScheduleRepository) CountUnlocked(key, hour string) (int64, error) {
 
 func (r *ScheduleRepository) CountLocked(key, hour string) (int64, error) {
 	var count int64
-	err := r.db.Model(&entity.Schedule{}).Where("name = ?", key).Where("DATE_FORMAT(unlocked_at, '%H:%i') = DATE_FORMAT(?, '%H:%i')", hour).Where("is_unlocked = ?", false).Count(&count).Error
+	err := r.db.Model(&entity.Schedule{}).Where("name = ?", key).Where("DATE_FORMAT(unlocked_at, '%H:%i') = ?", hour).Where("is_unlocked = ?", false).Count(&count).Error
 	if err != nil {
 		return count, err
 	}
@@ -54,7 +54,7 @@ func (r *ScheduleRepository) GetAllPaginate(pagination *entity.Pagination) (*ent
 
 func (r *ScheduleRepository) Get(key, hour string) (*entity.Schedule, error) {
 	var c entity.Schedule
-	err := r.db.Where("name = ?", key).Where("DATE_FORMAT(hour, '%H:%i') = DATE_FORMAT(?, '%H:%i')", hour).Take(&c).Error
+	err := r.db.Where("name = ?", key).Where("DATE_FORMAT(publish_at, '%H:%i') = ?", hour).Take(&c).Error
 	if err != nil {
 		return nil, err
 	}
