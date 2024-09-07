@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"encoding/json"
-	"log"
 	"time"
 
 	"github.com/idprm/go-football-alert/internal/domain/entity"
@@ -50,12 +49,7 @@ var publisherPredictionCmd = &cobra.Command{
 			scheduleRepo := repository.NewScheduleRepository(db)
 			scheduleService := services.NewScheduleService(scheduleRepo)
 
-			log.Println(ACT_PREDICTION)
-			log.Println(timeNow)
-
 			if scheduleService.IsUnlocked(ACT_PREDICTION, timeNow) {
-
-				log.Println("prediction_is_true_unlocked")
 
 				scheduleService.Update(
 					&entity.Schedule{
@@ -112,12 +106,7 @@ var publisherCreditCmd = &cobra.Command{
 			scheduleRepo := repository.NewScheduleRepository(db)
 			scheduleService := services.NewScheduleService(scheduleRepo)
 
-			log.Println(ACT_CREDIT_GOAL)
-			log.Println(timeNow)
-
 			if scheduleService.IsUnlocked(ACT_CREDIT_GOAL, timeNow) {
-
-				log.Println("credit_goal_is_true_unlocked")
 
 				scheduleService.Update(
 					&entity.Schedule{
@@ -334,8 +323,6 @@ func populatePrediction(db *gorm.DB, rmq rmqp.AMQP) {
 
 	subs := subscriptionService.Renewal()
 
-	log.Println(subs)
-
 	for _, s := range *subs {
 		var sub entity.Subscription
 
@@ -347,8 +334,6 @@ func populatePrediction(db *gorm.DB, rmq rmqp.AMQP) {
 		sub.LatestSubject = s.LatestSubject
 		sub.IpAddress = s.IpAddress
 		sub.CreatedAt = s.CreatedAt
-
-		log.Println(sub)
 
 		json, _ := json.Marshal(sub)
 
@@ -364,8 +349,6 @@ func populateGoalCredit(db *gorm.DB, rmq rmqp.AMQP) {
 
 	subs := subscriptionService.Renewal()
 
-	log.Println(subs)
-
 	for _, s := range *subs {
 		var sub entity.Subscription
 
@@ -377,8 +360,6 @@ func populateGoalCredit(db *gorm.DB, rmq rmqp.AMQP) {
 		sub.LatestSubject = s.LatestSubject
 		sub.IpAddress = s.IpAddress
 		sub.CreatedAt = s.CreatedAt
-
-		log.Println(sub)
 
 		json, _ := json.Marshal(sub)
 
