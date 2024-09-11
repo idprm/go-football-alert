@@ -45,6 +45,8 @@ func (p *Telco) QueryProfileAndBal() ([]byte, error) {
 	reqXml.SetSoap("http://schemas.xmlsoap.org/soap/envelope/")
 	reqXml.SetUsername(p.service.GetUserTelco())
 	reqXml.SetPassword(p.service.GetPassTelco())
+	reqXml.SetMsisdn(p.subscription.GetMsisdn())
+	reqXml.SetTransactionSN("123455")
 
 	payload, err := xml.Marshal(&reqXml)
 	if err != nil {
@@ -107,9 +109,9 @@ func (p *Telco) DeductFee() ([]byte, error) {
 	reqXml.SetSoap("http://schemas.xmlsoap.org/soap/envelope/")
 	reqXml.SetUsername(p.service.GetUserTelco())
 	reqXml.SetPassword(p.service.GetPassTelco())
-	reqXml.SetTransactionSN("123547645")
-	reqXml.SetTransactionDesc("")
-	reqXml.SetChannelID("THANOS")
+	reqXml.SetTransactionSN("123455")
+	reqXml.SetTransactionDesc("OFCTEST")
+	reqXml.SetChannelID("ESERV")
 	reqXml.SetMsisdn(p.subscription.GetMsisdn())
 	reqXml.SetAccountCode("")
 	reqXml.SetAcctResCode("1")

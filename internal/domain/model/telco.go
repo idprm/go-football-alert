@@ -174,3 +174,15 @@ func (m *QueryProfileAndBalRequest) SetUsername(v string) {
 func (m *QueryProfileAndBalRequest) SetPassword(v string) {
 	m.Header.AuthHeader.Password = v
 }
+
+func (m *QueryProfileAndBalRequest) SetMsisdn(v string) {
+	m.Body.QueryProfileAndBal.Msisdn = v
+}
+
+func (m *QueryProfileAndBalRequest) SetTransactionSN(v string) {
+	m.Body.QueryProfileAndBal.TransactionSN = v
+}
+
+func (m *QueryProfileAndBalRequest) SetUserPwd(v string) {
+	m.Body.QueryProfileAndBal.UserPwd = v
+}
