@@ -78,6 +78,8 @@ func (p *Kannel) SMS(sc string) ([]byte, error) {
 		return nil, err
 	}
 
+	p.logger.Writer(string(body))
+
 	duration := time.Since(start).Milliseconds()
 	p.logger.Writer(string(body))
 	l.WithFields(logrus.Fields{
