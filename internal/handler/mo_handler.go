@@ -323,9 +323,7 @@ func (h *MOHandler) Unsub() {
 			ServiceID:  service.GetId(),
 			Msisdn:     h.req.GetMsisdn(),
 			TotalUnsub: sub.TotalUnsub + 1,
-			UnsubAt:    time.Now(),
 			UpdatedAt:  time.Now(),
-			IsActive:   false,
 		},
 	)
 

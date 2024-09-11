@@ -35,9 +35,9 @@ type Subscription struct {
 	TotalAmountFirstpush float64   `json:"total_amount_firstpush,omitempty"`
 	TotalAmountRenewal   float64   `json:"total_amount_renewal,omitempty"`
 	IpAddress            string    `json:"ip_address,omitempty"`
-	IsRetry              bool      `json:"is_retry,omitempty"`
-	IsTrial              bool      `json:"is_trial,omitempty"`
-	IsActive             bool      `json:"is_active,omitempty"`
+	IsRetry              bool      `gorm:"type:bool" json:"is_retry,omitempty"`
+	IsTrial              bool      `gorm:"type:bool" json:"is_trial,omitempty"`
+	IsActive             bool      `gorm:"type:bool" json:"is_active,omitempty"`
 	CreatedAt            time.Time `json:"created_at"`
 	UpdatedAt            time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"updated_at"`
 }

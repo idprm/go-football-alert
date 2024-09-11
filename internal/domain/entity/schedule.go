@@ -9,7 +9,7 @@ type Schedule struct {
 	Name       string    `json:"name"`
 	PublishAt  time.Time `json:"publish_at"`
 	UnlockedAt time.Time `json:"unlocked_at"`
-	IsUnlocked bool      `json:"is_unlocked"`
+	IsUnlocked bool      `gorm:"type:bool" json:"is_unlocked"`
 }
 
 func (e *Schedule) GetId() int {
