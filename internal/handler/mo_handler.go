@@ -97,13 +97,21 @@ func (h *MOHandler) Firstpush() {
 	}
 
 	t := telco.NewTelco(h.logger, service, subscription)
-	resp, err := t.DeductFee()
+	deductFee, err := t.DeductFee()
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	profileBall, err := t.QueryProfileAndBal()
 	if err != nil {
 		log.Println(err.Error())
 	}
 
 	var respDeduct *model.DeductResponse
-	xml.Unmarshal(utils.EscapeChar(resp), &respDeduct)
+	xml.Unmarshal(utils.EscapeChar(deductFee), &respDeduct)
+
+	var respProfileBall *model.QueryProfileAndBalResponse
+	xml.Unmarshal(utils.EscapeChar(profileBall), &respProfileBall)
 
 	if respDeduct.IsFailed() {
 		h.subscriptionService.Update(
@@ -118,7 +126,7 @@ func (h *MOHandler) Firstpush() {
 				RetryAt:       time.Now(),
 				TotalFailed:   sub.TotalFailed + 1,
 				IsRetry:       true,
-				LatestPayload: string(resp),
+				LatestPayload: string(deductFee),
 				UpdatedAt:     time.Now(),
 			},
 		)
@@ -135,7 +143,7 @@ func (h *MOHandler) Firstpush() {
 				StatusCode:     respDeduct.GetFaultCode(),
 				StatusDetail:   respDeduct.GetFaultString(),
 				Subject:        SUBJECT_FIRSTPUSH,
-				Payload:        string(resp),
+				Payload:        string(deductFee),
 				CreatedAt:      time.Now(),
 			},
 		)
@@ -155,7 +163,6 @@ func (h *MOHandler) Firstpush() {
 
 		// setter summary
 		summary.SetTotalChargeFailed(1)
-
 	} else {
 		h.subscriptionService.Update(
 			&entity.Subscription{
@@ -172,7 +179,7 @@ func (h *MOHandler) Firstpush() {
 				IsRetry:              false,
 				TotalFirstpush:       sub.TotalFirstpush + 1,
 				TotalAmountFirstpush: service.GetPrice(),
-				LatestPayload:        string(resp),
+				LatestPayload:        string(deductFee),
 				UpdatedAt:            time.Now(),
 			},
 		)
@@ -190,7 +197,7 @@ func (h *MOHandler) Firstpush() {
 				StatusCode:     "",
 				StatusDetail:   "",
 				Subject:        SUBJECT_FIRSTPUSH,
-				Payload:        string(resp),
+				Payload:        string(deductFee),
 				CreatedAt:      time.Now(),
 			},
 		)

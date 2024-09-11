@@ -3,6 +3,48 @@ package model
 import "encoding/xml"
 
 type (
+	QueryProfileAndBalRequest struct {
+		XMLName xml.Name `xml:"soapenv:Envelope"`
+		Soapenv string   `xml:"xmlns:soapenv,attr"`
+		Header  struct {
+			AuthHeader struct {
+				Username string `xml:"Username,omitempty"`
+				Password string `xml:"Password,omitempty"`
+			} `xml:"AuthHeader"`
+		} `xml:"soapenv:Header"`
+		Body struct {
+			QueryProfileAndBal struct {
+				Msisdn        string `xml:"MSISDN,omitempty"`
+				TransactionSN string `xml:"TransactionSN,omitempty"`
+				UserPwd       string `xml:"UserPwd,omitempty"`
+			} `xml:"QueryProfileAndBalRequest"`
+		} `xml:"soapenv:Body"`
+	}
+
+	QueryProfileAndBalResponse struct {
+		XMLName xml.Name `xml:"Envelope"`
+		SoapEnv string   `xml:"xmlns:soapenv,attr"`
+		Body    struct {
+			QueryProfileAndBal struct {
+				Msisdn          string `xml:"MSISDN,omitempty"`
+				DefLang         string `xml:"DefLang,omitempty"`
+				State           string `xml:"State,omitempty"`
+				StateSet        string `xml:"StateSet,omitempty"`
+				ActiveStopDate  string `xml:"ActiveStopDate,omitempty"`
+				SuspendStopDate string `xml:"SuspendStopDate,omitempty"`
+				DisableStopDate string `xml:"DisableStopDate,omitempty"`
+				ServiceStopDate string `xml:"ServiceStopDate,omitempty"`
+				BrandIndex      string `xml:"BrandIndex,omitempty"`
+				ServiceClass    string `xml:"ServiceClass,omitempty"`
+				TransactionSN   string `xml:"TransactionSN,omitempty"`
+				BalDtoList      struct {
+				} `xml:"BalDtoList"`
+			} `xml:"QueryProfileAndBalResponse"`
+		} `xml:"soapenv:Body"`
+	}
+)
+
+type (
 	DeductRequest struct {
 		XMLName xml.Name `xml:"soapenv:Envelope"`
 		Soapenv string   `xml:"xmlns:soapenv,attr"`
@@ -14,13 +56,13 @@ type (
 		} `xml:"soapenv:Header"`
 		Body struct {
 			DeductFee struct {
-				TransactionSN   string `xml:"TransactionSN"`
-				TransactionDesc string `xml:"TransactionDesc"`
-				ChannelID       string `xml:"Channel_ID"`
-				Msisdn          string `xml:"MSISDN"`
-				AccountCode     string `xml:"AccountCode"`
-				AcctResCode     string `xml:"AcctResCode"`
-				DeductBalance   string `xml:"DeductBalance"`
+				TransactionSN   string `xml:"TransactionSN,omitempty"`
+				TransactionDesc string `xml:"TransactionDesc,omitempty"`
+				ChannelID       string `xml:"Channel_ID,omitempty"`
+				Msisdn          string `xml:"MSISDN,omitempty"`
+				AccountCode     string `xml:"AccountCode,omitempty"`
+				AcctResCode     string `xml:"AcctResCode,omitempty"`
+				DeductBalance   string `xml:"DeductBalance,omitempty"`
 			} `xml:"DeductFeeRequest"`
 		} `xml:"soapenv:Body"`
 	}
@@ -29,17 +71,17 @@ type (
 		XMLName xml.Name `xml:"Envelope"`
 		SoapEnv string   `xml:"xmlns:soapenv,attr"`
 		Body    struct {
-			DeductFeeResponse struct {
-				TransactionSN string `xml:"TransactionSN"`
-				AcctResCode   string `xml:"AcctResCode"`
-				AcctResName   string `xml:"AcctResName"`
-				BeforeBalance string `xml:"BeforeBalance"`
-				AfterBalance  string `xml:"AfterBalance"`
-				ExpDate       string `xml:"ExpDate"`
+			DeductFee struct {
+				TransactionSN string `xml:"TransactionSN,omitempty"`
+				AcctResCode   string `xml:"AcctResCode,omitempty"`
+				AcctResName   string `xml:"AcctResName,omitempty"`
+				BeforeBalance string `xml:"BeforeBalance,omitempty"`
+				AfterBalance  string `xml:"AfterBalance,omitempty"`
+				ExpDate       string `xml:"ExpDate,omitempty"`
 			} `xml:"DeductFeeResponse"`
 			Fault struct {
-				FaultCode   string `xml:"faultcode"`
-				FaultString string `xml:"faultstring"`
+				FaultCode   string `xml:"faultcode,omitempty"`
+				FaultString string `xml:"faultstring,omitempty"`
 			} `xml:"soapenv:Fault"`
 		} `xml:"soapenv:Body"`
 	}
@@ -86,27 +128,27 @@ func (m *DeductRequest) SetDeductBalance(v string) {
 }
 
 func (m *DeductResponse) GetTransactionSN() string {
-	return m.Body.DeductFeeResponse.TransactionSN
+	return m.Body.DeductFee.TransactionSN
 }
 
 func (m *DeductResponse) GetAcctResCode() string {
-	return m.Body.DeductFeeResponse.AcctResCode
+	return m.Body.DeductFee.AcctResCode
 }
 
 func (m *DeductResponse) GetAcctResName() string {
-	return m.Body.DeductFeeResponse.AcctResName
+	return m.Body.DeductFee.AcctResName
 }
 
 func (m *DeductResponse) GetBeforeBalance() string {
-	return m.Body.DeductFeeResponse.BeforeBalance
+	return m.Body.DeductFee.BeforeBalance
 }
 
 func (m *DeductResponse) GetAfterBalance() string {
-	return m.Body.DeductFeeResponse.AfterBalance
+	return m.Body.DeductFee.AfterBalance
 }
 
 func (m *DeductResponse) GetExpDate() string {
-	return m.Body.DeductFeeResponse.ExpDate
+	return m.Body.DeductFee.ExpDate
 }
 
 func (m *DeductResponse) GetFaultCode() string {
@@ -118,5 +160,17 @@ func (m *DeductResponse) GetFaultString() string {
 }
 
 func (m *DeductResponse) IsFailed() bool {
-	return m.Body.Fault.FaultCode != "" || m.Body.Fault.FaultString != ""
+	return m.Body.Fault.FaultCode == "" || m.Body.Fault.FaultString == "" || m == nil
+}
+
+func (e *QueryProfileAndBalRequest) SetSoap(v string) {
+	e.Soapenv = v
+}
+
+func (m *QueryProfileAndBalRequest) SetUsername(v string) {
+	m.Header.AuthHeader.Username = v
+}
+
+func (m *QueryProfileAndBalRequest) SetPassword(v string) {
+	m.Header.AuthHeader.Password = v
 }
