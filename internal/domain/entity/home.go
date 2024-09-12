@@ -6,7 +6,7 @@ type Home struct {
 	TeamID    int64 `json:"team_id"`
 	Team      *Team `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"team,omitempty"`
 	Goal      int   `gorm:"size:10" json:"goal"`
-	IsWinner  bool  `gorm:"type:bool;default:false" json:"is_winner"`
+	IsWinner  bool  `gorm:"type:boolean;default:false" json:"is_winner"`
 }
 
 func (e *Home) GetId() int64 {

@@ -11,34 +11,34 @@ type Subscription struct {
 	Country              *Country  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"country,omitempty"`
 	ServiceID            int       `json:"service_id"`
 	Service              *Service  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"service,omitempty"`
-	Category             string    `json:"category"`
+	Category             string    `gorm:"size:20" json:"category"`
 	Msisdn               string    `gorm:"size:15;not null" json:"msisdn"`
-	Channel              string    `json:"channel,omitempty"`
-	LatestTrxId          string    `json:"trx_id,omitempty"`
-	LatestKeyword        string    `json:"latest_keyword,omitempty"`
-	LatestSubject        string    `json:"latest_subject,omitempty"`
-	LatestStatus         string    `json:"latest_status,omitempty"`
-	LatestPayload        string    `json:"latest_payload,omitempty"`
+	Channel              string    `gorm:"size:15" json:"channel,omitempty"`
+	LatestTrxId          string    `gorm:"size:100" json:"trx_id,omitempty"`
+	LatestKeyword        string    `gorm:"size:50" json:"latest_keyword,omitempty"`
+	LatestSubject        string    `gorm:"size:25" json:"latest_subject,omitempty"`
+	LatestStatus         string    `gorm:"size:25" json:"latest_status,omitempty"`
+	LatestPayload        string    `gorm:"type:text" json:"latest_payload,omitempty"`
 	RenewalAt            time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"renewal_at,omitempty"`
 	UnsubAt              time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"unsub_at,omitempty"`
 	ChargeAt             time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"charge_at,omitempty"`
 	RetryAt              time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"retry_at,omitempty"`
 	TrialAt              time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"trial_at,omitempty"`
 	FirstSuccessAt       time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"first_success_at,omitempty"`
-	TotalSuccess         int       `json:"total_success,omitempty"`
-	TotalFailed          int       `json:"total_failed,omitempty"`
-	TotalAmount          float64   `json:"total_amount,omitempty"`
-	TotalFirstpush       int       `json:"total_firstpush,omitempty"`
-	TotalRenewal         int       `json:"total_renewal,omitempty"`
-	TotalSub             int       `json:"total_sub,omitempty"`
-	TotalUnsub           int       `json:"total_unsub,omitempty"`
-	TotalAmountFirstpush float64   `json:"total_amount_firstpush,omitempty"`
-	TotalAmountRenewal   float64   `json:"total_amount_renewal,omitempty"`
-	IpAddress            string    `json:"ip_address,omitempty"`
-	IsRetry              bool      `gorm:"type:bool" json:"is_retry,omitempty"`
-	IsTrial              bool      `gorm:"type:bool" json:"is_trial,omitempty"`
-	IsActive             bool      `gorm:"type:bool" json:"is_active,omitempty"`
-	CreatedAt            time.Time `json:"created_at"`
+	TotalSuccess         int       `gorm:"default:0" json:"total_success,omitempty"`
+	TotalFailed          int       `gorm:"default:0" json:"total_failed,omitempty"`
+	TotalAmount          float64   `gorm:"default:0" json:"total_amount,omitempty"`
+	TotalFirstpush       int       `gorm:"default:0" json:"total_firstpush,omitempty"`
+	TotalRenewal         int       `gorm:"default:0" json:"total_renewal,omitempty"`
+	TotalSub             int       `gorm:"default:0" json:"total_sub,omitempty"`
+	TotalUnsub           int       `gorm:"default:0" json:"total_unsub,omitempty"`
+	TotalAmountFirstpush float64   `gorm:"default:0" json:"total_amount_firstpush,omitempty"`
+	TotalAmountRenewal   float64   `gorm:"default:0" json:"total_amount_renewal,omitempty"`
+	IpAddress            string    `gorm:"size:25" json:"ip_address,omitempty"`
+	IsRetry              bool      `gorm:"type:boolean" json:"is_retry,omitempty"`
+	IsTrial              bool      `gorm:"type:boolean" json:"is_trial,omitempty"`
+	IsActive             bool      `gorm:"type:boolean" json:"is_active,omitempty"`
+	CreatedAt            time.Time `gorm:"type:TIMESTAMP" json:"created_at"`
 	UpdatedAt            time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"updated_at"`
 }
 
