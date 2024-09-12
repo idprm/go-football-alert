@@ -16,7 +16,7 @@ type (
 		Body struct {
 			QueryProfileAndBal struct {
 				Msisdn        string `xml:"MSISDN,omitempty"`
-				TransactionSN string `xml:"TransactionSN,omitempty"`
+				TransactionSN int64  `xml:"TransactionSN,omitempty"`
 				UserPwd       string `xml:"UserPwd,omitempty"`
 			} `xml:"xsd:QueryProfileAndBalRequest"`
 		} `xml:"soapenv:Body"`
@@ -58,7 +58,7 @@ type (
 		} `xml:"soapenv:Header"`
 		Body struct {
 			DeductFee struct {
-				TransactionSN   string `xml:"TransactionSN,omitempty"`
+				TransactionSN   int64  `xml:"TransactionSN,omitempty"`
 				TransactionDesc string `xml:"TransactionDesc,omitempty"`
 				ChannelID       string `xml:"Channel_ID,omitempty"`
 				Msisdn          string `xml:"MSISDN,omitempty"`
@@ -109,7 +109,7 @@ func (m *QueryProfileAndBalRequest) SetMsisdn(v string) {
 	m.Body.QueryProfileAndBal.Msisdn = v
 }
 
-func (m *QueryProfileAndBalRequest) SetTransactionSN(v string) {
+func (m *QueryProfileAndBalRequest) SetTransactionSN(v int64) {
 	m.Body.QueryProfileAndBal.TransactionSN = v
 }
 
@@ -133,7 +133,7 @@ func (m *DeductRequest) SetPassword(v string) {
 	m.Header.AuthHeader.Password = v
 }
 
-func (m *DeductRequest) SetTransactionSN(v string) {
+func (m *DeductRequest) SetTransactionSN(v int64) {
 	m.Body.DeductFee.TransactionSN = v
 }
 

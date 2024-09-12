@@ -11,7 +11,6 @@ import (
 	"github.com/idprm/go-football-alert/internal/domain/entity"
 	"github.com/idprm/go-football-alert/internal/domain/model"
 	"github.com/idprm/go-football-alert/internal/logger"
-	"github.com/idprm/go-football-alert/internal/utils"
 	"github.com/sirupsen/logrus"
 )
 
@@ -48,7 +47,7 @@ func (p *Telco) QueryProfileAndBal() ([]byte, error) {
 	reqXml.SetUsername(p.service.GetUserTelco())
 	reqXml.SetPassword(p.service.GetPassTelco())
 	reqXml.SetMsisdn(p.subscription.GetMsisdn())
-	reqXml.SetTransactionSN(utils.GenerateTrxId())
+	reqXml.SetTransactionSN(time.Now().UnixMicro())
 
 	payload, err := xml.Marshal(&reqXml)
 	if err != nil {
@@ -112,7 +111,7 @@ func (p *Telco) DeductFee() ([]byte, error) {
 	reqXml.SetXsd("http://com.ztesoft.zsmart/xsd")
 	reqXml.SetUsername(p.service.GetUserTelco())
 	reqXml.SetPassword(p.service.GetPassTelco())
-	reqXml.SetTransactionSN(utils.GenerateTrxId())
+	reqXml.SetTransactionSN(time.Now().UnixMicro())
 	reqXml.SetTransactionDesc("OFCTEST")
 	reqXml.SetChannelID("ESERV")
 	reqXml.SetMsisdn(p.subscription.GetMsisdn())
