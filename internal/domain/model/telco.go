@@ -6,18 +6,19 @@ type (
 	QueryProfileAndBalRequest struct {
 		XMLName xml.Name `xml:"soapenv:Envelope"`
 		Soapenv string   `xml:"xmlns:soapenv,attr"`
+		Xsd     string   `xml:"xmlns:xsd,attr"`
 		Header  struct {
 			AuthHeader struct {
 				Username string `xml:"Username,omitempty"`
 				Password string `xml:"Password,omitempty"`
-			} `xml:"AuthHeader"`
+			} `xml:"xsd:AuthHeader"`
 		} `xml:"soapenv:Header"`
 		Body struct {
 			QueryProfileAndBal struct {
 				Msisdn        string `xml:"MSISDN,omitempty"`
 				TransactionSN string `xml:"TransactionSN,omitempty"`
 				UserPwd       string `xml:"UserPwd,omitempty"`
-			} `xml:"QueryProfileAndBalRequest"`
+			} `xml:"xsd:QueryProfileAndBalRequest"`
 		} `xml:"soapenv:Body"`
 	}
 
@@ -48,11 +49,12 @@ type (
 	DeductRequest struct {
 		XMLName xml.Name `xml:"soapenv:Envelope"`
 		Soapenv string   `xml:"xmlns:soapenv,attr"`
+		Xsd     string   `xml:"xmlns:xsd,attr"`
 		Header  struct {
 			AuthHeader struct {
 				Username string `xml:"Username"`
 				Password string `xml:"Password"`
-			} `xml:"AuthHeader"`
+			} `xml:"xsd:AuthHeader"`
 		} `xml:"soapenv:Header"`
 		Body struct {
 			DeductFee struct {
@@ -63,7 +65,7 @@ type (
 				AccountCode     string `xml:"AccountCode,omitempty"`
 				AcctResCode     string `xml:"AcctResCode,omitempty"`
 				DeductBalance   string `xml:"DeductBalance,omitempty"`
-			} `xml:"DeductFeeRequest"`
+			} `xml:"xsd:DeductFeeRequest"`
 		} `xml:"soapenv:Body"`
 	}
 
@@ -87,8 +89,40 @@ type (
 	}
 )
 
+func (e *QueryProfileAndBalRequest) SetSoap(v string) {
+	e.Soapenv = v
+}
+
+func (e *QueryProfileAndBalRequest) SetXsd(v string) {
+	e.Xsd = v
+}
+
+func (m *QueryProfileAndBalRequest) SetUsername(v string) {
+	m.Header.AuthHeader.Username = v
+}
+
+func (m *QueryProfileAndBalRequest) SetPassword(v string) {
+	m.Header.AuthHeader.Password = v
+}
+
+func (m *QueryProfileAndBalRequest) SetMsisdn(v string) {
+	m.Body.QueryProfileAndBal.Msisdn = v
+}
+
+func (m *QueryProfileAndBalRequest) SetTransactionSN(v string) {
+	m.Body.QueryProfileAndBal.TransactionSN = v
+}
+
+func (m *QueryProfileAndBalRequest) SetUserPwd(v string) {
+	m.Body.QueryProfileAndBal.UserPwd = v
+}
+
 func (e *DeductRequest) SetSoap(v string) {
 	e.Soapenv = v
+}
+
+func (e *DeductRequest) SetXsd(v string) {
+	e.Xsd = v
 }
 
 func (m *DeductRequest) SetUsername(v string) {
@@ -161,28 +195,4 @@ func (m *DeductResponse) GetFaultString() string {
 
 func (m *DeductResponse) IsFailed() bool {
 	return m.Body.Fault.FaultCode == "" || m.Body.Fault.FaultString == "" || m == nil
-}
-
-func (e *QueryProfileAndBalRequest) SetSoap(v string) {
-	e.Soapenv = v
-}
-
-func (m *QueryProfileAndBalRequest) SetUsername(v string) {
-	m.Header.AuthHeader.Username = v
-}
-
-func (m *QueryProfileAndBalRequest) SetPassword(v string) {
-	m.Header.AuthHeader.Password = v
-}
-
-func (m *QueryProfileAndBalRequest) SetMsisdn(v string) {
-	m.Body.QueryProfileAndBal.Msisdn = v
-}
-
-func (m *QueryProfileAndBalRequest) SetTransactionSN(v string) {
-	m.Body.QueryProfileAndBal.TransactionSN = v
-}
-
-func (m *QueryProfileAndBalRequest) SetUserPwd(v string) {
-	m.Body.QueryProfileAndBal.UserPwd = v
 }

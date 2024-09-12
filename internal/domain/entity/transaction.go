@@ -22,7 +22,7 @@ type Transaction struct {
 	Subject        string        `gorm:"size:25" json:"subject,omitempty"`
 	IpAddress      string        `gorm:"size:30" json:"ip_address,omitempty"`
 	Payload        string        `gorm:"type:text" json:"payload,omitempty"`
-	CreatedAt      time.Time     `json:"created_at"`
+	CreatedAt      time.Time     `gorm:"type:TIMESTAMP" json:"created_at"`
 	UpdatedAt      time.Time     `gorm:"type:TIMESTAMP;null;default:null" json:"updated_at"`
 }
 

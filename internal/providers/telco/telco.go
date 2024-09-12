@@ -43,10 +43,11 @@ func (p *Telco) QueryProfileAndBal() ([]byte, error) {
 
 	var reqXml model.QueryProfileAndBalRequest
 	reqXml.SetSoap("http://schemas.xmlsoap.org/soap/envelope/")
+	reqXml.SetXsd("http://com.ztesoft.zsmart/xsd")
 	reqXml.SetUsername(p.service.GetUserTelco())
 	reqXml.SetPassword(p.service.GetPassTelco())
 	reqXml.SetMsisdn(p.subscription.GetMsisdn())
-	reqXml.SetTransactionSN("123455")
+	reqXml.SetTransactionSN("1000000")
 
 	payload, err := xml.Marshal(&reqXml)
 	if err != nil {
@@ -107,9 +108,10 @@ func (p *Telco) DeductFee() ([]byte, error) {
 	var reqXml model.DeductRequest
 
 	reqXml.SetSoap("http://schemas.xmlsoap.org/soap/envelope/")
+	reqXml.SetXsd("http://com.ztesoft.zsmart/xsd")
 	reqXml.SetUsername(p.service.GetUserTelco())
 	reqXml.SetPassword(p.service.GetPassTelco())
-	reqXml.SetTransactionSN("123455")
+	reqXml.SetTransactionSN("1000000")
 	reqXml.SetTransactionDesc("OFCTEST")
 	reqXml.SetChannelID("ESERV")
 	reqXml.SetMsisdn(p.subscription.GetMsisdn())

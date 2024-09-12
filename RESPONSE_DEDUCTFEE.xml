@@ -1,0 +1,19 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://com.ztesoft.zsmart/xsd">
+   <soapenv:Header>
+      <xsd:AuthHeader>
+         <Username>ESERV</Username>
+         <Password>WS0001</Password>
+      </xsd:AuthHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <xsd:DeductFeeRequest>
+         <TransactionSN>1000000</TransactionSN>
+         <TransactionDesc>OFCTEST</TransactionDesc>
+         <Channel_ID>ESERV</Channel_ID>
+         <MSISDN>22390662894</MSISDN>
+         <AccountCode/>
+         <AcctResCode>1</AcctResCode>
+         <DeductBalance>100</DeductBalance>
+      </xsd:DeductFeeRequest>
+   </soapenv:Body>
+</soapenv:Envelope>

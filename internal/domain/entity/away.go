@@ -6,7 +6,7 @@ type Away struct {
 	TeamID    int64 `json:"team_id"`
 	Team      *Team `json:"team"`
 	Goal      int   `json:"goal"`
-	IsWinner  bool  `gorm:"type:bool;default:false" json:"is_winner"`
+	IsWinner  bool  `gorm:"type:boolean;default:false" json:"is_winner"`
 }
 
 func (e *Away) GetId() int64 {
