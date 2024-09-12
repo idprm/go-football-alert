@@ -91,6 +91,7 @@ func init() {
 	 */
 	rootCmd.AddCommand(consumerMOCmd)
 	rootCmd.AddCommand(consumerRenewalCmd)
+	rootCmd.AddCommand(consumerRetryCmd)
 	rootCmd.AddCommand(consumerPredictionCmd)
 	rootCmd.AddCommand(consumerCreditGoalCmd)
 	rootCmd.AddCommand(consumerNewsCmd)
@@ -98,11 +99,13 @@ func init() {
 	/**
 	 * Publisher Scraping service
 	 */
-	rootCmd.AddCommand(publisherScrapingCmd)
 	rootCmd.AddCommand(publisherRenewalCmd)
-	rootCmd.AddCommand(publisherNewsCmd)
-	rootCmd.AddCommand(publisherCreditCmd)
+	rootCmd.AddCommand(publisherRetryCmd)
+	rootCmd.AddCommand(publisherScrapingCmd)
 	rootCmd.AddCommand(publisherPredictionCmd)
+	rootCmd.AddCommand(publisherCreditCmd)
+	rootCmd.AddCommand(publisherNewsCmd)
+
 }
 
 func Execute() error {

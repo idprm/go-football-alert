@@ -18,6 +18,8 @@ jobs:
             image: idprm/fb-alert-mo-service
           - dockerfile: ./Dockerfile.renewal
             image: idprm/fb-alert-renewal-service
+          - dockerfile: ./Dockerfile.retry
+            image: idprm/fb-alert-retry-service
           - dockerfile: ./Dockerfile.prediction
             image: idprm/fb-alert-prediction-service
           - dockerfile: ./Dockerfile.credit_goal
@@ -28,6 +30,8 @@ jobs:
             image: idprm/fb-alert-pub-scraping-service
           - dockerfile: ./Dockerfile.pub_renewal
             image: idprm/fb-alert-pub-renewal-service
+          - dockerfile: ./Dockerfile.pub_retry
+            image: idprm/fb-alert-pub-retry-service
           - dockerfile: ./Dockerfile.pub_prediction
             image: idprm/fb-alert-pub-prediction-service
           - dockerfile: ./Dockerfile.pub_credit_goal

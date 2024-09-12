@@ -15,8 +15,8 @@ type Service struct {
 	Package    string   `gorm:"size:50" json:"package"`
 	Price      float64  `gorm:"size:15" json:"price"`
 	CreditGoal float64  `gorm:"size:15" json:"credit_goal"`
-	RenewalDay int      `json:"renewal_day"`
-	TrialDay   int      `json:"trial_day"`
+	RenewalDay int      `gorm:"size:2;default:0" json:"renewal_day"`
+	TrialDay   int      `gorm:"size:2;default:0" json:"trial_day"`
 	UrlTelco   string   `gorm:"size:350;not null" json:"url_telco"`
 	UserTelco  string   `gorm:"size:100;not null" json:"user_telco"`
 	PassTelco  string   `gorm:"size:100;not null" json:"pass_telco"`

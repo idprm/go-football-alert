@@ -96,51 +96,6 @@ func (p *Processor) MO(wg *sync.WaitGroup, message []byte) {
 	wg.Done()
 }
 
-func (p *Processor) Scraping() {
-
-	leagueRepo := repository.NewLeagueRepository(p.db)
-	leagueService := services.NewLeagueService(leagueRepo)
-
-	seasonRepo := repository.NewSeasonRepository(p.db)
-	seasonService := services.NewSeasonService(seasonRepo)
-
-	fixtureRepo := repository.NewFixtureRepository(p.db)
-	fixtureService := services.NewFixtureService(fixtureRepo)
-
-	homeRepo := repository.NewHomeRepository(p.db)
-	homeService := services.NewHomeService(homeRepo)
-
-	awayRepo := repository.NewAwayRepository(p.db)
-	awayService := services.NewAwayService(awayRepo)
-
-	teamRepo := repository.NewTeamRepository(p.db)
-	teamService := services.NewTeamService(teamRepo)
-
-	liveScoreRepo := repository.NewLiveScoreRepository(p.db)
-	liveScoreService := services.NewLiveScoreService(liveScoreRepo)
-
-	predictionRepo := repository.NewPredictionRepository(p.db)
-	predictionService := services.NewPredictionService(predictionRepo)
-
-	newsRepo := repository.NewNewsRepository(p.db)
-	newsService := services.NewNewsService(newsRepo)
-
-	h := handler.NewScraperHandler(
-		leagueService,
-		seasonService,
-		fixtureService,
-		homeService,
-		awayService,
-		teamService,
-		liveScoreService,
-		predictionService,
-		newsService,
-	)
-
-	h.Fixtures()
-	h.News()
-}
-
 func (p *Processor) Renewal(wg *sync.WaitGroup, message []byte) {
 	/**
 	 * load repo
@@ -173,6 +128,48 @@ func (p *Processor) Renewal(wg *sync.WaitGroup, message []byte) {
 
 	// Dailypush MT API
 	h.Dailypush()
+
+	wg.Done()
+}
+
+func (p *Processor) Retry(wg *sync.WaitGroup, message []byte) {
+	/**
+	 * load repo
+	 */
+	serviceRepo := repository.NewServiceRepository(p.db)
+	serviceService := services.NewServiceService(serviceRepo)
+	contentRepo := repository.NewContentRepository(p.db)
+	contentService := services.NewContentService(contentRepo)
+	subscriptionRepo := repository.NewSubscriptionRepository(p.db)
+	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+	transactionRepo := repository.NewTransactionRepository(p.db)
+	transactionService := services.NewTransactionService(transactionRepo)
+	summaryRepo := repository.NewSummaryRepository(p.db)
+	summaryService := services.NewSummaryService(summaryRepo)
+
+	// parsing json to string
+	var sub *entity.Subscription
+	json.Unmarshal(message, &sub)
+
+	h := handler.NewRetryHandler(
+		p.rmq,
+		p.logger,
+		sub,
+		serviceService,
+		contentService,
+		subscriptionService,
+		transactionService,
+		summaryService,
+	)
+	if sub.IsFirstpush() {
+		if sub.IsRetryAtToday() {
+			h.Firstpush()
+		} else {
+			h.Dailypush()
+		}
+	} else {
+		h.Dailypush()
+	}
 
 	wg.Done()
 }
@@ -286,4 +283,49 @@ func (p *Processor) News(wg *sync.WaitGroup, message []byte) {
 	h.News()
 
 	wg.Done()
+}
+
+func (p *Processor) Scraping() {
+
+	leagueRepo := repository.NewLeagueRepository(p.db)
+	leagueService := services.NewLeagueService(leagueRepo)
+
+	seasonRepo := repository.NewSeasonRepository(p.db)
+	seasonService := services.NewSeasonService(seasonRepo)
+
+	fixtureRepo := repository.NewFixtureRepository(p.db)
+	fixtureService := services.NewFixtureService(fixtureRepo)
+
+	homeRepo := repository.NewHomeRepository(p.db)
+	homeService := services.NewHomeService(homeRepo)
+
+	awayRepo := repository.NewAwayRepository(p.db)
+	awayService := services.NewAwayService(awayRepo)
+
+	teamRepo := repository.NewTeamRepository(p.db)
+	teamService := services.NewTeamService(teamRepo)
+
+	liveScoreRepo := repository.NewLiveScoreRepository(p.db)
+	liveScoreService := services.NewLiveScoreService(liveScoreRepo)
+
+	predictionRepo := repository.NewPredictionRepository(p.db)
+	predictionService := services.NewPredictionService(predictionRepo)
+
+	newsRepo := repository.NewNewsRepository(p.db)
+	newsService := services.NewNewsService(newsRepo)
+
+	h := handler.NewScraperHandler(
+		leagueService,
+		seasonService,
+		fixtureService,
+		homeService,
+		awayService,
+		teamService,
+		liveScoreService,
+		predictionService,
+		newsService,
+	)
+
+	h.Fixtures()
+	h.News()
 }

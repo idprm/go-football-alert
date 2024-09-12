@@ -12,6 +12,132 @@ import (
 	"gorm.io/gorm"
 )
 
+var publisherRenewalCmd = &cobra.Command{
+	Use:   "pub_renewal",
+	Short: "Renewal CLI",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		/**
+		 * connect mysql
+		 */
+		db, err := connectDb()
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * connect rabbitmq
+		 */
+		rmq, err := connectRabbitMq()
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * SETUP CHANNEL
+		 */
+		rmq.SetUpChannel(
+			RMQ_EXCHANGE_TYPE,
+			true,
+			RMQ_RENEWAL_EXCHANGE,
+			true,
+			RMQ_RENEWAL_QUEUE,
+		)
+
+		/**
+		 * Looping schedule
+		 */
+		timeDuration := time.Duration(1)
+
+		for {
+			timeNow := time.Now().Format("15:04")
+
+			scheduleRepo := repository.NewScheduleRepository(db)
+			scheduleService := services.NewScheduleService(scheduleRepo)
+
+			if scheduleService.IsUnlocked(ACT_RENEWAL, timeNow) {
+
+				scheduleService.Update(
+					&entity.Schedule{
+						Name:       ACT_RENEWAL,
+						IsUnlocked: false,
+					},
+				)
+
+				go func() {
+					populateRenewal(db, rmq)
+				}()
+			}
+
+			time.Sleep(timeDuration * time.Minute)
+
+		}
+	},
+}
+
+var publisherRetryCmd = &cobra.Command{
+	Use:   "pub_retry",
+	Short: "Retry CLI",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		/**
+		 * connect mysql
+		 */
+		db, err := connectDb()
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * connect rabbitmq
+		 */
+		rmq, err := connectRabbitMq()
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * SETUP CHANNEL
+		 */
+		rmq.SetUpChannel(
+			RMQ_EXCHANGE_TYPE,
+			true,
+			RMQ_RETRY_EXCHANGE,
+			true,
+			RMQ_RETRY_QUEUE,
+		)
+
+		/**
+		 * Looping schedule
+		 */
+		timeDuration := time.Duration(1)
+
+		for {
+			timeNow := time.Now().Format("15:04")
+
+			scheduleRepo := repository.NewScheduleRepository(db)
+			scheduleService := services.NewScheduleService(scheduleRepo)
+
+			if scheduleService.IsUnlocked(ACT_RETRY, timeNow) {
+
+				scheduleService.Update(
+					&entity.Schedule{
+						Name:       ACT_RETRY,
+						IsUnlocked: false,
+					},
+				)
+
+				go func() {
+					populateRetry(db, rmq)
+				}()
+			}
+
+			time.Sleep(timeDuration * time.Minute)
+
+		}
+	},
+}
+
 var publisherPredictionCmd = &cobra.Command{
 	Use:   "pub_prediction",
 	Short: "Publisher Prediction CLI",
@@ -177,63 +303,6 @@ var publisherScrapingCmd = &cobra.Command{
 	},
 }
 
-var publisherRenewalCmd = &cobra.Command{
-	Use:   "pub_renewal",
-	Short: "Renewal CLI",
-	Long:  ``,
-	Run: func(cmd *cobra.Command, args []string) {
-		/**
-		 * connect mysql
-		 */
-		db, err := connectDb()
-		if err != nil {
-			panic(err)
-		}
-
-		/**
-		 * connect rabbitmq
-		 */
-		rmq, err := connectRabbitMq()
-		if err != nil {
-			panic(err)
-		}
-
-		/**
-		 * SETUP CHANNEL
-		 */
-		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_RENEWAL_EXCHANGE, true, RMQ_RENEWAL_QUEUE)
-
-		/**
-		 * Looping schedule
-		 */
-		timeDuration := time.Duration(1)
-
-		for {
-			timeNow := time.Now().Format("15:04")
-
-			scheduleRepo := repository.NewScheduleRepository(db)
-			scheduleService := services.NewScheduleService(scheduleRepo)
-
-			if scheduleService.IsUnlocked(ACT_RENEWAL, timeNow) {
-
-				scheduleService.Update(
-					&entity.Schedule{
-						Name:       ACT_RENEWAL,
-						IsUnlocked: false,
-					},
-				)
-
-				go func() {
-					populateRenewal(db, rmq)
-				}()
-			}
-
-			time.Sleep(timeDuration * time.Minute)
-
-		}
-	},
-}
-
 var publisherNewsCmd = &cobra.Command{
 	Use:   "pub_news",
 	Short: "Publisher News CLI",
@@ -312,6 +381,32 @@ func populateRenewal(db *gorm.DB, rmq rmqp.AMQP) {
 		json, _ := json.Marshal(sub)
 
 		rmq.IntegratePublish(RMQ_RENEWAL_EXCHANGE, RMQ_RENEWAL_QUEUE, RMQ_DATA_TYPE, "", string(json))
+
+		time.Sleep(100 * time.Microsecond)
+	}
+}
+
+func populateRetry(db *gorm.DB, rmq rmqp.AMQP) {
+	subscriptionRepo := repository.NewSubscriptionRepository(db)
+	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+
+	subs := subscriptionService.Renewal()
+
+	for _, s := range *subs {
+		var sub entity.Subscription
+
+		sub.ID = s.ID
+		sub.ServiceID = s.ServiceID
+		sub.Msisdn = s.Msisdn
+		sub.Channel = s.Channel
+		sub.LatestKeyword = s.LatestKeyword
+		sub.LatestSubject = s.LatestSubject
+		sub.IpAddress = s.IpAddress
+		sub.CreatedAt = s.CreatedAt
+
+		json, _ := json.Marshal(sub)
+
+		rmq.IntegratePublish(RMQ_RETRY_EXCHANGE, RMQ_RETRY_QUEUE, RMQ_DATA_TYPE, "", string(json))
 
 		time.Sleep(100 * time.Microsecond)
 	}

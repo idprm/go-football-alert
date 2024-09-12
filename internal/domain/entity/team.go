@@ -4,6 +4,7 @@ type Team struct {
 	ID   int64  `gorm:"primaryKey" json:"id"`
 	Name string `json:"name"`
 	Slug string `json:"slug"`
+	Code string `json:"code"`
 	Logo string `json:"logo"`
 }
 
@@ -17,6 +18,10 @@ func (e *Team) GetName() string {
 
 func (e *Team) GetSlug() string {
 	return e.Slug
+}
+
+func (e *Team) GetCode() string {
+	return e.Code
 }
 
 func (e *Team) GetLogo() string {
