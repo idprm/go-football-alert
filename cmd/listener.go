@@ -55,6 +55,7 @@ var listenerCmd = &cobra.Command{
 
 		// TODO: Add migrations
 		db.AutoMigrate(
+			&entity.Menu{},
 			&entity.Ussd{},
 			&entity.League{},
 			&entity.Season{},
@@ -102,6 +103,9 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	app.Static(PATH_STATIC, path+"/public")
 
 	app.Use(cors.New())
+
+	menuRepo := repository.NewMenuRepository(db)
+	menuService := services.NewMenuService(menuRepo)
 
 	leagueRepo := repository.NewLeagueRepository(db)
 	leagueService := services.NewLeagueService(leagueRepo)
@@ -154,6 +158,7 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	h := handler.NewIncomingHandler(
 		rmq,
 		logger,
+		menuService,
 		leagueService,
 		seasonService,
 		teamService,
@@ -175,7 +180,7 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	teamHandler := handler.NewTeamHandler(teamService)
 	fixtureHandler := handler.NewFixtureHandler(fixtureService)
 	predictionHandler := handler.NewPredictionHandler(predictionService)
-	ussdHandler := handler.NewUssdHandler(ussdService)
+	ussdHandler := handler.NewUssdHandler(menuService, ussdService)
 	newsHandler := handler.NewNewsHandler(newsService)
 
 	app.Post("/mo", h.MessageOriginated)

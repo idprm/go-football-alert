@@ -60,6 +60,7 @@ var (
 type IncomingHandler struct {
 	rmq                 rmqp.AMQP
 	logger              *logger.Logger
+	menuService         services.IMenuService
 	leagueService       services.ILeagueService
 	seasonService       services.ISeasonService
 	teamService         services.ITeamService
@@ -80,6 +81,7 @@ type IncomingHandler struct {
 func NewIncomingHandler(
 	rmq rmqp.AMQP,
 	logger *logger.Logger,
+	menuService services.IMenuService,
 	leagueService services.ILeagueService,
 	seasonService services.ISeasonService,
 	teamService services.ITeamService,
@@ -99,6 +101,7 @@ func NewIncomingHandler(
 	return &IncomingHandler{
 		rmq:                 rmq,
 		logger:              logger,
+		menuService:         menuService,
 		leagueService:       leagueService,
 		seasonService:       seasonService,
 		teamService:         teamService,

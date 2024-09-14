@@ -16,9 +16,19 @@ func NewUssdRepository(db *gorm.DB) *UssdRepository {
 }
 
 type IUssdRepository interface {
+	GetAll() ([]*entity.Ussd, error)
 	Save(*entity.Ussd) (*entity.Ussd, error)
 	Update(*entity.Ussd) (*entity.Ussd, error)
 	Delete(*entity.Ussd) error
+}
+
+func (r *UssdRepository) GetAll() ([]*entity.Ussd, error) {
+	var ussds []*entity.Ussd
+	err := r.db.Where("is_active = ?", true).Order("parent, child ASC").Find(&ussds).Error
+	if err != nil {
+		return nil, err
+	}
+	return ussds, nil
 }
 
 func (r *UssdRepository) Save(e *entity.Ussd) (*entity.Ussd, error) {

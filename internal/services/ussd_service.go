@@ -10,6 +10,7 @@ type UssdService struct {
 }
 
 type IUssdService interface {
+	GetAll() ([]*entity.Ussd, error)
 	Save(*entity.Ussd) (*entity.Ussd, error)
 	Update(*entity.Ussd) (*entity.Ussd, error)
 	Delete(*entity.Ussd) error
@@ -21,6 +22,10 @@ func NewUssdService(
 	return &UssdService{
 		ussdRepo: ussdRepo,
 	}
+}
+
+func (s *UssdService) GetAll() ([]*entity.Ussd, error) {
+	return s.ussdRepo.GetAll()
 }
 
 func (s *UssdService) Save(e *entity.Ussd) (*entity.Ussd, error) {

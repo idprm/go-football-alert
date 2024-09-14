@@ -1,5 +1,9 @@
 package model
 
+type UssdResponse struct {
+	Name string
+}
+
 type WebResponse struct {
 	Error       bool   `json:"error,omitempty"`
 	StatusCode  int    `json:"status_code,omitempty"`
