@@ -2,9 +2,12 @@ package handler
 
 import (
 	"encoding/json"
+	"strconv"
+	"strings"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"github.com/idprm/go-football-alert/internal/domain/entity"
 	"github.com/idprm/go-football-alert/internal/domain/model"
 	"github.com/idprm/go-football-alert/internal/logger"
 	"github.com/idprm/go-football-alert/internal/services"
@@ -61,6 +64,7 @@ type IncomingHandler struct {
 	rmq                 rmqp.AMQP
 	logger              *logger.Logger
 	menuService         services.IMenuService
+	ussdService         services.IUssdService
 	leagueService       services.ILeagueService
 	seasonService       services.ISeasonService
 	teamService         services.ITeamService
@@ -82,6 +86,7 @@ func NewIncomingHandler(
 	rmq rmqp.AMQP,
 	logger *logger.Logger,
 	menuService services.IMenuService,
+	ussdService services.IUssdService,
 	leagueService services.ILeagueService,
 	seasonService services.ISeasonService,
 	teamService services.ITeamService,
@@ -102,6 +107,7 @@ func NewIncomingHandler(
 		rmq:                 rmq,
 		logger:              logger,
 		menuService:         menuService,
+		ussdService:         ussdService,
 		leagueService:       leagueService,
 		seasonService:       seasonService,
 		teamService:         teamService,
@@ -148,6 +154,260 @@ func (h *IncomingHandler) Sub(c *fiber.Ctx) error {
 
 func (h *IncomingHandler) UnSub(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
+}
+
+func (h *IncomingHandler) Callback(c *fiber.Ctx) error {
+	req := new(model.UssdRequest)
+
+	err := c.BodyParser(req)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusBadRequest,
+				Message:    err.Error(),
+			},
+		)
+	}
+
+	if req.IsMain() {
+		main, err := h.menuService.GetAll()
+		if err != nil {
+			return c.Status(fiber.StatusBadGateway).JSON(
+				&model.WebResponse{
+					Error:      true,
+					StatusCode: fiber.StatusBadGateway,
+					Message:    err.Error(),
+				},
+			)
+		}
+
+		var mainData []string
+		for i, s := range main {
+			idx := strconv.Itoa(i + 1)
+			row := idx + ". " + s.Name
+			mainData = append(mainData, row)
+		}
+
+		justString := strings.Join(mainData, "\n")
+		return c.Status(fiber.StatusOK).SendString(justString)
+
+	} else {
+		if !h.menuService.IsKeyPress(req.GetText()) {
+			return c.Status(fiber.StatusNotFound).JSON(
+				&model.WebResponse{
+					Error:      true,
+					StatusCode: fiber.StatusNotFound,
+					Message:    "menu_not_found",
+				},
+			)
+		}
+		menu, err := h.menuService.GetMenuByKeyPress(req.GetText())
+		if err != nil {
+			return c.Status(fiber.StatusBadGateway).JSON(
+				&model.WebResponse{
+					Error:      true,
+					StatusCode: fiber.StatusBadGateway,
+					Message:    err.Error(),
+				},
+			)
+		}
+
+		submenus, err := h.menuService.GetMenuByParentId(menu.GetId())
+		if err != nil {
+			return c.Status(fiber.StatusBadGateway).JSON(
+				&model.WebResponse{
+					Error:      true,
+					StatusCode: fiber.StatusBadGateway,
+					Message:    err.Error(),
+				},
+			)
+		}
+
+		prevs := []entity.Menu{
+			{ID: 0, Name: "Préc", KeyPress: "0"},
+			{ID: 98, Name: "Accueil", KeyPress: "98"},
+		}
+
+		var subData []string
+		subData = append(subData, menu.GetName())
+		for i, s := range submenus {
+			idx := strconv.Itoa(i + 1)
+			row := idx + ". " + s.Name
+			subData = append(subData, row)
+		}
+		if req.IsLevel() {
+			var row string
+			/**
+			 **	for loop data
+			 **/
+			if req.IsLiveMatch() {
+				row = h.LiveMatch()
+			}
+
+			if req.IsSchedule() {
+				row = h.Schedule()
+			}
+
+			if req.IsLineup() {
+				row = h.Lineup()
+			}
+
+			if req.IsMatchStats() {
+				row = h.MatchStats()
+			}
+
+			if req.IsDisplayLiveMatch() {
+
+			}
+
+			if req.IsFlashNews() {
+
+			}
+
+			if req.IsCreditGoal() {
+
+			}
+
+			if req.IsChampResults() {
+
+			}
+
+			if req.IsChampStandings() {
+
+			}
+
+			if req.IsChampTeam() {
+
+			}
+
+			if req.IsChampCreditScore() {
+
+			}
+
+			if req.IsChampCreditGoal() {
+
+			}
+
+			if req.IsChampSMSAlerte() {
+
+			}
+
+			if req.IsChampSMSAlerteEquipe() {
+
+			}
+
+			if req.IsPrediction() {
+
+			}
+
+			if req.IsKitFoot() {
+
+			}
+
+			if req.IsEurope() {
+
+			}
+
+			if req.IsAfrique() {
+
+			}
+
+			if req.IsSMSAlerteEquipe() {
+
+			}
+
+			if req.IsFootInternational() {
+
+			}
+
+			if req.IsAlerteChampMaliEquipe() {
+
+			}
+
+			if req.IsAlertePremierLeagueEquipe() {
+
+			}
+
+			if req.IsAlertePremierLeagueEquipe() {
+
+			}
+
+			if req.IsAlerteLaLigaEquipe() {
+
+			}
+
+			if req.IsAlerteLigue1Equipe() {
+
+			}
+
+			if req.IsAlerteSerieAEquipe() {
+
+			}
+
+			if req.IsAlerteBundesligueEquipe() {
+
+			}
+
+			if req.IsChampionLeague() {
+
+			}
+
+			if req.IsPremierLeague() {
+
+			}
+
+			if req.IsLaLiga() {
+
+			}
+
+			if req.IsLigue1() {
+
+			}
+
+			if req.IsSerieA() {
+
+			}
+
+			if req.IsBundesligua() {
+
+			}
+
+			if req.IsChampPortugal() {
+
+			}
+
+			if req.IsSaudiLeague() {
+
+			}
+
+			row = "0. Suiv"
+			subData = append(subData, row)
+		} else {
+			for _, p := range prevs {
+				row := p.KeyPress + ". " + p.Name
+				subData = append(subData, row)
+			}
+		}
+		justString := strings.Join(subData, "\n")
+		return c.Status(fiber.StatusOK).SendString(justString)
+	}
+}
+
+func (h *IncomingHandler) LiveMatch() string {
+	return "No Live Match"
+}
+
+func (h *IncomingHandler) Schedule() string {
+	return "No Schedule"
+}
+
+func (h *IncomingHandler) Lineup() string {
+	return "No Lineup"
+}
+
+func (h *IncomingHandler) MatchStats() string {
+	return "No Match Stats"
 }
 
 func (h *IncomingHandler) MessageOriginated(c *fiber.Ctx) error {

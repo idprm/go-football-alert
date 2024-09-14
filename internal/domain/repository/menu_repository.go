@@ -16,7 +16,8 @@ func NewMenuRepository(db *gorm.DB) *MenuRepository {
 }
 
 type IMenuRepository interface {
-	Count(string) (int64, error)
+	CountByKeyPress(string) (int64, error)
+	CountByAction(string) (int64, error)
 	GetAll() ([]*entity.Menu, error)
 	GetMenuByKeyPress(string) (*entity.Menu, error)
 	GetMenuByParentId(int) ([]*entity.Menu, error)
@@ -25,9 +26,18 @@ type IMenuRepository interface {
 	Delete(*entity.Menu) error
 }
 
-func (r *MenuRepository) Count(keyPress string) (int64, error) {
+func (r *MenuRepository) CountByKeyPress(keyPress string) (int64, error) {
 	var count int64
 	err := r.db.Model(&entity.Menu{}).Where("key_press = ?", keyPress).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *MenuRepository) CountByAction(keyPress string) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Menu{}).Where("key_press = ?", keyPress).Where("action != ?", "").Count(&count).Error
 	if err != nil {
 		return count, err
 	}

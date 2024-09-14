@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/wiliehidayat87/rmqp"
 	"gorm.io/gorm"
+	loggerDb "gorm.io/gorm/logger"
 )
 
 var publisherRenewalCmd = &cobra.Command{
@@ -262,6 +263,9 @@ var publisherScrapingCmd = &cobra.Command{
 		if err != nil {
 			panic(err)
 		}
+
+		// DEBUG ON CONSOLE
+		db.Logger = loggerDb.Default.LogMode(loggerDb.Info)
 
 		/**
 		 * Looping schedule

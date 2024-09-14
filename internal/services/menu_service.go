@@ -11,6 +11,7 @@ type MenuService struct {
 
 type IMenuService interface {
 	IsKeyPress(string) bool
+	IsAction(string) bool
 	GetAll() ([]*entity.Menu, error)
 	GetMenuByKeyPress(string) (*entity.Menu, error)
 	GetMenuByParentId(int) ([]*entity.Menu, error)
@@ -28,7 +29,12 @@ func NewMenuService(
 }
 
 func (s *MenuService) IsKeyPress(keyPress string) bool {
-	count, _ := s.menuRepo.Count(keyPress)
+	count, _ := s.menuRepo.CountByKeyPress(keyPress)
+	return count > 0
+}
+
+func (s *MenuService) IsAction(keyPress string) bool {
+	count, _ := s.menuRepo.CountByAction(keyPress)
 	return count > 0
 }
 

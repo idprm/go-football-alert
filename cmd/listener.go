@@ -159,6 +159,7 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 		rmq,
 		logger,
 		menuService,
+		ussdService,
 		leagueService,
 		seasonService,
 		teamService,
@@ -180,7 +181,6 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	teamHandler := handler.NewTeamHandler(teamService)
 	fixtureHandler := handler.NewFixtureHandler(fixtureService)
 	predictionHandler := handler.NewPredictionHandler(predictionService)
-	ussdHandler := handler.NewUssdHandler(menuService, ussdService)
 	newsHandler := handler.NewNewsHandler(newsService)
 
 	app.Post("/mo", h.MessageOriginated)
@@ -222,7 +222,7 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 
 	// callback
 	ussd := v1.Group("ussd")
-	ussd.Post("callback", ussdHandler.Callback)
+	ussd.Post("callback", h.Callback)
 	// ussd.Post("event", ussdHandler.Event)
 
 	// landing page
