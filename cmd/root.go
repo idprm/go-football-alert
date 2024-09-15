@@ -37,6 +37,8 @@ var (
 const (
 	RMQ_EXCHANGE_TYPE       string = "direct"
 	RMQ_DATA_TYPE           string = "application/json"
+	RMQ_USSD_EXCHANGE       string = "E_USSD"
+	RMQ_USSD_QUEUE          string = "Q_USSD"
 	RMQ_MO_EXCHANGE         string = "E_MO"
 	RMQ_MO_QUEUE            string = "Q_MO"
 	RMQ_RENEWAL_EXCHANGE    string = "E_RENEWAL"
@@ -89,6 +91,7 @@ func init() {
 	/**
 	 * Consumer service
 	 */
+	rootCmd.AddCommand(consumerUSSDCmd)
 	rootCmd.AddCommand(consumerMOCmd)
 	rootCmd.AddCommand(consumerRenewalCmd)
 	rootCmd.AddCommand(consumerRetryCmd)

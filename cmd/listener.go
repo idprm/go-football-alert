@@ -84,6 +84,7 @@ var listenerCmd = &cobra.Command{
 		/**
 		 * Setup channel
 		 */
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_USSD_EXCHANGE, true, RMQ_USSD_QUEUE)
 		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_MO_EXCHANGE, true, RMQ_MO_QUEUE)
 
 		r := routeUrlListener(db, rds, rmq, logger)

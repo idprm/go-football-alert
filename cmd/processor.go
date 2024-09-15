@@ -37,6 +37,47 @@ func NewProcessor(
 	}
 }
 
+func (p *Processor) USSD(wg *sync.WaitGroup, message []byte) {
+
+	menuRepo := repository.NewMenuRepository(p.db)
+	menuService := services.NewMenuService(menuRepo)
+	ussdRepo := repository.NewUssdRepository(p.db)
+	ussdService := services.NewUssdService(ussdRepo)
+	serviceRepo := repository.NewServiceRepository(p.db)
+	serviceService := services.NewServiceService(serviceRepo)
+	contentRepo := repository.NewContentRepository(p.db)
+	contentService := services.NewContentService(contentRepo)
+	subscriptionRepo := repository.NewSubscriptionRepository(p.db)
+	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+	transactionRepo := repository.NewTransactionRepository(p.db)
+	transactionService := services.NewTransactionService(transactionRepo)
+	historyRepo := repository.NewHistoryRepository(p.db)
+	historyService := services.NewHistoryService(historyRepo)
+	summaryRepo := repository.NewSummaryRepository(p.db)
+	summaryService := services.NewSummaryService(summaryRepo)
+
+	var req *model.UssdRequest
+	json.Unmarshal([]byte(message), &req)
+
+	h := handler.NewUssdHandler(
+		p.rmq,
+		p.logger,
+		menuService,
+		ussdService,
+		serviceService,
+		contentService,
+		subscriptionService,
+		transactionService,
+		historyService,
+		summaryService,
+		req,
+	)
+
+	h.USSD()
+
+	wg.Done()
+}
+
 func (p *Processor) MO(wg *sync.WaitGroup, message []byte) {
 	/**
 	 * -. Filter REG / UNREG

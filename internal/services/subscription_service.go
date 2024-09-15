@@ -27,7 +27,10 @@ type ISubscriptionService interface {
 	Save(*entity.Subscription) (*entity.Subscription, error)
 	Update(*entity.Subscription) (*entity.Subscription, error)
 	Delete(*entity.Subscription) error
+	Prediction() *[]entity.Subscription
+	News() *[]entity.Subscription
 	Renewal() *[]entity.Subscription
+	Retry() *[]entity.Subscription
 }
 
 func (s *SubscriptionService) IsSubscription(serviceId int, msisdn string) bool {
@@ -60,7 +63,31 @@ func (s *SubscriptionService) Delete(a *entity.Subscription) error {
 	return s.subscriptionRepo.Delete(a)
 }
 
+func (s *SubscriptionService) Prediction() *[]entity.Subscription {
+	subs, err := s.subscriptionRepo.Renewal()
+	if err != nil {
+		log.Println(err)
+	}
+	return subs
+}
+
+func (s *SubscriptionService) News() *[]entity.Subscription {
+	subs, err := s.subscriptionRepo.Renewal()
+	if err != nil {
+		log.Println(err)
+	}
+	return subs
+}
+
 func (s *SubscriptionService) Renewal() *[]entity.Subscription {
+	subs, err := s.subscriptionRepo.Renewal()
+	if err != nil {
+		log.Println(err)
+	}
+	return subs
+}
+
+func (s *SubscriptionService) Retry() *[]entity.Subscription {
 	subs, err := s.subscriptionRepo.Renewal()
 	if err != nil {
 		log.Println(err)

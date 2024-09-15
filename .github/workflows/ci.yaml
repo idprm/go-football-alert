@@ -14,6 +14,8 @@ jobs:
         include:
           - dockerfile: ./Dockerfile.listener
             image: idprm/fb-alert-listener-service
+          - dockerfile: ./Dockerfile.ussd
+            image: idprm/fb-alert-ussd-service
           - dockerfile: ./Dockerfile.mo
             image: idprm/fb-alert-mo-service
           - dockerfile: ./Dockerfile.renewal

@@ -36,6 +36,8 @@ var (
 
 var (
 	RMQ_DATA_TYPE       string = "application/json"
+	RMQ_USSD_EXCHANGE   string = "E_USSD"
+	RMQ_USSD_QUEUE      string = "Q_USSD"
 	RMQ_MO_EXCHANGE     string = "E_MO"
 	RMQ_MO_QUEUE        string = "Q_MO"
 	MT_FIRSTPUSH        string = "FIRSTPUSH"

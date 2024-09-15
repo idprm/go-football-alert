@@ -8,7 +8,17 @@ const (
 )
 
 type UssdRequest struct {
-	Text string `validate:"required" form:"text"`
+	ServiceCode string `validate:"required" form:"serviceCode" json:"service_code"`
+	PhoneNumber string `validate:"required" form:"phoneNumber" json:"phone_number"`
+	Text        string `validate:"required" form:"text" json:"text"`
+}
+
+func (m *UssdRequest) GetServiceCode() string {
+	return m.ServiceCode
+}
+
+func (m *UssdRequest) GetMsisdn() string {
+	return m.PhoneNumber
 }
 
 func (m *UssdRequest) GetText() string {
