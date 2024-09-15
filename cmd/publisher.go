@@ -6,6 +6,7 @@ import (
 
 	"github.com/idprm/go-football-alert/internal/domain/entity"
 	"github.com/idprm/go-football-alert/internal/domain/repository"
+	"github.com/idprm/go-football-alert/internal/handler"
 	"github.com/idprm/go-football-alert/internal/services"
 	"github.com/spf13/cobra"
 	"github.com/wiliehidayat87/rmqp"
@@ -288,7 +289,7 @@ var publisherScrapingCmd = &cobra.Command{
 				)
 
 				go func() {
-					scraping(db)
+					scrapingFixturesAndNews(db)
 				}()
 			}
 
@@ -394,7 +395,7 @@ func populateRetry(db *gorm.DB, rmq rmqp.AMQP) {
 	subscriptionRepo := repository.NewSubscriptionRepository(db)
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
 
-	subs := subscriptionService.Renewal()
+	subs := subscriptionService.Retry()
 
 	for _, s := range *subs {
 		var sub entity.Subscription
@@ -420,7 +421,7 @@ func populatePrediction(db *gorm.DB, rmq rmqp.AMQP) {
 	subscriptionRepo := repository.NewSubscriptionRepository(db)
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
 
-	subs := subscriptionService.Renewal()
+	subs := subscriptionService.Prediction()
 
 	for _, s := range *subs {
 		var sub entity.Subscription
@@ -472,7 +473,7 @@ func populateNews(db *gorm.DB, rmq rmqp.AMQP) {
 	subscriptionRepo := repository.NewSubscriptionRepository(db)
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
 
-	subs := subscriptionService.Renewal()
+	subs := subscriptionService.News()
 
 	for _, s := range *subs {
 		var sub entity.Subscription
@@ -494,6 +495,39 @@ func populateNews(db *gorm.DB, rmq rmqp.AMQP) {
 	}
 }
 
-func scraping(db *gorm.DB) {
+func scrapingFixturesAndNews(db *gorm.DB) {
 
+	leagueRepo := repository.NewLeagueRepository(db)
+	leagueService := services.NewLeagueService(leagueRepo)
+	seasonRepo := repository.NewSeasonRepository(db)
+	seasonService := services.NewSeasonService(seasonRepo)
+	fixtureRepo := repository.NewFixtureRepository(db)
+	fixtureService := services.NewFixtureService(fixtureRepo)
+	homeRepo := repository.NewHomeRepository(db)
+	homeService := services.NewHomeService(homeRepo)
+	awayRepo := repository.NewAwayRepository(db)
+	awayService := services.NewAwayService(awayRepo)
+	teamRepo := repository.NewTeamRepository(db)
+	teamService := services.NewTeamService(teamRepo)
+	liveScoreRepo := repository.NewLiveScoreRepository(db)
+	liveScoreService := services.NewLiveScoreService(liveScoreRepo)
+	predictionRepo := repository.NewPredictionRepository(db)
+	predictionService := services.NewPredictionService(predictionRepo)
+	newsRepo := repository.NewNewsRepository(db)
+	newsService := services.NewNewsService(newsRepo)
+
+	h := handler.NewScraperHandler(
+		leagueService,
+		seasonService,
+		fixtureService,
+		homeService,
+		awayService,
+		teamService,
+		liveScoreService,
+		predictionService,
+		newsService,
+	)
+
+	h.Fixtures()
+	h.News()
 }

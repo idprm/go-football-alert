@@ -29,3 +29,12 @@ func (e *News) GetDescription() string {
 func (e *News) GetPublishAt() time.Time {
 	return e.PublishAt
 }
+
+type NewsSubsciption struct {
+	ID             int64         `gorm:"primaryKey" json:"id"`
+	SubscriptionID int64         `json:"subscription_id"`
+	Subscription   *Subscription `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"subscription,omitempty"`
+	TeamID         int64         `json:"team_id"`
+	Team           *Team         `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"team,omitempty"`
+	CreatedAt      time.Time     `json:"created_at"`
+}

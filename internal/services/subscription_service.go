@@ -27,8 +27,9 @@ type ISubscriptionService interface {
 	Save(*entity.Subscription) (*entity.Subscription, error)
 	Update(*entity.Subscription) (*entity.Subscription, error)
 	Delete(*entity.Subscription) error
-	Prediction() *[]entity.Subscription
 	News() *[]entity.Subscription
+	Prediction() *[]entity.Subscription
+	CreditGoal() *[]entity.Subscription
 	Renewal() *[]entity.Subscription
 	Retry() *[]entity.Subscription
 }
@@ -63,16 +64,24 @@ func (s *SubscriptionService) Delete(a *entity.Subscription) error {
 	return s.subscriptionRepo.Delete(a)
 }
 
-func (s *SubscriptionService) Prediction() *[]entity.Subscription {
-	subs, err := s.subscriptionRepo.Renewal()
+func (s *SubscriptionService) News() *[]entity.Subscription {
+	subs, err := s.subscriptionRepo.News()
 	if err != nil {
 		log.Println(err)
 	}
 	return subs
 }
 
-func (s *SubscriptionService) News() *[]entity.Subscription {
-	subs, err := s.subscriptionRepo.Renewal()
+func (s *SubscriptionService) Prediction() *[]entity.Subscription {
+	subs, err := s.subscriptionRepo.Prediction()
+	if err != nil {
+		log.Println(err)
+	}
+	return subs
+}
+
+func (s *SubscriptionService) CreditGoal() *[]entity.Subscription {
+	subs, err := s.subscriptionRepo.CreditGoal()
 	if err != nil {
 		log.Println(err)
 	}

@@ -24,6 +24,8 @@ type Subscription struct {
 	ChargeAt             time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"charge_at,omitempty"`
 	RetryAt              time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"retry_at,omitempty"`
 	TrialAt              time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"trial_at,omitempty"`
+	NewsAt               time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"news_at,omitempty"`
+	PredictionAt         time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"prediction_at,omitempty"`
 	FirstSuccessAt       time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"first_success_at,omitempty"`
 	TotalSuccess         int       `gorm:"default:0" json:"total_success,omitempty"`
 	TotalFailed          int       `gorm:"default:0" json:"total_failed,omitempty"`
