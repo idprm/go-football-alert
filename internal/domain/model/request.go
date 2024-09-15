@@ -25,6 +25,10 @@ func (m *UssdRequest) GetText() string {
 	return m.Text
 }
 
+func (m *UssdRequest) GetTextSubMenu() bool {
+	return strings.HasPrefix(m.GetText(), "1*1*")
+}
+
 func (m *UssdRequest) IsMain() bool {
 	return m.Text == "" || m.Text == "98" || m.Text == "99"
 }
@@ -38,147 +42,147 @@ func (m *UssdRequest) IsLevel() bool {
 }
 
 func (m *UssdRequest) IsLiveMatch() bool {
-	return m.GetText() == "1*1"
+	return strings.HasPrefix(m.GetText(), "1*1*")
 }
 
 func (m *UssdRequest) IsSchedule() bool {
-	return m.GetText() == "1*2"
+	return strings.HasPrefix(m.GetText(), "1*2*")
 }
 
 func (m *UssdRequest) IsLineup() bool {
-	return m.GetText() == "1*3"
+	return strings.HasPrefix(m.GetText(), "1*3*")
 }
 
 func (m *UssdRequest) IsMatchStats() bool {
-	return m.GetText() == "1*4"
+	return strings.HasPrefix(m.GetText(), "1*4*")
 }
 
 func (m *UssdRequest) IsDisplayLiveMatch() bool {
-	return m.GetText() == "1*5"
+	return strings.HasPrefix(m.GetText(), "1*5*")
 }
 
 func (m *UssdRequest) IsFlashNews() bool {
-	return m.GetText() == "2"
+	return strings.HasPrefix(m.GetText(), "2*")
 }
 
 func (m *UssdRequest) IsCreditGoal() bool {
-	return m.GetText() == "3"
+	return strings.HasPrefix(m.GetText(), "3*")
 }
 
 func (m *UssdRequest) IsChampResults() bool {
-	return m.GetText() == "4*1"
+	return strings.HasPrefix(m.GetText(), "4*1*")
 }
 
 func (m *UssdRequest) IsChampStandings() bool {
-	return m.GetText() == "4*2"
+	return strings.HasPrefix(m.GetText(), "4*2*")
 }
 
 func (m *UssdRequest) IsChampSchedule() bool {
-	return m.GetText() == "4*3"
+	return strings.HasPrefix(m.GetText(), "4*3")
 }
 
 func (m *UssdRequest) IsChampTeam() bool {
-	return m.GetText() == "4*4"
+	return strings.HasPrefix(m.GetText(), "4*4*")
 }
 
 func (m *UssdRequest) IsChampCreditScore() bool {
-	return m.GetText() == "4*5"
+	return strings.HasPrefix(m.GetText(), "4*5*")
 }
 
 func (m *UssdRequest) IsChampCreditGoal() bool {
-	return m.GetText() == "4*6"
+	return strings.HasPrefix(m.GetText(), "4*6*")
 }
 
 func (m *UssdRequest) IsChampSMSAlerte() bool {
-	return m.GetText() == "4*7"
+	return strings.HasPrefix(m.GetText(), "4*7*")
 }
 
 func (m *UssdRequest) IsChampSMSAlerteEquipe() bool {
-	return m.GetText() == "4*8"
+	return strings.HasPrefix(m.GetText(), "4*8*")
 }
 
 func (m *UssdRequest) IsPrediction() bool {
-	return m.GetText() == "5"
+	return strings.HasPrefix(m.GetText(), "5*")
 }
 
 func (m *UssdRequest) IsKitFoot() bool {
-	return m.GetText() == "6*1"
+	return strings.HasPrefix(m.GetText(), "6*1*")
 }
 
 func (m *UssdRequest) IsEurope() bool {
-	return m.GetText() == "6*2"
+	return strings.HasPrefix(m.GetText(), "6*2*")
 }
 
 func (m *UssdRequest) IsAfrique() bool {
-	return m.GetText() == "6*3"
+	return strings.HasPrefix(m.GetText(), "6*3*")
 }
 
 func (m *UssdRequest) IsSMSAlerteEquipe() bool {
-	return m.GetText() == "6*4"
+	return strings.HasPrefix(m.GetText(), "6*4*")
 }
 
 func (m *UssdRequest) IsFootInternational() bool {
-	return m.GetText() == "6*5"
+	return strings.HasPrefix(m.GetText(), "6*5*")
 }
 
 func (m *UssdRequest) IsAlerteChampMaliEquipe() bool {
-	return m.GetText() == "7*1"
+	return strings.HasPrefix(m.GetText(), "7*1*")
 }
 
 func (m *UssdRequest) IsAlertePremierLeagueEquipe() bool {
-	return m.GetText() == "7*2"
+	return strings.HasPrefix(m.GetText(), "7*2*")
 }
 
 func (m *UssdRequest) IsAlerteLaLigaEquipe() bool {
-	return m.GetText() == "7*3"
+	return strings.HasPrefix(m.GetText(), "7*3*")
 }
 
 func (m *UssdRequest) IsAlerteLigue1Equipe() bool {
-	return m.GetText() == "7*4"
+	return strings.HasPrefix(m.GetText(), "7*4*")
 }
 
 func (m *UssdRequest) IsAlerteSerieAEquipe() bool {
-	return m.GetText() == "7*5"
+	return strings.HasPrefix(m.GetText(), "7*5*")
 }
 
 func (m *UssdRequest) IsAlerteBundesligueEquipe() bool {
-	return m.GetText() == "7*6"
+	return strings.HasPrefix(m.GetText(), "7*6*")
 }
 
 func (m *UssdRequest) IsChampionLeague() bool {
-	return m.GetText() == "8*1"
+	return strings.HasPrefix(m.GetText(), "8*1*")
 }
 
 func (m *UssdRequest) IsPremierLeague() bool {
-	return m.GetText() == "8*2"
+	return strings.HasPrefix(m.GetText(), "8*2*")
 }
 
 func (m *UssdRequest) IsLaLiga() bool {
-	return m.GetText() == "8*3"
+	return strings.HasPrefix(m.GetText(), "8*3*")
 }
 
 func (m *UssdRequest) IsLigue1() bool {
-	return m.GetText() == "8*4"
+	return strings.HasPrefix(m.GetText(), "8*4*")
 }
 
 func (m *UssdRequest) IsLEuropa() bool {
-	return m.GetText() == "8*5"
+	return strings.HasPrefix(m.GetText(), "8*5*")
 }
 
 func (m *UssdRequest) IsSerieA() bool {
-	return m.GetText() == "8*6"
+	return strings.HasPrefix(m.GetText(), "8*6*")
 }
 
 func (m *UssdRequest) IsBundesligua() bool {
-	return m.GetText() == "8*7"
+	return strings.HasPrefix(m.GetText(), "8*7*")
 }
 
 func (m *UssdRequest) IsChampPortugal() bool {
-	return m.GetText() == "8*8"
+	return strings.HasPrefix(m.GetText(), "8*8*")
 }
 
 func (m *UssdRequest) IsSaudiLeague() bool {
-	return m.GetText() == "8*9"
+	return strings.HasPrefix(m.GetText(), "8*9*")
 }
 
 type MORequest struct {

@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -57,17 +58,31 @@ func (h *IncomingHandler) Callback(c *fiber.Ctx) error {
 
 		justString := strings.Join(mainData, "\n")
 		return c.Status(fiber.StatusOK).SendString(justString)
-
 	} else {
-
 		if !h.menuService.IsKeyPress(req.GetText()) {
-			return c.Status(fiber.StatusNotFound).JSON(
-				&model.WebResponse{
-					Error:      true,
-					StatusCode: fiber.StatusNotFound,
-					Message:    "menu_not_found",
-				},
-			)
+			// if nested
+			var subData []string
+			if req.IsLiveMatch() {
+				prevs := &[]entity.Menu{
+					{ID: 0, Name: "Yes Yes", KeyPress: "0"},
+					{ID: 98, Name: "Accueil", KeyPress: "98"},
+				}
+				for _, p := range *prevs {
+					row := p.KeyPress + ". " + p.Name
+					subData = append(subData, row)
+				}
+			} else {
+				prevs := &[]entity.Menu{
+					{ID: 0, Name: "Préc", KeyPress: "0"},
+					{ID: 98, Name: "Accueil", KeyPress: "98"},
+				}
+				for _, p := range *prevs {
+					row := p.KeyPress + ". " + p.Name
+					subData = append(subData, row)
+				}
+			}
+			justString := strings.Join(subData, "\n")
+			return c.Status(fiber.StatusOK).SendString(justString)
 		}
 		menu, err := h.menuService.GetMenuByKeyPress(req.GetText())
 		if err != nil {
@@ -134,16 +149,104 @@ func (h *IncomingHandler) Callback(c *fiber.Ctx) error {
 
 func (h *IncomingHandler) convertToArrayString(req *model.UssdRequest, subData []string) []string {
 	var menus []*entity.Menu
-
 	switch req.GetText() {
 	case "1*1":
 		menus = h.LiveMatch()
 	case "1*2":
 		menus = h.Schedule()
+	case "1*3":
+		menus = h.Lineup()
+	case "1*4":
+		menus = h.MatchStats()
+	case "1*5":
+		menus = h.DisplayLiveMatch()
+	case "2":
+		menus = h.FlashNews()
+	case "3":
+		menus = h.CreditGoal()
+	case "4*1":
+		menus = h.ChampResults()
+	case "4*2":
+		menus = h.ChampStandings()
+	case "4*3":
+		menus = h.ChampSchedule()
+	case "4*4":
+		menus = h.ChampTeam()
+	case "4*5":
+		menus = h.ChampCreditScore()
+	case "4*6":
+		menus = h.ChampCreditGoal()
+	case "4*7":
+		menus = h.ChampSMSAlerte()
+	case "4*8":
+		menus = h.ChampSMSAlerteEquipe()
+	case "5":
+		menus = h.Prediction()
+	case "6*1":
+		menus = h.KitFoot()
+	case "6*2":
+		menus = h.Europe()
+	case "6*3":
+		menus = h.Afrique()
+	case "6*4":
+		menus = h.SMSAlerteEquipe()
+	case "6*5":
+		menus = h.FootInternational()
+	case "7*1":
+		menus = h.AlerteChampMaliEquipe()
+	case "7*2":
+		menus = h.AlertePremierLeagueEquipe()
+	case "7*3":
+		menus = h.AlerteLaLigaEquipe()
+	case "7*4":
+		menus = h.AlerteLigue1Equipe()
+	case "7*5":
+		menus = h.AlerteSerieAEquipe()
+	case "7*6":
+		menus = h.AlerteBundesligueEquipe()
+	case "8*1":
+		menus = h.ChampionLeague()
+	case "8*2":
+		menus = h.PremierLeague()
+	case "8*3":
+		menus = h.LaLiga()
+	case "8*4":
+		menus = h.Ligue1()
+	case "8*5":
+		menus = h.LEuropa()
+	case "8*6":
+		menus = h.SerieA()
+	case "8*7":
+		menus = h.Bundesligua()
+	case "8*8":
+		menus = h.ChampPortugal()
+	case "8*9":
+		menus = h.SaudiLeague()
 	default:
-		menus = []*entity.Menu{}
+		menus = []*entity.Menu{{Name: "Not found"}}
 	}
 
+	for i, s := range menus {
+		idx := strconv.Itoa(i + 1)
+		var row string
+		if strings.Contains(s.Name, "No") {
+			row = s.Name
+		} else {
+			row = idx + ". " + s.Name
+		}
+		subData = append(subData, row)
+	}
+	return subData
+}
+
+func (h *IncomingHandler) ChooseMenu(req *model.UssdRequest) {
+
+	switch req.GetText() {
+	case "1*1":
+		fmt.Println("XXX")
+	case "1*2":
+
+	}
 	// if req.IsLineup() {
 	// 	menus =  h.Lineup()
 	// }
@@ -275,18 +378,6 @@ func (h *IncomingHandler) convertToArrayString(req *model.UssdRequest, subData [
 	// if req.IsSaudiLeague() {
 	// 	menus =  h.SaudiLeague()
 	// }
-
-	for i, s := range menus {
-		idx := strconv.Itoa(i + 1)
-		var row string
-		if strings.Contains(s.Name, "No") {
-			row = s.Name
-		} else {
-			row = idx + ". " + s.Name
-		}
-		subData = append(subData, row)
-	}
-	return subData
 }
 
 func (h *IncomingHandler) LiveMatch() []*entity.Menu {
