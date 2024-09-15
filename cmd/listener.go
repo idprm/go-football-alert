@@ -224,7 +224,7 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	// callback
 	ussd := v1.Group("ussd")
 	ussd.Post("callback", h.Callback)
-	// ussd.Post("event", ussdHandler.Event)
+	// ussd.Post("event", h.Event)
 
 	// landing page
 	p := v1.Group("p")

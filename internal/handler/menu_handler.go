@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"strconv"
 	"strings"
 
@@ -29,6 +28,7 @@ func (h *IncomingHandler) Callback(c *fiber.Ctx) error {
 	}
 
 	if req.IsMain() {
+		// menu level 1
 		main, err := h.menuService.GetAll()
 		if err != nil {
 			return c.Status(fiber.StatusBadGateway).JSON(
@@ -41,46 +41,70 @@ func (h *IncomingHandler) Callback(c *fiber.Ctx) error {
 		}
 
 		var mainData []string
+		mainData = append(mainData, "Orange Football Club, votre choix:")
 		for i, s := range main {
 			idx := strconv.Itoa(i + 1)
 			row := idx + ". " + s.Name
 			mainData = append(mainData, row)
 		}
+		mainData = append(mainData, "0. Suiv")
 
 		l.WithFields(logrus.Fields{"request": req}).Info("USSD")
-		dataJson, _ := json.Marshal(req)
+
+		jsonData, _ := json.Marshal(req)
+
 		h.rmq.IntegratePublish(
 			RMQ_USSD_EXCHANGE,
 			RMQ_USSD_QUEUE,
 			RMQ_DATA_TYPE,
-			"", string(dataJson),
+			"", string(jsonData),
 		)
 
 		justString := strings.Join(mainData, "\n")
 		return c.Status(fiber.StatusOK).SendString(justString)
 	} else {
+		// if keyPress not found in database
 		if !h.menuService.IsKeyPress(req.GetText()) {
-			// if nested
 			var subData []string
-			if req.IsLiveMatch() {
-				prevs := &[]entity.Menu{
-					{ID: 0, Name: "Yes Yes", KeyPress: "0"},
-					{ID: 98, Name: "Accueil", KeyPress: "98"},
-				}
-				for _, p := range *prevs {
-					row := p.KeyPress + ". " + p.Name
-					subData = append(subData, row)
+			// is valid pressKey
+			if req.IsFilterLevel3() {
+				// menu level 3
+				if req.IsLiveMatch() {
+					prevs := &[]entity.Menu{
+						{ID: 0, Name: "Yes Yes", KeyPress: "0"},
+						{ID: 98, Name: "Accueil", KeyPress: "98"},
+					}
+					for _, p := range *prevs {
+						row := p.KeyPress + ". " + p.Name
+						subData = append(subData, row)
+					}
+				} else {
+					prevs := &[]entity.Menu{
+						{ID: 0, Name: "Préc", KeyPress: "0"},
+						{ID: 98, Name: "Accueil", KeyPress: "98"},
+					}
+					for _, p := range *prevs {
+						row := p.KeyPress + ". " + p.Name
+						subData = append(subData, row)
+					}
 				}
 			} else {
-				prevs := &[]entity.Menu{
-					{ID: 0, Name: "Préc", KeyPress: "0"},
+				// menu not found
+				notFound := &[]entity.Menu{
+					{ID: 0, Name: "Menu not found", KeyPress: "0"},
 					{ID: 98, Name: "Accueil", KeyPress: "98"},
 				}
-				for _, p := range *prevs {
-					row := p.KeyPress + ". " + p.Name
+				for _, p := range *notFound {
+					var row string
+					if strings.Contains(p.KeyPress, "0") {
+						row = p.Name
+					} else {
+						row = p.KeyPress + ". " + p.Name
+					}
 					subData = append(subData, row)
 				}
 			}
+
 			justString := strings.Join(subData, "\n")
 			return c.Status(fiber.StatusOK).SendString(justString)
 		}
@@ -114,15 +138,9 @@ func (h *IncomingHandler) Callback(c *fiber.Ctx) error {
 			subData = append(subData, row)
 		}
 		if req.IsLevel() {
-			/**
-			 **	for loop data
-			 **/
-
-			// row := "0. Suiv"
-			// subData = append(subData, row)
+			// menu level 2
 			subData = h.convertToArrayString(req, subData)
-			// log.Println(subData)
-			// subData = append(subData, row)
+			subData = append(subData, "0. Suiv")
 		} else {
 			prevs := &[]entity.Menu{
 				{ID: 0, Name: "Préc", KeyPress: "0"},
@@ -223,7 +241,7 @@ func (h *IncomingHandler) convertToArrayString(req *model.UssdRequest, subData [
 	case "8*9":
 		menus = h.SaudiLeague()
 	default:
-		menus = []*entity.Menu{{Name: "Not found"}}
+		menus = []*entity.Menu{{ID: 0, Name: "Menu not found", KeyPress: "0"}}
 	}
 
 	for i, s := range menus {
@@ -240,13 +258,6 @@ func (h *IncomingHandler) convertToArrayString(req *model.UssdRequest, subData [
 }
 
 func (h *IncomingHandler) ChooseMenu(req *model.UssdRequest) {
-
-	switch req.GetText() {
-	case "1*1":
-		fmt.Println("XXX")
-	case "1*2":
-
-	}
 	// if req.IsLineup() {
 	// 	menus =  h.Lineup()
 	// }

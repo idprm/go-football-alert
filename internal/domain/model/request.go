@@ -1,6 +1,8 @@
 package model
 
-import "strings"
+import (
+	"strings"
+)
 
 const (
 	MO_REG   string = "REG"
@@ -11,6 +13,7 @@ type UssdRequest struct {
 	ServiceCode string `validate:"required" form:"serviceCode" json:"service_code"`
 	PhoneNumber string `validate:"required" form:"phoneNumber" json:"phone_number"`
 	Text        string `validate:"required" form:"text" json:"text"`
+	Action      string `json:"action,omitempty"`
 }
 
 func (m *UssdRequest) GetServiceCode() string {
@@ -25,8 +28,42 @@ func (m *UssdRequest) GetText() string {
 	return m.Text
 }
 
-func (m *UssdRequest) GetTextSubMenu() bool {
-	return strings.HasPrefix(m.GetText(), "1*1*")
+func (m *UssdRequest) IsFilterLevel2() bool {
+	filter := []string{
+		"0", "1*1*", "1*2*", "1*3*", "1*4*",
+		"1*5*", "2*", "3*", "4*1*", "4*2*",
+		"4*3*", "4*4*", "4*5*", "4*6*", "4*7*",
+		"4*8*", "5*", "6*1*", "6*2*", "6*3*",
+		"6*4*", "6*5*", "7*1*", "7*2*", "7*3*",
+		"7*4*", "7*5*", "7*6*", "8*1*", "8*2*",
+		"8*3*", "8*4*", "8*5*", "8*6*", "8*7*",
+		"8*8*", "8*9*",
+	}
+	for _, s := range filter {
+		if strings.HasPrefix(m.GetText(), s) {
+			return true
+		}
+	}
+	return false
+}
+
+func (m *UssdRequest) IsFilterLevel3() bool {
+	filter := []string{
+		"0", "1*1*", "1*2*", "1*3*", "1*4*",
+		"1*5*", "2*", "3*", "4*1*", "4*2*",
+		"4*3*", "4*4*", "4*5*", "4*6*", "4*7*",
+		"4*8*", "5*", "6*1*", "6*2*", "6*3*",
+		"6*4*", "6*5*", "7*1*", "7*2*", "7*3*",
+		"7*4*", "7*5*", "7*6*", "8*1*", "8*2*",
+		"8*3*", "8*4*", "8*5*", "8*6*", "8*7*",
+		"8*8*", "8*9*",
+	}
+	for _, s := range filter {
+		if strings.HasPrefix(m.GetText(), s) {
+			return true
+		}
+	}
+	return false
 }
 
 func (m *UssdRequest) IsMain() bool {
@@ -78,7 +115,7 @@ func (m *UssdRequest) IsChampStandings() bool {
 }
 
 func (m *UssdRequest) IsChampSchedule() bool {
-	return strings.HasPrefix(m.GetText(), "4*3")
+	return strings.HasPrefix(m.GetText(), "4*3*")
 }
 
 func (m *UssdRequest) IsChampTeam() bool {
