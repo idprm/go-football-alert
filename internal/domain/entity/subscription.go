@@ -35,6 +35,8 @@ type Subscription struct {
 	TotalAmountFirstpush float64   `gorm:"default:0" json:"total_amount_firstpush,omitempty"`
 	TotalAmountRenewal   float64   `gorm:"default:0" json:"total_amount_renewal,omitempty"`
 	IpAddress            string    `gorm:"size:25" json:"ip_address,omitempty"`
+	IsPrediction         bool      `gorm:"type:boolean;column:is_prediction" json:"is_prediction,omitempty"`
+	IsNews               bool      `gorm:"type:boolean;column:is_news" json:"is_news,omitempty"`
 	IsRetry              bool      `gorm:"type:boolean;column:is_retry" json:"is_retry,omitempty"`
 	IsTrial              bool      `gorm:"type:boolean;column:is_trial" json:"is_trial,omitempty"`
 	IsActive             bool      `gorm:"type:boolean;column:is_active" json:"is_active,omitempty"`
@@ -86,12 +88,20 @@ func (s *Subscription) SetLatestPayload(payload string) {
 	s.LatestPayload = payload
 }
 
-func (s *Subscription) SetIsRetry(retry bool) {
-	s.IsRetry = retry
+func (s *Subscription) SetIsPrediction(v bool) {
+	s.IsPrediction = v
 }
 
-func (s *Subscription) SetIsActive(active bool) {
-	s.IsActive = active
+func (s *Subscription) SetIsNews(v bool) {
+	s.IsNews = v
+}
+
+func (s *Subscription) SetIsRetry(v bool) {
+	s.IsRetry = v
+}
+
+func (s *Subscription) SetIsActive(v bool) {
+	s.IsActive = v
 }
 
 func (s *Subscription) SetRenewalAt(renewalAt time.Time) {

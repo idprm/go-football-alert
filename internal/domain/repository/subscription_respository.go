@@ -24,6 +24,9 @@ type ISubscriptionRepository interface {
 	Update(*entity.Subscription) (*entity.Subscription, error)
 	Delete(*entity.Subscription) error
 	Renewal() (*[]entity.Subscription, error)
+	Retry() (*[]entity.Subscription, error)
+	Prediction() (*[]entity.Subscription, error)
+	News() (*[]entity.Subscription, error)
 }
 
 func (r *SubscriptionRepository) Count(serviceId int, msisdn string) (int64, error) {
@@ -88,6 +91,35 @@ func (r *SubscriptionRepository) Delete(c *entity.Subscription) error {
 }
 
 func (r *SubscriptionRepository) Renewal() (*[]entity.Subscription, error) {
+	var sub []entity.Subscription
+	err := r.db.Where("is_active = ?", true).Find(&sub).Error
+	if err != nil {
+		return nil, err
+	}
+	return &sub, nil
+}
+
+func (r *SubscriptionRepository) Retry() (*[]entity.Subscription, error) {
+	var sub []entity.Subscription
+	err := r.db.Where("is_active = ?", true).Find(&sub).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &sub, nil
+}
+
+func (r *SubscriptionRepository) Prediction() (*[]entity.Subscription, error) {
+	var sub []entity.Subscription
+	err := r.db.Where("is_active = ?", true).Find(&sub).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &sub, nil
+}
+
+func (r *SubscriptionRepository) News() (*[]entity.Subscription, error) {
 	var sub []entity.Subscription
 	err := r.db.Where("is_active = ?", true).Find(&sub).Error
 	if err != nil {

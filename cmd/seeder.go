@@ -59,12 +59,12 @@ func seederDB(db *gorm.DB) {
 		{
 			ServiceID: 1,
 			Name:      ACT_FIRSTPUSH,
-			Value:     "Test Firstpush",
+			Value:     "Bravo! Vous venez de souscrire au pack SMS alert qui vs permet de suivre votre equipe favorite Joueur! Jusqu au {date} vous recevrez toutes les infos. {price}{currency}/souscription",
 		},
 		{
 			ServiceID: 1,
 			Name:      ACT_RENEWAL,
-			Value:     "Test Renewal",
+			Value:     "Votre souscription au service SMS-Alerte City est activee jusqe au {date}. Prix: {price}{currency}. Orange vous remercie",
 		},
 		{
 			ServiceID: 1,

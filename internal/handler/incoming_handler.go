@@ -57,6 +57,8 @@ var (
 	SUBJECT_CREDIT_GOAL string = "CREDIT_GOAL"
 	SUBJECT_NEWS        string = "NEWS"
 	SUBJECT_UNSUB       string = "UNSUB"
+	ACT_PREDICTION      string = "PREDICTION"
+	ACT_NEWS            string = "NEWS"
 )
 
 type IncomingHandler struct {

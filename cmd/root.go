@@ -62,6 +62,7 @@ const (
 	ACT_RENEWAL             string = "RENEWAL"
 	ACT_RETRY               string = "RETRY"
 	ACT_PREDICTION          string = "PREDICTION"
+	ACT_SUB_SMS_ALERT              = "SUB_SMS_ALERT"
 	ACT_SUB                 string = "SUB"
 	ACT_UNSUB               string = "UNSUB"
 	ACT_CREDIT_GOAL         string = "CREDIT_GOAL"
