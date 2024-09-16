@@ -2,16 +2,22 @@ package repository
 
 import (
 	"github.com/idprm/go-football-alert/internal/domain/entity"
+	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 )
 
 type MenuRepository struct {
-	db *gorm.DB
+	db  *gorm.DB
+	rds *redis.Client
 }
 
-func NewMenuRepository(db *gorm.DB) *MenuRepository {
+func NewMenuRepository(
+	db *gorm.DB,
+	rds *redis.Client,
+) *MenuRepository {
 	return &MenuRepository{
-		db: db,
+		db:  db,
+		rds: rds,
 	}
 }
 

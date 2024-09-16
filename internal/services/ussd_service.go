@@ -14,6 +14,8 @@ type IUssdService interface {
 	Save(*entity.Ussd) (*entity.Ussd, error)
 	Update(*entity.Ussd) (*entity.Ussd, error)
 	Delete(*entity.Ussd) error
+	Set(*entity.Ussd) error
+	Get(string) (*entity.Ussd, error)
 }
 
 func NewUssdService(
@@ -38,4 +40,12 @@ func (s *UssdService) Update(e *entity.Ussd) (*entity.Ussd, error) {
 
 func (s *UssdService) Delete(e *entity.Ussd) error {
 	return s.ussdRepo.Delete(e)
+}
+
+func (s *UssdService) Set(e *entity.Ussd) error {
+	return s.ussdRepo.Set(e)
+}
+
+func (s *UssdService) Get(msisdn string) (*entity.Ussd, error) {
+	return s.ussdRepo.Get(msisdn)
 }

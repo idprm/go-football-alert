@@ -2,8 +2,10 @@ package handler
 
 import (
 	"encoding/json"
+	"log"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/idprm/go-football-alert/internal/domain/entity"
@@ -11,11 +13,21 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+const (
+	ACT_MENU    string = "MENU"
+	ACT_NO_MENU string = "NO_MENU"
+	ACT_CONFIRM string = "CONFIRM"
+	ACT_REG     string = "REG"
+)
+
+var (
+	USSD_TITLE    string = "Orange Football Club, votre choix:"
+	USSD_MENU_404 string = "Menu not found"
+)
+
 func (h *IncomingHandler) Callback(c *fiber.Ctx) error {
 	l := h.logger.Init("ussd", true)
-
 	req := new(model.UssdRequest)
-
 	err := c.BodyParser(req)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
@@ -27,142 +39,186 @@ func (h *IncomingHandler) Callback(c *fiber.Ctx) error {
 		)
 	}
 
-	if req.IsMain() {
-		// menu level 1
-		main, err := h.menuService.GetAll()
+	// valid service
+	if h.IsService(req.GetServiceCode()) {
+		// get cache
+		cache, err := h.ussdService.Get(req.GetMsisdn())
 		if err != nil {
-			return c.Status(fiber.StatusBadGateway).JSON(
-				&model.WebResponse{
-					Error:      true,
-					StatusCode: fiber.StatusBadGateway,
-					Message:    err.Error(),
+			log.Println(err.Error())
+		}
+
+		// get service
+		service, err := h.serviceService.Get(req.GetServiceCode())
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		// main menu
+		if req.IsMain() {
+
+			// init array string
+			var mainData []string
+
+			// menu level 1
+			main, err := h.menuService.GetAll()
+			if err != nil {
+				mainData = append(mainData, err.Error())
+			}
+
+			// title ussd
+			mainData = append(mainData, USSD_TITLE)
+			// loop main menu
+			for i, s := range main {
+				idx := strconv.Itoa(i + 1)
+				row := idx + ". " + s.Name
+				mainData = append(mainData, row)
+			}
+			mainData = append(mainData, "0. Suiv")
+
+			l.WithFields(logrus.Fields{"request": req}).Info("USSD")
+
+			jsonData, _ := json.Marshal(req)
+			h.rmq.IntegratePublish(
+				RMQ_USSD_EXCHANGE,
+				RMQ_USSD_QUEUE,
+				RMQ_DATA_TYPE,
+				"", string(jsonData),
+			)
+			justString := strings.Join(mainData, "\n")
+			// set cache
+			h.ussdService.Set(
+				&entity.Ussd{
+					Msisdn:    req.GetMsisdn(),
+					KeyPress:  req.GetText(),
+					Action:    ACT_MENU,
+					Result:    justString,
+					CreatedAt: time.Now(),
 				},
 			)
-		}
+			return c.Status(fiber.StatusOK).SendString(justString)
+		} else {
+			// init cache
+			ca := &entity.Ussd{
+				Msisdn:    req.GetMsisdn(),
+				KeyPress:  req.GetText(),
+				CreatedAt: time.Now(),
+			}
 
-		var mainData []string
-		mainData = append(mainData, "Orange Football Club, votre choix:")
-		for i, s := range main {
-			idx := strconv.Itoa(i + 1)
-			row := idx + ". " + s.Name
-			mainData = append(mainData, row)
-		}
-		mainData = append(mainData, "0. Suiv")
+			// if keyPress not found in database
+			if !h.menuService.IsKeyPress(req.GetText()) {
+				var subData []string
 
-		l.WithFields(logrus.Fields{"request": req}).Info("USSD")
+				// is valid pressKey level 3
+				if req.IsFilterLevel3() {
 
-		jsonData, _ := json.Marshal(req)
-
-		h.rmq.IntegratePublish(
-			RMQ_USSD_EXCHANGE,
-			RMQ_USSD_QUEUE,
-			RMQ_DATA_TYPE,
-			"", string(jsonData),
-		)
-
-		justString := strings.Join(mainData, "\n")
-		return c.Status(fiber.StatusOK).SendString(justString)
-	} else {
-		// if keyPress not found in database
-		if !h.menuService.IsKeyPress(req.GetText()) {
-			var subData []string
-			// is valid pressKey
-			if req.IsFilterLevel3() {
-				// menu level 3
-				if req.IsLiveMatch() {
-					prevs := &[]entity.Menu{
-						{ID: 0, Name: "Yes Yes", KeyPress: "0"},
-						{ID: 98, Name: "Accueil", KeyPress: "98"},
-					}
-					for _, p := range *prevs {
-						row := p.KeyPress + ". " + p.Name
-						subData = append(subData, row)
+					// menu level 3
+					if req.IsLiveMatch() {
+						prevs := &[]entity.Menu{
+							{ID: 0, Name: "Yes Yes", KeyPress: "0"},
+							{ID: 98, Name: "Accueil", KeyPress: "98"},
+						}
+						ca.SetAction(ACT_MENU)
+						for _, p := range *prevs {
+							row := p.KeyPress + ". " + p.Name
+							subData = append(subData, row)
+						}
+					} else {
+						prevs := &[]entity.Menu{
+							{ID: 0, Name: "Préc", KeyPress: "0"},
+							{ID: 98, Name: "Accueil", KeyPress: "98"},
+						}
+						ca.SetAction(ACT_MENU)
+						for _, p := range *prevs {
+							row := p.KeyPress + ". " + p.Name
+							subData = append(subData, row)
+						}
 					}
 				} else {
-					prevs := &[]entity.Menu{
-						{ID: 0, Name: "Préc", KeyPress: "0"},
+					// menu not found
+					notFound := &[]entity.Menu{
+						{ID: 0, Name: USSD_MENU_404, KeyPress: "0"},
 						{ID: 98, Name: "Accueil", KeyPress: "98"},
 					}
-					for _, p := range *prevs {
-						row := p.KeyPress + ". " + p.Name
+					ca.SetAction(ACT_NO_MENU)
+					for _, p := range *notFound {
+						var row string
+						if strings.Contains(p.KeyPress, "0") {
+							row = p.Name
+						} else {
+							row = p.KeyPress + ". " + p.Name
+						}
 						subData = append(subData, row)
 					}
 				}
-			} else {
-				// menu not found
-				notFound := &[]entity.Menu{
-					{ID: 0, Name: "Menu not found", KeyPress: "0"},
-					{ID: 98, Name: "Accueil", KeyPress: "98"},
-				}
-				for _, p := range *notFound {
-					var row string
-					if strings.Contains(p.KeyPress, "0") {
-						row = p.Name
-					} else {
-						row = p.KeyPress + ". " + p.Name
-					}
-					subData = append(subData, row)
-				}
+
+				justString := strings.Join(subData, "\n")
+				// set cache
+				ca.SetResult(justString)
+				h.ussdService.Set(ca)
+				return c.Status(fiber.StatusOK).SendString(justString)
 			}
 
+			// init array string
+			var subData []string
+
+			if cache != nil {
+
+				if h.menuService.IsKeyPress(cache.GetKeyPress()) {
+					menu, err := h.menuService.GetMenuByKeyPress(cache.GetKeyPress())
+					if err != nil {
+						subData = append(subData, err.Error())
+					}
+
+					submenus, err := h.menuService.GetMenuByParentId(menu.GetId())
+					if err != nil {
+						subData = append(subData, err.Error())
+					}
+
+					// is valid pressKey level 1
+					if req.IsFilterLevel1() {
+						if !h.IsActiveSub(req) {
+							subData = h.confirmSub(service, subData)
+							ca.SetAction(ACT_CONFIRM)
+						}
+					} else {
+						ca.SetAction(ACT_MENU)
+						subData = append(subData, menu.GetName())
+						for i, s := range submenus {
+							idx := strconv.Itoa(i + 1)
+							row := idx + ". " + s.Name
+							subData = append(subData, row)
+						}
+					}
+				}
+
+			}
+
+			if req.IsLevel() {
+				subData = h.convertToArrayString(req, subData)
+				subData = append(subData, "0. Suiv")
+				ca.SetAction(ACT_MENU)
+			}
+
+			l.WithFields(logrus.Fields{"request": req}).Info("USSD")
+			jsonData, _ := json.Marshal(req)
+			h.rmq.IntegratePublish(
+				RMQ_USSD_EXCHANGE,
+				RMQ_USSD_QUEUE,
+				RMQ_DATA_TYPE,
+				"", string(jsonData),
+			)
 			justString := strings.Join(subData, "\n")
+			// set cache
+			ca.SetResult(justString)
+			h.ussdService.Set(ca)
 			return c.Status(fiber.StatusOK).SendString(justString)
 		}
-		menu, err := h.menuService.GetMenuByKeyPress(req.GetText())
-		if err != nil {
-			return c.Status(fiber.StatusBadGateway).JSON(
-				&model.WebResponse{
-					Error:      true,
-					StatusCode: fiber.StatusBadGateway,
-					Message:    err.Error(),
-				},
-			)
-		}
-
-		submenus, err := h.menuService.GetMenuByParentId(menu.GetId())
-		if err != nil {
-			return c.Status(fiber.StatusBadGateway).JSON(
-				&model.WebResponse{
-					Error:      true,
-					StatusCode: fiber.StatusBadGateway,
-					Message:    err.Error(),
-				},
-			)
-		}
-
-		var subData []string
-		subData = append(subData, menu.GetName())
-		for i, s := range submenus {
-			idx := strconv.Itoa(i + 1)
-			row := idx + ". " + s.Name
-			subData = append(subData, row)
-		}
-		if req.IsLevel() {
-			// menu level 2
-			subData = h.convertToArrayString(req, subData)
-			subData = append(subData, "0. Suiv")
-		} else {
-			prevs := &[]entity.Menu{
-				{ID: 0, Name: "Préc", KeyPress: "0"},
-				{ID: 98, Name: "Accueil", KeyPress: "98"},
-			}
-			for _, p := range *prevs {
-				row := p.KeyPress + ". " + p.Name
-				subData = append(subData, row)
-			}
-		}
-
-		l.WithFields(logrus.Fields{"request": req}).Info("USSD")
-		jsonData, _ := json.Marshal(req)
-		h.rmq.IntegratePublish(
-			RMQ_USSD_EXCHANGE,
-			RMQ_USSD_QUEUE,
-			RMQ_DATA_TYPE,
-			"", string(jsonData),
-		)
-		justString := strings.Join(subData, "\n")
-		return c.Status(fiber.StatusOK).SendString(justString)
 	}
+
+	var noServiceData []string
+	noServiceData = append(noServiceData, "No service")
+	justString := strings.Join(noServiceData, "\n")
+	return c.Status(fiber.StatusOK).SendString(justString)
 }
 
 func (h *IncomingHandler) convertToArrayString(req *model.UssdRequest, subData []string) []string {
@@ -241,7 +297,7 @@ func (h *IncomingHandler) convertToArrayString(req *model.UssdRequest, subData [
 	case "8*9":
 		menus = h.SaudiLeague()
 	default:
-		menus = []*entity.Menu{{ID: 0, Name: "Menu not found", KeyPress: "0"}}
+		menus = []*entity.Menu{{ID: 0, Name: USSD_MENU_404, KeyPress: "0"}}
 	}
 
 	for i, s := range menus {
@@ -255,6 +311,41 @@ func (h *IncomingHandler) convertToArrayString(req *model.UssdRequest, subData [
 		subData = append(subData, row)
 	}
 	return subData
+}
+
+func (h *IncomingHandler) confirmSub(service *entity.Service, subData []string) []string {
+	price := strconv.FormatFloat(service.GetPrice(), 'f', 0, 64)
+	menus := []*entity.Menu{
+		{ID: 0, Name: "You are about to subscribe to the " + service.GetPackage() + " offer " + price, KeyPress: "0"},
+		{ID: 1, Name: "Yes", KeyPress: "1"},
+		{ID: 2, Name: "No", KeyPress: "2"},
+	}
+	for _, s := range menus {
+		var row string
+		if strings.Contains(s.KeyPress, "0") {
+			row = s.Name
+		} else {
+			row = s.KeyPress + ". " + s.Name
+		}
+		subData = append(subData, row)
+	}
+	return subData
+}
+
+func (h *IncomingHandler) IsActiveSub(req *model.UssdRequest) bool {
+	service, err := h.getService(req.GetServiceCode())
+	if err != nil {
+		log.Println(err)
+	}
+	return h.subscriptionService.IsActiveSubscription(service.GetId(), req.GetMsisdn())
+}
+
+func (h *IncomingHandler) IsService(code string) bool {
+	return h.serviceService.IsService(code)
+}
+
+func (h *IncomingHandler) getService(code string) (*entity.Service, error) {
+	return h.serviceService.Get(code)
 }
 
 func (h *IncomingHandler) ChooseMenu(req *model.UssdRequest) {

@@ -39,9 +39,9 @@ func NewProcessor(
 
 func (p *Processor) USSD(wg *sync.WaitGroup, message []byte) {
 
-	menuRepo := repository.NewMenuRepository(p.db)
+	menuRepo := repository.NewMenuRepository(p.db, p.rds)
 	menuService := services.NewMenuService(menuRepo)
-	ussdRepo := repository.NewUssdRepository(p.db)
+	ussdRepo := repository.NewUssdRepository(p.db, p.rds)
 	ussdService := services.NewUssdService(ussdRepo)
 	serviceRepo := repository.NewServiceRepository(p.db)
 	serviceService := services.NewServiceService(serviceRepo)
@@ -73,7 +73,9 @@ func (p *Processor) USSD(wg *sync.WaitGroup, message []byte) {
 		req,
 	)
 
-	h.USSD()
+	if req.Action == "REG" {
+		h.Reg()
+	}
 
 	wg.Done()
 }

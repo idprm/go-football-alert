@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"log"
-
 	"github.com/idprm/go-football-alert/internal/domain/model"
 	"github.com/idprm/go-football-alert/internal/logger"
 	"github.com/idprm/go-football-alert/internal/services"
@@ -51,6 +49,6 @@ func NewUssdHandler(
 	}
 }
 
-func (h *UssdHandler) USSD() {
-	log.Println(h.req)
+func (h *UssdHandler) Reg() {
+
 }

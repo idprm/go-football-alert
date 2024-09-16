@@ -105,7 +105,7 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 
 	app.Use(cors.New())
 
-	menuRepo := repository.NewMenuRepository(db)
+	menuRepo := repository.NewMenuRepository(db, rds)
 	menuService := services.NewMenuService(menuRepo)
 
 	leagueRepo := repository.NewLeagueRepository(db)
@@ -153,7 +153,7 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	rewardRepo := repository.NewRewardRepository(db)
 	rewardService := services.NewRewardService(rewardRepo)
 
-	ussdRepo := repository.NewUssdRepository(db)
+	ussdRepo := repository.NewUssdRepository(db, rds)
 	ussdService := services.NewUssdService(ussdRepo)
 
 	h := handler.NewIncomingHandler(

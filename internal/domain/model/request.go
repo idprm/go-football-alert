@@ -36,6 +36,22 @@ func (m *UssdRequest) SetAction(v string) {
 	m.Action = v
 }
 
+func (m *UssdRequest) IsREG() bool {
+	return m.Action == "REG"
+}
+
+func (m *UssdRequest) IsFilterLevel1() bool {
+	filter := []string{
+		"1", "2", "3", "4*", "5", "6", "7",
+	}
+	for _, s := range filter {
+		if strings.HasPrefix(m.GetText(), s) {
+			return true
+		}
+	}
+	return false
+}
+
 func (m *UssdRequest) IsFilterLevel3() bool {
 	filter := []string{
 		"0", "1*1*", "1*2*", "1*3*", "1*4*",

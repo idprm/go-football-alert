@@ -58,3 +58,58 @@ Note :
 _Is this true, and there is no subscription renewal session?_
 
 User Get SMS MT
+
+## USSD (#101#36#)
+
+### Main Menu
+
+1.  #101#36# : Main Menu
+
+### Level 1
+
+1.  #101#36#1 : Live Match (Confirm Message)
+2.  #101#36#2 : Flash News (Confirm Message)
+3.  #101#36#3 : Crédit Goal (Confirm Message)
+4.  #101#36#4 : Champ. Mali (Confirm Message)
+5.  #101#36#5 : Prédiction (Confirm Message)
+6.  #101#36#6 : SMS Alerte (Confirm Message)
+7.  #101#36#7 : Kit Foot (Confirm Message)
+8.  #101#36#8 : Foot Europe (Free Access)
+9.  #101#36#9 : Suiv
+
+### Level 2
+
+1.  #101#36#1#1 : Live Match
+2.  #101#36#1#2 : Schedule
+3.  #101#36#1#3 : Line Up
+4.  #101#36#1#4 : Match Stats
+5.  #101#36#1#5 : Display Live match
+6.  #101#36#1#6 : Flash News
+7.  #101#36#4#1 : Results
+8.  #101#36#4#2 : Standings
+9.  #101#36#4#3 : Schedule
+10. #101#36#4#4 : Team
+11. #101#36#4#5 : Crédit Score
+12. #101#36#4#6 : Crédit Goal
+13. #101#36#4#7 : SMS Alerte
+14. #101#36#4#8 : SMS Alerte Equipe
+15. #101#36#6#1 : Kit Foot
+16. #101#36#6#2 : Europe
+17. #101#36#6#3 : Afrique
+18. #101#36#6#4 : SMS Alerte Equipe
+19. #101#36#6#5 : Foot International
+20. #101#36#7#1 : Alerte Champ. Mali + Equipe
+21. #101#36#7#2 : Alerte Premier League + Equipe
+22. #101#36#7#3 : Alerte La Liga + Equipe
+23. #101#36#7#4 : Alerte Ligue 1 + Equipe
+24. #101#36#7#5 : Alerte Serie A + Equipe
+25. #101#36#7#6 : Alerte Bundesligue + Equipe
+26. #101#36#8#1 : Champion League
+27. #101#36#8#2 : Premier League
+28. #101#36#8#3 : La Liga
+29. #101#36#8#4 : Ligue 1
+30. #101#36#8#5 : L. Europa
+31. #101#36#8#6 : Serie A
+32. #101#36#8#7 : Bundesligua
+33. #101#36#8#8 : Champ Portugal
+34. #101#36#8#9 : Saudi League
