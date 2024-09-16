@@ -6,6 +6,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/template/html/v2"
 	"github.com/idprm/go-football-alert/internal/domain/entity"
 	"github.com/idprm/go-football-alert/internal/domain/repository"
 	"github.com/idprm/go-football-alert/internal/handler"
@@ -94,12 +95,19 @@ var listenerCmd = &cobra.Command{
 }
 
 func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *logger.Logger) *fiber.App {
-	app := fiber.New()
 
 	path, err := os.Getwd()
 	if err != nil {
 		panic(err)
 	}
+
+	engine := html.New(path+"/views", ".html")
+
+	app := fiber.New(
+		fiber.Config{
+			Views: engine,
+		},
+	)
 
 	app.Static(PATH_STATIC, path+"/public")
 
@@ -186,6 +194,9 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 
 	app.Post("/mo", h.MessageOriginated)
 
+	lp := app.Group("p")
+	lp.Get("/:service", h.LandingPage)
+
 	v1 := app.Group(API_VERSION)
 	leagues := v1.Group("leagues")
 	leagues.Get("/", leagueHandler.GetAllPaginate)
@@ -223,6 +234,7 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 
 	// callback
 	ussd := v1.Group("ussd")
+	ussd.Get("sample", h.USSDSample)
 	ussd.Post("callback", h.Callback)
 	// ussd.Post("event", h.Event)
 

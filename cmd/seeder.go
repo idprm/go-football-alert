@@ -221,7 +221,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:       6,
 			Name:     "Display Live match",
-			KeyPress: " #101#36#1#5",
+			KeyPress: "#101#36#1#5",
 			ParentID: 1,
 			Child:    5,
 			Action:   "",
@@ -230,7 +230,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:       7,
 			Name:     "Flash News",
-			KeyPress: "2",
+			KeyPress: "#101#36#2",
 			ParentID: 0,
 			Child:    0,
 			Action:   "",
@@ -239,7 +239,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:       8,
 			Name:     "Crédit Goal",
-			KeyPress: "3",
+			KeyPress: "#101#36#3",
 			ParentID: 0,
 			Child:    0,
 			Action:   "",
@@ -248,7 +248,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:       9,
 			Name:     "Champ. Mali",
-			KeyPress: "4",
+			KeyPress: "#101#36#4",
 			ParentID: 0,
 			Child:    0,
 			Action:   "",
@@ -257,7 +257,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:       10,
 			Name:     "Results",
-			KeyPress: "4*1",
+			KeyPress: "#101#36#4#1",
 			ParentID: 9,
 			Child:    1,
 			Action:   "",
@@ -266,7 +266,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:       11,
 			Name:     "Standings",
-			KeyPress: "4*2",
+			KeyPress: "#101#36#4#2",
 			ParentID: 9,
 			Child:    2,
 			Action:   "",
@@ -275,7 +275,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:       12,
 			Name:     "Schedule",
-			KeyPress: "4*3",
+			KeyPress: "#101#36#4#3",
 			ParentID: 9,
 			Child:    3,
 			Action:   "",
@@ -284,7 +284,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:       13,
 			Name:     "Team",
-			KeyPress: "4*4",
+			KeyPress: "#101#36#4#4",
 			ParentID: 9,
 			Child:    4,
 			Action:   "",
@@ -293,7 +293,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:       14,
 			Name:     "Crédit Score",
-			KeyPress: "4*5",
+			KeyPress: "#101#36#4#5",
 			ParentID: 9,
 			Child:    5,
 			Action:   "",
@@ -302,7 +302,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:       15,
 			Name:     "Crédit Goal",
-			KeyPress: "4*6",
+			KeyPress: "#101#36#4#6",
 			ParentID: 9,
 			Child:    6,
 			Action:   "",
@@ -311,7 +311,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:       16,
 			Name:     "SMS Alerte",
-			KeyPress: "4*7",
+			KeyPress: "#101#36#4#7",
 			ParentID: 9,
 			Child:    7,
 			Action:   "",
@@ -320,7 +320,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:       17,
 			Name:     "SMS Alerte Equipe",
-			KeyPress: "4*8",
+			KeyPress: "#101#36#4#8",
 			ParentID: 9,
 			Child:    8,
 			Action:   "",
@@ -347,7 +347,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:       20,
 			Name:     "Kit Foot",
-			KeyPress: "6*1",
+			KeyPress: "#101#36#6#1",
 			ParentID: 19,
 			Child:    1,
 			Action:   "",
@@ -356,7 +356,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:       21,
 			Name:     "Europe",
-			KeyPress: "6*2",
+			KeyPress: "#101#36#6#2",
 			ParentID: 19,
 			Child:    2,
 			Action:   "foot-europe",
@@ -365,7 +365,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:       22,
 			Name:     "Afrique",
-			KeyPress: "6*3",
+			KeyPress: "#101#36#6#3",
 			ParentID: 19,
 			Child:    3,
 			Action:   "foot-afrique",
@@ -374,7 +374,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:       23,
 			Name:     "SMS Alerte Equipe",
-			KeyPress: "6*4",
+			KeyPress: "#101#36#6#4",
 			ParentID: 19,
 			Child:    4,
 			Action:   "",
@@ -383,7 +383,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:       24,
 			Name:     "Foot International",
-			KeyPress: "6*5",
+			KeyPress: "#101#36#6#5",
 			ParentID: 19,
 			Child:    5,
 			Action:   "foot-international",
@@ -401,7 +401,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:       26,
 			Name:     "Alerte Champ. Mali + Equipe",
-			KeyPress: "7*1",
+			KeyPress: "#101#36#7#1",
 			ParentID: 25,
 			Child:    1,
 			Action:   "",
@@ -410,7 +410,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:       27,
 			Name:     "Alerte Premier League + Equipe",
-			KeyPress: "7*2",
+			KeyPress: "#101#36#7#2",
 			ParentID: 25,
 			Child:    2,
 			Action:   "",
@@ -419,7 +419,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:       28,
 			Name:     "Alerte La Liga + Equipe",
-			KeyPress: "7*3",
+			KeyPress: "#101#36#7#3",
 			ParentID: 25,
 			Child:    3,
 			Action:   "",
@@ -428,7 +428,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:       29,
 			Name:     "Alerte Ligue 1 + Equipe",
-			KeyPress: "7*4",
+			KeyPress: "#101#36#7#4",
 			ParentID: 25,
 			Child:    4,
 			Action:   "",
@@ -437,7 +437,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:       30,
 			Name:     "Alerte Serie A + Equipe",
-			KeyPress: "7*5",
+			KeyPress: "#101#36#7#5",
 			ParentID: 25,
 			Child:    5,
 			Action:   "",
@@ -446,7 +446,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:       31,
 			Name:     "Alerte Bundesligue + Equipe",
-			KeyPress: "7*6",
+			KeyPress: "#101#36#7#6",
 			ParentID: 25,
 			Child:    6,
 			Action:   "",
@@ -464,7 +464,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:       33,
 			Name:     "Champion League",
-			KeyPress: "8*1",
+			KeyPress: "#101#36#8#1",
 			ParentID: 32,
 			Child:    1,
 			Action:   "champion-league",
@@ -473,7 +473,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:       34,
 			Name:     "Premier League",
-			KeyPress: "8*2",
+			KeyPress: "#101#36#8#2",
 			ParentID: 32,
 			Child:    2,
 			Action:   "premier-league",
@@ -482,7 +482,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:       35,
 			Name:     "La Liga",
-			KeyPress: "8*3",
+			KeyPress: "#101#36#8#3",
 			ParentID: 32,
 			Child:    3,
 			Action:   "la-liga",
@@ -491,7 +491,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:       36,
 			Name:     "Ligue 1",
-			KeyPress: "8*4",
+			KeyPress: "#101#36#8#4",
 			ParentID: 32,
 			Child:    4,
 			Action:   "ligue-1",
@@ -500,7 +500,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:       37,
 			Name:     "L. Europa",
-			KeyPress: "8*5",
+			KeyPress: "#101#36#8#5",
 			ParentID: 32,
 			Child:    5,
 			Action:   "l-europa",
@@ -509,7 +509,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:       38,
 			Name:     "Serie A",
-			KeyPress: "8*6",
+			KeyPress: "#101#36#8#6",
 			ParentID: 32,
 			Child:    6,
 			Action:   "serie-a",
@@ -518,7 +518,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:       39,
 			Name:     "Bundesligua",
-			KeyPress: "8*7",
+			KeyPress: "#101#36#8#7",
 			ParentID: 32,
 			Child:    7,
 			Action:   "bundesligua",
@@ -527,7 +527,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:       40,
 			Name:     "Champ Portugal",
-			KeyPress: "8*8",
+			KeyPress: "#101#36#8#8",
 			ParentID: 32,
 			Child:    8,
 			Action:   "champ-portugal",
@@ -536,7 +536,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:       41,
 			Name:     "Saudi League",
-			KeyPress: "8*9",
+			KeyPress: "#101#36#8#9",
 			ParentID: 32,
 			Child:    9,
 			Action:   "saudi-league",

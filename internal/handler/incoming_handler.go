@@ -2,6 +2,8 @@ package handler
 
 import (
 	"encoding/json"
+	"strconv"
+	"strings"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
@@ -145,8 +147,27 @@ func ValidateStruct(data interface{}) []*model.ErrorResponse {
 	return errors
 }
 
-func (h *IncomingHandler) USSD(c *fiber.Ctx) error {
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
+func (h *IncomingHandler) USSDSample(c *fiber.Ctx) error {
+	// init array string
+	var mainData []string
+
+	// menu level 1
+	main, err := h.menuService.GetAll()
+	if err != nil {
+		mainData = append(mainData, err.Error())
+	}
+
+	// title ussd
+	mainData = append(mainData, USSD_TITLE)
+	// loop main menu
+	for i, s := range main {
+		idx := strconv.Itoa(i + 1)
+		row := idx + ". " + s.Name
+		mainData = append(mainData, row)
+	}
+	mainData = append(mainData, "0. Suiv")
+	justString := strings.Join(mainData, "\n")
+	return c.Status(fiber.StatusOK).SendString(justString)
 }
 
 func (h *IncomingHandler) Sub(c *fiber.Ctx) error {
@@ -155,6 +176,13 @@ func (h *IncomingHandler) Sub(c *fiber.Ctx) error {
 
 func (h *IncomingHandler) UnSub(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
+}
+
+func (h *IncomingHandler) LandingPage(c *fiber.Ctx) error {
+	if h.serviceService.IsService(c.Params("service")) {
+		return c.Render("fb-alert/sub", fiber.Map{})
+	}
+	return c.Redirect("https://www.google.com/")
 }
 
 func (h *IncomingHandler) MessageOriginated(c *fiber.Ctx) error {
