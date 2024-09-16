@@ -184,7 +184,7 @@ func (h *ScraperHandler) News() {
 
 	for _, el := range resp.Channel.Item {
 
-		d, _ := time.Parse("Mon, 02 Jan 2006 15:04:05 +0200", el.PubDate)
+		d, _ := time.Parse(time.RFC1123Z, el.PubDate)
 
 		if !h.newsService.IsNews(slug.Make(el.Title), d.Format("2006-01-02")) {
 			h.newsService.Save(
