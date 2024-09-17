@@ -2,8 +2,9 @@ package handler
 
 import (
 	"encoding/json"
-	"strconv"
-	"strings"
+	"encoding/xml"
+	"log"
+	"os"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
@@ -148,26 +149,12 @@ func ValidateStruct(data interface{}) []*model.ErrorResponse {
 }
 
 func (h *IncomingHandler) USSDSample(c *fiber.Ctx) error {
-	// init array string
-	var mainData []string
-
-	// menu level 1
-	main, err := h.menuService.GetAll()
+	c.Set("Content-type", "application/xml; charset=utf-8")
+	data, err := os.ReadFile("./views/xml/main_menu.xml")
 	if err != nil {
-		mainData = append(mainData, err.Error())
+		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
 	}
-
-	// title ussd
-	mainData = append(mainData, USSD_TITLE)
-	// loop main menu
-	for i, s := range main {
-		idx := strconv.Itoa(i + 1)
-		row := idx + ". " + s.Name
-		mainData = append(mainData, row)
-	}
-	mainData = append(mainData, "0. Suiv")
-	justString := strings.Join(mainData, "\n")
-	return c.Status(fiber.StatusOK).SendString(justString)
+	return c.Status(fiber.StatusOK).SendString(string(data))
 }
 
 func (h *IncomingHandler) Sub(c *fiber.Ctx) error {
@@ -176,6 +163,18 @@ func (h *IncomingHandler) Sub(c *fiber.Ctx) error {
 
 func (h *IncomingHandler) UnSub(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
+}
+
+func (h *IncomingHandler) TestUSSD(c *fiber.Ctx) error {
+	c.Set("Content-type", "application/xml; charset=utf-8")
+	p := model.Plan{PlanCode: "test"}
+	p.UnitAmountInCents.AddCurrency("USD", 4000)
+	xmlstring, err := xml.MarshalIndent(p, "", "  ")
+	if err != nil {
+		log.Println(err.Error())
+	}
+	xmlstring = []byte(xml.Header + string(xmlstring))
+	return c.Status(fiber.StatusOK).SendString(string(xmlstring))
 }
 
 func (h *IncomingHandler) LandingPage(c *fiber.Ctx) error {

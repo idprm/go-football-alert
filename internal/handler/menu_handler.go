@@ -162,7 +162,6 @@ func (h *IncomingHandler) Callback(c *fiber.Ctx) error {
 			var subData []string
 
 			if cache != nil {
-
 				if h.menuService.IsKeyPress(cache.GetKeyPress()) {
 					menu, err := h.menuService.GetMenuByKeyPress(cache.GetKeyPress())
 					if err != nil {
