@@ -22,6 +22,7 @@ type IFixtureRepository interface {
 	Get(int, int) (*entity.Fixture, error)
 	Save(*entity.Fixture) (*entity.Fixture, error)
 	Update(*entity.Fixture) (*entity.Fixture, error)
+	UpdateByPrimaryId(*entity.Fixture) (*entity.Fixture, error)
 	Delete(*entity.Fixture) error
 }
 
@@ -72,6 +73,14 @@ func (r *FixtureRepository) Save(c *entity.Fixture) (*entity.Fixture, error) {
 
 func (r *FixtureRepository) Update(c *entity.Fixture) (*entity.Fixture, error) {
 	err := r.db.Where("id = ?", c.ID).Updates(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
+func (r *FixtureRepository) UpdateByPrimaryId(c *entity.Fixture) (*entity.Fixture, error) {
+	err := r.db.Where("primary_id = ?", c.PrimaryID).Updates(&c).Error
 	if err != nil {
 		return nil, err
 	}

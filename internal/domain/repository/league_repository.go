@@ -19,10 +19,12 @@ type ILeagueRepository interface {
 	Count(string) (int64, error)
 	CountByPrimaryId(int) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
+	GetAllByActive() ([]*entity.League, error)
 	Get(string) (*entity.League, error)
 	GetByPrimaryId(int) (*entity.League, error)
 	Save(*entity.League) (*entity.League, error)
 	Update(*entity.League) (*entity.League, error)
+	UpdateByPrimaryId(*entity.League) (*entity.League, error)
 	Delete(*entity.League) error
 }
 
@@ -54,6 +56,15 @@ func (r *LeagueRepository) GetAllPaginate(pagination *entity.Pagination) (*entit
 	return pagination, nil
 }
 
+func (r *LeagueRepository) GetAllByActive() ([]*entity.League, error) {
+	var c []*entity.League
+	err := r.db.Where(&entity.League{IsActive: true}).Find(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
 func (r *LeagueRepository) Get(slug string) (*entity.League, error) {
 	var c entity.League
 	err := r.db.Where("slug = ?", slug).Take(&c).Error
@@ -82,6 +93,14 @@ func (r *LeagueRepository) Save(c *entity.League) (*entity.League, error) {
 
 func (r *LeagueRepository) Update(c *entity.League) (*entity.League, error) {
 	err := r.db.Where("id = ?", c.ID).Updates(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
+func (r *LeagueRepository) UpdateByPrimaryId(c *entity.League) (*entity.League, error) {
+	err := r.db.Where("primary_id = ?", c.PrimaryID).Updates(&c).Error
 	if err != nil {
 		return nil, err
 	}

@@ -1,17 +1,21 @@
 package entity
 
+import "gorm.io/gorm"
+
 type Fixture struct {
-	ID        int64   `gorm:"primaryKey" json:"id"`
-	PrimaryID int64   `json:"primary_id"`
-	Timezone  string  `json:"timezone"`
-	Date      string  `json:"date"`
-	TimeStamp int     `json:"timestamp"`
-	LeagueID  int64   `json:"league_id"`
-	League    *League `json:"league"`
-	HomeID    int64   `json:"home_id"`
-	Home      *Home   `json:"home"`
-	AwayID    int64   `json:"away_id"`
-	Away      *Away   `json:"away"`
+	ID          int64   `gorm:"primaryKey" json:"id"`
+	PrimaryID   int64   `json:"primary_id"`
+	Timezone    string  `json:"timezone"`
+	FixtureDate string  `json:"fixture_date"`
+	TimeStamp   int     `json:"timestamp"`
+	LeagueID    int64   `json:"league_id"`
+	League      *League `json:"league"`
+	HomeID      int64   `json:"home_id"`
+	Home        *Team   `json:"home"`
+	AwayID      int64   `json:"away_id"`
+	Away        *Team   `json:"away"`
+	Goal        string  `json:"goal"`
+	gorm.Model  `json:"-"`
 }
 
 func (e *Fixture) GetId() int64 {
@@ -27,7 +31,7 @@ func (e *Fixture) GetTimezone() string {
 }
 
 func (e *Fixture) GetDate() string {
-	return e.Date
+	return e.FixtureDate
 }
 
 func (e *Fixture) GetTimeStamp() int {

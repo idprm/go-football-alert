@@ -27,6 +27,10 @@ type ISubscriptionService interface {
 	Save(*entity.Subscription) (*entity.Subscription, error)
 	Update(*entity.Subscription) (*entity.Subscription, error)
 	Delete(*entity.Subscription) error
+	IsNotActive(*entity.Subscription) (*entity.Subscription, error)
+	IsNotRetry(*entity.Subscription) (*entity.Subscription, error)
+	IsNotNews(*entity.Subscription) (*entity.Subscription, error)
+	IsNotPrediction(*entity.Subscription) (*entity.Subscription, error)
 	News() *[]entity.Subscription
 	Prediction() *[]entity.Subscription
 	CreditGoal() *[]entity.Subscription
@@ -64,6 +68,22 @@ func (s *SubscriptionService) Delete(a *entity.Subscription) error {
 	return s.subscriptionRepo.Delete(a)
 }
 
+func (s *SubscriptionService) IsNotActive(a *entity.Subscription) (*entity.Subscription, error) {
+	return s.subscriptionRepo.IsNotActive(a)
+}
+
+func (s *SubscriptionService) IsNotRetry(a *entity.Subscription) (*entity.Subscription, error) {
+	return s.subscriptionRepo.IsNotRetry(a)
+}
+
+func (s *SubscriptionService) IsNotNews(a *entity.Subscription) (*entity.Subscription, error) {
+	return s.subscriptionRepo.IsNotNews(a)
+}
+
+func (s *SubscriptionService) IsNotPrediction(a *entity.Subscription) (*entity.Subscription, error) {
+	return s.subscriptionRepo.IsNotPrediction(a)
+}
+
 func (s *SubscriptionService) News() *[]entity.Subscription {
 	subs, err := s.subscriptionRepo.News()
 	if err != nil {
@@ -97,7 +117,7 @@ func (s *SubscriptionService) Renewal() *[]entity.Subscription {
 }
 
 func (s *SubscriptionService) Retry() *[]entity.Subscription {
-	subs, err := s.subscriptionRepo.Renewal()
+	subs, err := s.subscriptionRepo.Retry()
 	if err != nil {
 		log.Println(err)
 	}

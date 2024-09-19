@@ -22,6 +22,7 @@ type IScheduleRepository interface {
 	Get(string, string) (*entity.Schedule, error)
 	Save(*entity.Schedule) (*entity.Schedule, error)
 	Update(*entity.Schedule) error
+	UpdateLocked(*entity.Schedule) error
 }
 
 func (r *ScheduleRepository) CountUnlocked(key, hour string) (int64, error) {
@@ -71,6 +72,14 @@ func (r *ScheduleRepository) Save(c *entity.Schedule) (*entity.Schedule, error) 
 
 func (r *ScheduleRepository) Update(c *entity.Schedule) error {
 	err := r.db.Where("name = ?", c.Name).Updates(&c).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *ScheduleRepository) UpdateLocked(c *entity.Schedule) error {
+	err := r.db.Where("name = ?", c.Name).Updates(map[string]interface{}{"is_unlocked": false}).Error
 	if err != nil {
 		return err
 	}

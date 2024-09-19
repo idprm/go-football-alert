@@ -110,6 +110,9 @@ func init() {
 	rootCmd.AddCommand(publisherCreditCmd)
 	rootCmd.AddCommand(publisherNewsCmd)
 
+	// Test command
+	rootCmd.AddCommand(consumerTestCmd)
+
 }
 
 func Execute() error {

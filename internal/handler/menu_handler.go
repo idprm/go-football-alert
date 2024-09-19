@@ -192,11 +192,11 @@ func (h *IncomingHandler) Callback(c *fiber.Ctx) error {
 
 			}
 
-			if req.IsLevel() {
-				subData = h.convertToArrayString(req, subData)
-				subData = append(subData, "0. Suiv")
-				ca.SetAction(ACT_MENU)
-			}
+			// if req.IsLevel() {
+			// 	subData = h.convertToArrayString(req, subData)
+			// 	subData = append(subData, "0. Suiv")
+			// 	ca.SetAction(ACT_MENU)
+			// }
 
 			l.WithFields(logrus.Fields{"request": req}).Info("USSD")
 			jsonData, _ := json.Marshal(req)
@@ -220,6 +220,10 @@ func (h *IncomingHandler) Callback(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).SendString(justString)
 }
 
+func (h *IncomingHandler) USSDMenu(c *fiber.Ctx) error {
+	return c.Status(fiber.StatusOK).SendString("TEST")
+}
+
 func (h *IncomingHandler) convertToArrayString(req *model.UssdRequest, subData []string) []string {
 	var menus []*entity.Menu
 	switch req.GetText() {
@@ -233,8 +237,6 @@ func (h *IncomingHandler) convertToArrayString(req *model.UssdRequest, subData [
 		menus = h.MatchStats()
 	case "1*5":
 		menus = h.DisplayLiveMatch()
-	case "2":
-		menus = h.FlashNews()
 	case "3":
 		menus = h.CreditGoal()
 	case "4*1":
@@ -348,137 +350,6 @@ func (h *IncomingHandler) getService(code string) (*entity.Service, error) {
 }
 
 func (h *IncomingHandler) ChooseMenu(req *model.UssdRequest) {
-	// if req.IsLineup() {
-	// 	menus =  h.Lineup()
-	// }
-	// if req.IsMatchStats() {
-	// 	menus =  h.MatchStats()
-	// }
-	// if req.IsDisplayLiveMatch() {
-	// 	menus =  h.DsiplayMatchStats()
-	// }
-	// if req.IsFlashNews() {
-	// 	menus =  h.FlashNews()
-	// }
-	// if req.IsCreditGoal() {
-	// 	menus =  h.CreditGoal()
-	// }
-	// if req.IsChampResults() {
-	// 	menus =  h.ChampResults()
-	// }
-	// if req.IsChampStandings() {
-	// 	menus =  h.ChampStandings()
-	// }
-	// if req.IsChampTeam() {
-	// 	menus =  h.ChampTeam()
-	// }
-	// if req.IsChampCreditScore() {
-	// 	menus = h.ChampCreditScore()
-	// }
-	// if req.IsChampCreditGoal() {
-	// 	menus =  h.ChampCreditGoal()
-	// }
-	// if req.IsChampSMSAlerte() {
-	// 	menus = h.ChampSMSAlerte()
-	// }
-
-	// if req.IsChampSMSAlerteEquipe() {
-	// 	menus = h.ChampSMSAlerteEquipe()
-
-	// }
-
-	// if req.IsPrediction() {
-	// 	menus =  h.Prediction()
-
-	// }
-
-	// if req.IsKitFoot() {
-	// 	menus =  h.KitFoot()
-
-	// }
-
-	// if req.IsEurope() {
-	// 	menus =  h.Europe()
-
-	// }
-
-	// if req.IsAfrique() {
-	// 	menus =  h.Afrique()
-
-	// }
-
-	// if req.IsSMSAlerteEquipe() {
-	// 	menus = h.SMSAlerteEquipe()
-
-	// }
-	// if req.IsFootInternational() {
-	// 	menus =  h.FootInternational()
-
-	// }
-	// if req.IsAlerteChampMaliEquipe() {
-	// 	menus =  h.AlerteChampMaliEquipe()
-
-	// }
-	// if req.IsAlertePremierLeagueEquipe() {
-	// 	menus = h.AlertePremierLeagueEquipe()
-
-	// }
-
-	// if req.IsAlerteLaLigaEquipe() {
-	// 	menus = h.AlerteLaLigaEquipe()
-
-	// if req.IsAlerteLigue1Equipe() {
-	// 	menus =  h.AlerteLigue1Equipe()
-
-	// }
-
-	// if req.IsAlerteSerieAEquipe() {
-	// 	menus =  h.AlerteSerieAEquipe()
-
-	// }
-
-	// if req.IsAlerteBundesligueEquipe() {
-	// 	menus =  h.AlerteBundesligueEquipe()
-
-	// }
-
-	// if req.IsChampionLeague() {
-	// 	menus = h.ChampionLeague()
-
-	// }
-
-	// if req.IsPremierLeague() {
-	// 	menus =  h.PremierLeague()
-
-	// }
-
-	// if req.IsLaLiga() {
-	// 	menus =  h.LaLiga()
-
-	// }
-
-	// if req.IsLigue1() {
-	// 	menus =  h.Ligue1()
-
-	// }
-
-	// if req.IsSerieA() {
-	// 	menus =  h.SerieA()
-
-	// }
-
-	// if req.IsBundesligua() {
-	// 	menus = h.Bundesligua()
-
-	// }
-
-	// if req.IsChampPortugal() {
-	// 	menus = h.ChampPortugal()
-
-	// }
-	// if req.IsSaudiLeague() {
-	// 	menus =  h.SaudiLeague()
-	// }
 }
 
 func (h *IncomingHandler) LiveMatch() []*entity.Menu {
@@ -511,10 +382,12 @@ func (h *IncomingHandler) DisplayLiveMatch() []*entity.Menu {
 	}
 }
 
-func (h *IncomingHandler) FlashNews() []*entity.Menu {
-	return []*entity.Menu{
-		{ID: 0, Name: "No Flash News", KeyPress: "0"},
+func (h *IncomingHandler) FlashNews() ([]*entity.News, error) {
+	news, err := h.newsService.GetAllUSSD()
+	if err != nil {
+		return nil, err
 	}
+	return news, nil
 }
 
 func (h *IncomingHandler) CreditGoal() []*entity.Menu {

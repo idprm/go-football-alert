@@ -26,6 +26,7 @@ type Subscription struct {
 	TrialAt              time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"trial_at,omitempty"`
 	NewsAt               time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"news_at,omitempty"`
 	PredictionAt         time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"prediction_at,omitempty"`
+	CreditGoalAt         time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"credit_goal_at,omitempty"`
 	FirstSuccessAt       time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"first_success_at,omitempty"`
 	TotalSuccess         int       `gorm:"default:0" json:"total_success,omitempty"`
 	TotalFailed          int       `gorm:"default:0" json:"total_failed,omitempty"`
@@ -37,8 +38,9 @@ type Subscription struct {
 	TotalAmountFirstpush float64   `gorm:"default:0" json:"total_amount_firstpush,omitempty"`
 	TotalAmountRenewal   float64   `gorm:"default:0" json:"total_amount_renewal,omitempty"`
 	IpAddress            string    `gorm:"size:25" json:"ip_address,omitempty"`
-	IsPrediction         bool      `gorm:"type:boolean;column:is_prediction" json:"is_prediction,omitempty"`
 	IsNews               bool      `gorm:"type:boolean;column:is_news" json:"is_news,omitempty"`
+	IsPrediction         bool      `gorm:"type:boolean;column:is_prediction" json:"is_prediction,omitempty"`
+	IsCreditGoal         bool      `gorm:"type:boolean;column:is_credit_goal" json:"is_credit_goal,omitempty"`
 	IsRetry              bool      `gorm:"type:boolean;column:is_retry" json:"is_retry,omitempty"`
 	IsTrial              bool      `gorm:"type:boolean;column:is_trial" json:"is_trial,omitempty"`
 	IsActive             bool      `gorm:"type:boolean;column:is_active" json:"is_active,omitempty"`
@@ -78,16 +80,16 @@ func (s *Subscription) GetIpAddress() string {
 	return s.IpAddress
 }
 
-func (s *Subscription) SetLatestSubject(latestSubject string) {
-	s.LatestSubject = latestSubject
+func (s *Subscription) SetLatestSubject(v string) {
+	s.LatestSubject = v
 }
 
-func (s *Subscription) SetLatestStatus(latestStatus string) {
-	s.LatestStatus = latestStatus
+func (s *Subscription) SetLatestStatus(v string) {
+	s.LatestStatus = v
 }
 
-func (s *Subscription) SetLatestPayload(payload string) {
-	s.LatestPayload = payload
+func (s *Subscription) SetLatestPayload(v string) {
+	s.LatestPayload = v
 }
 
 func (s *Subscription) SetIsPrediction(v bool) {
@@ -106,20 +108,20 @@ func (s *Subscription) SetIsActive(v bool) {
 	s.IsActive = v
 }
 
-func (s *Subscription) SetRenewalAt(renewalAt time.Time) {
-	s.RenewalAt = renewalAt
+func (s *Subscription) SetRenewalAt(v time.Time) {
+	s.RenewalAt = v
 }
 
-func (s *Subscription) SetRetryAt(retryAt time.Time) {
-	s.RetryAt = retryAt
+func (s *Subscription) SetRetryAt(v time.Time) {
+	s.RetryAt = v
 }
 
-func (s *Subscription) SetChargeAt(chargeAt time.Time) {
-	s.ChargeAt = chargeAt
+func (s *Subscription) SetChargeAt(v time.Time) {
+	s.ChargeAt = v
 }
 
-func (s *Subscription) SetUnsubAt(unsubAt time.Time) {
-	s.UnsubAt = unsubAt
+func (s *Subscription) SetUnsubAt(v time.Time) {
+	s.UnsubAt = v
 }
 
 func (s *Subscription) IsCreatedAtToday() bool {

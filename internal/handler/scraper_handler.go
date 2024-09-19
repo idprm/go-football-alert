@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"log"
+	"strconv"
 	"time"
 
 	"github.com/gosimple/slug"
@@ -51,96 +52,18 @@ func NewScraperHandler(
 }
 
 func (h *ScraperHandler) Leagues() {
-}
-
-func (h *ScraperHandler) Teams() {
 	fb := apifb.NewApiFb()
-	f, err := fb.GetFixtures()
-	if err != nil {
-		log.Println(err.Error())
-	}
-	log.Println(f)
-}
-
-func (h *ScraperHandler) Fixtures() {
-	fb := apifb.NewApiFb()
-	f, err := fb.GetFixtures()
+	f, err := fb.GetLeagues()
 	if err != nil {
 		log.Println(err.Error())
 	}
 	log.Println(string(f))
 
-	var resp model.FixtureResult
+	var resp model.LeagueResult
 	json.Unmarshal(f, &resp)
 
 	for _, el := range resp.Response {
-		log.Println(el.Fixtures.ID)
-
-		if !h.fixtureService.IsFixtureByPrimaryId(el.Fixtures.ID) {
-
-			if !h.homeService.IsHomeByPrimaryId(el.Teams.Home.ID) {
-				if !h.teamService.IsTeam(slug.Make(el.Teams.Home.Name)) {
-					h.teamService.Save(
-						&entity.Team{
-							Name: el.Teams.Home.Name,
-							Slug: slug.Make(el.Teams.Home.Name),
-							Logo: el.Teams.Home.Logo,
-						},
-					)
-				}
-
-				team, err := h.teamService.Get(slug.Make(el.Teams.Home.Name))
-				if err != nil {
-					log.Println(err.Error())
-				}
-
-				h.homeService.Save(
-					&entity.Home{
-						PrimaryID: int64(el.Teams.Home.ID),
-						TeamID:    team.GetId(),
-						Goal:      0,
-						IsWinner:  el.Teams.Home.Winner,
-					},
-				)
-			}
-
-			if !h.awayService.IsAwayByPrimaryId(el.Teams.Away.ID) {
-				if !h.teamService.IsTeam(slug.Make(el.Teams.Away.Name)) {
-					h.teamService.Save(
-						&entity.Team{
-							Name: el.Teams.Away.Name,
-							Slug: slug.Make(el.Teams.Away.Name),
-							Logo: el.Teams.Away.Logo,
-						},
-					)
-				}
-
-				team, err := h.teamService.Get(slug.Make(el.Teams.Away.Name))
-				if err != nil {
-					log.Println(err.Error())
-				}
-
-				h.awayService.Save(
-					&entity.Away{
-						PrimaryID: int64(el.Teams.Away.ID),
-						TeamID:    team.GetId(),
-						Goal:      0,
-						IsWinner:  el.Teams.Away.Winner,
-					},
-				)
-			}
-		}
-
-		home, err := h.homeService.GetByPrimaryId(el.Teams.Home.ID)
-		if err != nil {
-			log.Println(err.Error())
-		}
-
-		away, err := h.awayService.GetByPrimaryId(el.Teams.Away.ID)
-		if err != nil {
-			log.Println(err.Error())
-		}
-
+		log.Println(el.Country)
 		if !h.leagueService.IsLeagueByPrimaryId(el.League.ID) {
 			h.leagueService.Save(
 				&entity.League{
@@ -148,28 +71,187 @@ func (h *ScraperHandler) Fixtures() {
 					Name:      el.League.Name,
 					Slug:      slug.Make(el.League.Name),
 					Logo:      el.League.Logo,
-					Country:   el.League.Country,
+					Country:   el.Country.Name,
+				},
+			)
+		} else {
+			h.leagueService.UpdateByPrimaryId(
+				&entity.League{
+					PrimaryID: int64(el.League.ID),
+					Name:      el.League.Name,
+					Slug:      slug.Make(el.League.Name),
+					Logo:      el.League.Logo,
+					Country:   el.Country.Name,
 				},
 			)
 		}
+	}
+}
 
-		league, err := h.leagueService.GetByPrimaryId(el.League.ID)
+func (h *ScraperHandler) Teams() {
+	fb := apifb.NewApiFb()
+
+	leagues, err := h.leagueService.GetAllByActive()
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	for _, l := range leagues {
+
+		f, err := fb.GetTeams(int(l.PrimaryID))
 		if err != nil {
 			log.Println(err.Error())
 		}
 
-		h.fixtureService.Save(
-			&entity.Fixture{
-				PrimaryID: int64(el.Fixtures.ID),
-				Timezone:  el.Fixtures.TimeZone,
-				Date:      el.Fixtures.Date,
-				TimeStamp: el.Fixtures.Timestamp,
-				LeagueID:  league.ID,
-				HomeID:    home.ID,
-				AwayID:    away.ID,
-			},
-		)
+		var resp model.TeamResult
+		json.Unmarshal(f, &resp)
+
+		for _, el := range resp.Response {
+			if !h.teamService.IsTeamByPrimaryId(el.Team.ID) {
+				h.teamService.Save(
+					&entity.Team{
+						PrimaryID: int64(el.Team.ID),
+						Name:      el.Team.Name,
+						Slug:      slug.Make(el.Team.Name),
+						Code:      el.Team.Code,
+						Logo:      el.Team.Logo,
+						Founded:   el.Team.Founded,
+						Country:   el.Team.Country,
+					},
+				)
+			} else {
+				h.teamService.UpdateByPrimaryId(
+					&entity.Team{
+						PrimaryID: int64(el.Team.ID),
+						Name:      el.Team.Name,
+						Slug:      slug.Make(el.Team.Name),
+						Code:      el.Team.Code,
+						Logo:      el.Team.Logo,
+						Founded:   el.Team.Founded,
+						Country:   el.Team.Country,
+					},
+				)
+			}
+			log.Println(string(f))
+		}
+
 	}
+}
+
+func (h *ScraperHandler) Fixtures() {
+	fb := apifb.NewApiFb()
+
+	leagues, err := h.leagueService.GetAllByActive()
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	for _, l := range leagues {
+		f, err := fb.GetFixtures(int(l.PrimaryID))
+		if err != nil {
+			log.Println(err.Error())
+		}
+		log.Println(string(f))
+
+		var resp model.FixtureResult
+		json.Unmarshal(f, &resp)
+
+		for _, el := range resp.Response {
+			log.Println(el.Fixtures.ID)
+
+			home, err := h.teamService.GetByPrimaryId(el.Teams.Home.ID)
+			if err != nil {
+				log.Println(err.Error())
+			}
+
+			away, err := h.teamService.GetByPrimaryId(el.Teams.Away.ID)
+			if err != nil {
+				log.Println(err.Error())
+			}
+
+			if !h.fixtureService.IsFixtureByPrimaryId(el.Fixtures.ID) {
+				h.fixtureService.Save(
+					&entity.Fixture{
+						PrimaryID:   int64(el.Fixtures.ID),
+						Timezone:    el.Fixtures.TimeZone,
+						FixtureDate: el.Fixtures.Date,
+						TimeStamp:   el.Fixtures.Timestamp,
+						LeagueID:    l.ID,
+						HomeID:      home.ID,
+						AwayID:      away.ID,
+						Goal:        strconv.Itoa(el.Goals.Home) + "|" + strconv.Itoa(el.Goals.Away),
+					},
+				)
+			} else {
+				h.fixtureService.UpdateByPrimaryId(
+					&entity.Fixture{
+						PrimaryID:   int64(el.Fixtures.ID),
+						Timezone:    el.Fixtures.TimeZone,
+						FixtureDate: el.Fixtures.Date,
+						TimeStamp:   el.Fixtures.Timestamp,
+						LeagueID:    l.ID,
+						HomeID:      home.ID,
+						AwayID:      away.ID,
+						Goal:        strconv.Itoa(el.Goals.Home) + "|" + strconv.Itoa(el.Goals.Away),
+					},
+				)
+			}
+		}
+
+	}
+
+	// if !h.homeService.IsHomeByPrimaryId(el.Teams.Home.ID) {
+	// 	if !h.teamService.IsTeam(slug.Make(el.Teams.Home.Name)) {
+	// 		h.teamService.Save(
+	// 			&entity.Team{
+	// 				Name: el.Teams.Home.Name,
+	// 				Slug: slug.Make(el.Teams.Home.Name),
+	// 				Logo: el.Teams.Home.Logo,
+	// 			},
+	// 		)
+	// 	}
+
+	// 	team, err := h.teamService.Get(slug.Make(el.Teams.Home.Name))
+	// 	if err != nil {
+	// 		log.Println(err.Error())
+	// 	}
+
+	// 	h.homeService.Save(
+	// 		&entity.Home{
+	// 			PrimaryID: int64(el.Teams.Home.ID),
+	// 			TeamID:    team.GetId(),
+	// 			Goal:      0,
+	// 			IsWinner:  el.Teams.Home.Winner,
+	// 		},
+	// 	)
+	// }
+
+	// if !h.awayService.IsAwayByPrimaryId(el.Teams.Away.ID) {
+	// 	if !h.teamService.IsTeam(slug.Make(el.Teams.Away.Name)) {
+	// 		h.teamService.Save(
+	// 			&entity.Team{
+	// 				Name: el.Teams.Away.Name,
+	// 				Slug: slug.Make(el.Teams.Away.Name),
+	// 				Logo: el.Teams.Away.Logo,
+	// 			},
+	// 		)
+	// 	}
+
+	// 	team, err := h.teamService.Get(slug.Make(el.Teams.Away.Name))
+	// 	if err != nil {
+	// 		log.Println(err.Error())
+	// 	}
+
+	// 	h.awayService.Save(
+	// 		&entity.Away{
+	// 			PrimaryID: int64(el.Teams.Away.ID),
+	// 			TeamID:    team.GetId(),
+	// 			Goal:      0,
+	// 			IsWinner:  el.Teams.Away.Winner,
+	// 		},
+	// 	)
+	// }
+
 }
 
 func (h *ScraperHandler) News() {

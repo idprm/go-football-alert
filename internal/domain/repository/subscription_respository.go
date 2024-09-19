@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"time"
+
 	"github.com/idprm/go-football-alert/internal/domain/entity"
 	"gorm.io/gorm"
 )
@@ -23,6 +25,11 @@ type ISubscriptionRepository interface {
 	Save(*entity.Subscription) (*entity.Subscription, error)
 	Update(*entity.Subscription) (*entity.Subscription, error)
 	Delete(*entity.Subscription) error
+	IsNotActive(*entity.Subscription) (*entity.Subscription, error)
+	IsNotRetry(*entity.Subscription) (*entity.Subscription, error)
+	IsNotNews(*entity.Subscription) (*entity.Subscription, error)
+	IsNotPrediction(*entity.Subscription) (*entity.Subscription, error)
+	IsNotCreditGoal(*entity.Subscription) (*entity.Subscription, error)
 	News() (*[]entity.Subscription, error)
 	Prediction() (*[]entity.Subscription, error)
 	CreditGoal() (*[]entity.Subscription, error)
@@ -91,9 +98,49 @@ func (r *SubscriptionRepository) Delete(c *entity.Subscription) error {
 	return nil
 }
 
+func (r *SubscriptionRepository) IsNotActive(c *entity.Subscription) (*entity.Subscription, error) {
+	err := r.db.Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Updates(map[string]interface{}{"updated_at": time.Now(), "is_active": false}).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
+func (r *SubscriptionRepository) IsNotRetry(c *entity.Subscription) (*entity.Subscription, error) {
+	err := r.db.Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Updates(map[string]interface{}{"updated_at": time.Now(), "is_retry": false}).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
+func (r *SubscriptionRepository) IsNotNews(c *entity.Subscription) (*entity.Subscription, error) {
+	err := r.db.Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Updates(map[string]interface{}{"updated_at": time.Now(), "is_news": false}).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
+func (r *SubscriptionRepository) IsNotPrediction(c *entity.Subscription) (*entity.Subscription, error) {
+	err := r.db.Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Updates(map[string]interface{}{"updated_at": time.Now(), "is_prediction": false}).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
+func (r *SubscriptionRepository) IsNotCreditGoal(c *entity.Subscription) (*entity.Subscription, error) {
+	err := r.db.Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Updates(map[string]interface{}{"updated_at": time.Now(), "is_credit_goal": false}).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
 func (r *SubscriptionRepository) News() (*[]entity.Subscription, error) {
 	var sub []entity.Subscription
-	err := r.db.Where("is_active = ?", true).Find(&sub).Error
+	err := r.db.Where(&entity.Subscription{IsNews: true, IsActive: true}).Find(&sub).Error
 	if err != nil {
 		return nil, err
 	}
@@ -103,7 +150,7 @@ func (r *SubscriptionRepository) News() (*[]entity.Subscription, error) {
 
 func (r *SubscriptionRepository) Prediction() (*[]entity.Subscription, error) {
 	var sub []entity.Subscription
-	err := r.db.Where("is_active = ?", true).Find(&sub).Error
+	err := r.db.Where(&entity.Subscription{IsPrediction: true, IsActive: true}).Find(&sub).Error
 	if err != nil {
 		return nil, err
 	}
@@ -113,7 +160,7 @@ func (r *SubscriptionRepository) Prediction() (*[]entity.Subscription, error) {
 
 func (r *SubscriptionRepository) CreditGoal() (*[]entity.Subscription, error) {
 	var sub []entity.Subscription
-	err := r.db.Where("is_active = ?", true).Find(&sub).Error
+	err := r.db.Where(&entity.Subscription{IsCreditGoal: true, IsActive: true}).Find(&sub).Error
 	if err != nil {
 		return nil, err
 	}
@@ -121,9 +168,10 @@ func (r *SubscriptionRepository) CreditGoal() (*[]entity.Subscription, error) {
 	return &sub, nil
 }
 
+// ORDER BY success DESC, DATE(created_at) DES
 func (r *SubscriptionRepository) Renewal() (*[]entity.Subscription, error) {
 	var sub []entity.Subscription
-	err := r.db.Where("is_active = ?", true).Find(&sub).Error
+	err := r.db.Where(&entity.Subscription{IsActive: true}).Where("DATE(renewal_at) <= DATE(NOW())").Order("DATE(created_at) DESC").Find(&sub).Error
 	if err != nil {
 		return nil, err
 	}
@@ -132,7 +180,7 @@ func (r *SubscriptionRepository) Renewal() (*[]entity.Subscription, error) {
 
 func (r *SubscriptionRepository) Retry() (*[]entity.Subscription, error) {
 	var sub []entity.Subscription
-	err := r.db.Where("is_active = ?", true).Find(&sub).Error
+	err := r.db.Where(&entity.Subscription{IsRetry: true, IsActive: true}).Where("DATE(renewal_at) = DATE(NOW() + INTERVAL 1 DAY)").Order("DATE(created_at) DESC").Find(&sub).Error
 	if err != nil {
 		return nil, err
 	}

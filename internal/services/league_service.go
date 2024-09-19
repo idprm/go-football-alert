@@ -19,10 +19,12 @@ type ILeagueService interface {
 	IsLeague(string) bool
 	IsLeagueByPrimaryId(int) bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
+	GetAllByActive() ([]*entity.League, error)
 	Get(string) (*entity.League, error)
 	GetByPrimaryId(int) (*entity.League, error)
 	Save(*entity.League) (*entity.League, error)
 	Update(*entity.League) (*entity.League, error)
+	UpdateByPrimaryId(*entity.League) (*entity.League, error)
 	Delete(*entity.League) error
 }
 
@@ -44,6 +46,10 @@ func (s *LeagueService) Get(slug string) (*entity.League, error) {
 	return s.leagueRepo.Get(slug)
 }
 
+func (s *LeagueService) GetAllByActive() ([]*entity.League, error) {
+	return s.leagueRepo.GetAllByActive()
+}
+
 func (s *LeagueService) GetByPrimaryId(primaryId int) (*entity.League, error) {
 	return s.leagueRepo.GetByPrimaryId(primaryId)
 }
@@ -54,6 +60,10 @@ func (s *LeagueService) Save(a *entity.League) (*entity.League, error) {
 
 func (s *LeagueService) Update(a *entity.League) (*entity.League, error) {
 	return s.leagueRepo.Update(a)
+}
+
+func (s *LeagueService) UpdateByPrimaryId(a *entity.League) (*entity.League, error) {
+	return s.leagueRepo.UpdateByPrimaryId(a)
 }
 
 func (s *LeagueService) Delete(a *entity.League) error {

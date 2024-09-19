@@ -1,11 +1,14 @@
 package entity
 
 type Team struct {
-	ID   int64  `gorm:"primaryKey" json:"id"`
-	Name string `json:"name"`
-	Slug string `json:"slug"`
-	Code string `json:"code"`
-	Logo string `json:"logo"`
+	ID        int64  `gorm:"primaryKey" json:"id"`
+	PrimaryID int64  `json:"primary_id"`
+	Name      string `json:"name"`
+	Slug      string `json:"slug"`
+	Code      string `json:"code"`
+	Logo      string `json:"logo"`
+	Founded   int    `json:"founded"`
+	Country   string `json:"country"`
 }
 
 func (e *Team) GetId() int64 {

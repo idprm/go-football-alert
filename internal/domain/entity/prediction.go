@@ -1,11 +1,19 @@
 package entity
 
-import "time"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type Prediction struct {
-	ID        int64    `gorm:"primaryKey" json:"id"`
-	FixtureID int64    `json:"fixture_id"`
-	Fixture   *Fixture `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"fixture,omitempty"`
+	ID         int64    `gorm:"primaryKey" json:"id"`
+	FixtureID  int64    `json:"fixture_id"`
+	Fixture    *Fixture `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"fixture,omitempty"`
+	WinnerID   int64    `json:"winner_id"`
+	Winner     *Team    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"winner,omitempty"`
+	Percent    string   `json:"percent"`
+	gorm.Model `json:"-"`
 }
 
 func (e *Prediction) GetId() int64 {

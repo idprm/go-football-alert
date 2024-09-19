@@ -297,11 +297,20 @@ func (h *MOHandler) Unsub() {
 			LatestKeyword: h.req.GetKeyword(),
 			UnsubAt:       time.Now(),
 			IpAddress:     h.req.GetIpAddress(),
-			IsRetry:       false,
-			IsActive:      false,
 			UpdatedAt:     time.Now(),
 		},
 	)
+
+	s := &entity.Subscription{
+		CountryID: service.GetCountryId(),
+		ServiceID: service.GetId(),
+		Msisdn:    h.req.GetMsisdn(),
+	}
+
+	// set false is_active
+	h.subscriptionService.IsNotActive(s)
+	// set false is_retry
+	h.subscriptionService.IsNotRetry(s)
 
 	sub, err := h.subscriptionService.Get(service.GetId(), h.req.GetMsisdn())
 	if err != nil {

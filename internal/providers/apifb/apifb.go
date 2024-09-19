@@ -23,23 +23,107 @@ func NewApiFb() *ApiFb {
 	return &ApiFb{}
 }
 
-func (p *ApiFb) GetLeague() ([]byte, error) {
+func (p *ApiFb) GetLeagues() ([]byte, error) {
 	req, err := http.NewRequest("GET", API_FOOTBALL_URL+"/leagues", nil)
 	if err != nil {
 		return nil, errors.New(err.Error())
 	}
 
+	q := req.URL.Query()
+	q.Add("season", strconv.Itoa(time.Now().Year()))
+
+	req.URL.RawQuery = q.Encode()
+
 	req.Header.Set("x-rapidapi-key", API_FOOTBALL_KEY)
 	req.Header.Set("x-rapidapi-host", API_FOOTBALL_HOST)
 
 	tr := &http.Transport{
-		MaxIdleConns:       10,
-		IdleConnTimeout:    10 * time.Second,
+		MaxIdleConns:       20,
+		IdleConnTimeout:    30 * time.Second,
 		DisableCompression: true,
 	}
 
 	client := &http.Client{
-		Timeout:   10 * time.Second,
+		Timeout:   30 * time.Second,
+		Transport: tr,
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+
+	return body, nil
+}
+
+func (p *ApiFb) GetTeams(leagueId int) ([]byte, error) {
+	req, err := http.NewRequest("GET", API_FOOTBALL_URL+"/teams", nil)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+
+	q := req.URL.Query()
+	q.Add("league", strconv.Itoa(leagueId))
+	// q.Add("season", strconv.Itoa(time.Now().Year()))
+	q.Add("season", "2024")
+
+	req.URL.RawQuery = q.Encode()
+
+	req.Header.Set("x-rapidapi-key", API_FOOTBALL_KEY)
+	req.Header.Set("x-rapidapi-host", API_FOOTBALL_HOST)
+
+	tr := &http.Transport{
+		MaxIdleConns:       20,
+		IdleConnTimeout:    30 * time.Second,
+		DisableCompression: true,
+	}
+
+	client := &http.Client{
+		Timeout:   30 * time.Second,
+		Transport: tr,
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+
+	return body, nil
+}
+
+func (p *ApiFb) GetFixtures(leagueId int) ([]byte, error) {
+	req, err := http.NewRequest("GET", API_FOOTBALL_URL+"/fixtures", nil)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+
+	q := req.URL.Query()
+	q.Add("season", strconv.Itoa(time.Now().Year()))
+	q.Add("league", strconv.Itoa(leagueId))
+	req.URL.RawQuery = q.Encode()
+	req.Header.Set("x-rapidapi-key", API_FOOTBALL_KEY)
+	req.Header.Set("x-rapidapi-host", API_FOOTBALL_HOST)
+
+	tr := &http.Transport{
+		MaxIdleConns:       20,
+		IdleConnTimeout:    30 * time.Second,
+		DisableCompression: true,
+	}
+
+	client := &http.Client{
+		Timeout:   30 * time.Second,
 		Transport: tr,
 	}
 
@@ -67,13 +151,13 @@ func (p *ApiFb) GetSeason() ([]byte, error) {
 	req.Header.Set("x-rapidapi-host", API_FOOTBALL_HOST)
 
 	tr := &http.Transport{
-		MaxIdleConns:       10,
-		IdleConnTimeout:    10 * time.Second,
+		MaxIdleConns:       20,
+		IdleConnTimeout:    30 * time.Second,
 		DisableCompression: true,
 	}
 
 	client := &http.Client{
-		Timeout:   10 * time.Second,
+		Timeout:   30 * time.Second,
 		Transport: tr,
 	}
 
@@ -91,29 +175,28 @@ func (p *ApiFb) GetSeason() ([]byte, error) {
 	return body, nil
 }
 
-func (p *ApiFb) GetFixtures() ([]byte, error) {
+func (p *ApiFb) GetFixtureByLeague(leagueId int) ([]byte, error) {
 	req, err := http.NewRequest("GET", API_FOOTBALL_URL+"/fixtures", nil)
 	if err != nil {
 		return nil, errors.New(err.Error())
 	}
 
 	q := req.URL.Query()
-	// q.Add("live", "all")
-	q.Add("date", time.Now().Format("2006-01-02"))
+	q.Add("season", strconv.Itoa(time.Now().Year()))
 	// primary league
-	// q.Add("league", "39")
+	q.Add("league", strconv.Itoa(leagueId))
 	req.URL.RawQuery = q.Encode()
 	req.Header.Set("x-rapidapi-key", API_FOOTBALL_KEY)
 	req.Header.Set("x-rapidapi-host", API_FOOTBALL_HOST)
 
 	tr := &http.Transport{
-		MaxIdleConns:       10,
-		IdleConnTimeout:    10 * time.Second,
+		MaxIdleConns:       20,
+		IdleConnTimeout:    30 * time.Second,
 		DisableCompression: true,
 	}
 
 	client := &http.Client{
-		Timeout:   10 * time.Second,
+		Timeout:   30 * time.Second,
 		Transport: tr,
 	}
 
@@ -146,13 +229,13 @@ func (p *ApiFb) GetFixtureByRounds(leagueId, seasonId int, current bool) ([]byte
 	req.Header.Set("x-rapidapi-host", API_FOOTBALL_HOST)
 
 	tr := &http.Transport{
-		MaxIdleConns:       10,
-		IdleConnTimeout:    10 * time.Second,
+		MaxIdleConns:       20,
+		IdleConnTimeout:    30 * time.Second,
 		DisableCompression: true,
 	}
 
 	client := &http.Client{
-		Timeout:   10 * time.Second,
+		Timeout:   30 * time.Second,
 		Transport: tr,
 	}
 
@@ -186,13 +269,13 @@ func (p *ApiFb) GetFixtureByHeadToHead(h2h string) ([]byte, error) {
 	req.Header.Set("x-rapidapi-host", API_FOOTBALL_HOST)
 
 	tr := &http.Transport{
-		MaxIdleConns:       10,
-		IdleConnTimeout:    10 * time.Second,
+		MaxIdleConns:       20,
+		IdleConnTimeout:    30 * time.Second,
 		DisableCompression: true,
 	}
 
 	client := &http.Client{
-		Timeout:   10 * time.Second,
+		Timeout:   30 * time.Second,
 		Transport: tr,
 	}
 
@@ -223,13 +306,13 @@ func (p *ApiFb) GetPredictionsByFixture(fixtureId int) ([]byte, error) {
 	req.Header.Set("x-rapidapi-host", API_FOOTBALL_HOST)
 
 	tr := &http.Transport{
-		MaxIdleConns:       10,
-		IdleConnTimeout:    10 * time.Second,
+		MaxIdleConns:       20,
+		IdleConnTimeout:    30 * time.Second,
 		DisableCompression: true,
 	}
 
 	client := &http.Client{
-		Timeout:   10 * time.Second,
+		Timeout:   30 * time.Second,
 		Transport: tr,
 	}
 

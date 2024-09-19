@@ -59,10 +59,9 @@ var publisherRenewalCmd = &cobra.Command{
 
 			if scheduleService.IsUnlocked(ACT_RENEWAL, timeNow) {
 
-				scheduleService.Update(
+				scheduleService.UpdateLocked(
 					&entity.Schedule{
-						Name:       ACT_RENEWAL,
-						IsUnlocked: false,
+						Name: ACT_RENEWAL,
 					},
 				)
 
@@ -122,10 +121,9 @@ var publisherRetryCmd = &cobra.Command{
 
 			if scheduleService.IsUnlocked(ACT_RETRY, timeNow) {
 
-				scheduleService.Update(
+				scheduleService.UpdateLocked(
 					&entity.Schedule{
-						Name:       ACT_RETRY,
-						IsUnlocked: false,
+						Name: ACT_RETRY,
 					},
 				)
 
@@ -179,10 +177,9 @@ var publisherPredictionCmd = &cobra.Command{
 
 			if scheduleService.IsUnlocked(ACT_PREDICTION, timeNow) {
 
-				scheduleService.Update(
+				scheduleService.UpdateLocked(
 					&entity.Schedule{
-						Name:       ACT_PREDICTION,
-						IsUnlocked: false,
+						Name: ACT_PREDICTION,
 					},
 				)
 
@@ -236,10 +233,9 @@ var publisherCreditCmd = &cobra.Command{
 
 			if scheduleService.IsUnlocked(ACT_CREDIT_GOAL, timeNow) {
 
-				scheduleService.Update(
+				scheduleService.UpdateLocked(
 					&entity.Schedule{
-						Name:       ACT_CREDIT_GOAL,
-						IsUnlocked: false,
+						Name: ACT_CREDIT_GOAL,
 					},
 				)
 
@@ -281,10 +277,9 @@ var publisherScrapingCmd = &cobra.Command{
 
 			if scheduleService.IsUnlocked(ACT_SCRAPING, timeNow) {
 
-				scheduleService.Update(
+				scheduleService.UpdateLocked(
 					&entity.Schedule{
-						Name:       ACT_SCRAPING,
-						IsUnlocked: false,
+						Name: ACT_SCRAPING,
 					},
 				)
 
@@ -347,10 +342,9 @@ var publisherNewsCmd = &cobra.Command{
 
 			if scheduleService.IsUnlocked(ACT_NEWS, timeNow) {
 
-				scheduleService.Update(
+				scheduleService.UpdateLocked(
 					&entity.Schedule{
-						Name:       ACT_NEWS,
-						IsUnlocked: false,
+						Name: ACT_NEWS,
 					},
 				)
 
@@ -530,4 +524,109 @@ func scrapingFixturesAndNews(db *gorm.DB) {
 
 	h.Fixtures()
 	h.News()
+}
+
+func scrapingLeagues(db *gorm.DB) {
+	leagueRepo := repository.NewLeagueRepository(db)
+	leagueService := services.NewLeagueService(leagueRepo)
+	seasonRepo := repository.NewSeasonRepository(db)
+	seasonService := services.NewSeasonService(seasonRepo)
+	fixtureRepo := repository.NewFixtureRepository(db)
+	fixtureService := services.NewFixtureService(fixtureRepo)
+	homeRepo := repository.NewHomeRepository(db)
+	homeService := services.NewHomeService(homeRepo)
+	awayRepo := repository.NewAwayRepository(db)
+	awayService := services.NewAwayService(awayRepo)
+	teamRepo := repository.NewTeamRepository(db)
+	teamService := services.NewTeamService(teamRepo)
+	liveScoreRepo := repository.NewLiveScoreRepository(db)
+	liveScoreService := services.NewLiveScoreService(liveScoreRepo)
+	predictionRepo := repository.NewPredictionRepository(db)
+	predictionService := services.NewPredictionService(predictionRepo)
+	newsRepo := repository.NewNewsRepository(db)
+	newsService := services.NewNewsService(newsRepo)
+
+	h := handler.NewScraperHandler(
+		leagueService,
+		seasonService,
+		fixtureService,
+		homeService,
+		awayService,
+		teamService,
+		liveScoreService,
+		predictionService,
+		newsService,
+	)
+
+	h.Leagues()
+}
+
+func scrapingTeams(db *gorm.DB) {
+	leagueRepo := repository.NewLeagueRepository(db)
+	leagueService := services.NewLeagueService(leagueRepo)
+	seasonRepo := repository.NewSeasonRepository(db)
+	seasonService := services.NewSeasonService(seasonRepo)
+	fixtureRepo := repository.NewFixtureRepository(db)
+	fixtureService := services.NewFixtureService(fixtureRepo)
+	homeRepo := repository.NewHomeRepository(db)
+	homeService := services.NewHomeService(homeRepo)
+	awayRepo := repository.NewAwayRepository(db)
+	awayService := services.NewAwayService(awayRepo)
+	teamRepo := repository.NewTeamRepository(db)
+	teamService := services.NewTeamService(teamRepo)
+	liveScoreRepo := repository.NewLiveScoreRepository(db)
+	liveScoreService := services.NewLiveScoreService(liveScoreRepo)
+	predictionRepo := repository.NewPredictionRepository(db)
+	predictionService := services.NewPredictionService(predictionRepo)
+	newsRepo := repository.NewNewsRepository(db)
+	newsService := services.NewNewsService(newsRepo)
+
+	h := handler.NewScraperHandler(
+		leagueService,
+		seasonService,
+		fixtureService,
+		homeService,
+		awayService,
+		teamService,
+		liveScoreService,
+		predictionService,
+		newsService,
+	)
+
+	h.Teams()
+}
+
+func scrapingFixtures(db *gorm.DB) {
+	leagueRepo := repository.NewLeagueRepository(db)
+	leagueService := services.NewLeagueService(leagueRepo)
+	seasonRepo := repository.NewSeasonRepository(db)
+	seasonService := services.NewSeasonService(seasonRepo)
+	fixtureRepo := repository.NewFixtureRepository(db)
+	fixtureService := services.NewFixtureService(fixtureRepo)
+	homeRepo := repository.NewHomeRepository(db)
+	homeService := services.NewHomeService(homeRepo)
+	awayRepo := repository.NewAwayRepository(db)
+	awayService := services.NewAwayService(awayRepo)
+	teamRepo := repository.NewTeamRepository(db)
+	teamService := services.NewTeamService(teamRepo)
+	liveScoreRepo := repository.NewLiveScoreRepository(db)
+	liveScoreService := services.NewLiveScoreService(liveScoreRepo)
+	predictionRepo := repository.NewPredictionRepository(db)
+	predictionService := services.NewPredictionService(predictionRepo)
+	newsRepo := repository.NewNewsRepository(db)
+	newsService := services.NewNewsService(newsRepo)
+
+	h := handler.NewScraperHandler(
+		leagueService,
+		seasonService,
+		fixtureService,
+		homeService,
+		awayService,
+		teamService,
+		liveScoreService,
+		predictionService,
+		newsService,
+	)
+
+	h.Fixtures()
 }

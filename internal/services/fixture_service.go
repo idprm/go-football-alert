@@ -22,6 +22,7 @@ type IFixtureService interface {
 	Get(int, int) (*entity.Fixture, error)
 	Save(*entity.Fixture) (*entity.Fixture, error)
 	Update(*entity.Fixture) (*entity.Fixture, error)
+	UpdateByPrimaryId(*entity.Fixture) (*entity.Fixture, error)
 	Delete(*entity.Fixture) error
 }
 
@@ -49,6 +50,10 @@ func (s *FixtureService) Save(a *entity.Fixture) (*entity.Fixture, error) {
 
 func (s *FixtureService) Update(a *entity.Fixture) (*entity.Fixture, error) {
 	return s.fixtureRepo.Update(a)
+}
+
+func (s *FixtureService) UpdateByPrimaryId(a *entity.Fixture) (*entity.Fixture, error) {
+	return s.fixtureRepo.UpdateByPrimaryId(a)
 }
 
 func (s *FixtureService) Delete(a *entity.Fixture) error {

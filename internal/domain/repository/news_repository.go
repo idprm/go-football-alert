@@ -18,6 +18,8 @@ func NewNewsRepository(db *gorm.DB) *NewsRepository {
 type INewsRepository interface {
 	Count(string, string) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
+	GetAllUSSD() ([]*entity.News, error)
+	GetByTeamUSSD(string, int) (*entity.News, error)
 	Get(string, string) (*entity.News, error)
 	Save(*entity.News) (*entity.News, error)
 	Update(*entity.News) (*entity.News, error)
@@ -41,6 +43,24 @@ func (r *NewsRepository) GetAllPaginate(pagination *entity.Pagination) (*entity.
 	}
 	pagination.Rows = news
 	return pagination, nil
+}
+
+func (r *NewsRepository) GetAllUSSD() ([]*entity.News, error) {
+	var c []*entity.News
+	err := r.db.Where("DATE(publish_at) = DATE(NOW())").Limit(10).Find(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
+func (r *NewsRepository) GetByTeamUSSD(pubAt string, teamId int) (*entity.News, error) {
+	var c entity.News
+	err := r.db.Where("DATE(publish_at) = DATE(?)", pubAt).Where("team_id = ?", teamId).Take(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return &c, nil
 }
 
 func (r *NewsRepository) Get(slug, pubAt string) (*entity.News, error) {

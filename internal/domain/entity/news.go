@@ -7,6 +7,7 @@ type News struct {
 	Title       string    `gorm:"size:300;not null" json:"title"`
 	Slug        string    `gorm:"size:300;not null" json:"slug"`
 	Description string    `gorm:"type:text" json:"description"`
+	Source      string    `gorm:"size:45" json:"source"`
 	PublishAt   time.Time `json:"publish_at"`
 }
 
@@ -24,6 +25,10 @@ func (e *News) GetSlug() string {
 
 func (e *News) GetDescription() string {
 	return e.Description
+}
+
+func (e *News) GetSource() string {
+	return e.Source
 }
 
 func (e *News) GetPublishAt() time.Time {

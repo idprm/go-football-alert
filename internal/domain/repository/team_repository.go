@@ -17,16 +17,28 @@ func NewTeamRepository(db *gorm.DB) *TeamRepository {
 
 type ITeamRepository interface {
 	Count(string) (int64, error)
+	CountByPrimaryId(int) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	Get(string) (*entity.Team, error)
+	GetByPrimaryId(int) (*entity.Team, error)
 	Save(*entity.Team) (*entity.Team, error)
 	Update(*entity.Team) (*entity.Team, error)
+	UpdateByPrimaryId(*entity.Team) (*entity.Team, error)
 	Delete(*entity.Team) error
 }
 
 func (r *TeamRepository) Count(slug string) (int64, error) {
 	var count int64
 	err := r.db.Model(&entity.Team{}).Where("slug = ?", slug).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *TeamRepository) CountByPrimaryId(primaryId int) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Team{}).Where("primary_id = ?", primaryId).Count(&count).Error
 	if err != nil {
 		return count, err
 	}
@@ -52,6 +64,15 @@ func (r *TeamRepository) Get(slug string) (*entity.Team, error) {
 	return &c, nil
 }
 
+func (r *TeamRepository) GetByPrimaryId(primaryId int) (*entity.Team, error) {
+	var c entity.Team
+	err := r.db.Where("primary_id = ?", primaryId).Take(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return &c, nil
+}
+
 func (r *TeamRepository) Save(c *entity.Team) (*entity.Team, error) {
 	err := r.db.Create(&c).Error
 	if err != nil {
@@ -62,6 +83,14 @@ func (r *TeamRepository) Save(c *entity.Team) (*entity.Team, error) {
 
 func (r *TeamRepository) Update(c *entity.Team) (*entity.Team, error) {
 	err := r.db.Where("id = ?", c.ID).Updates(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
+func (r *TeamRepository) UpdateByPrimaryId(c *entity.Team) (*entity.Team, error) {
+	err := r.db.Where("primary_id = ?", c.PrimaryID).Updates(&c).Error
 	if err != nil {
 		return nil, err
 	}
