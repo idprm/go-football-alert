@@ -52,6 +52,16 @@ type FixtureResult struct {
 	Response []ResponseFixturesAPI `json:"response"`
 }
 
+type PredictionResult struct {
+	Results  int                     `json:"results"`
+	Response []ResponsePredictionAPI `json:"response"`
+}
+
+type StandingResult struct {
+	Results  int                   `json:"results"`
+	Response []ResponseStandingAPI `json:"response"`
+}
+
 type ResponseLeagueAPI struct {
 	League  LeagueResp  `json:"league"`
 	Country CountryResp `json:"country"`
@@ -66,6 +76,37 @@ type ResponseFixturesAPI struct {
 	Teams    TeamResponse     `json:"teams"`
 	League   LeagueResponse   `json:"league"`
 	Goals    GoalResponse     `json:"goals"`
+}
+
+type ResponsePredictionAPI struct {
+	Prediction PredictionResponse `json:"predictions"`
+}
+
+type ResponseStandingAPI struct {
+	League struct {
+		// Standing []StandingResponse
+	} `json:"league"`
+}
+
+type StandingResponse struct {
+	Rank int `json:"rank"`
+	Team struct {
+		PrimaryID   int    `json:"id"`
+		Name        string `json:"name"`
+		Points      int    `json:"points"`
+		GoalsDiff   int    `json:"goalsDiff"`
+		Group       string `json:"group"`
+		Form        string `json:"form"`
+		Status      string `json:"status"`
+		Description string `json:"description"`
+	} `json:"team"`
+	All struct {
+		Played int `json:"played"`
+		Win    int `json:"win"`
+		Draw   int `json:"draw"`
+		Lose   int `json:"lose"`
+	} `json:"all"`
+	UpdateAt string `json:"update"`
 }
 
 type FixturesResponse struct {
@@ -119,6 +160,20 @@ type CountryResp struct {
 	Name string `json:"name,omitempty"`
 	Code string `json:"code,omitempty"`
 	Logo string `json:"logo,omitempty"`
+}
+
+type PredictionResponse struct {
+	Winner struct {
+		PrimaryID int    `json:"id"`
+		Name      string `json:"name"`
+		Comment   string `json:"comment"`
+	} `json:"winner"`
+	Advice  string `json:"advice"`
+	Percent struct {
+		Home string `json:"home"`
+		Draw string `json:"draw"`
+		Away string `json:"away"`
+	} `json:"percent"`
 }
 
 type TeamResp struct {

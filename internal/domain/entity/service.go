@@ -26,6 +26,7 @@ type Service struct {
 	ScSubMT    string   `gorm:"size:15;not null" json:"sc_sub_mt"`
 	ScUnsubMT  string   `gorm:"size:15;not null" json:"sc_unsub_mt"`
 	UssdCode   string   `gorm:"size:15;not null" json:"ussd_code"`
+	IsActive   bool     `gorm:"type:boolean;default:false" json:"is_active"`
 }
 
 func (e *Service) GetId() int {

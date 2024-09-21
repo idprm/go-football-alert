@@ -46,11 +46,9 @@ func (h *FixtureHandler) GetAllPaginate(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fixtures)
 }
 
-func (h *FixtureHandler) GetBySlug(c *fiber.Ctx) error {
-	homeId := 1
-	awayId := 2
+func (h *FixtureHandler) Get(c *fiber.Ctx) error {
 
-	if !h.fixtureService.IsFixture(homeId, awayId) {
+	if !h.fixtureService.IsFixture(1) {
 		return c.Status(fiber.StatusNotFound).JSON(
 			&model.WebResponse{
 				Error:      true,
@@ -60,7 +58,7 @@ func (h *FixtureHandler) GetBySlug(c *fiber.Ctx) error {
 		)
 	}
 
-	fixture, err := h.fixtureService.Get(homeId, awayId)
+	fixture, err := h.fixtureService.Get(1)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
 			&model.WebResponse{

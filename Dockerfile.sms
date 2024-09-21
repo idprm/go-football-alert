@@ -7,6 +7,7 @@ RUN apk --update add ca-certificates
 LABEL author="Indra Pramana"
 
 RUN mkdir -p /logs/http
+RUN mkdir -p /logs/sms
 RUN mkdir -p /logs/mt
 
 WORKDIR /app
@@ -27,4 +28,4 @@ COPY --from=golang /bin/sh /bin/sh
 
 COPY --from=golang /fb-alert .
 
-CMD ["/fb-alert", "news"]
+CMD ["/fb-alert", "sms"]

@@ -6,19 +6,23 @@ import (
 )
 
 type Content struct {
-	ID        int      `gorm:"primaryKey" json:"id"`
-	ServiceID int      `json:"service_id"`
-	Service   *Service `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"service,omitempty"`
-	Name      string   `gorm:"size:50" json:"name"`
-	Value     string   `gorm:"size:250" json:"value"`
+	ID       int    `gorm:"primaryKey" json:"id"`
+	Category string `gorm:"size:20" json:"category"`
+	Channel  string `gorm:"size:15" json:"channel"`
+	Name     string `gorm:"size:50" json:"name"`
+	Value    string `gorm:"size:250" json:"value"`
 }
 
 func (e *Content) GetId() int {
 	return e.ID
 }
 
-func (e *Content) GetServiceId() int {
-	return e.ServiceID
+func (e *Content) GetCategory() string {
+	return e.Category
+}
+
+func (e *Content) GetChannel() string {
+	return e.Channel
 }
 
 func (e *Content) GetName() string {

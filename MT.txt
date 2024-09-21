@@ -1,0 +1,60 @@
+CREDIT_GOAL_SUB (Confirmation)
+Credit Goal: Votre participation a ete enregistree. Si Lille marque des buts lors du prochain match, vous recevrez [100][F] de credit par but. [100][F]/souscription
+
+CREDIT_GOAL_ALREADY_SUB (Confirmation)
+Credit Goal: Desole, vous avez deja une equipe favorite pour le prochain match de [Ligue 1]. Vous pourrez choisir une autre equipe pour la journee suivante au [944].
+
+CREDIT_GOAL_UNVALID_SUB (Confirmation)
+Credit Goal: Desole, votre choix n est pas valide. Renvoyez par SMS au [944] votre equipe favorite pour le prochain match. [100 [F]/souscription
+
+CREDIT_GOAL_MATCH_END_PAYOUT (Notification)
+Credit Goal: Felicitations! Le score final du match Lille - Marseille est 2-0. Votre compte va etre credite de [200][F] [CFA]
+
+CREDIT_GOAL_MATCH_INCENTIVE (Notification)
+Credit Goal: la prochaine journee de [Ligue 1] va commencer. Soutenez votre equipe et gagnez du credit. Envoyez au [944] votre equipe. [100][F]/souscription
+
+
+=======================================================
+
+CREDIT_GOAL_SUB (Confirmation)
+Credit Goal: Votre participation a ete enregistree. Si {team} marque des buts lors du prochain match, vous recevrez {amount}{curency} de credit par but. {amount}{curency}/souscription
+
+CREDIT_GOAL_ALREADY_SUB (Confirmation)
+Credit Goal: Desole, vous avez deja une equipe favorite pour le prochain match de {league}. Vous pourrez choisir une autre equipe pour la journee suivante au [sdc].
+
+CREDIT_GOAL_UNVALID_SUB (Confirmation)
+Credit Goal: Desole, votre choix n est pas valide. Renvoyez par SMS au {sdc} votre equipe favorite pour le prochain match. {amount}{curency}/souscription
+
+CREDIT_GOAL_MATCH_END_PAYOUT (Notification)
+Credit Goal: Felicitations! Le score final du match {home} - {away} est {score}. Votre compte va etre credite de {amount}{curency} [CFA]
+
+CREDIT_GOAL_MATCH_INCENTIVE (Notification)
+Credit Goal: la prochaine journee de {league} va commencer. Soutenez votre equipe et gagnez du credit. Envoyez au {sdc} votre equipe. {amount}{curency}/souscription
+
+=======================================================
+
+
+
+
+Predict & Win
+SMS_REG
+
+VALID_SUB_CONFIRM_PREDICT
+Prono: Faites vos pronostics pour [Barcelone] - [Madrid]. Envoyez au [985]: [LES][12] plus [1] pour [Barcelone], [2] pour [Madrid] ou [3] pour un nul. [50][F]/SMS
+
+SUB_PREDICT_SUCCESS_DEBIT_WIN
+Prono: Votre pronostic a ete enregistre avec une victoire de: [Barcelone]. Votre compte a ete debite de [50][F] [CFA]. Bonne Chance!
+
+SUB_PREDICT_SUCCESS_DEBIT_DRAW
+Prono: Votre pronostic est un match nul pour le match [TEAM1] - [TEAM2]. Votre compte a ete debite de [50][F] [CFA]. Bonne Chance!
+
+UNVALID_SUB
+
+
+
+
+INFO
+Info Services FFC: [#157#] USSD /[981] SMS Alerte Equipe /[9009] - SMS Alerte Competition /[###] SMS Alerte a la demande /[944] Credit Goal /[985] Pronostic
+
+STOP
+Services FFC: Vous venez d envoyer STOP. Orange vous remercie d avoir utiliser nos services! Visitez www.orange.cm pour en savoir plus sur Football Fan Club

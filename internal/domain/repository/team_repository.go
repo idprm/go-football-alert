@@ -18,9 +18,11 @@ func NewTeamRepository(db *gorm.DB) *TeamRepository {
 type ITeamRepository interface {
 	Count(string) (int64, error)
 	CountByPrimaryId(int) (int64, error)
+	CountByName(string) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	Get(string) (*entity.Team, error)
 	GetByPrimaryId(int) (*entity.Team, error)
+	GetByName(string) (*entity.Team, error)
 	Save(*entity.Team) (*entity.Team, error)
 	Update(*entity.Team) (*entity.Team, error)
 	UpdateByPrimaryId(*entity.Team) (*entity.Team, error)
@@ -39,6 +41,15 @@ func (r *TeamRepository) Count(slug string) (int64, error) {
 func (r *TeamRepository) CountByPrimaryId(primaryId int) (int64, error) {
 	var count int64
 	err := r.db.Model(&entity.Team{}).Where("primary_id = ?", primaryId).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *TeamRepository) CountByName(name string) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Team{}).Where("UPPER(name) LIKE UPPER(?)", "%"+name+"%").Count(&count).Error
 	if err != nil {
 		return count, err
 	}
@@ -67,6 +78,15 @@ func (r *TeamRepository) Get(slug string) (*entity.Team, error) {
 func (r *TeamRepository) GetByPrimaryId(primaryId int) (*entity.Team, error) {
 	var c entity.Team
 	err := r.db.Where("primary_id = ?", primaryId).Take(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return &c, nil
+}
+
+func (r *TeamRepository) GetByName(name string) (*entity.Team, error) {
+	var c entity.Team
+	err := r.db.Where("UPPER(name) LIKE UPPER(?)", "%"+name+"%").Take(&c).Error
 	if err != nil {
 		return nil, err
 	}

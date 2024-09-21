@@ -16,6 +16,8 @@ jobs:
             image: idprm/fb-alert-listener-service
           - dockerfile: ./Dockerfile.ussd
             image: idprm/fb-alert-ussd-service
+          - dockerfile: ./Dockerfile.sms
+            image: idprm/fb-alert-sms-service
           - dockerfile: ./Dockerfile.mo
             image: idprm/fb-alert-mo-service
           - dockerfile: ./Dockerfile.renewal
@@ -26,8 +28,10 @@ jobs:
             image: idprm/fb-alert-prediction-service
           - dockerfile: ./Dockerfile.credit_goal
             image: idprm/fb-alert-credit-goal-service
-          - dockerfile: ./Dockerfile.news
-            image: idprm/fb-alert-news-service
+          - dockerfile: ./Dockerfile.follow_competition
+            image: idprm/fb-alert-follow-competition-service
+          - dockerfile: ./Dockerfile.follow_team
+            image: idprm/fb-alert-follow-team-service
           - dockerfile: ./Dockerfile.pub_scraping
             image: idprm/fb-alert-pub-scraping-service
           - dockerfile: ./Dockerfile.pub_renewal
@@ -38,8 +42,10 @@ jobs:
             image: idprm/fb-alert-pub-prediction-service
           - dockerfile: ./Dockerfile.pub_credit_goal
             image: idprm/fb-alert-pub-credit-goal-service
-          - dockerfile: ./Dockerfile.pub_news
-            image: idprm/fb-alert-pub-news-service
+          - dockerfile: ./Dockerfile.pub_follow_competition
+            image: idprm/fb-alert-pub-follow-competition-service
+          - dockerfile: ./Dockerfile.pub_follow_team
+            image: idprm/fb-alert-pub-follow-team-service
 
     permissions:
       contents: read

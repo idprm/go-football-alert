@@ -21,6 +21,7 @@ type IPredictionRepository interface {
 	Get(int) (*entity.Prediction, error)
 	Save(*entity.Prediction) (*entity.Prediction, error)
 	Update(*entity.Prediction) (*entity.Prediction, error)
+	UpdateByFixtureId(*entity.Prediction) (*entity.Prediction, error)
 	Delete(*entity.Prediction) error
 }
 
@@ -62,6 +63,14 @@ func (r *PredictionRepository) Save(c *entity.Prediction) (*entity.Prediction, e
 
 func (r *PredictionRepository) Update(c *entity.Prediction) (*entity.Prediction, error) {
 	err := r.db.Where("id = ?", c.ID).Updates(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
+func (r *PredictionRepository) UpdateByFixtureId(c *entity.Prediction) (*entity.Prediction, error) {
+	err := r.db.Where("fixture_id = ?", c.FixtureID).Updates(&c).Error
 	if err != nil {
 		return nil, err
 	}

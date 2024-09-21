@@ -70,11 +70,8 @@ type IncomingHandler struct {
 	menuService         services.IMenuService
 	ussdService         services.IUssdService
 	leagueService       services.ILeagueService
-	seasonService       services.ISeasonService
 	teamService         services.ITeamService
 	fixtureService      services.IFixtureService
-	homeService         services.IHomeService
-	awayService         services.IAwayService
 	livescoreService    services.ILiveScoreService
 	predictionService   services.IPredictionService
 	newsService         services.INewsService
@@ -92,11 +89,8 @@ func NewIncomingHandler(
 	menuService services.IMenuService,
 	ussdService services.IUssdService,
 	leagueService services.ILeagueService,
-	seasonService services.ISeasonService,
 	teamService services.ITeamService,
 	fixtureService services.IFixtureService,
-	homeService services.IHomeService,
-	awayService services.IAwayService,
 	livescoreService services.ILiveScoreService,
 	predictionService services.IPredictionService,
 	newsService services.INewsService,
@@ -113,11 +107,8 @@ func NewIncomingHandler(
 		menuService:         menuService,
 		ussdService:         ussdService,
 		leagueService:       leagueService,
-		seasonService:       seasonService,
 		teamService:         teamService,
 		fixtureService:      fixtureService,
-		homeService:         homeService,
-		awayService:         awayService,
 		livescoreService:    livescoreService,
 		predictionService:   predictionService,
 		newsService:         newsService,

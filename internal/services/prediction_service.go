@@ -16,15 +16,16 @@ func NewPredictionService(predictionRepo repository.IPredictionRepository) *Pred
 }
 
 type IPredictionService interface {
-	IsPrediction(int) bool
+	IsPredictionByFixtureId(int) bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	Get(int) (*entity.Prediction, error)
 	Save(*entity.Prediction) (*entity.Prediction, error)
 	Update(*entity.Prediction) (*entity.Prediction, error)
+	UpdateByFixtureId(*entity.Prediction) (*entity.Prediction, error)
 	Delete(*entity.Prediction) error
 }
 
-func (s *PredictionService) IsPrediction(fixtureId int) bool {
+func (s *PredictionService) IsPredictionByFixtureId(fixtureId int) bool {
 	count, _ := s.predictionRepo.Count(fixtureId)
 	return count > 0
 }
@@ -43,6 +44,10 @@ func (s *PredictionService) Save(a *entity.Prediction) (*entity.Prediction, erro
 
 func (s *PredictionService) Update(a *entity.Prediction) (*entity.Prediction, error) {
 	return s.predictionRepo.Update(a)
+}
+
+func (s *PredictionService) UpdateByFixtureId(a *entity.Prediction) (*entity.Prediction, error) {
+	return s.predictionRepo.UpdateByFixtureId(a)
 }
 
 func (s *PredictionService) Delete(a *entity.Prediction) error {

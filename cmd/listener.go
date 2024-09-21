@@ -59,10 +59,11 @@ var listenerCmd = &cobra.Command{
 			&entity.Menu{},
 			&entity.Ussd{},
 			&entity.League{},
-			&entity.Season{},
 			&entity.Team{},
 			&entity.Fixture{},
 			&entity.Prediction{},
+			&entity.Lineup{},
+			&entity.Standing{},
 			&entity.News{},
 			&entity.Country{},
 			&entity.Schedule{},
@@ -117,20 +118,11 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	leagueRepo := repository.NewLeagueRepository(db)
 	leagueService := services.NewLeagueService(leagueRepo)
 
-	seasonRepo := repository.NewSeasonRepository(db)
-	seasonService := services.NewSeasonService(seasonRepo)
-
 	teamRepo := repository.NewTeamRepository(db)
 	teamService := services.NewTeamService(teamRepo)
 
 	fixtureRepo := repository.NewFixtureRepository(db)
 	fixtureService := services.NewFixtureService(fixtureRepo)
-
-	homeRepo := repository.NewHomeRepository(db)
-	homeService := services.NewHomeService(homeRepo)
-
-	awayRepo := repository.NewAwayRepository(db)
-	awayService := services.NewAwayService(awayRepo)
 
 	livescoreRepo := repository.NewLiveScoreRepository(db)
 	livescoreService := services.NewLiveScoreService(livescoreRepo)
@@ -168,11 +160,8 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 		menuService,
 		ussdService,
 		leagueService,
-		seasonService,
 		teamService,
 		fixtureService,
-		homeService,
-		awayService,
 		livescoreService,
 		predictionService,
 		newsService,
@@ -212,7 +201,7 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 
 	fixtures := v1.Group("fixtures")
 	fixtures.Get("/", fixtureHandler.GetAllPaginate)
-	fixtures.Get("/:slug", fixtureHandler.GetBySlug)
+	fixtures.Get("/:id", fixtureHandler.Get)
 	fixtures.Post("/", fixtureHandler.Save)
 	fixtures.Put("/:id", fixtureHandler.Update)
 	fixtures.Delete("/:id", fixtureHandler.Delete)

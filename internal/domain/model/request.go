@@ -227,6 +227,35 @@ func (m *UssdRequest) IsSaudiLeague() bool {
 	return strings.HasPrefix(m.GetText(), "8*9*")
 }
 
+type SMSRequest struct {
+	Smsc     string `query:"smsc,omitempty"`
+	Username string `query:"username,omitempty"`
+	Password string `query:"password,omitempty"`
+	From     string `query:"from,omitempty"`
+	To       string `query:"to,omitempty"`
+	Text     string `query:"text,omitempty"`
+}
+
+func (m *SMSRequest) GetFrom() string {
+	return m.From
+}
+
+func (m *SMSRequest) GetTo() string {
+	return m.To
+}
+
+func (m *SMSRequest) GetText() string {
+	return strings.ToUpper(m.Text)
+}
+
+func (m *SMSRequest) IsInfo() bool {
+	return m.GetText() == "INFO"
+}
+
+func (m *SMSRequest) IsStop() bool {
+	return m.GetText() == "STOP"
+}
+
 type MORequest struct {
 	SMS       string `validate:"required" json:"sms" xml:"sms"`
 	Msisdn    string `validate:"required" json:"msisdn" xml:"msisdn"`

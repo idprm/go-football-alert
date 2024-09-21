@@ -57,39 +57,34 @@ func seederDB(db *gorm.DB) {
 
 	var contents = []entity.Content{
 		{
-			ServiceID: 1,
-			Name:      ACT_FIRSTPUSH,
-			Value:     "Bravo! Vous venez de souscrire au pack SMS alert qui vs permet de suivre votre equipe favorite Joueur! Jusqu au {date} vous recevrez toutes les infos. {price}{currency}/souscription",
+			Category: ACT_CONFIRMATION,
+			Channel:  ACT_SMS,
+			Name:     SMS_CREDIT_GOAL_SUB,
+			Value:    "",
 		},
 		{
-			ServiceID: 1,
-			Name:      ACT_RENEWAL,
-			Value:     "Votre souscription au service SMS-Alerte City est activee jusqe au {date}. Prix: {price}{currency}. Orange vous remercie",
+			Category: ACT_CONFIRMATION,
+			Channel:  ACT_SMS,
+			Name:     SMS_CREDIT_GOAL_ALREADY_SUB,
+			Value:    "",
 		},
 		{
-			ServiceID: 1,
-			Name:      ACT_PREDICTION,
-			Value:     "Credit Goal: {home}-{away}! Gagnez {credit}F credit a chaque but de votre equipe si elle gagne le match! Envoyes {home-code} ou {away-code} par SMS au {sdc}. {price}{currency}/sms",
+			Category: ACT_CONFIRMATION,
+			Channel:  ACT_SMS,
+			Name:     SMS_CREDIT_GOAL_UNVALID_SUB,
+			Value:    "",
 		},
 		{
-			ServiceID: 1,
-			Name:      ACT_SUB,
-			Value:     "Votre participation a ete enregistree. Si {team} gagne et marque des buts lors du prochain match, vous recevrez {price}{currency} deb bonus par but. {price}{currency}/souscription",
+			Category: ACT_CONFIRMATION,
+			Channel:  ACT_SMS,
+			Name:     SMS_CREDIT_GOAL_MATCH_END_PAYOUT,
+			Value:    "",
 		},
 		{
-			ServiceID: 1,
-			Name:      ACT_CREDIT_GOAL,
-			Value:     "Credit Goal: Felicitations! Le score final du match {home}-{away} est {score}. Votre compte va etre credite dans un delai de 72H de {price}{currency}",
-		},
-		{
-			ServiceID: 1,
-			Name:      ACT_USER_LOSES,
-			Value:     "Test User Loses",
-		},
-		{
-			ServiceID: 1,
-			Name:      ACT_UNSUB,
-			Value:     "Test Unsub",
+			Category: ACT_CONFIRMATION,
+			Channel:  ACT_SMS,
+			Name:     SMS_CREDIT_GOAL_MATCH_INCENTIVE,
+			Value:    "",
 		},
 	}
 
@@ -117,7 +112,14 @@ func seederDB(db *gorm.DB) {
 		},
 		{
 			CountryID:  1,
-			Name:       ACT_NEWS,
+			Name:       ACT_FOLLOW_COMPETITION,
+			PublishAt:  time.Now(),
+			UnlockedAt: time.Now(),
+			IsUnlocked: false,
+		},
+		{
+			CountryID:  1,
+			Name:       ACT_FOLLOW_TEAM,
 			PublishAt:  time.Now(),
 			UnlockedAt: time.Now(),
 			IsUnlocked: false,

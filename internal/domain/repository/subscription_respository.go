@@ -27,12 +27,13 @@ type ISubscriptionRepository interface {
 	Delete(*entity.Subscription) error
 	IsNotActive(*entity.Subscription) (*entity.Subscription, error)
 	IsNotRetry(*entity.Subscription) (*entity.Subscription, error)
-	IsNotNews(*entity.Subscription) (*entity.Subscription, error)
+	IsNotFollow(*entity.Subscription) (*entity.Subscription, error)
 	IsNotPrediction(*entity.Subscription) (*entity.Subscription, error)
 	IsNotCreditGoal(*entity.Subscription) (*entity.Subscription, error)
-	News() (*[]entity.Subscription, error)
-	Prediction() (*[]entity.Subscription, error)
 	CreditGoal() (*[]entity.Subscription, error)
+	Prediction() (*[]entity.Subscription, error)
+	FollowCompetition() (*[]entity.Subscription, error)
+	FollowTeam() (*[]entity.Subscription, error)
 	Renewal() (*[]entity.Subscription, error)
 	Retry() (*[]entity.Subscription, error)
 }
@@ -114,8 +115,8 @@ func (r *SubscriptionRepository) IsNotRetry(c *entity.Subscription) (*entity.Sub
 	return c, nil
 }
 
-func (r *SubscriptionRepository) IsNotNews(c *entity.Subscription) (*entity.Subscription, error) {
-	err := r.db.Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Updates(map[string]interface{}{"updated_at": time.Now(), "is_news": false}).Error
+func (r *SubscriptionRepository) IsNotFollow(c *entity.Subscription) (*entity.Subscription, error) {
+	err := r.db.Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Updates(map[string]interface{}{"updated_at": time.Now(), "is_follow": false}).Error
 	if err != nil {
 		return nil, err
 	}
@@ -138,9 +139,9 @@ func (r *SubscriptionRepository) IsNotCreditGoal(c *entity.Subscription) (*entit
 	return c, nil
 }
 
-func (r *SubscriptionRepository) News() (*[]entity.Subscription, error) {
+func (r *SubscriptionRepository) FollowCompetition() (*[]entity.Subscription, error) {
 	var sub []entity.Subscription
-	err := r.db.Where(&entity.Subscription{IsNews: true, IsActive: true}).Find(&sub).Error
+	err := r.db.Where(&entity.Subscription{IsFollow: true, IsActive: true}).Find(&sub).Error
 	if err != nil {
 		return nil, err
 	}
@@ -148,9 +149,9 @@ func (r *SubscriptionRepository) News() (*[]entity.Subscription, error) {
 	return &sub, nil
 }
 
-func (r *SubscriptionRepository) Prediction() (*[]entity.Subscription, error) {
+func (r *SubscriptionRepository) FollowTeam() (*[]entity.Subscription, error) {
 	var sub []entity.Subscription
-	err := r.db.Where(&entity.Subscription{IsPrediction: true, IsActive: true}).Find(&sub).Error
+	err := r.db.Where(&entity.Subscription{IsFollow: true, IsActive: true}).Find(&sub).Error
 	if err != nil {
 		return nil, err
 	}
@@ -161,6 +162,16 @@ func (r *SubscriptionRepository) Prediction() (*[]entity.Subscription, error) {
 func (r *SubscriptionRepository) CreditGoal() (*[]entity.Subscription, error) {
 	var sub []entity.Subscription
 	err := r.db.Where(&entity.Subscription{IsCreditGoal: true, IsActive: true}).Find(&sub).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &sub, nil
+}
+
+func (r *SubscriptionRepository) Prediction() (*[]entity.Subscription, error) {
+	var sub []entity.Subscription
+	err := r.db.Where(&entity.Subscription{IsPrediction: true, IsActive: true}).Find(&sub).Error
 	if err != nil {
 		return nil, err
 	}

@@ -18,9 +18,11 @@ func NewTeamService(teamRepo repository.ITeamRepository) *TeamService {
 type ITeamService interface {
 	IsTeam(string) bool
 	IsTeamByPrimaryId(int) bool
+	IsTeamByName(string) bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	Get(string) (*entity.Team, error)
 	GetByPrimaryId(int) (*entity.Team, error)
+	GetByName(string) (*entity.Team, error)
 	Save(*entity.Team) (*entity.Team, error)
 	Update(*entity.Team) (*entity.Team, error)
 	UpdateByPrimaryId(*entity.Team) (*entity.Team, error)
@@ -37,6 +39,11 @@ func (s *TeamService) IsTeamByPrimaryId(primaryId int) bool {
 	return count > 0
 }
 
+func (s *TeamService) IsTeamByName(name string) bool {
+	count, _ := s.teamRepo.CountByName(name)
+	return count > 0
+}
+
 func (s *TeamService) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {
 	return s.teamRepo.GetAllPaginate(pagination)
 }
@@ -47,6 +54,10 @@ func (s *TeamService) Get(slug string) (*entity.Team, error) {
 
 func (s *TeamService) GetByPrimaryId(primaryId int) (*entity.Team, error) {
 	return s.teamRepo.GetByPrimaryId(primaryId)
+}
+
+func (s *TeamService) GetByName(name string) (*entity.Team, error) {
+	return s.teamRepo.GetByName(name)
 }
 
 func (s *TeamService) Save(a *entity.Team) (*entity.Team, error) {

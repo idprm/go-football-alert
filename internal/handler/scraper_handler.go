@@ -17,36 +17,27 @@ import (
 
 type ScraperHandler struct {
 	leagueService     services.ILeagueService
-	seasonService     services.ISeasonService
-	fixtureService    services.IFixtureService
-	homeService       services.IHomeService
-	awayService       services.IAwayService
 	teamService       services.ITeamService
-	livescoreService  services.ILiveScoreService
+	fixtureService    services.IFixtureService
 	predictionService services.IPredictionService
+	standingService   services.IStandingService
 	newsService       services.INewsService
 }
 
 func NewScraperHandler(
 	leagueService services.ILeagueService,
-	seasonService services.ISeasonService,
-	fixtureService services.IFixtureService,
-	homeService services.IHomeService,
-	awayService services.IAwayService,
 	teamService services.ITeamService,
-	livescoreService services.ILiveScoreService,
+	fixtureService services.IFixtureService,
 	predictionService services.IPredictionService,
+	standingService services.IStandingService,
 	newsService services.INewsService,
 ) *ScraperHandler {
 	return &ScraperHandler{
 		leagueService:     leagueService,
-		seasonService:     seasonService,
-		fixtureService:    fixtureService,
-		homeService:       homeService,
-		awayService:       awayService,
 		teamService:       teamService,
-		livescoreService:  livescoreService,
+		fixtureService:    fixtureService,
 		predictionService: predictionService,
+		standingService:   standingService,
 		newsService:       newsService,
 	}
 }
@@ -157,7 +148,6 @@ func (h *ScraperHandler) Fixtures() {
 		json.Unmarshal(f, &resp)
 
 		for _, el := range resp.Response {
-			log.Println(el.Fixtures.ID)
 
 			home, err := h.teamService.GetByPrimaryId(el.Teams.Home.ID)
 			if err != nil {
@@ -169,12 +159,14 @@ func (h *ScraperHandler) Fixtures() {
 				log.Println(err.Error())
 			}
 
+			fixtureDate, _ := time.Parse(time.RFC3339, el.Fixtures.Date)
+
 			if !h.fixtureService.IsFixtureByPrimaryId(el.Fixtures.ID) {
 				h.fixtureService.Save(
 					&entity.Fixture{
 						PrimaryID:   int64(el.Fixtures.ID),
 						Timezone:    el.Fixtures.TimeZone,
-						FixtureDate: el.Fixtures.Date,
+						FixtureDate: fixtureDate,
 						TimeStamp:   el.Fixtures.Timestamp,
 						LeagueID:    l.ID,
 						HomeID:      home.ID,
@@ -187,7 +179,7 @@ func (h *ScraperHandler) Fixtures() {
 					&entity.Fixture{
 						PrimaryID:   int64(el.Fixtures.ID),
 						Timezone:    el.Fixtures.TimeZone,
-						FixtureDate: el.Fixtures.Date,
+						FixtureDate: fixtureDate,
 						TimeStamp:   el.Fixtures.Timestamp,
 						LeagueID:    l.ID,
 						HomeID:      home.ID,
@@ -199,58 +191,136 @@ func (h *ScraperHandler) Fixtures() {
 		}
 
 	}
+}
 
-	// if !h.homeService.IsHomeByPrimaryId(el.Teams.Home.ID) {
-	// 	if !h.teamService.IsTeam(slug.Make(el.Teams.Home.Name)) {
-	// 		h.teamService.Save(
-	// 			&entity.Team{
-	// 				Name: el.Teams.Home.Name,
-	// 				Slug: slug.Make(el.Teams.Home.Name),
-	// 				Logo: el.Teams.Home.Logo,
-	// 			},
-	// 		)
-	// 	}
+func (h *ScraperHandler) Predictions() {
 
-	// 	team, err := h.teamService.Get(slug.Make(el.Teams.Home.Name))
-	// 	if err != nil {
-	// 		log.Println(err.Error())
-	// 	}
+	fb := apifb.NewApiFb()
 
-	// 	h.homeService.Save(
-	// 		&entity.Home{
-	// 			PrimaryID: int64(el.Teams.Home.ID),
-	// 			TeamID:    team.GetId(),
-	// 			Goal:      0,
-	// 			IsWinner:  el.Teams.Home.Winner,
-	// 		},
-	// 	)
-	// }
+	fixtures, err := h.fixtureService.GetAllByFixtureDate(time.Now())
+	if err != nil {
+		log.Println(err.Error())
+	}
 
-	// if !h.awayService.IsAwayByPrimaryId(el.Teams.Away.ID) {
-	// 	if !h.teamService.IsTeam(slug.Make(el.Teams.Away.Name)) {
-	// 		h.teamService.Save(
-	// 			&entity.Team{
-	// 				Name: el.Teams.Away.Name,
-	// 				Slug: slug.Make(el.Teams.Away.Name),
-	// 				Logo: el.Teams.Away.Logo,
-	// 			},
-	// 		)
-	// 	}
+	for _, l := range fixtures {
+		// rate limit is 10 requests per minute.
+		if !h.predictionService.IsPredictionByFixtureId(int(l.ID)) {
+			f, err := fb.GetPredictions(int(l.PrimaryID))
+			if err != nil {
+				log.Println(err.Error())
+			}
 
-	// 	team, err := h.teamService.Get(slug.Make(el.Teams.Away.Name))
-	// 	if err != nil {
-	// 		log.Println(err.Error())
-	// 	}
+			var resp model.PredictionResult
+			json.Unmarshal(f, &resp)
+			log.Println(string(f))
 
-	// 	h.awayService.Save(
-	// 		&entity.Away{
-	// 			PrimaryID: int64(el.Teams.Away.ID),
-	// 			TeamID:    team.GetId(),
-	// 			Goal:      0,
-	// 			IsWinner:  el.Teams.Away.Winner,
-	// 		},
-	// 	)
-	// }
+			for _, el := range resp.Response {
+				team, err := h.teamService.GetByPrimaryId(el.Prediction.Winner.PrimaryID)
+				if err != nil {
+					log.Println(err.Error())
+				}
+
+				h.predictionService.Save(
+					&entity.Prediction{
+						FixtureID:     l.ID,
+						FixtureDate:   l.FixtureDate,
+						WinnerID:      team.ID,
+						WinnerName:    el.Prediction.Winner.Name,
+						WinnerComment: el.Prediction.Winner.Comment,
+						Advice:        el.Prediction.Advice,
+						PercentHome:   el.Prediction.Percent.Home,
+						PercentDraw:   el.Prediction.Percent.Draw,
+						PercentAway:   el.Prediction.Percent.Away,
+					},
+				)
+			}
+		}
+
+	}
+
+}
+
+func (h *ScraperHandler) Standings() {
+	fb := apifb.NewApiFb()
+
+	leagues, err := h.leagueService.GetAllByActive()
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	for _, l := range leagues {
+
+		// league, err := h.leagueService.GetByPrimaryId(int(l.PrimaryID))
+		// if err != nil {
+		// 	log.Println(err.Error())
+		// }
+
+		f, err := fb.GetStandings(int(l.PrimaryID))
+		if err != nil {
+			log.Println(err.Error())
+		}
+		log.Println(string(f))
+		var resp model.StandingResult
+		json.Unmarshal(f, &resp)
+
+		for _, el := range resp.Response {
+
+			log.Println(el)
+			// for _, ol := range el.League.Standing {
+
+			// 	team, err := h.teamService.GetByPrimaryId(ol.Team.PrimaryID)
+			// 	if err != nil {
+			// 		log.Println(err.Error())
+			// 	}
+
+			// 	if !h.standingService.IsRank(ol.Rank) {
+			// 		updatedAt, _ := time.Parse(time.RFC3339, ol.UpdateAt)
+			// 		h.standingService.Save(
+			// 			&entity.Standing{
+			// 				Rank:        ol.Rank,
+			// 				LeagueID:    league.GetId(),
+			// 				TeamID:      team.GetId(),
+			// 				TeamName:    ol.Team.Name,
+			// 				Points:      ol.Team.Points,
+			// 				GoalsDiff:   ol.Team.GoalsDiff,
+			// 				Group:       ol.Team.Group,
+			// 				Form:        ol.Team.Form,
+			// 				Status:      ol.Team.Status,
+			// 				Description: ol.Team.Description,
+			// 				Played:      ol.All.Played,
+			// 				Win:         ol.All.Win,
+			// 				Draw:        ol.All.Draw,
+			// 				Lose:        ol.All.Lose,
+			// 				UpdateAt:    updatedAt,
+			// 			},
+			// 		)
+			// 	} else {
+			// 		updatedAt, _ := time.Parse(time.RFC3339, ol.UpdateAt)
+			// 		h.standingService.UpdateByRank(
+			// 			&entity.Standing{
+			// 				Rank:        ol.Rank,
+			// 				LeagueID:    league.GetId(),
+			// 				TeamID:      team.GetId(),
+			// 				TeamName:    ol.Team.Name,
+			// 				Points:      ol.Team.Points,
+			// 				GoalsDiff:   ol.Team.GoalsDiff,
+			// 				Group:       ol.Team.Group,
+			// 				Form:        ol.Team.Form,
+			// 				Status:      ol.Team.Status,
+			// 				Description: ol.Team.Description,
+			// 				Played:      ol.All.Played,
+			// 				Win:         ol.All.Win,
+			// 				Draw:        ol.All.Draw,
+			// 				Lose:        ol.All.Lose,
+			// 				UpdateAt:    updatedAt,
+			// 			},
+			// 		)
+			// 	}
+			// }
+
+		}
+
+	}
 
 }
 

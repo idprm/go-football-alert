@@ -16,17 +16,17 @@ func NewContentRepository(db *gorm.DB) *ContentRepository {
 }
 
 type IContentRepository interface {
-	Count(int, string) (int64, error)
+	Count(string) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
-	Get(int, string) (*entity.Content, error)
+	Get(string) (*entity.Content, error)
 	Save(*entity.Content) (*entity.Content, error)
 	Update(*entity.Content) (*entity.Content, error)
 	Delete(*entity.Content) error
 }
 
-func (r *ContentRepository) Count(serviceId int, name string) (int64, error) {
+func (r *ContentRepository) Count(name string) (int64, error) {
 	var count int64
-	err := r.db.Model(&entity.Content{}).Where("service_id = ?", serviceId).Where("name = ?", name).Count(&count).Error
+	err := r.db.Model(&entity.Content{}).Where("name = ?", name).Count(&count).Error
 	if err != nil {
 		return count, err
 	}
@@ -43,9 +43,9 @@ func (r *ContentRepository) GetAllPaginate(pagination *entity.Pagination) (*enti
 	return pagination, nil
 }
 
-func (r *ContentRepository) Get(serviceId int, name string) (*entity.Content, error) {
+func (r *ContentRepository) Get(name string) (*entity.Content, error) {
 	var content entity.Content
-	err := r.db.Where("service_id = ?", serviceId).Where("name = ?", name).Preload("Service").Take(&content).Error
+	err := r.db.Where("name = ?", name).Preload("Service").Take(&content).Error
 	if err != nil {
 		return nil, err
 	}

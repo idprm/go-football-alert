@@ -4,6 +4,10 @@ import "time"
 
 type News struct {
 	ID          int64     `gorm:"primaryKey" json:"id"`
+	LeagueID    int64     `json:"league_id"`
+	League      *League   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"league,omitempty"`
+	TeamID      int64     `json:"team_id"`
+	Team        *Team     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"team,omitempty"`
 	Title       string    `gorm:"size:300;not null" json:"title"`
 	Slug        string    `gorm:"size:300;not null" json:"slug"`
 	Description string    `gorm:"type:text" json:"description"`

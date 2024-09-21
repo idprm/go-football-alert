@@ -18,10 +18,12 @@ func NewLeagueService(leagueRepo repository.ILeagueRepository) *LeagueService {
 type ILeagueService interface {
 	IsLeague(string) bool
 	IsLeagueByPrimaryId(int) bool
+	IsLeagueByName(string) bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetAllByActive() ([]*entity.League, error)
 	Get(string) (*entity.League, error)
 	GetByPrimaryId(int) (*entity.League, error)
+	GetByName(string) (*entity.League, error)
 	Save(*entity.League) (*entity.League, error)
 	Update(*entity.League) (*entity.League, error)
 	UpdateByPrimaryId(*entity.League) (*entity.League, error)
@@ -35,6 +37,11 @@ func (s *LeagueService) IsLeague(key string) bool {
 
 func (s *LeagueService) IsLeagueByPrimaryId(primaryId int) bool {
 	count, _ := s.leagueRepo.CountByPrimaryId(primaryId)
+	return count > 0
+}
+
+func (s *LeagueService) IsLeagueByName(name string) bool {
+	count, _ := s.leagueRepo.CountByName(name)
 	return count > 0
 }
 
@@ -52,6 +59,10 @@ func (s *LeagueService) GetAllByActive() ([]*entity.League, error) {
 
 func (s *LeagueService) GetByPrimaryId(primaryId int) (*entity.League, error) {
 	return s.leagueRepo.GetByPrimaryId(primaryId)
+}
+
+func (s *LeagueService) GetByName(name string) (*entity.League, error) {
+	return s.leagueRepo.GetByName(name)
 }
 
 func (s *LeagueService) Save(a *entity.League) (*entity.League, error) {

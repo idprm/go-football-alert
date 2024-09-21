@@ -57,7 +57,7 @@ func (h *RetryHandler) Firstpush() {
 			log.Println(err.Error())
 		}
 
-		content, err := h.getContentFirstpush(h.sub.GetServiceId())
+		content, err := h.getContent(MT_FIRSTPUSH)
 		if err != nil {
 			log.Println(err.Error())
 		}
@@ -95,7 +95,6 @@ func (h *RetryHandler) Firstpush() {
 					TotalFirstpush:       h.sub.TotalFirstpush + 1,
 					TotalAmountFirstpush: service.GetPrice(),
 					LatestPayload:        string(resp),
-					UpdatedAt:            time.Now(),
 				},
 			)
 
@@ -144,7 +143,7 @@ func (h *RetryHandler) Dailypush() {
 			log.Println(err.Error())
 		}
 
-		content, err := h.getContentRenewal(h.sub.GetServiceId())
+		content, err := h.getContent(MT_RENEWAL)
 		if err != nil {
 			log.Println(err.Error())
 		}
@@ -182,7 +181,6 @@ func (h *RetryHandler) Dailypush() {
 					TotalRenewal:       h.sub.TotalRenewal + 1,
 					TotalAmountRenewal: service.GetPrice(),
 					LatestPayload:      string(resp),
-					UpdatedAt:          time.Now(),
 				},
 			)
 
@@ -222,22 +220,12 @@ func (h *RetryHandler) Dailypush() {
 	}
 }
 
-func (h *RetryHandler) getContentFirstpush(serviceId int) (*entity.Content, error) {
+func (h *RetryHandler) getContent(name string) (*entity.Content, error) {
 	// if data not exist in table contents
-	if !h.contentService.IsContent(serviceId, MT_FIRSTPUSH) {
+	if !h.contentService.IsContent(name) {
 		return &entity.Content{
 			Value: "SAMPLE_TEXT",
 		}, nil
 	}
-	return h.contentService.Get(serviceId, MT_FIRSTPUSH)
-}
-
-func (h *RetryHandler) getContentRenewal(serviceId int) (*entity.Content, error) {
-	// if data not exist in table contents
-	if !h.contentService.IsContent(serviceId, MT_RENEWAL) {
-		return &entity.Content{
-			Value: "SAMPLE_TEXT",
-		}, nil
-	}
-	return h.contentService.Get(serviceId, MT_RENEWAL)
+	return h.contentService.Get(name)
 }

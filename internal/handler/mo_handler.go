@@ -58,7 +58,7 @@ func (h *MOHandler) Firstpush() {
 		log.Println(err)
 	}
 
-	content, err := h.getContentFirstpush(service.GetId())
+	content, err := h.getContent(MT_FIRSTPUSH)
 	if err != nil {
 		log.Println(err)
 	}
@@ -127,7 +127,6 @@ func (h *MOHandler) Firstpush() {
 				TotalFailed:   sub.TotalFailed + 1,
 				IsRetry:       true,
 				LatestPayload: string(deductFee),
-				UpdatedAt:     time.Now(),
 			},
 		)
 
@@ -144,7 +143,6 @@ func (h *MOHandler) Firstpush() {
 				StatusDetail:   respDeduct.GetFaultString(),
 				Subject:        SUBJECT_FIRSTPUSH,
 				Payload:        string(deductFee),
-				CreatedAt:      time.Now(),
 			},
 		)
 
@@ -180,7 +178,6 @@ func (h *MOHandler) Firstpush() {
 				TotalFirstpush:       sub.TotalFirstpush + 1,
 				TotalAmountFirstpush: service.GetPrice(),
 				LatestPayload:        string(deductFee),
-				UpdatedAt:            time.Now(),
 			},
 		)
 
@@ -262,7 +259,6 @@ func (h *MOHandler) Firstpush() {
 			ServiceID: service.GetId(),
 			Msisdn:    h.req.GetMsisdn(),
 			TotalSub:  sub.TotalSub + 1,
-			UpdatedAt: time.Now(),
 		},
 	)
 
@@ -274,7 +270,7 @@ func (h *MOHandler) Unsub() {
 		log.Println(err)
 	}
 
-	content, err := h.getContentUnsub(service.GetId())
+	content, err := h.getContent(MT_UNSUB)
 	if err != nil {
 		log.Println(err)
 	}
@@ -297,7 +293,6 @@ func (h *MOHandler) Unsub() {
 			LatestKeyword: h.req.GetKeyword(),
 			UnsubAt:       time.Now(),
 			IpAddress:     h.req.GetIpAddress(),
-			UpdatedAt:     time.Now(),
 		},
 	)
 
@@ -332,7 +327,6 @@ func (h *MOHandler) Unsub() {
 			ServiceID:  service.GetId(),
 			Msisdn:     h.req.GetMsisdn(),
 			TotalUnsub: sub.TotalUnsub + 1,
-			UpdatedAt:  time.Now(),
 		},
 	)
 
@@ -403,16 +397,12 @@ func (h *MOHandler) getService() (*entity.Service, error) {
 	return h.serviceService.Get(h.req.GetSubKeyword())
 }
 
-func (h *MOHandler) getContentFirstpush(serviceId int) (*entity.Content, error) {
-	if !h.contentService.IsContent(serviceId, MT_FIRSTPUSH) {
-		return &entity.Content{}, nil
+func (h *MOHandler) getContent(name string) (*entity.Content, error) {
+	// if data not exist in table contents
+	if !h.contentService.IsContent(name) {
+		return &entity.Content{
+			Value: "SAMPLE_TEXT",
+		}, nil
 	}
-	return h.contentService.Get(serviceId, MT_FIRSTPUSH)
-}
-
-func (h *MOHandler) getContentUnsub(serviceId int) (*entity.Content, error) {
-	if !h.contentService.IsContent(serviceId, MT_UNSUB) {
-		return &entity.Content{}, nil
-	}
-	return h.contentService.Get(serviceId, MT_UNSUB)
+	return h.contentService.Get(name)
 }

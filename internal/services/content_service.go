@@ -16,16 +16,16 @@ func NewContentService(contentRepo repository.IContentRepository) *ContentServic
 }
 
 type IContentService interface {
-	IsContent(int, string) bool
+	IsContent(string) bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
-	Get(int, string) (*entity.Content, error)
+	Get(string) (*entity.Content, error)
 	Save(*entity.Content) (*entity.Content, error)
 	Update(*entity.Content) (*entity.Content, error)
 	Delete(*entity.Content) error
 }
 
-func (s *ContentService) IsContent(serviceId int, key string) bool {
-	count, _ := s.contentRepo.Count(serviceId, key)
+func (s *ContentService) IsContent(name string) bool {
+	count, _ := s.contentRepo.Count(name)
 	return count > 0
 }
 
@@ -33,8 +33,8 @@ func (s *ContentService) GetAllPaginate(pagination *entity.Pagination) (*entity.
 	return s.contentRepo.GetAllPaginate(pagination)
 }
 
-func (s *ContentService) Get(serviceId int, key string) (*entity.Content, error) {
-	return s.contentRepo.Get(serviceId, key)
+func (s *ContentService) Get(name string) (*entity.Content, error) {
+	return s.contentRepo.Get(name)
 }
 
 func (s *ContentService) Save(a *entity.Content) (*entity.Content, error) {

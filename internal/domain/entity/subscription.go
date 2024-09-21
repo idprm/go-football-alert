@@ -3,6 +3,8 @@ package entity
 import (
 	"strings"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type Subscription struct {
@@ -24,7 +26,7 @@ type Subscription struct {
 	ChargeAt             time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"charge_at,omitempty"`
 	RetryAt              time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"retry_at,omitempty"`
 	TrialAt              time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"trial_at,omitempty"`
-	NewsAt               time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"news_at,omitempty"`
+	FollowAt             time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"follow_at,omitempty"`
 	PredictionAt         time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"prediction_at,omitempty"`
 	CreditGoalAt         time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"credit_goal_at,omitempty"`
 	FirstSuccessAt       time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"first_success_at,omitempty"`
@@ -37,15 +39,17 @@ type Subscription struct {
 	TotalUnsub           int       `gorm:"default:0" json:"total_unsub,omitempty"`
 	TotalAmountFirstpush float64   `gorm:"default:0" json:"total_amount_firstpush,omitempty"`
 	TotalAmountRenewal   float64   `gorm:"default:0" json:"total_amount_renewal,omitempty"`
+	BeforeBalance        float64   `gorm:"default:0" json:"before_balance,omitempty"`
+	AfterBalance         float64   `gorm:"default:0" json:"after_balance,omitempty"`
+	ExpireAt             time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"expire_at,omitempty"`
 	IpAddress            string    `gorm:"size:25" json:"ip_address,omitempty"`
-	IsNews               bool      `gorm:"type:boolean;column:is_news" json:"is_news,omitempty"`
+	IsFollow             bool      `gorm:"type:boolean;column:is_follow" json:"is_follow,omitempty"`
 	IsPrediction         bool      `gorm:"type:boolean;column:is_prediction" json:"is_prediction,omitempty"`
 	IsCreditGoal         bool      `gorm:"type:boolean;column:is_credit_goal" json:"is_credit_goal,omitempty"`
 	IsRetry              bool      `gorm:"type:boolean;column:is_retry" json:"is_retry,omitempty"`
 	IsTrial              bool      `gorm:"type:boolean;column:is_trial" json:"is_trial,omitempty"`
 	IsActive             bool      `gorm:"type:boolean;column:is_active" json:"is_active,omitempty"`
-	CreatedAt            time.Time `gorm:"type:TIMESTAMP" json:"created_at"`
-	UpdatedAt            time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"updated_at"`
+	gorm.Model           `json:"-"`
 }
 
 func (e *Subscription) GetId() int64 {
@@ -96,8 +100,8 @@ func (s *Subscription) SetIsPrediction(v bool) {
 	s.IsPrediction = v
 }
 
-func (s *Subscription) SetIsNews(v bool) {
-	s.IsNews = v
+func (s *Subscription) SetIsFollow(v bool) {
+	s.IsFollow = v
 }
 
 func (s *Subscription) SetIsRetry(v bool) {

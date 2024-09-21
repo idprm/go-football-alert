@@ -87,6 +87,84 @@ var consumerUSSDCmd = &cobra.Command{
 	},
 }
 
+var consumerSMSCmd = &cobra.Command{
+	Use:   "sms",
+	Short: "Consumer SMS Service CLI",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		/**
+		 * connect mysql
+		 */
+		db, err := connectDb()
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * connect redis
+		 */
+		rds, err := connectRedis()
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * connect rabbitmq
+		 */
+		rmq, err := connectRabbitMq()
+		if err != nil {
+			panic(err)
+		}
+
+		// DEBUG ON CONSOLE
+		db.Logger = loggerDb.Default.LogMode(loggerDb.Info)
+
+		/**
+		 * SETUP LOG
+		 */
+		logger := logger.NewLogger()
+
+		/**
+		 * SETUP CHANNEL
+		 */
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_SMS_EXCHANGE, true, RMQ_SMS_QUEUE)
+
+		messagesData, errSub := rmq.Subscribe(1, false, RMQ_SMS_QUEUE, RMQ_SMS_EXCHANGE, RMQ_SMS_QUEUE)
+		if errSub != nil {
+			panic(errSub)
+		}
+
+		// Initial sync waiting group
+		var wg sync.WaitGroup
+
+		// Loop forever listening incoming data
+		forever := make(chan bool)
+
+		p := NewProcessor(db, rds, rmq, logger)
+
+		// Set into goroutine this listener
+		go func() {
+
+			// Loop every incoming data
+			for d := range messagesData {
+
+				wg.Add(1)
+				p.SMS(&wg, d.Body)
+				wg.Wait()
+
+				// Manual consume queue
+				d.Ack(false)
+
+			}
+
+		}()
+
+		fmt.Println("[*] Waiting for data...")
+
+		<-forever
+	},
+}
+
 var consumerMOCmd = &cobra.Command{
 	Use:   "mo",
 	Short: "Consumer MO Service CLI",
@@ -475,9 +553,9 @@ var consumerCreditGoalCmd = &cobra.Command{
 	},
 }
 
-var consumerNewsCmd = &cobra.Command{
-	Use:   "news",
-	Short: "Consumer News Service CLI",
+var consumerFollowCompetitionCmd = &cobra.Command{
+	Use:   "follow_competition",
+	Short: "Consumer Follow Competition Service CLI",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		/**
@@ -515,9 +593,9 @@ var consumerNewsCmd = &cobra.Command{
 		/**
 		 * SETUP CHANNEL
 		 */
-		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_NEWS_EXCHANGE, true, RMQ_NEWS_QUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_FOLLOW_COMPETITION_EXCHANGE, true, RMQ_FOLLOW_COMPETITION_QUEUE)
 
-		messagesData, errSub := rmq.Subscribe(1, false, RMQ_NEWS_QUEUE, RMQ_NEWS_EXCHANGE, RMQ_NEWS_QUEUE)
+		messagesData, errSub := rmq.Subscribe(1, false, RMQ_FOLLOW_COMPETITION_QUEUE, RMQ_FOLLOW_COMPETITION_EXCHANGE, RMQ_FOLLOW_COMPETITION_QUEUE)
 		if errSub != nil {
 			panic(errSub)
 		}
@@ -537,7 +615,85 @@ var consumerNewsCmd = &cobra.Command{
 			for d := range messagesData {
 
 				wg.Add(1)
-				p.News(&wg, d.Body)
+				p.FollowCompetition(&wg, d.Body)
+				wg.Wait()
+
+				// Manual consume queue
+				d.Ack(false)
+
+			}
+
+		}()
+
+		fmt.Println("[*] Waiting for data...")
+
+		<-forever
+	},
+}
+
+var consumerFollowTeamCmd = &cobra.Command{
+	Use:   "follow_team",
+	Short: "Consumer Follow Team Service CLI",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		/**
+		 * connect mysql
+		 */
+		db, err := connectDb()
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * connect redis
+		 */
+		rds, err := connectRedis()
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * connect rabbitmq
+		 */
+		rmq, err := connectRabbitMq()
+		if err != nil {
+			panic(err)
+		}
+
+		// DEBUG ON CONSOLE
+		db.Logger = loggerDb.Default.LogMode(loggerDb.Info)
+
+		/**
+		 * SETUP LOG
+		 */
+		logger := logger.NewLogger()
+
+		/**
+		 * SETUP CHANNEL
+		 */
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_FOLLOW_TEAM_EXCHANGE, true, RMQ_FOLLOW_TEAM_QUEUE)
+
+		messagesData, errSub := rmq.Subscribe(1, false, RMQ_FOLLOW_TEAM_QUEUE, RMQ_FOLLOW_TEAM_EXCHANGE, RMQ_FOLLOW_TEAM_QUEUE)
+		if errSub != nil {
+			panic(errSub)
+		}
+
+		// Initial sync waiting group
+		var wg sync.WaitGroup
+
+		// Loop forever listening incoming data
+		forever := make(chan bool)
+
+		p := NewProcessor(db, rds, rmq, logger)
+
+		// Set into goroutine this listener
+		go func() {
+
+			// Loop every incoming data
+			for d := range messagesData {
+
+				wg.Add(1)
+				p.FollowTeam(&wg, d.Body)
 				wg.Wait()
 
 				// Manual consume queue
@@ -566,6 +722,6 @@ var consumerTestCmd = &cobra.Command{
 			panic(err)
 		}
 
-		scrapingFixtures(db)
+		scrapingStandings(db)
 	},
 }

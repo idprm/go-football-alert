@@ -57,7 +57,7 @@ func (h *CreditGoalHandler) CreditGoal() {
 			log.Println(err.Error())
 		}
 
-		content, err := h.getContentCredit(h.sub.GetServiceId())
+		content, err := h.getContent(MT_CREDIT_GOAL)
 		if err != nil {
 			log.Println(err.Error())
 		}
@@ -86,7 +86,6 @@ func (h *CreditGoalHandler) CreditGoal() {
 				LatestTrxId:   trxId,
 				LatestSubject: SUBJECT_CREDIT_GOAL,
 				LatestStatus:  STATUS_SUCCESS,
-				UpdatedAt:     time.Now(),
 			},
 		)
 
@@ -115,12 +114,12 @@ func (h *CreditGoalHandler) CreditGoal() {
 	}
 }
 
-func (h *CreditGoalHandler) getContentCredit(serviceId int) (*entity.Content, error) {
+func (h *CreditGoalHandler) getContent(name string) (*entity.Content, error) {
 	// if data not exist in table contents
-	if !h.contentService.IsContent(serviceId, MT_CREDIT_GOAL) {
+	if !h.contentService.IsContent(name) {
 		return &entity.Content{
 			Value: "SAMPLE_TEXT",
 		}, nil
 	}
-	return h.contentService.Get(serviceId, MT_CREDIT_GOAL)
+	return h.contentService.Get(name)
 }

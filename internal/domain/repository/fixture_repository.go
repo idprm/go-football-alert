@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"time"
+
 	"github.com/idprm/go-football-alert/internal/domain/entity"
 	"gorm.io/gorm"
 )
@@ -16,19 +18,22 @@ func NewFixtureRepository(db *gorm.DB) *FixtureRepository {
 }
 
 type IFixtureRepository interface {
-	Count(int, int) (int64, error)
+	Count(int) (int64, error)
 	CountByPrimaryId(int) (int64, error)
+	CountByFixtureDate(time.Time) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
-	Get(int, int) (*entity.Fixture, error)
+	GetAll() ([]*entity.Fixture, error)
+	GetAllByFixtureDate(time.Time) ([]*entity.Fixture, error)
+	Get(int) (*entity.Fixture, error)
 	Save(*entity.Fixture) (*entity.Fixture, error)
 	Update(*entity.Fixture) (*entity.Fixture, error)
 	UpdateByPrimaryId(*entity.Fixture) (*entity.Fixture, error)
 	Delete(*entity.Fixture) error
 }
 
-func (r *FixtureRepository) Count(homeId, awayId int) (int64, error) {
+func (r *FixtureRepository) Count(id int) (int64, error) {
 	var count int64
-	err := r.db.Model(&entity.Fixture{}).Where("home_id = ?", homeId).Where("away_id = ?", awayId).Count(&count).Error
+	err := r.db.Model(&entity.Fixture{}).Where("id = ?", id).Count(&count).Error
 	if err != nil {
 		return count, err
 	}
@@ -38,6 +43,15 @@ func (r *FixtureRepository) Count(homeId, awayId int) (int64, error) {
 func (r *FixtureRepository) CountByPrimaryId(primaryId int) (int64, error) {
 	var count int64
 	err := r.db.Model(&entity.Fixture{}).Where("primary_id = ?", primaryId).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *FixtureRepository) CountByFixtureDate(fixDate time.Time) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Fixture{}).Where("DATE(fixture_date) >= DATE(?)", fixDate).Count(&count).Error
 	if err != nil {
 		return count, err
 	}
@@ -54,9 +68,27 @@ func (r *FixtureRepository) GetAllPaginate(pagination *entity.Pagination) (*enti
 	return pagination, nil
 }
 
-func (r *FixtureRepository) Get(homeId, awayId int) (*entity.Fixture, error) {
+func (r *FixtureRepository) GetAll() ([]*entity.Fixture, error) {
+	var c []*entity.Fixture
+	err := r.db.Where("", "").Order("id ASC").Find(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
+func (r *FixtureRepository) GetAllByFixtureDate(fixDate time.Time) ([]*entity.Fixture, error) {
+	var c []*entity.Fixture
+	err := r.db.Where("DATE(fixture_date) BETWEEN DATE(?) AND DATE(? + INTERVAL 1 DAY)", fixDate, fixDate).Preload("Home").Preload("Away").Find(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
+func (r *FixtureRepository) Get(id int) (*entity.Fixture, error) {
 	var c entity.Fixture
-	err := r.db.Where("home_id = ?", homeId).Where("away_id = ?", awayId).Preload("Home").Preload("Away").Take(&c).Error
+	err := r.db.Where("id = ?", id).Preload("Home").Preload("Away").Take(&c).Error
 	if err != nil {
 		return nil, err
 	}

@@ -78,7 +78,6 @@ func (h *BulkHandler) Prediction() {
 				LatestTrxId:   trxId,
 				LatestSubject: SUBJECT_PREDICTION,
 				LatestStatus:  STATUS_SUCCESS,
-				UpdatedAt:     time.Now(),
 			},
 		)
 
@@ -101,7 +100,7 @@ func (h *BulkHandler) Prediction() {
 	}
 }
 
-func (h *BulkHandler) News() {
+func (h *BulkHandler) FollowCompetition() {
 	if h.subscriptionService.IsActiveSubscription(h.sub.GetServiceId(), h.sub.GetMsisdn()) {
 		service, err := h.serviceService.GetById(h.sub.GetServiceId())
 		if err != nil {
@@ -132,7 +131,59 @@ func (h *BulkHandler) News() {
 				LatestTrxId:   trxId,
 				LatestSubject: SUBJECT_NEWS,
 				LatestStatus:  STATUS_SUCCESS,
-				UpdatedAt:     time.Now(),
+			},
+		)
+
+		h.transactionService.Save(
+			&entity.Transaction{
+				TrxId:          trxId,
+				CountryID:      service.GetCountryId(),
+				SubscriptionID: h.sub.GetId(),
+				ServiceID:      service.GetId(),
+				Msisdn:         h.sub.GetMsisdn(),
+				Keyword:        h.sub.GetLatestKeyword(),
+				Status:         STATUS_SUCCESS,
+				StatusCode:     "",
+				StatusDetail:   "",
+				Subject:        SUBJECT_NEWS,
+				Payload:        "-",
+				CreatedAt:      time.Now(),
+			},
+		)
+	}
+}
+
+func (h *BulkHandler) FollowTeam() {
+	if h.subscriptionService.IsActiveSubscription(h.sub.GetServiceId(), h.sub.GetMsisdn()) {
+		service, err := h.serviceService.GetById(h.sub.GetServiceId())
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		content, err := h.getContentNews(h.sub.GetServiceId())
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		trxId := utils.GenerateTrxId()
+
+		k := kannel.NewKannel(h.logger, service, content, h.sub)
+		sms, err := k.SMS(service.ScSubMT)
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		var respKannel *model.KannelResponse
+		json.Unmarshal(sms, &respKannel)
+
+		h.subscriptionService.Update(
+			&entity.Subscription{
+				CountryID:     service.GetCountryId(),
+				ServiceID:     service.GetId(),
+				Msisdn:        h.sub.GetMsisdn(),
+				LatestTrxId:   trxId,
+				LatestSubject: SUBJECT_NEWS,
+				LatestStatus:  STATUS_SUCCESS,
 			},
 		)
 
@@ -157,20 +208,20 @@ func (h *BulkHandler) News() {
 
 func (h *BulkHandler) getContentPrediction(serviceId int) (*entity.Content, error) {
 	// if data not exist in table contents
-	if !h.contentService.IsContent(serviceId, MT_PREDICTION) {
+	if !h.contentService.IsContent(MT_PREDICTION) {
 		return &entity.Content{
 			Value: "SAMPLE_TEXT",
 		}, nil
 	}
-	return h.contentService.Get(serviceId, MT_PREDICTION)
+	return h.contentService.Get(MT_PREDICTION)
 }
 
 func (h *BulkHandler) getContentNews(serviceId int) (*entity.Content, error) {
 	// if data not exist in table contents
-	if !h.contentService.IsContent(serviceId, MT_NEWS) {
+	if !h.contentService.IsContent(MT_NEWS) {
 		return &entity.Content{
 			Value: "SAMPLE_TEXT",
 		}, nil
 	}
-	return h.contentService.Get(serviceId, MT_NEWS)
+	return h.contentService.Get(MT_NEWS)
 }

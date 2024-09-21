@@ -17,3 +17,20 @@
       </xsd:DeductFeeRequest>
    </soapenv:Body>
 </soapenv:Envelope>
+
+
+<?xml version='1.0' encoding='utf-8'?>
+<soapenv:Envelope
+	xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+	<soapenv:Body>
+		<ns:DeductFeeResponse
+			xmlns:ns="http://com.ztesoft.zsmart/xsd">
+			<TransactionSN>1726146508077841</TransactionSN>
+			<AcctResCode>1</AcctResCode>
+			<AcctResName>Principal</AcctResName>
+			<BeforeBalance>-10698</BeforeBalance>
+			<AfterBalance>-10598</AfterBalance>
+			<ExpDate>2024-11-03</ExpDate>
+		</ns:DeductFeeResponse>
+	</soapenv:Body>
+</soapenv:Envelope>

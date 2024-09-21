@@ -39,7 +39,6 @@ type UssdResponse struct {
 	XMLName xml.Name `xml:"Pages"`
 	Page    struct {
 		Page []struct {
-			A string `xml:"a"`
 		} `xml:"page"`
 	} `xml:"pages"`
 }
