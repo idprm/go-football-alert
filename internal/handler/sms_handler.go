@@ -1,9 +1,12 @@
 package handler
 
 import (
+	"log"
+
 	"github.com/idprm/go-football-alert/internal/domain/entity"
 	"github.com/idprm/go-football-alert/internal/domain/model"
 	"github.com/idprm/go-football-alert/internal/logger"
+	"github.com/idprm/go-football-alert/internal/providers/kannel"
 	"github.com/idprm/go-football-alert/internal/services"
 	"github.com/wiliehidayat87/rmqp"
 )
@@ -62,6 +65,16 @@ func NewSMSHandler(
 	}
 }
 
+const (
+	SMS_CREDIT_GOAL_SUB              string = "CREDIT_GOAL_SUB"
+	SMS_CREDIT_GOAL_ALREADY_SUB      string = "CREDIT_GOAL_ALREADY_SUB"
+	SMS_CREDIT_GOAL_UNVALID_SUB      string = "CREDIT_GOAL_UNVALID_SUB"
+	SMS_CREDIT_GOAL_MATCH_END_PAYOUT string = "CREDIT_GOAL_MATCH_END_PAYOUT"
+	SMS_CREDIT_GOAL_MATCH_INCENTIVE  string = "CREDIT_GOAL_MATCH_INCENTIVE"
+	SMS_INFO                         string = "INFO"
+	SMS_STOP                         string = "STOP"
+)
+
 func (h *SMSHandler) Registration() {
 
 	if h.leagueService.IsLeagueByName(h.req.GetText()) {
@@ -101,30 +114,50 @@ func (h *SMSHandler) AlerteMatchs() {
 }
 
 func (h *SMSHandler) Info() {
+	content, err := h.getContent(SMS_INFO)
+	if err != nil {
+		log.Println(err.Error())
+	}
 
+	k := kannel.NewKannel(h.logger, &entity.Service{}, content, &entity.Subscription{})
+	k.SMS("")
 }
 
 func (h *SMSHandler) Stop() {
+	content, err := h.getContent(SMS_STOP)
+	if err != nil {
+		log.Println(err.Error())
+	}
 
+	k := kannel.NewKannel(h.logger, &entity.Service{}, content, &entity.Subscription{})
+	k.SMS("")
 }
 
 func (h *SMSHandler) Unvalid() {
+	content, err := h.getContent(SMS_CREDIT_GOAL_UNVALID_SUB)
+	if err != nil {
+		log.Println(err.Error())
+	}
 
+	k := kannel.NewKannel(h.logger, &entity.Service{}, content, &entity.Subscription{})
+	k.SMS("")
 }
 
-func (h *SMSHandler) IsSub() {
-
+func (h *SMSHandler) IsActiveSub() bool {
+	return h.subscriptionService.IsActiveSubscription(1, h.req.GetTo())
 }
 
-func (h *SMSHandler) IsActiveSub() {
-
+func (h *SMSHandler) IsSub() bool {
+	return h.subscriptionService.IsSubscription(1, h.req.GetTo())
 }
 
 func (h *SMSHandler) getContent(name string) (*entity.Content, error) {
 	// if data not exist in table contents
 	if !h.contentService.IsContent(name) {
 		return &entity.Content{
-			Value: "SAMPLE_TEXT",
+			Category: "CATEGORY",
+			Channel:  "SMS",
+			Value:    "SAMPLE_TEXT",
 		}, nil
 	}
 	return h.contentService.Get(name)

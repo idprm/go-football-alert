@@ -13,7 +13,6 @@ Credit Goal: Felicitations! Le score final du match Lille - Marseille est 2-0. V
 CREDIT_GOAL_MATCH_INCENTIVE (Notification)
 Credit Goal: la prochaine journee de [Ligue 1] va commencer. Soutenez votre equipe et gagnez du credit. Envoyez au [944] votre equipe. [100][F]/souscription
 
-
 =======================================================
 
 CREDIT_GOAL_SUB (Confirmation)
@@ -34,24 +33,60 @@ Credit Goal: la prochaine journee de {league} va commencer. Soutenez votre equip
 =======================================================
 
 
-
-
 Predict & Win
-SMS_REG
-
-VALID_SUB_CONFIRM_PREDICT
+PREDICT_SUB (Confirmation)
 Prono: Faites vos pronostics pour [Barcelone] - [Madrid]. Envoyez au [985]: [LES][12] plus [1] pour [Barcelone], [2] pour [Madrid] ou [3] pour un nul. [50][F]/SMS
 
-SUB_PREDICT_SUCCESS_DEBIT_WIN
+PREDICT_SUB_BET_WIN (Confirmation)
 Prono: Votre pronostic a ete enregistre avec une victoire de: [Barcelone]. Votre compte a ete debite de [50][F] [CFA]. Bonne Chance!
 
-SUB_PREDICT_SUCCESS_DEBIT_DRAW
+PREDICT_SUB_BET_DRAW (Confirmation)
 Prono: Votre pronostic est un match nul pour le match [TEAM1] - [TEAM2]. Votre compte a ete debite de [50][F] [CFA]. Bonne Chance!
 
-UNVALID_SUB
+PREDICT_UNVALID_SUB
+Prono: Desole, votre choix n est pas valide. Renvoyez votre choix au [985] ou le nom de votre competition. [50F]/SMS
 
+PREDICT_SUB_REJECT_MATCH_END
+Prono: Desole, cette competition est terminee. Envoyez le nom de votre competition au [985] pour recevoir les invitations a pronostiquer. [50F]/SMS
 
+PREDICT_SUB_REJECT_MATCH_STARTED
+Prono: Desole, vous ne pouvez plus faire de pronostics sur ce match. SMS Confirmation Retentez votre chance Free of charge SMS Text Template: G21(NEW) pour le prochain match [50F]/SMS
 
+PREDICT_MATCH_END_WINNER_AIRTIME
+Prono: Bravo! Bon pronostic pour le match [Lille] – [Marseille], vous avez gagne [1000][F] de credit de com par tirage au sort. Votre compte sera credite sous 48h.
+
+PREDICT_MATCH_END_WINNER_LOTERY
+Bravo! Vous avez fait un bon pronostic pour le match Lille-Marseille, vous venez de gagner un lot, aller à la boutique Orange pour les obtenir.
+
+PREDICT_MATCH_END_LUCKY_LOSER
+Prono: Vous avez fait un bon pronostic, mais vous n avez pas ete tire au sort pour gagner [1000][F]. Retentez votre chance pour le prochain match au [985]. [50][F]/SMS
+
+PREDICT_MATCH_END_LOSER_NOTIF
+Prono: Desole! Votre pronostic n a pas ete le bon pour le match Lille- Marseille. Retentez votre chance pour les prochains matchs .Bonne chance!
+
+=======================================================
+
+FOLLOW_TEAM_SUB (Confirmation) can be multiple team
+SMS Alerte: Vous avez souscrit avec succes pour suivre votre equipe favorite! Jusqu au [25]/[04] vous recevrez toutes les infos en direct. [200][F]/souscription
+
+FOLLOW_TEAM_UNVALID_SUB
+SMS Alerte: Desole, votre choix n est pas valide. Envoyez de nouveau au [981] le nom de votre equipe pour obtenir toutes les infos. [200][F]/souscription
+
+FOLLOW_TEAM_EXPIRE_SUB
+SMS Alerte: Desole mais votre abonnement pour suivre votre equipe vient de se terminer. Pour le renouveler, envoyer au [981] le nom de l equipe a suivre. [200][F]
+
+=======================================================
+
+FOLLOW_COMPETITION_SUB
+SMS Alerte: Vous avez souscrit avec succes pour suivre [la Liga]! Jusqu au [day]/[month] vous recevrez toutes les infos en direct. [200][F]/souscription
+
+FOLLOW_COMPETITION_INVALID_SUB
+SMS Alerte: Desole, mais votre choix n est pas valide. Renvoyez au [9009] la competition que vous voulez suivre en direct. [250F]/SMS
+
+FOLLOW_COMPETITION_EXPIRE_SUB
+SMS Alerte: Desole mais votre abonnement pour suivre votre competition vient de se terminer. Pour le renouveler, envoyer au [9009] le nom de l equipe a suivre. [250][F]/SMS
+
+=======================================================
 
 INFO
 Info Services FFC: [#157#] USSD /[981] SMS Alerte Equipe /[9009] - SMS Alerte Competition /[###] SMS Alerte a la demande /[944] Credit Goal /[985] Pronostic

@@ -722,6 +722,6 @@ var consumerTestCmd = &cobra.Command{
 			panic(err)
 		}
 
-		scrapingStandings(db)
+		scrapingNews(db)
 	},
 }

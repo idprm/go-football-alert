@@ -28,10 +28,10 @@ MT UNSUB
 ``
 
 MT_SUCCESS_PICK
-Credit Goal: Votre participation a ete enregistree. Si Lille marque des buts lors du prochain match, vous recevrez [100][F] de credit par but. [100][F]/souscription
+`Credit Goal: Votre participation a ete enregistree. Si Lille marque des buts lors du prochain match, vous recevrez [100][F] de credit par but. [100][F]/souscription`
 
 MT_ALREADY_PICK
-Credit Goal: Desole, vous avez deja une equipe favorite pour le prochain match de [Ligue 1]. Vous pourrez choisir une autre equipe pour la journee suivante au [944].
+`Credit Goal: Desole, vous avez deja une equipe favorite pour le prochain match de [Ligue 1]. Vous pourrez choisir une autre equipe pour la journee suivante au [944].`
 
 ## Pseudo Code
 

@@ -81,11 +81,29 @@ const (
 )
 
 const (
-	SMS_CREDIT_GOAL_SUB              string = "CREDIT_GOAL_SUB"
-	SMS_CREDIT_GOAL_ALREADY_SUB      string = "CREDIT_GOAL_ALREADY_SUB"
-	SMS_CREDIT_GOAL_UNVALID_SUB      string = "CREDIT_GOAL_UNVALID_SUB"
-	SMS_CREDIT_GOAL_MATCH_END_PAYOUT string = "CREDIT_GOAL_MATCH_END_PAYOUT"
-	SMS_CREDIT_GOAL_MATCH_INCENTIVE  string = "CREDIT_GOAL_MATCH_INCENTIVE"
+	SMS_CREDIT_GOAL_SUB                  string = "CREDIT_GOAL_SUB"
+	SMS_CREDIT_GOAL_ALREADY_SUB          string = "CREDIT_GOAL_ALREADY_SUB"
+	SMS_CREDIT_GOAL_UNVALID_SUB          string = "CREDIT_GOAL_UNVALID_SUB"
+	SMS_CREDIT_GOAL_MATCH_END_PAYOUT     string = "CREDIT_GOAL_MATCH_END_PAYOUT"
+	SMS_CREDIT_GOAL_MATCH_INCENTIVE      string = "CREDIT_GOAL_MATCH_INCENTIVE"
+	SMS_PREDICT_SUB                      string = "PREDICT_SUB"
+	SMS_PREDICT_SUB_BET_WIN              string = "PREDICT_SUB_BET_WIN"
+	SMS_PREDICT_SUB_BET_DRAW             string = "PREDICT_SUB_BET_DRAW"
+	SMS_PREDICT_UNVALID_SUB              string = "PREDICT_UNVALID_SUB"
+	SMS_PREDICT_SUB_REJECT_MATCH_END     string = "PREDICT_SUB_REJECT_MATCH_END"
+	SMS_PREDICT_SUB_REJECT_MATCH_STARTED string = "PREDICT_SUB_REJECT_MATCH_STARTED"
+	SMS_PREDICT_MATCH_END_WINNER_AIRTIME string = "PREDICT_MATCH_END_WINNER_AIRTIME"
+	SMS_PREDICT_MATCH_END_WINNER_LOTERY  string = "PREDICT_MATCH_END_WINNER_LOTERY"
+	SMS_PREDICT_MATCH_END_LUCKY_LOSER    string = "PREDICT_MATCH_END_LUCKY_LOSER"
+	SMS_PREDICT_MATCH_END_LOSER_NOTIF    string = "PREDICT_MATCH_END_LOSER_NOTIF"
+	SMS_FOLLOW_TEAM_SUB                  string = "FOLLOW_TEAM_SUB"
+	SMS_FOLLOW_TEAM_UNVALID_SUB          string = "FOLLOW_TEAM_UNVALID_SUB"
+	SMS_FOLLOW_TEAM_EXPIRE_SUB           string = "FOLLOW_TEAM_EXPIRE_SUB"
+	SMS_FOLLOW_COMPETITION_SUB           string = "FOLLOW_COMPETITION_SUB"
+	SMS_FOLLOW_COMPETITION_INVALID_SUB   string = "FOLLOW_COMPETITION_INVALID_SUB"
+	SMS_FOLLOW_COMPETITION_EXPIRE_SUB    string = "FOLLOW_COMPETITION_EXPIRE_SUB"
+	SMS_INFO                             string = "INFO"
+	SMS_STOP                             string = "STOP"
 )
 
 var (
@@ -110,6 +128,7 @@ func init() {
 	 * Consumer service
 	 */
 	rootCmd.AddCommand(consumerUSSDCmd)
+	rootCmd.AddCommand(consumerSMSCmd)
 	rootCmd.AddCommand(consumerMOCmd)
 	rootCmd.AddCommand(consumerRenewalCmd)
 	rootCmd.AddCommand(consumerRetryCmd)
@@ -121,9 +140,9 @@ func init() {
 	/**
 	 * Publisher Scraping service
 	 */
+	rootCmd.AddCommand(publisherScrapingCmd)
 	rootCmd.AddCommand(publisherRenewalCmd)
 	rootCmd.AddCommand(publisherRetryCmd)
-	rootCmd.AddCommand(publisherScrapingCmd)
 	rootCmd.AddCommand(publisherPredictionCmd)
 	rootCmd.AddCommand(publisherCreditCmd)
 	rootCmd.AddCommand(publisherFollowCompetitionCmd)

@@ -284,7 +284,7 @@ var publisherScrapingCmd = &cobra.Command{
 				)
 
 				go func() {
-					scrapingFixturesAndNews(db)
+					scrapingNews(db)
 				}()
 			}
 
@@ -571,7 +571,7 @@ func populateFollowTeam(db *gorm.DB, rmq rmqp.AMQP) {
 	}
 }
 
-func scrapingFixturesAndNews(db *gorm.DB) {
+func scrapingNews(db *gorm.DB) {
 	leagueRepo := repository.NewLeagueRepository(db)
 	leagueService := services.NewLeagueService(leagueRepo)
 	teamRepo := repository.NewTeamRepository(db)
@@ -594,7 +594,6 @@ func scrapingFixturesAndNews(db *gorm.DB) {
 		newsService,
 	)
 
-	h.Fixtures()
 	h.News()
 }
 
