@@ -14,7 +14,7 @@ func seederDB(db *gorm.DB) {
 	var content []entity.Content
 	var schedule []entity.Schedule
 	var menu []entity.Menu
-
+	//
 	var countries = []entity.Country{
 		{
 			ID:       1,
@@ -437,6 +437,12 @@ func seederDB(db *gorm.DB) {
 			Channel:  ACT_SMS,
 			Name:     SMS_FOLLOW_COMPETITION_EXPIRE_SUB,
 			Value:    "SMS Alerte: Desole mais votre abonnement pour suivre votre competition vient de se terminer. Pour le renouveler, envoyer au {sc} le nom de l equipe a suivre. {price}{currency}/SMS",
+		},
+		{
+			Category: ACT_CONFIRMATION,
+			Channel:  ACT_SMS,
+			Name:     SMS_CONFIRMATION,
+			Value:    "Info Services FFC: [#157#] USSD /[981] SMS Alerte Equipe /[9009] - SMS Alerte Competition /[###] SMS Alerte a la demande /[944] Credit Goal /[985] Pronostic",
 		},
 		{
 			Category: ACT_CONFIRMATION,
