@@ -72,7 +72,6 @@ func (h *BulkHandler) Prediction() {
 
 		h.subscriptionService.Update(
 			&entity.Subscription{
-				CountryID:     service.GetCountryId(),
 				ServiceID:     service.GetId(),
 				Msisdn:        h.sub.GetMsisdn(),
 				LatestTrxId:   trxId,
@@ -83,18 +82,16 @@ func (h *BulkHandler) Prediction() {
 
 		h.transactionService.Save(
 			&entity.Transaction{
-				TrxId:          trxId,
-				CountryID:      service.GetCountryId(),
-				SubscriptionID: h.sub.GetId(),
-				ServiceID:      service.GetId(),
-				Msisdn:         h.sub.GetMsisdn(),
-				Keyword:        h.sub.GetLatestKeyword(),
-				Status:         STATUS_SUCCESS,
-				StatusCode:     "",
-				StatusDetail:   "",
-				Subject:        SUBJECT_PREDICTION,
-				Payload:        "-",
-				CreatedAt:      time.Now(),
+				TrxId:        trxId,
+				ServiceID:    service.GetId(),
+				Msisdn:       h.sub.GetMsisdn(),
+				Keyword:      h.sub.GetLatestKeyword(),
+				Status:       STATUS_SUCCESS,
+				StatusCode:   "",
+				StatusDetail: "",
+				Subject:      SUBJECT_PREDICTION,
+				Payload:      "-",
+				CreatedAt:    time.Now(),
 			},
 		)
 	}
@@ -125,7 +122,6 @@ func (h *BulkHandler) FollowCompetition() {
 
 		h.subscriptionService.Update(
 			&entity.Subscription{
-				CountryID:     service.GetCountryId(),
 				ServiceID:     service.GetId(),
 				Msisdn:        h.sub.GetMsisdn(),
 				LatestTrxId:   trxId,
@@ -136,18 +132,16 @@ func (h *BulkHandler) FollowCompetition() {
 
 		h.transactionService.Save(
 			&entity.Transaction{
-				TrxId:          trxId,
-				CountryID:      service.GetCountryId(),
-				SubscriptionID: h.sub.GetId(),
-				ServiceID:      service.GetId(),
-				Msisdn:         h.sub.GetMsisdn(),
-				Keyword:        h.sub.GetLatestKeyword(),
-				Status:         STATUS_SUCCESS,
-				StatusCode:     "",
-				StatusDetail:   "",
-				Subject:        SUBJECT_NEWS,
-				Payload:        "-",
-				CreatedAt:      time.Now(),
+				TrxId:        trxId,
+				ServiceID:    service.GetId(),
+				Msisdn:       h.sub.GetMsisdn(),
+				Keyword:      h.sub.GetLatestKeyword(),
+				Status:       STATUS_SUCCESS,
+				StatusCode:   "",
+				StatusDetail: "",
+				Subject:      SUBJECT_NEWS,
+				Payload:      "-",
+				CreatedAt:    time.Now(),
 			},
 		)
 	}
@@ -178,7 +172,6 @@ func (h *BulkHandler) FollowTeam() {
 
 		h.subscriptionService.Update(
 			&entity.Subscription{
-				CountryID:     service.GetCountryId(),
 				ServiceID:     service.GetId(),
 				Msisdn:        h.sub.GetMsisdn(),
 				LatestTrxId:   trxId,
@@ -189,18 +182,16 @@ func (h *BulkHandler) FollowTeam() {
 
 		h.transactionService.Save(
 			&entity.Transaction{
-				TrxId:          trxId,
-				CountryID:      service.GetCountryId(),
-				SubscriptionID: h.sub.GetId(),
-				ServiceID:      service.GetId(),
-				Msisdn:         h.sub.GetMsisdn(),
-				Keyword:        h.sub.GetLatestKeyword(),
-				Status:         STATUS_SUCCESS,
-				StatusCode:     "",
-				StatusDetail:   "",
-				Subject:        SUBJECT_NEWS,
-				Payload:        "-",
-				CreatedAt:      time.Now(),
+				TrxId:        trxId,
+				ServiceID:    service.GetId(),
+				Msisdn:       h.sub.GetMsisdn(),
+				Keyword:      h.sub.GetLatestKeyword(),
+				Status:       STATUS_SUCCESS,
+				StatusCode:   "",
+				StatusDetail: "",
+				Subject:      SUBJECT_NEWS,
+				Payload:      "-",
+				CreatedAt:    time.Now(),
 			},
 		)
 	}

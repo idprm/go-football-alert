@@ -22,6 +22,7 @@ func NewSubscriptionService(
 type ISubscriptionService interface {
 	IsSubscription(int, string) bool
 	IsActiveSubscription(int, string) bool
+	IsActiveSubscriptionByCategory(string, string) bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	Get(int, string) (*entity.Subscription, error)
 	Save(*entity.Subscription) (*entity.Subscription, error)
@@ -29,7 +30,8 @@ type ISubscriptionService interface {
 	Delete(*entity.Subscription) error
 	IsNotActive(*entity.Subscription) (*entity.Subscription, error)
 	IsNotRetry(*entity.Subscription) (*entity.Subscription, error)
-	IsNotFollow(*entity.Subscription) (*entity.Subscription, error)
+	IsNotFollowTeam(*entity.Subscription) (*entity.Subscription, error)
+	IsNotFollowCompetition(*entity.Subscription) (*entity.Subscription, error)
 	IsNotPrediction(*entity.Subscription) (*entity.Subscription, error)
 	FollowCompetition() *[]entity.Subscription
 	FollowTeam() *[]entity.Subscription
@@ -46,6 +48,11 @@ func (s *SubscriptionService) IsSubscription(serviceId int, msisdn string) bool 
 
 func (s *SubscriptionService) IsActiveSubscription(serviceId int, msisdn string) bool {
 	count, _ := s.subscriptionRepo.CountActive(serviceId, msisdn)
+	return count > 0
+}
+
+func (s *SubscriptionService) IsActiveSubscriptionByCategory(category string, msisdn string) bool {
+	count, _ := s.subscriptionRepo.CountActiveByCategory(category, msisdn)
 	return count > 0
 }
 
@@ -77,24 +84,20 @@ func (s *SubscriptionService) IsNotRetry(a *entity.Subscription) (*entity.Subscr
 	return s.subscriptionRepo.IsNotRetry(a)
 }
 
-func (s *SubscriptionService) IsNotFollow(a *entity.Subscription) (*entity.Subscription, error) {
-	return s.subscriptionRepo.IsNotFollow(a)
+func (s *SubscriptionService) IsNotFollowTeam(a *entity.Subscription) (*entity.Subscription, error) {
+	return s.subscriptionRepo.IsNotFollowTeam(a)
+}
+
+func (s *SubscriptionService) IsNotFollowCompetition(a *entity.Subscription) (*entity.Subscription, error) {
+	return s.subscriptionRepo.IsNotFollowCompetition(a)
 }
 
 func (s *SubscriptionService) IsNotPrediction(a *entity.Subscription) (*entity.Subscription, error) {
 	return s.subscriptionRepo.IsNotPrediction(a)
 }
 
-func (s *SubscriptionService) FollowCompetition() *[]entity.Subscription {
-	subs, err := s.subscriptionRepo.FollowCompetition()
-	if err != nil {
-		log.Println(err)
-	}
-	return subs
-}
-
-func (s *SubscriptionService) FollowTeam() *[]entity.Subscription {
-	subs, err := s.subscriptionRepo.FollowTeam()
+func (s *SubscriptionService) CreditGoal() *[]entity.Subscription {
+	subs, err := s.subscriptionRepo.CreditGoal()
 	if err != nil {
 		log.Println(err)
 	}
@@ -109,8 +112,16 @@ func (s *SubscriptionService) Prediction() *[]entity.Subscription {
 	return subs
 }
 
-func (s *SubscriptionService) CreditGoal() *[]entity.Subscription {
-	subs, err := s.subscriptionRepo.CreditGoal()
+func (s *SubscriptionService) FollowTeam() *[]entity.Subscription {
+	subs, err := s.subscriptionRepo.FollowTeam()
+	if err != nil {
+		log.Println(err)
+	}
+	return subs
+}
+
+func (s *SubscriptionService) FollowCompetition() *[]entity.Subscription {
+	subs, err := s.subscriptionRepo.FollowCompetition()
 	if err != nil {
 		log.Println(err)
 	}

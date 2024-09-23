@@ -80,7 +80,6 @@ func (h *RenewalHandler) Dailypush() {
 		if respDeduct.IsFailed() {
 			h.subscriptionService.Update(
 				&entity.Subscription{
-					CountryID:     service.GetCountryId(),
 					ServiceID:     service.GetId(),
 					Msisdn:        h.sub.GetMsisdn(),
 					LatestTrxId:   trxId,
@@ -97,8 +96,6 @@ func (h *RenewalHandler) Dailypush() {
 			h.transactionService.Save(
 				&entity.Transaction{
 					TrxId:          trxId,
-					CountryID:      service.GetCountryId(),
-					SubscriptionID: h.sub.GetId(),
 					ServiceID:      service.GetId(),
 					Msisdn:         h.sub.GetMsisdn(),
 					Keyword:        h.sub.GetLatestKeyword(),
@@ -116,7 +113,6 @@ func (h *RenewalHandler) Dailypush() {
 		} else {
 			h.subscriptionService.Update(
 				&entity.Subscription{
-					CountryID:            service.GetCountryId(),
 					ServiceID:            service.GetId(),
 					Msisdn:               h.sub.GetMsisdn(),
 					LatestTrxId:          trxId,
@@ -135,9 +131,6 @@ func (h *RenewalHandler) Dailypush() {
 
 			h.transactionService.Save(
 				&entity.Transaction{
-					TrxId:          trxId,
-					CountryID:      service.GetCountryId(),
-					SubscriptionID: h.sub.GetId(),
 					ServiceID:      service.GetId(),
 					Msisdn:         h.sub.GetMsisdn(),
 					Keyword:        h.sub.GetLatestKeyword(),

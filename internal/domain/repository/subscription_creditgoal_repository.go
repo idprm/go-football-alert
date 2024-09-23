@@ -17,6 +17,7 @@ func NewSubscriptionCreditGoalRepository(db *gorm.DB) *SubscriptionCreditGoalRep
 
 type ISubscriptionCreditGoalRepository interface {
 	Count(int, int, int) (int64, error)
+	CountBySubId(int) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	Get(int, int, int) (*entity.SubscriptionCreditGoal, error)
 	Save(*entity.SubscriptionCreditGoal) (*entity.SubscriptionCreditGoal, error)
@@ -27,6 +28,15 @@ type ISubscriptionCreditGoalRepository interface {
 func (r *SubscriptionCreditGoalRepository) Count(subId, fixtureId, teamId int) (int64, error) {
 	var count int64
 	err := r.db.Model(&entity.SubscriptionCreditGoal{}).Where(&entity.SubscriptionCreditGoal{SubscriptionID: int64(subId), FixtureID: int64(fixtureId), TeamID: int64(teamId)}).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *SubscriptionCreditGoalRepository) CountBySubId(subId int) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.SubscriptionCreditGoal{}).Where(&entity.SubscriptionCreditGoal{SubscriptionID: int64(subId)}).Count(&count).Error
 	if err != nil {
 		return count, err
 	}

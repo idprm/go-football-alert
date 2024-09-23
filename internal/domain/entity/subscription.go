@@ -9,8 +9,6 @@ import (
 
 type Subscription struct {
 	ID                   int64     `gorm:"primaryKey" json:"id"`
-	CountryID            int       `json:"country_id"`
-	Country              *Country  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"country,omitempty"`
 	ServiceID            int       `json:"service_id"`
 	Service              *Service  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"service,omitempty"`
 	Category             string    `gorm:"size:20" json:"category"`
@@ -43,7 +41,8 @@ type Subscription struct {
 	AfterBalance         float64   `gorm:"default:0" json:"after_balance,omitempty"`
 	ExpireAt             time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"expire_at,omitempty"`
 	IpAddress            string    `gorm:"size:25" json:"ip_address,omitempty"`
-	IsFollow             bool      `gorm:"type:boolean;column:is_follow" json:"is_follow,omitempty"`
+	IsFollowTeam         bool      `gorm:"type:boolean;column:is_follow_team" json:"is_follow_team,omitempty"`
+	IsFollowCompetition         bool      `gorm:"type:boolean;column:is_follow_competition" json:"is_follow_competition,omitempty"`
 	IsPrediction         bool      `gorm:"type:boolean;column:is_prediction" json:"is_prediction,omitempty"`
 	IsCreditGoal         bool      `gorm:"type:boolean;column:is_credit_goal" json:"is_credit_goal,omitempty"`
 	IsRetry              bool      `gorm:"type:boolean;column:is_retry" json:"is_retry,omitempty"`
@@ -100,8 +99,12 @@ func (s *Subscription) SetIsPrediction(v bool) {
 	s.IsPrediction = v
 }
 
-func (s *Subscription) SetIsFollow(v bool) {
-	s.IsFollow = v
+func (s *Subscription) SetIsFollowTeam(v bool) {
+	s.IsFollowCompetition = v
+}
+
+func (s *Subscription) SetIsFollowCompetition(v bool) {
+	s.IsFollowCompetition = v
 }
 
 func (s *Subscription) SetIsRetry(v bool) {

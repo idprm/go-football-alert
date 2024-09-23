@@ -43,7 +43,7 @@ func (l *Logger) Init(path string, display bool) *logrus.Logger {
 
 func (l *Logger) Writer(data interface{}) {
 	//create your file with desired read/write permissions
-	f, err := os.OpenFile(PATH_LOG+"/http/log-"+time.Now().Format("2006-01-02")+".log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	f, err := os.OpenFile(PATH_LOG+"/http/http-"+time.Now().Format("2006-01-02")+".log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatal(err)
 	}

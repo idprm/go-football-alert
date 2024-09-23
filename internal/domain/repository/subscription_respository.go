@@ -20,6 +20,7 @@ func NewSubscriptionRepository(db *gorm.DB) *SubscriptionRepository {
 type ISubscriptionRepository interface {
 	Count(int, string) (int64, error)
 	CountActive(int, string) (int64, error)
+	CountActiveByCategory(string, string) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	Get(int, string) (*entity.Subscription, error)
 	Save(*entity.Subscription) (*entity.Subscription, error)
@@ -27,13 +28,14 @@ type ISubscriptionRepository interface {
 	Delete(*entity.Subscription) error
 	IsNotActive(*entity.Subscription) (*entity.Subscription, error)
 	IsNotRetry(*entity.Subscription) (*entity.Subscription, error)
-	IsNotFollow(*entity.Subscription) (*entity.Subscription, error)
+	IsNotFollowTeam(*entity.Subscription) (*entity.Subscription, error)
+	IsNotFollowCompetition(*entity.Subscription) (*entity.Subscription, error)
 	IsNotPrediction(*entity.Subscription) (*entity.Subscription, error)
 	IsNotCreditGoal(*entity.Subscription) (*entity.Subscription, error)
 	CreditGoal() (*[]entity.Subscription, error)
 	Prediction() (*[]entity.Subscription, error)
-	FollowCompetition() (*[]entity.Subscription, error)
 	FollowTeam() (*[]entity.Subscription, error)
+	FollowCompetition() (*[]entity.Subscription, error)
 	Renewal() (*[]entity.Subscription, error)
 	Retry() (*[]entity.Subscription, error)
 }
@@ -50,6 +52,15 @@ func (r *SubscriptionRepository) Count(serviceId int, msisdn string) (int64, err
 func (r *SubscriptionRepository) CountActive(serviceId int, msisdn string) (int64, error) {
 	var count int64
 	err := r.db.Model(&entity.Subscription{}).Where("service_id = ?", serviceId).Where("msisdn = ?", msisdn).Where("is_active = ?", true).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *SubscriptionRepository) CountActiveByCategory(category string, msisdn string) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Subscription{}).Where("category = ?", category).Where("msisdn = ?", msisdn).Where("is_active = ?", true).Count(&count).Error
 	if err != nil {
 		return count, err
 	}
@@ -115,8 +126,16 @@ func (r *SubscriptionRepository) IsNotRetry(c *entity.Subscription) (*entity.Sub
 	return c, nil
 }
 
-func (r *SubscriptionRepository) IsNotFollow(c *entity.Subscription) (*entity.Subscription, error) {
-	err := r.db.Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Updates(map[string]interface{}{"updated_at": time.Now(), "is_follow": false}).Error
+func (r *SubscriptionRepository) IsNotFollowTeam(c *entity.Subscription) (*entity.Subscription, error) {
+	err := r.db.Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Updates(map[string]interface{}{"updated_at": time.Now(), "is_follow_team": false}).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
+func (r *SubscriptionRepository) IsNotFollowCompetition(c *entity.Subscription) (*entity.Subscription, error) {
+	err := r.db.Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Updates(map[string]interface{}{"updated_at": time.Now(), "is_follow_competition": false}).Error
 	if err != nil {
 		return nil, err
 	}
@@ -141,7 +160,7 @@ func (r *SubscriptionRepository) IsNotCreditGoal(c *entity.Subscription) (*entit
 
 func (r *SubscriptionRepository) FollowCompetition() (*[]entity.Subscription, error) {
 	var sub []entity.Subscription
-	err := r.db.Where(&entity.Subscription{IsFollow: true, IsActive: true}).Find(&sub).Error
+	err := r.db.Where(&entity.Subscription{IsFollowCompetition: true, IsActive: true}).Find(&sub).Error
 	if err != nil {
 		return nil, err
 	}
@@ -151,7 +170,7 @@ func (r *SubscriptionRepository) FollowCompetition() (*[]entity.Subscription, er
 
 func (r *SubscriptionRepository) FollowTeam() (*[]entity.Subscription, error) {
 	var sub []entity.Subscription
-	err := r.db.Where(&entity.Subscription{IsFollow: true, IsActive: true}).Find(&sub).Error
+	err := r.db.Where(&entity.Subscription{IsFollowTeam: true, IsActive: true}).Find(&sub).Error
 	if err != nil {
 		return nil, err
 	}

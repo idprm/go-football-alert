@@ -71,7 +71,6 @@ func (h *MOHandler) Firstpush() {
 	}
 
 	subscription := &entity.Subscription{
-		CountryID:     service.GetCountryId(),
 		ServiceID:     service.GetId(),
 		Category:      service.GetCategory(),
 		Msisdn:        h.req.GetMsisdn(),
@@ -116,7 +115,6 @@ func (h *MOHandler) Firstpush() {
 	if respDeduct.IsFailed() {
 		h.subscriptionService.Update(
 			&entity.Subscription{
-				CountryID:     service.GetCountryId(),
 				ServiceID:     service.GetId(),
 				Msisdn:        h.req.GetMsisdn(),
 				LatestTrxId:   trxId,
@@ -132,17 +130,15 @@ func (h *MOHandler) Firstpush() {
 
 		h.transactionService.Save(
 			&entity.Transaction{
-				TrxId:          trxId,
-				CountryID:      service.GetCountryId(),
-				SubscriptionID: sub.GetId(),
-				ServiceID:      service.GetId(),
-				Msisdn:         h.req.GetMsisdn(),
-				Keyword:        h.req.GetKeyword(),
-				Status:         STATUS_FAILED,
-				StatusCode:     respDeduct.GetFaultCode(),
-				StatusDetail:   respDeduct.GetFaultString(),
-				Subject:        SUBJECT_FIRSTPUSH,
-				Payload:        string(deductFee),
+				TrxId:        trxId,
+				ServiceID:    service.GetId(),
+				Msisdn:       h.req.GetMsisdn(),
+				Keyword:      h.req.GetKeyword(),
+				Status:       STATUS_FAILED,
+				StatusCode:   respDeduct.GetFaultCode(),
+				StatusDetail: respDeduct.GetFaultString(),
+				Subject:      SUBJECT_FIRSTPUSH,
+				Payload:      string(deductFee),
 			},
 		)
 
@@ -164,7 +160,6 @@ func (h *MOHandler) Firstpush() {
 	} else {
 		h.subscriptionService.Update(
 			&entity.Subscription{
-				CountryID:            service.GetCountryId(),
 				ServiceID:            service.GetId(),
 				Msisdn:               h.req.GetMsisdn(),
 				LatestTrxId:          trxId,
@@ -183,19 +178,17 @@ func (h *MOHandler) Firstpush() {
 
 		h.transactionService.Save(
 			&entity.Transaction{
-				TrxId:          trxId,
-				CountryID:      service.GetCountryId(),
-				SubscriptionID: sub.GetId(),
-				ServiceID:      service.GetId(),
-				Msisdn:         h.req.GetMsisdn(),
-				Keyword:        h.req.GetKeyword(),
-				Amount:         service.GetPrice(),
-				Status:         STATUS_SUCCESS,
-				StatusCode:     "",
-				StatusDetail:   "",
-				Subject:        SUBJECT_FIRSTPUSH,
-				Payload:        string(deductFee),
-				CreatedAt:      time.Now(),
+				TrxId:        trxId,
+				ServiceID:    service.GetId(),
+				Msisdn:       h.req.GetMsisdn(),
+				Keyword:      h.req.GetKeyword(),
+				Amount:       service.GetPrice(),
+				Status:       STATUS_SUCCESS,
+				StatusCode:   "",
+				StatusDetail: "",
+				Subject:      SUBJECT_FIRSTPUSH,
+				Payload:      string(deductFee),
+				CreatedAt:    time.Now(),
 			},
 		)
 
@@ -255,7 +248,6 @@ func (h *MOHandler) Firstpush() {
 	// count total sub
 	h.subscriptionService.Update(
 		&entity.Subscription{
-			CountryID: service.GetCountryId(),
 			ServiceID: service.GetId(),
 			Msisdn:    h.req.GetMsisdn(),
 			TotalSub:  sub.TotalSub + 1,
@@ -284,7 +276,6 @@ func (h *MOHandler) Unsub() {
 
 	h.subscriptionService.Update(
 		&entity.Subscription{
-			CountryID:     service.GetCountryId(),
 			ServiceID:     service.GetId(),
 			Msisdn:        h.req.GetMsisdn(),
 			LatestTrxId:   trxId,
@@ -297,7 +288,6 @@ func (h *MOHandler) Unsub() {
 	)
 
 	s := &entity.Subscription{
-		CountryID: service.GetCountryId(),
 		ServiceID: service.GetId(),
 		Msisdn:    h.req.GetMsisdn(),
 	}
@@ -323,7 +313,6 @@ func (h *MOHandler) Unsub() {
 
 	h.subscriptionService.Update(
 		&entity.Subscription{
-			CountryID:  service.GetCountryId(),
 			ServiceID:  service.GetId(),
 			Msisdn:     h.req.GetMsisdn(),
 			TotalUnsub: sub.TotalUnsub + 1,
@@ -332,19 +321,17 @@ func (h *MOHandler) Unsub() {
 
 	h.transactionService.Save(
 		&entity.Transaction{
-			TrxId:          trxId,
-			CountryID:      service.GetCountryId(),
-			SubscriptionID: sub.GetId(),
-			ServiceID:      service.GetId(),
-			Msisdn:         h.req.GetMsisdn(),
-			Keyword:        h.req.GetKeyword(),
-			Status:         STATUS_SUCCESS,
-			StatusCode:     "",
-			StatusDetail:   "",
-			Subject:        SUBJECT_UNSUB,
-			IpAddress:      h.req.GetIpAddress(),
-			Payload:        "",
-			CreatedAt:      time.Now(),
+			TrxId:        trxId,
+			ServiceID:    service.GetId(),
+			Msisdn:       h.req.GetMsisdn(),
+			Keyword:      h.req.GetKeyword(),
+			Status:       STATUS_SUCCESS,
+			StatusCode:   "",
+			StatusDetail: "",
+			Subject:      SUBJECT_UNSUB,
+			IpAddress:    h.req.GetIpAddress(),
+			Payload:      "",
+			CreatedAt:    time.Now(),
 		},
 	)
 

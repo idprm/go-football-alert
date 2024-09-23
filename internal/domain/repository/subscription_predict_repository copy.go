@@ -17,6 +17,7 @@ func NewSubscriptionPredictRepository(db *gorm.DB) *SubscriptionPredictRepositor
 
 type ISubscriptionPredictRepository interface {
 	Count(int, int, int) (int64, error)
+	CountBySubId(int) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	Get(int, int, int) (*entity.SubscriptionPredict, error)
 	Save(*entity.SubscriptionPredict) (*entity.SubscriptionPredict, error)
@@ -27,6 +28,15 @@ type ISubscriptionPredictRepository interface {
 func (r *SubscriptionPredictRepository) Count(subId, fixtureId, teamId int) (int64, error) {
 	var count int64
 	err := r.db.Model(&entity.SubscriptionPredict{}).Where(&entity.SubscriptionPredict{SubscriptionID: int64(subId), FixtureID: int64(fixtureId), TeamID: int64(teamId)}).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *SubscriptionPredictRepository) CountBySubId(subId int) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.SubscriptionPredict{}).Where(&entity.SubscriptionPredict{SubscriptionID: int64(subId)}).Count(&count).Error
 	if err != nil {
 		return count, err
 	}

@@ -17,6 +17,7 @@ func NewSubscriptionCreditGoalService(subCreditGoalRepo repository.ISubscription
 
 type ISubscriptionCreditGoalService interface {
 	IsSubCreditGoal(int, int, int) bool
+	IsSubCreditGoalBySubId(int) bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	Get(int, int, int) (*entity.SubscriptionCreditGoal, error)
 	Save(*entity.SubscriptionCreditGoal) (*entity.SubscriptionCreditGoal, error)
@@ -26,6 +27,11 @@ type ISubscriptionCreditGoalService interface {
 
 func (s *SubscriptionCreditGoalService) IsSubCreditGoal(subId, fixtureId, teamId int) bool {
 	count, _ := s.subCreditGoalRepo.Count(subId, fixtureId, teamId)
+	return count > 0
+}
+
+func (s *SubscriptionCreditGoalService) IsSubCreditGoalBySubId(subId int) bool {
+	count, _ := s.subCreditGoalRepo.CountBySubId(subId)
 	return count > 0
 }
 

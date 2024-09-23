@@ -2,6 +2,8 @@ package model
 
 import (
 	"strings"
+
+	"github.com/idprm/go-football-alert/internal/domain/entity"
 )
 
 const (
@@ -236,6 +238,10 @@ type SMSRequest struct {
 	Text     string `query:"text,omitempty"`
 }
 
+func (m *SMSRequest) GetSmsc() string {
+	return m.Smsc
+}
+
 func (m *SMSRequest) GetFrom() string {
 	return m.From
 }
@@ -254,6 +260,39 @@ func (m *SMSRequest) IsInfo() bool {
 
 func (m *SMSRequest) IsStop() bool {
 	return m.GetText() == "STOP"
+}
+
+func (m *SMSRequest) IsCreditGoal() bool {
+	return m.GetSmsc() == "8021"
+}
+
+func (m *SMSRequest) IsPrediction() bool {
+	return m.GetSmsc() == "8033"
+}
+
+func (m *SMSRequest) IsFollowTeam() bool {
+	return m.GetSmsc() == "8023"
+}
+
+func (m *SMSRequest) IsFollowCompetition() bool {
+	return m.GetSmsc() == "8024"
+}
+
+func (m *SMSRequest) IsChooseService() bool {
+	return m.GetText() == "1" || m.GetText() == "2" || m.GetText() == "3"
+}
+
+func (m *SMSRequest) GetServiceByNumber() string {
+	switch m.GetText() {
+	case "1":
+		return "daily"
+	case "2":
+		return "weekly"
+	case "3":
+		return "monthly"
+	default:
+		return ""
+	}
 }
 
 type MORequest struct {
@@ -308,6 +347,12 @@ func (s *MORequest) GetIpAddress() string {
 	return s.IpAddress
 }
 
+type MTRequest struct {
+	Smsc         string               `json:"smsc,omitempty"`
+	Content      *entity.Content      `json:"content,omitempty"`
+	Subscription *entity.Subscription `json:"subscription,omitempty"`
+}
+
 type ErrorResponse struct {
 	FailedField string `json:"failed_field" xml:"failed_field"`
 	Tag         string `json:"tag" xml:"tag"`
@@ -320,16 +365,4 @@ type AfricasTalkingRequest struct {
 	ServiceCode string `form:"serviceCode" json:"service_code"`
 	PhoneNumber string `form:"phoneNumber" json:"phone_number"`
 	Text        string `form:"text" json:"text"`
-}
-
-func (r *AfricasTalkingRequest) IsFirst() bool {
-	return r.Text == ""
-}
-
-func (r *AfricasTalkingRequest) IsOne() bool {
-	return r.Text == "1"
-}
-
-func (r *AfricasTalkingRequest) IsTwo() bool {
-	return r.Text == "2"
 }

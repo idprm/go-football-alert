@@ -80,7 +80,6 @@ func (h *CreditGoalHandler) CreditGoal() {
 
 		h.subscriptionService.Update(
 			&entity.Subscription{
-				CountryID:     service.GetCountryId(),
 				ServiceID:     service.GetId(),
 				Msisdn:        h.sub.GetMsisdn(),
 				LatestTrxId:   trxId,
@@ -92,8 +91,6 @@ func (h *CreditGoalHandler) CreditGoal() {
 		h.transactionService.Save(
 			&entity.Transaction{
 				TrxId:          trxId,
-				CountryID:      service.GetCountryId(),
-				SubscriptionID: h.sub.GetId(),
 				ServiceID:      service.GetId(),
 				Msisdn:         h.sub.GetMsisdn(),
 				Keyword:        h.sub.GetLatestKeyword(),

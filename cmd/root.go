@@ -43,6 +43,8 @@ const (
 	RMQ_SMS_QUEUE                   string = "Q_SMS"
 	RMQ_MO_EXCHANGE                 string = "E_MO"
 	RMQ_MO_QUEUE                    string = "Q_MO"
+	RMQ_MT_EXCHANGE                 string = "E_MT"
+	RMQ_MT_QUEUE                    string = "Q_MT"
 	RMQ_RENEWAL_EXCHANGE            string = "E_RENEWAL"
 	RMQ_RENEWAL_QUEUE               string = "Q_RENEWAL"
 	RMQ_RETRY_EXCHANGE              string = "E_RETRY"
@@ -102,6 +104,7 @@ const (
 	SMS_FOLLOW_COMPETITION_SUB           string = "FOLLOW_COMPETITION_SUB"
 	SMS_FOLLOW_COMPETITION_INVALID_SUB   string = "FOLLOW_COMPETITION_INVALID_SUB"
 	SMS_FOLLOW_COMPETITION_EXPIRE_SUB    string = "FOLLOW_COMPETITION_EXPIRE_SUB"
+	SMS_CONFIRMATION                     string = "CONFIRMATION"
 	SMS_INFO                             string = "INFO"
 	SMS_STOP                             string = "STOP"
 )
@@ -130,12 +133,13 @@ func init() {
 	rootCmd.AddCommand(consumerUSSDCmd)
 	rootCmd.AddCommand(consumerSMSCmd)
 	rootCmd.AddCommand(consumerMOCmd)
+	rootCmd.AddCommand(consumerMTCmd)
 	rootCmd.AddCommand(consumerRenewalCmd)
 	rootCmd.AddCommand(consumerRetryCmd)
-	rootCmd.AddCommand(consumerPredictionCmd)
 	rootCmd.AddCommand(consumerCreditGoalCmd)
-	rootCmd.AddCommand(consumerFollowCompetitionCmd)
+	rootCmd.AddCommand(consumerPredictionCmd)
 	rootCmd.AddCommand(consumerFollowTeamCmd)
+	rootCmd.AddCommand(consumerFollowCompetitionCmd)
 
 	/**
 	 * Publisher Scraping service
@@ -143,10 +147,10 @@ func init() {
 	rootCmd.AddCommand(publisherScrapingCmd)
 	rootCmd.AddCommand(publisherRenewalCmd)
 	rootCmd.AddCommand(publisherRetryCmd)
-	rootCmd.AddCommand(publisherPredictionCmd)
 	rootCmd.AddCommand(publisherCreditCmd)
-	rootCmd.AddCommand(publisherFollowCompetitionCmd)
+	rootCmd.AddCommand(publisherPredictionCmd)
 	rootCmd.AddCommand(publisherFollowTeamCmd)
+	rootCmd.AddCommand(publisherFollowCompetitionCmd)
 
 	// Test command
 	rootCmd.AddCommand(consumerTestCmd)

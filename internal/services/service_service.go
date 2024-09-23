@@ -18,9 +18,11 @@ func NewServiceService(serviceRepo repository.IServiceRepository) *ServiceServic
 type IServiceService interface {
 	IsService(string) bool
 	IsServiceById(int) bool
+	IsServiceByPackage(string, string) bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	Get(string) (*entity.Service, error)
 	GetById(int) (*entity.Service, error)
+	GetByPackage(string, string) (*entity.Service, error)
 	Save(*entity.Service) (*entity.Service, error)
 	Update(*entity.Service) (*entity.Service, error)
 	Delete(*entity.Service) error
@@ -36,6 +38,11 @@ func (s *ServiceService) IsServiceById(id int) bool {
 	return count > 0
 }
 
+func (s *ServiceService) IsServiceByPackage(category, pkg string) bool {
+	count, _ := s.serviceRepo.CountByPackage(category, pkg)
+	return count > 0
+}
+
 func (s *ServiceService) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {
 	return s.serviceRepo.GetAllPaginate(pagination)
 }
@@ -46,6 +53,10 @@ func (s *ServiceService) Get(code string) (*entity.Service, error) {
 
 func (s *ServiceService) GetById(id int) (*entity.Service, error) {
 	return s.serviceRepo.GetById(id)
+}
+
+func (s *ServiceService) GetByPackage(category, pkg string) (*entity.Service, error) {
+	return s.serviceRepo.GetByPackage(category, pkg)
 }
 
 func (s *ServiceService) Save(a *entity.Service) (*entity.Service, error) {

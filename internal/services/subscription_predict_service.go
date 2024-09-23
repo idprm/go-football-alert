@@ -17,6 +17,7 @@ func NewSubscriptionPredictService(subPredictRepo repository.ISubscriptionPredic
 
 type ISubscriptionPredictService interface {
 	IsSubPredict(int, int, int) bool
+	IsSubPredictBySubId(int) bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	Get(int, int, int) (*entity.SubscriptionPredict, error)
 	Save(*entity.SubscriptionPredict) (*entity.SubscriptionPredict, error)
@@ -26,6 +27,11 @@ type ISubscriptionPredictService interface {
 
 func (s *SubscriptionPredictService) IsSubPredict(subId, fixtureId, teamId int) bool {
 	count, _ := s.subPredictRepo.Count(subId, fixtureId, teamId)
+	return count > 0
+}
+
+func (s *SubscriptionPredictService) IsSubPredictBySubId(subId int) bool {
+	count, _ := s.subPredictRepo.CountBySubId(subId)
 	return count > 0
 }
 

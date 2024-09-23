@@ -81,7 +81,6 @@ func (h *RetryHandler) Firstpush() {
 		if !respDeduct.IsFailed() {
 			h.subscriptionService.Update(
 				&entity.Subscription{
-					CountryID:            service.GetCountryId(),
 					ServiceID:            service.GetId(),
 					Msisdn:               h.sub.GetMsisdn(),
 					LatestTrxId:          trxId,
@@ -100,19 +99,17 @@ func (h *RetryHandler) Firstpush() {
 
 			h.transactionService.Save(
 				&entity.Transaction{
-					TrxId:          trxId,
-					CountryID:      service.GetCountryId(),
-					SubscriptionID: h.sub.GetId(),
-					ServiceID:      service.GetId(),
-					Msisdn:         h.sub.GetMsisdn(),
-					Keyword:        h.sub.GetLatestKeyword(),
-					Amount:         service.GetPrice(),
-					Status:         STATUS_SUCCESS,
-					StatusCode:     "",
-					StatusDetail:   "",
-					Subject:        SUBJECT_FIRSTPUSH,
-					Payload:        string(resp),
-					CreatedAt:      time.Now(),
+					TrxId:        trxId,
+					ServiceID:    service.GetId(),
+					Msisdn:       h.sub.GetMsisdn(),
+					Keyword:      h.sub.GetLatestKeyword(),
+					Amount:       service.GetPrice(),
+					Status:       STATUS_SUCCESS,
+					StatusCode:   "",
+					StatusDetail: "",
+					Subject:      SUBJECT_FIRSTPUSH,
+					Payload:      string(resp),
+					CreatedAt:    time.Now(),
 				},
 			)
 
@@ -167,7 +164,6 @@ func (h *RetryHandler) Dailypush() {
 		if !respDeduct.IsFailed() {
 			h.subscriptionService.Update(
 				&entity.Subscription{
-					CountryID:          service.GetCountryId(),
 					ServiceID:          service.GetId(),
 					Msisdn:             h.sub.GetMsisdn(),
 					LatestTrxId:        trxId,
@@ -186,19 +182,17 @@ func (h *RetryHandler) Dailypush() {
 
 			h.transactionService.Save(
 				&entity.Transaction{
-					TrxId:          trxId,
-					CountryID:      service.GetCountryId(),
-					SubscriptionID: h.sub.GetId(),
-					ServiceID:      service.GetId(),
-					Msisdn:         h.sub.GetMsisdn(),
-					Keyword:        h.sub.GetLatestKeyword(),
-					Amount:         service.GetPrice(),
-					Status:         STATUS_SUCCESS,
-					StatusCode:     "",
-					StatusDetail:   "",
-					Subject:        SUBJECT_RENEWAL,
-					Payload:        string(resp),
-					CreatedAt:      time.Now(),
+					TrxId:        trxId,
+					ServiceID:    service.GetId(),
+					Msisdn:       h.sub.GetMsisdn(),
+					Keyword:      h.sub.GetLatestKeyword(),
+					Amount:       service.GetPrice(),
+					Status:       STATUS_SUCCESS,
+					StatusCode:   "",
+					StatusDetail: "",
+					Subject:      SUBJECT_RENEWAL,
+					Payload:      string(resp),
+					CreatedAt:    time.Now(),
 				},
 			)
 

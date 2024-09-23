@@ -112,6 +112,7 @@ func (p *Processor) SMS(wg *sync.WaitGroup, message []byte) {
 
 	h := handler.NewSMSHandler(
 		p.rmq,
+		p.rds,
 		p.logger,
 		serviceService,
 		contentService,
@@ -188,6 +189,22 @@ func (p *Processor) MO(wg *sync.WaitGroup, message []byte) {
 			}
 		}
 	}
+
+	wg.Done()
+}
+
+func (p *Processor) MT(wg *sync.WaitGroup, message []byte) {
+
+	var req *model.MTRequest
+	json.Unmarshal([]byte(message), &req)
+
+	h := handler.NewMTHandler(
+		p.rmq,
+		p.logger,
+		req,
+	)
+
+	h.MessageTerminated()
 
 	wg.Done()
 }
