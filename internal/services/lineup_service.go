@@ -16,14 +16,14 @@ func NewLineupService(lineupRepo repository.ILineupRepository) *LineupService {
 }
 
 type ILineupService interface {
-	IsLineup(string) bool
-	IsLineupByPrimaryId(int) bool
+	IsLineup(int) bool
+	IsLineupByFixtureId(int) bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
-	Get(string) (*entity.Lineup, error)
-	GetByPrimaryId(int) (*entity.Lineup, error)
+	Get(int) (*entity.Lineup, error)
+	GetByFixtureId(int) (*entity.Lineup, error)
 	Save(*entity.Lineup) (*entity.Lineup, error)
 	Update(*entity.Lineup) (*entity.Lineup, error)
-	UpdateByPrimaryId(*entity.Lineup) (*entity.Lineup, error)
+	UpdateByFixtureId(*entity.Lineup) (*entity.Lineup, error)
 	Delete(*entity.Lineup) error
 }
 
@@ -32,8 +32,8 @@ func (s *LineupService) IsLineup(fixtureId int) bool {
 	return count > 0
 }
 
-func (s *LineupService) IsLineupByPrimaryId(primaryId int) bool {
-	count, _ := s.lineupRepo.CountByPrimaryId(primaryId)
+func (s *LineupService) IsLineupByFixtureId(primaryId int) bool {
+	count, _ := s.lineupRepo.CountByFixtureId(primaryId)
 	return count > 0
 }
 
@@ -45,8 +45,8 @@ func (s *LineupService) Get(fixtureId int) (*entity.Lineup, error) {
 	return s.lineupRepo.Get(fixtureId)
 }
 
-func (s *LineupService) GetByPrimaryId(primaryId int) (*entity.Lineup, error) {
-	return s.lineupRepo.GetByPrimaryId(primaryId)
+func (s *LineupService) GetByFixtureId(fixtureId int) (*entity.Lineup, error) {
+	return s.lineupRepo.GetByFixtureId(fixtureId)
 }
 
 func (s *LineupService) Save(a *entity.Lineup) (*entity.Lineup, error) {
@@ -57,8 +57,8 @@ func (s *LineupService) Update(a *entity.Lineup) (*entity.Lineup, error) {
 	return s.lineupRepo.Update(a)
 }
 
-func (s *LineupService) UpdateByPrimaryId(a *entity.Lineup) (*entity.Lineup, error) {
-	return s.lineupRepo.UpdateByPrimaryId(a)
+func (s *LineupService) UpdateByFixtureId(a *entity.Lineup) (*entity.Lineup, error) {
+	return s.lineupRepo.UpdateByFixtureId(a)
 }
 
 func (s *LineupService) Delete(a *entity.Lineup) error {

@@ -17,13 +17,13 @@ func NewLineupRepository(db *gorm.DB) *LineupRepository {
 
 type ILineupRepository interface {
 	Count(int) (int64, error)
-	CountByPrimaryId(int) (int64, error)
+	CountByFixtureId(int) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	Get(int) (*entity.Lineup, error)
-	GetByPrimaryId(int) (*entity.Lineup, error)
+	GetByFixtureId(int) (*entity.Lineup, error)
 	Save(*entity.Lineup) (*entity.Lineup, error)
 	Update(*entity.Lineup) (*entity.Lineup, error)
-	UpdateByPrimaryId(*entity.Lineup) (*entity.Lineup, error)
+	UpdateByFixtureId(*entity.Lineup) (*entity.Lineup, error)
 	Delete(*entity.Lineup) error
 }
 
@@ -36,9 +36,9 @@ func (r *LineupRepository) Count(id int) (int64, error) {
 	return count, nil
 }
 
-func (r *LineupRepository) CountByPrimaryId(primaryId int) (int64, error) {
+func (r *LineupRepository) CountByFixtureId(fixtureId int) (int64, error) {
 	var count int64
-	err := r.db.Model(&entity.Lineup{}).Where("primary_id = ?", primaryId).Count(&count).Error
+	err := r.db.Model(&entity.Lineup{}).Where("fixture_id = ?", fixtureId).Count(&count).Error
 	if err != nil {
 		return count, err
 	}
@@ -64,9 +64,9 @@ func (r *LineupRepository) Get(id int) (*entity.Lineup, error) {
 	return &c, nil
 }
 
-func (r *LineupRepository) GetByPrimaryId(primaryId int) (*entity.Lineup, error) {
+func (r *LineupRepository) GetByFixtureId(fixtureId int) (*entity.Lineup, error) {
 	var c entity.Lineup
-	err := r.db.Where("primary_id = ?", primaryId).Take(&c).Error
+	err := r.db.Where("fixture_id = ?", fixtureId).Take(&c).Error
 	if err != nil {
 		return nil, err
 	}
@@ -89,8 +89,8 @@ func (r *LineupRepository) Update(c *entity.Lineup) (*entity.Lineup, error) {
 	return c, nil
 }
 
-func (r *LineupRepository) UpdateByPrimaryId(c *entity.Lineup) (*entity.Lineup, error) {
-	err := r.db.Where("primary_id = ?", c.PrimaryID).Updates(&c).Error
+func (r *LineupRepository) UpdateByFixtureId(c *entity.Lineup) (*entity.Lineup, error) {
+	err := r.db.Where("fixture_id = ?", c.FixtureID).Updates(&c).Error
 	if err != nil {
 		return nil, err
 	}

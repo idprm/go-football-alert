@@ -582,6 +582,8 @@ func scrapingNews(db *gorm.DB) {
 	predictionService := services.NewPredictionService(predictionRepo)
 	standingRepo := repository.NewStandingRepository(db)
 	standingService := services.NewStandingService(standingRepo)
+	lineupRepo := repository.NewLineupRepository(db)
+	lineupService := services.NewLineupService(lineupRepo)
 	newsRepo := repository.NewNewsRepository(db)
 	newsService := services.NewNewsService(newsRepo)
 
@@ -591,6 +593,7 @@ func scrapingNews(db *gorm.DB) {
 		fixtureService,
 		predictionService,
 		standingService,
+		lineupService,
 		newsService,
 	)
 
@@ -608,6 +611,8 @@ func scrapingLeagues(db *gorm.DB) {
 	predictionService := services.NewPredictionService(predictionRepo)
 	standingRepo := repository.NewStandingRepository(db)
 	standingService := services.NewStandingService(standingRepo)
+	lineupRepo := repository.NewLineupRepository(db)
+	lineupService := services.NewLineupService(lineupRepo)
 	newsRepo := repository.NewNewsRepository(db)
 	newsService := services.NewNewsService(newsRepo)
 
@@ -617,6 +622,7 @@ func scrapingLeagues(db *gorm.DB) {
 		fixtureService,
 		predictionService,
 		standingService,
+		lineupService,
 		newsService,
 	)
 
@@ -634,6 +640,8 @@ func scrapingTeams(db *gorm.DB) {
 	predictionService := services.NewPredictionService(predictionRepo)
 	standingRepo := repository.NewStandingRepository(db)
 	standingService := services.NewStandingService(standingRepo)
+	lineupRepo := repository.NewLineupRepository(db)
+	lineupService := services.NewLineupService(lineupRepo)
 	newsRepo := repository.NewNewsRepository(db)
 	newsService := services.NewNewsService(newsRepo)
 
@@ -643,6 +651,7 @@ func scrapingTeams(db *gorm.DB) {
 		fixtureService,
 		predictionService,
 		standingService,
+		lineupService,
 		newsService,
 	)
 	h.Teams()
@@ -659,6 +668,8 @@ func scrapingFixtures(db *gorm.DB) {
 	predictionService := services.NewPredictionService(predictionRepo)
 	standingRepo := repository.NewStandingRepository(db)
 	standingService := services.NewStandingService(standingRepo)
+	lineupRepo := repository.NewLineupRepository(db)
+	lineupService := services.NewLineupService(lineupRepo)
 	newsRepo := repository.NewNewsRepository(db)
 	newsService := services.NewNewsService(newsRepo)
 
@@ -668,6 +679,7 @@ func scrapingFixtures(db *gorm.DB) {
 		fixtureService,
 		predictionService,
 		standingService,
+		lineupService,
 		newsService,
 	)
 
@@ -685,6 +697,8 @@ func scrapingPredictions(db *gorm.DB) {
 	predictionService := services.NewPredictionService(predictionRepo)
 	standingRepo := repository.NewStandingRepository(db)
 	standingService := services.NewStandingService(standingRepo)
+	lineupRepo := repository.NewLineupRepository(db)
+	lineupService := services.NewLineupService(lineupRepo)
 	newsRepo := repository.NewNewsRepository(db)
 	newsService := services.NewNewsService(newsRepo)
 
@@ -694,6 +708,7 @@ func scrapingPredictions(db *gorm.DB) {
 		fixtureService,
 		predictionService,
 		standingService,
+		lineupService,
 		newsService,
 	)
 
@@ -711,6 +726,8 @@ func scrapingStandings(db *gorm.DB) {
 	predictionService := services.NewPredictionService(predictionRepo)
 	standingRepo := repository.NewStandingRepository(db)
 	standingService := services.NewStandingService(standingRepo)
+	lineupRepo := repository.NewLineupRepository(db)
+	lineupService := services.NewLineupService(lineupRepo)
 	newsRepo := repository.NewNewsRepository(db)
 	newsService := services.NewNewsService(newsRepo)
 
@@ -720,6 +737,7 @@ func scrapingStandings(db *gorm.DB) {
 		fixtureService,
 		predictionService,
 		standingService,
+		lineupService,
 		newsService,
 	)
 
@@ -737,6 +755,8 @@ func scrapingLineups(db *gorm.DB) {
 	predictionService := services.NewPredictionService(predictionRepo)
 	standingRepo := repository.NewStandingRepository(db)
 	standingService := services.NewStandingService(standingRepo)
+	lineupRepo := repository.NewLineupRepository(db)
+	lineupService := services.NewLineupService(lineupRepo)
 	newsRepo := repository.NewNewsRepository(db)
 	newsService := services.NewNewsService(newsRepo)
 
@@ -746,6 +766,7 @@ func scrapingLineups(db *gorm.DB) {
 		fixtureService,
 		predictionService,
 		standingService,
+		lineupService,
 		newsService,
 	)
 

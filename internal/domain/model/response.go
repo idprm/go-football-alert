@@ -62,6 +62,11 @@ type StandingResult struct {
 	Response []ResponseStandingAPI `json:"response"`
 }
 
+type LineupResult struct {
+	Results  int                 `json:"results"`
+	Response []ResponseLineupAPI `json:"response"`
+}
+
 type ResponseLeagueAPI struct {
 	League  LeagueResp  `json:"league"`
 	Country CountryResp `json:"country"`
@@ -88,6 +93,14 @@ type ResponseStandingAPI struct {
 		Country  string               `json:"country"`
 		Standing [][]StandingResponse `json:"standings"`
 	} `json:"league"`
+}
+
+type ResponseLineupAPI struct {
+	Team struct {
+		PrimaryID int    `json:"id"`
+		Name      string `json:"name"`
+	} `json:"team"`
+	Formation string `json:"formation"`
 }
 
 type StandingResponse struct {

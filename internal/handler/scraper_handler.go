@@ -21,6 +21,7 @@ type ScraperHandler struct {
 	fixtureService    services.IFixtureService
 	predictionService services.IPredictionService
 	standingService   services.IStandingService
+	lineupService     services.ILineupService
 	newsService       services.INewsService
 }
 
@@ -30,6 +31,7 @@ func NewScraperHandler(
 	fixtureService services.IFixtureService,
 	predictionService services.IPredictionService,
 	standingService services.IStandingService,
+	lineupService services.ILineupService,
 	newsService services.INewsService,
 ) *ScraperHandler {
 	return &ScraperHandler{
@@ -38,6 +40,7 @@ func NewScraperHandler(
 		fixtureService:    fixtureService,
 		predictionService: predictionService,
 		standingService:   standingService,
+		lineupService:     lineupService,
 		newsService:       newsService,
 	}
 }
@@ -235,9 +238,11 @@ func (h *ScraperHandler) Predictions() {
 				)
 			}
 		}
+		// rate limit is 10 requests per minute.
+		if !h.predictionService.IsPredictionByFixtureId(int(l.ID)) {
 
+		}
 	}
-
 }
 
 func (h *ScraperHandler) Standings() {
@@ -323,30 +328,57 @@ func (h *ScraperHandler) Standings() {
 }
 
 func (h *ScraperHandler) Lineups() {
-	// jsonFile, err := os.Open("./logs/json_fbapi/lineups.json")
-	// // if we os.Open returns an error then handle it
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-	// // defer the closing of our jsonFile so that we can parse it later on
-	// defer jsonFile.Close()
+	fb := apifb.NewApiFb()
 
-	// // read our opened jsonFile as a byte array.
-	// byteValue, _ := io.ReadAll(jsonFile)
-	// // we initialize our Users array
-	// var resp model.StandingResult
-	// json.Unmarshal(byteValue, &resp)
+	fixtures, err := h.fixtureService.GetAllByFixtureDate(time.Now())
+	if err != nil {
+		log.Println(err.Error())
+	}
 
-	// for _, el := range resp.Response {
-	// 	for _, l := range el.League.Standing {
-	// 		for _, i := range l {
-	// 			log.Println(i)
+	for _, l := range fixtures {
+		f, err := fb.GetFixturesLineups(int(l.PrimaryID))
+		if err != nil {
+			log.Println(err.Error())
+		}
 
-	// 		}
-	// 	}
+		var resp model.LineupResult
+		json.Unmarshal(f, &resp)
 
-	// }
-	// }
+		for _, el := range resp.Response {
+			log.Println(el)
+
+			team, err := h.teamService.GetByPrimaryId(el.Team.PrimaryID)
+			if err != nil {
+				log.Println(err.Error())
+			}
+
+			// rate limit is 10 requests per minute.
+			if !h.lineupService.IsLineupByFixtureId(int(l.ID)) {
+				h.lineupService.Save(
+					&entity.Lineup{
+						LeagueID:    l.LeagueID,
+						FixtureID:   l.ID,
+						TeamID:      team.GetId(),
+						TeamName:    el.Team.Name,
+						FixtureDate: l.FixtureDate,
+						Formation:   el.Formation,
+					},
+				)
+			} else {
+				h.lineupService.UpdateByFixtureId(
+					&entity.Lineup{
+						LeagueID:    l.LeagueID,
+						FixtureID:   l.ID,
+						TeamID:      team.GetId(),
+						TeamName:    el.Team.Name,
+						FixtureDate: l.FixtureDate,
+						Formation:   el.Formation,
+					},
+				)
+			}
+
+		}
+	}
 
 }
 

@@ -216,6 +216,43 @@ func (p *ApiFb) GetStandings(leagueId int) ([]byte, error) {
 	return body, nil
 }
 
+func (p *ApiFb) GetFixturesLineups(fixtureId int) ([]byte, error) {
+	req, err := http.NewRequest("GET", API_FOOTBALL_URL+"/fixtures/lineups", nil)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+
+	q := req.URL.Query()
+	q.Add("fixture", strconv.Itoa(fixtureId))
+	req.URL.RawQuery = q.Encode()
+	req.Header.Set("x-rapidapi-key", API_FOOTBALL_KEY)
+	req.Header.Set("x-rapidapi-host", API_FOOTBALL_HOST)
+
+	tr := &http.Transport{
+		MaxIdleConns:       20,
+		IdleConnTimeout:    30 * time.Second,
+		DisableCompression: true,
+	}
+
+	client := &http.Client{
+		Timeout:   30 * time.Second,
+		Transport: tr,
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+
+	return body, nil
+}
+
 func (p *ApiFb) GetFixtureByLeague(leagueId int) ([]byte, error) {
 	req, err := http.NewRequest("GET", API_FOOTBALL_URL+"/fixtures", nil)
 	if err != nil {
