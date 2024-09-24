@@ -8,11 +8,11 @@ import (
 
 type Standing struct {
 	ID          int64     `gorm:"primaryKey" json:"id"`
-	Rank        int       `json:"primary_id"`
 	LeagueID    int64     `json:"league_id"`
 	League      *League   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"league,omitempty"`
 	TeamID      int64     `json:"team_id"`
 	Team        *Team     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"team,omitempty"`
+	Ranking     int       `json:"ranking"`
 	TeamName    string    `json:"team_name"`
 	Points      int       `json:"points"`
 	GoalsDiff   int       `json:"goalsDiff"`

@@ -725,3 +725,29 @@ func scrapingStandings(db *gorm.DB) {
 
 	h.Standings()
 }
+
+func scrapingLineups(db *gorm.DB) {
+	leagueRepo := repository.NewLeagueRepository(db)
+	leagueService := services.NewLeagueService(leagueRepo)
+	teamRepo := repository.NewTeamRepository(db)
+	teamService := services.NewTeamService(teamRepo)
+	fixtureRepo := repository.NewFixtureRepository(db)
+	fixtureService := services.NewFixtureService(fixtureRepo)
+	predictionRepo := repository.NewPredictionRepository(db)
+	predictionService := services.NewPredictionService(predictionRepo)
+	standingRepo := repository.NewStandingRepository(db)
+	standingService := services.NewStandingService(standingRepo)
+	newsRepo := repository.NewNewsRepository(db)
+	newsService := services.NewNewsService(newsRepo)
+
+	h := handler.NewScraperHandler(
+		leagueService,
+		teamService,
+		fixtureService,
+		predictionService,
+		standingService,
+		newsService,
+	)
+
+	h.Lineups()
+}

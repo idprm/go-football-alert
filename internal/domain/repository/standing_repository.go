@@ -17,10 +17,10 @@ func NewStandingRepository(db *gorm.DB) *StandingRepository {
 
 type IStandingRepository interface {
 	Count(int) (int64, error)
-	CountByRank(int) (int64, error)
+	CountByRank(int, int) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	Get(int) (*entity.Standing, error)
-	GetByRank(int) (*entity.Standing, error)
+	GetByRank(int, int) (*entity.Standing, error)
 	Save(*entity.Standing) (*entity.Standing, error)
 	Update(*entity.Standing) (*entity.Standing, error)
 	UpdateByRank(*entity.Standing) (*entity.Standing, error)
@@ -36,9 +36,9 @@ func (r *StandingRepository) Count(id int) (int64, error) {
 	return count, nil
 }
 
-func (r *StandingRepository) CountByRank(rank int) (int64, error) {
+func (r *StandingRepository) CountByRank(leagueId, rank int) (int64, error) {
 	var count int64
-	err := r.db.Model(&entity.Standing{}).Where("rank = ?", rank).Count(&count).Error
+	err := r.db.Model(&entity.Standing{}).Where("league_id = ?", leagueId).Where("ranking = ?", rank).Count(&count).Error
 	if err != nil {
 		return count, err
 	}
@@ -64,9 +64,9 @@ func (r *StandingRepository) Get(id int) (*entity.Standing, error) {
 	return &c, nil
 }
 
-func (r *StandingRepository) GetByRank(rank int) (*entity.Standing, error) {
+func (r *StandingRepository) GetByRank(leagueId, rank int) (*entity.Standing, error) {
 	var c entity.Standing
-	err := r.db.Where("rank = ?", rank).Take(&c).Error
+	err := r.db.Where("league_id = ?", leagueId).Where("ranking = ?", rank).Take(&c).Error
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +90,7 @@ func (r *StandingRepository) Update(c *entity.Standing) (*entity.Standing, error
 }
 
 func (r *StandingRepository) UpdateByRank(c *entity.Standing) (*entity.Standing, error) {
-	err := r.db.Where("rank = ?", c.Rank).Updates(&c).Error
+	err := r.db.Where("league_id = ?", c.LeagueID).Where("ranking = ?", c.Ranking).Updates(&c).Error
 	if err != nil {
 		return nil, err
 	}

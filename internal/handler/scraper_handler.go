@@ -250,10 +250,10 @@ func (h *ScraperHandler) Standings() {
 
 	for _, l := range leagues {
 
-		// league, err := h.leagueService.GetByPrimaryId(int(l.PrimaryID))
-		// if err != nil {
-		// 	log.Println(err.Error())
-		// }
+		league, err := h.leagueService.GetByPrimaryId(int(l.PrimaryID))
+		if err != nil {
+			log.Println(err.Error())
+		}
 
 		f, err := fb.GetStandings(int(l.PrimaryID))
 		if err != nil {
@@ -264,63 +264,89 @@ func (h *ScraperHandler) Standings() {
 		json.Unmarshal(f, &resp)
 
 		for _, el := range resp.Response {
+			for _, l := range el.League.Standing {
+				for _, e := range l {
+					team, err := h.teamService.GetByPrimaryId(e.Team.PrimaryID)
+					if err != nil {
+						log.Println(err.Error())
+					}
 
-			log.Println(el)
-			// for _, ol := range el.League.Standing {
+					if !h.standingService.IsRank(int(league.GetId()), e.Rank) {
+						updatedAt, _ := time.Parse(time.RFC3339, e.UpdateAt)
+						h.standingService.Save(
+							&entity.Standing{
+								LeagueID:    league.GetId(),
+								TeamID:      team.GetId(),
+								Ranking:     e.Rank,
+								TeamName:    e.Team.Name,
+								Points:      e.Points,
+								GoalsDiff:   e.GoalsDiff,
+								Group:       e.Group,
+								Form:        e.Form,
+								Status:      e.Status,
+								Description: e.Description,
+								Played:      e.All.Played,
+								Win:         e.All.Win,
+								Draw:        e.All.Draw,
+								Lose:        e.All.Lose,
+								UpdateAt:    updatedAt,
+							},
+						)
+					} else {
+						updatedAt, _ := time.Parse(time.RFC3339, e.UpdateAt)
+						h.standingService.UpdateByRank(
+							&entity.Standing{
+								LeagueID:    league.GetId(),
+								TeamID:      team.GetId(),
+								Ranking:     e.Rank,
+								TeamName:    e.Team.Name,
+								Points:      e.Points,
+								GoalsDiff:   e.GoalsDiff,
+								Group:       e.Group,
+								Form:        e.Form,
+								Status:      e.Status,
+								Description: e.Description,
+								Played:      e.All.Played,
+								Win:         e.All.Win,
+								Draw:        e.All.Draw,
+								Lose:        e.All.Lose,
+								UpdateAt:    updatedAt,
+							},
+						)
+					}
 
-			// 	team, err := h.teamService.GetByPrimaryId(ol.Team.PrimaryID)
-			// 	if err != nil {
-			// 		log.Println(err.Error())
-			// 	}
-
-			// 	if !h.standingService.IsRank(ol.Rank) {
-			// 		updatedAt, _ := time.Parse(time.RFC3339, ol.UpdateAt)
-			// 		h.standingService.Save(
-			// 			&entity.Standing{
-			// 				Rank:        ol.Rank,
-			// 				LeagueID:    league.GetId(),
-			// 				TeamID:      team.GetId(),
-			// 				TeamName:    ol.Team.Name,
-			// 				Points:      ol.Team.Points,
-			// 				GoalsDiff:   ol.Team.GoalsDiff,
-			// 				Group:       ol.Team.Group,
-			// 				Form:        ol.Team.Form,
-			// 				Status:      ol.Team.Status,
-			// 				Description: ol.Team.Description,
-			// 				Played:      ol.All.Played,
-			// 				Win:         ol.All.Win,
-			// 				Draw:        ol.All.Draw,
-			// 				Lose:        ol.All.Lose,
-			// 				UpdateAt:    updatedAt,
-			// 			},
-			// 		)
-			// 	} else {
-			// 		updatedAt, _ := time.Parse(time.RFC3339, ol.UpdateAt)
-			// 		h.standingService.UpdateByRank(
-			// 			&entity.Standing{
-			// 				Rank:        ol.Rank,
-			// 				LeagueID:    league.GetId(),
-			// 				TeamID:      team.GetId(),
-			// 				TeamName:    ol.Team.Name,
-			// 				Points:      ol.Team.Points,
-			// 				GoalsDiff:   ol.Team.GoalsDiff,
-			// 				Group:       ol.Team.Group,
-			// 				Form:        ol.Team.Form,
-			// 				Status:      ol.Team.Status,
-			// 				Description: ol.Team.Description,
-			// 				Played:      ol.All.Played,
-			// 				Win:         ol.All.Win,
-			// 				Draw:        ol.All.Draw,
-			// 				Lose:        ol.All.Lose,
-			// 				UpdateAt:    updatedAt,
-			// 			},
-			// 		)
-			// 	}
-			// }
+				}
+			}
 
 		}
-
 	}
+}
+
+func (h *ScraperHandler) Lineups() {
+	// jsonFile, err := os.Open("./logs/json_fbapi/lineups.json")
+	// // if we os.Open returns an error then handle it
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// // defer the closing of our jsonFile so that we can parse it later on
+	// defer jsonFile.Close()
+
+	// // read our opened jsonFile as a byte array.
+	// byteValue, _ := io.ReadAll(jsonFile)
+	// // we initialize our Users array
+	// var resp model.StandingResult
+	// json.Unmarshal(byteValue, &resp)
+
+	// for _, el := range resp.Response {
+	// 	for _, l := range el.League.Standing {
+	// 		for _, i := range l {
+	// 			log.Println(i)
+
+	// 		}
+	// 	}
+
+	// }
+	// }
 
 }
 

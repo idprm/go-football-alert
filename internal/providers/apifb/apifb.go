@@ -333,3 +333,7 @@ func (p *ApiFb) GetFixtureByHeadToHead(h2h string) ([]byte, error) {
 
 	return body, nil
 }
+
+// func (p *ApiFb) GetOdds() ([]byte, error) {
+
+// }

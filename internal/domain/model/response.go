@@ -84,23 +84,25 @@ type ResponsePredictionAPI struct {
 
 type ResponseStandingAPI struct {
 	League struct {
-		// Standing []StandingResponse
+		Name     string               `json:"name"`
+		Country  string               `json:"country"`
+		Standing [][]StandingResponse `json:"standings"`
 	} `json:"league"`
 }
 
 type StandingResponse struct {
 	Rank int `json:"rank"`
 	Team struct {
-		PrimaryID   int    `json:"id"`
-		Name        string `json:"name"`
-		Points      int    `json:"points"`
-		GoalsDiff   int    `json:"goalsDiff"`
-		Group       string `json:"group"`
-		Form        string `json:"form"`
-		Status      string `json:"status"`
-		Description string `json:"description"`
+		PrimaryID int    `json:"id"`
+		Name      string `json:"name"`
 	} `json:"team"`
-	All struct {
+	Points      int    `json:"points"`
+	GoalsDiff   int    `json:"goalsDiff"`
+	Group       string `json:"group"`
+	Form        string `json:"form"`
+	Status      string `json:"status"`
+	Description string `json:"description"`
+	All         struct {
 		Played int `json:"played"`
 		Win    int `json:"win"`
 		Draw   int `json:"draw"`

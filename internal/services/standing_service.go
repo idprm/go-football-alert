@@ -17,10 +17,10 @@ func NewStandingService(standingRepo repository.IStandingRepository) *StandingSe
 
 type IStandingService interface {
 	IsStanding(int) bool
-	IsRank(int) bool
+	IsRank(int, int) bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	Get(int) (*entity.Standing, error)
-	GetByRank(int) (*entity.Standing, error)
+	GetByRank(int, int) (*entity.Standing, error)
 	Save(*entity.Standing) (*entity.Standing, error)
 	Update(*entity.Standing) (*entity.Standing, error)
 	UpdateByRank(*entity.Standing) (*entity.Standing, error)
@@ -32,8 +32,8 @@ func (s *StandingService) IsStanding(id int) bool {
 	return count > 0
 }
 
-func (s *StandingService) IsRank(rank int) bool {
-	count, _ := s.standingRepo.CountByRank(rank)
+func (s *StandingService) IsRank(leagueId, rank int) bool {
+	count, _ := s.standingRepo.CountByRank(leagueId, rank)
 	return count > 0
 }
 
@@ -45,8 +45,8 @@ func (s *StandingService) Get(id int) (*entity.Standing, error) {
 	return s.standingRepo.Get(id)
 }
 
-func (s *StandingService) GetByRank(rank int) (*entity.Standing, error) {
-	return s.standingRepo.GetByRank(rank)
+func (s *StandingService) GetByRank(leagueId, rank int) (*entity.Standing, error) {
+	return s.standingRepo.GetByRank(leagueId, rank)
 }
 
 func (s *StandingService) Save(a *entity.Standing) (*entity.Standing, error) {
