@@ -174,7 +174,7 @@ func (h *ScraperHandler) Fixtures() {
 						LeagueID:    l.ID,
 						HomeID:      home.ID,
 						AwayID:      away.ID,
-						Goal:        strconv.Itoa(el.Goals.Home) + "|" + strconv.Itoa(el.Goals.Away),
+						Goal:        strconv.Itoa(el.Goals.Home) + "-" + strconv.Itoa(el.Goals.Away),
 					},
 				)
 			} else {
@@ -187,7 +187,7 @@ func (h *ScraperHandler) Fixtures() {
 						LeagueID:    l.ID,
 						HomeID:      home.ID,
 						AwayID:      away.ID,
-						Goal:        strconv.Itoa(el.Goals.Home) + "|" + strconv.Itoa(el.Goals.Away),
+						Goal:        strconv.Itoa(el.Goals.Home) + "-" + strconv.Itoa(el.Goals.Away),
 					},
 				)
 			}
@@ -379,7 +379,6 @@ func (h *ScraperHandler) Lineups() {
 
 		}
 	}
-
 }
 
 func (h *ScraperHandler) News() {

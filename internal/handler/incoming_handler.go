@@ -2,9 +2,8 @@ package handler
 
 import (
 	"encoding/json"
-	"encoding/xml"
-	"log"
 	"os"
+	"strings"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
@@ -32,6 +31,7 @@ var (
 	AUTH_SECRET       string = utils.GetEnv("AUTH_SECRET")
 	PATH_STATIC       string = utils.GetEnv("PATH_STATIC")
 	PATH_IMAGE        string = utils.GetEnv("PATH_IMAGE")
+	PATH_VIEWS        string = utils.GetEnv("PATH_VIEWS")
 	API_FOOTBALL_URL  string = utils.GetEnv("API_FOOTBALL_URL")
 	API_FOOTBALL_KEY  string = utils.GetEnv("API_FOOTBALL_KEY")
 	API_FOOTBALL_HOST string = utils.GetEnv("API_FOOTBALL_HOST")
@@ -43,6 +43,8 @@ var (
 	RMQ_USSD_QUEUE      string = "Q_USSD"
 	RMQ_MO_EXCHANGE     string = "E_MO"
 	RMQ_MO_QUEUE        string = "Q_MO"
+	RMQ_MT_EXCHANGE     string = "E_MT"
+	RMQ_MT_QUEUE        string = "Q_MT"
 	MT_FIRSTPUSH        string = "FIRSTPUSH"
 	MT_RENEWAL          string = "RENEWAL"
 	MT_PREDICTION       string = "PREDICTION"
@@ -141,11 +143,13 @@ func ValidateStruct(data interface{}) []*model.ErrorResponse {
 
 func (h *IncomingHandler) USSDSample(c *fiber.Ctx) error {
 	c.Set("Content-type", "application/xml; charset=utf-8")
-	data, err := os.ReadFile("./views/xml/main_menu.xml")
+	data, err := os.ReadFile(PATH_VIEWS + "/xml/main.xml")
 	if err != nil {
 		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
 	}
-	return c.Status(fiber.StatusOK).SendString(string(data))
+	replacer := strings.NewReplacer("{{ .url }}", APP_URL)
+	replace := replacer.Replace(string(data))
+	return c.Status(fiber.StatusOK).SendString(replace)
 }
 
 func (h *IncomingHandler) Sub(c *fiber.Ctx) error {
@@ -158,14 +162,11 @@ func (h *IncomingHandler) UnSub(c *fiber.Ctx) error {
 
 func (h *IncomingHandler) TestUSSD(c *fiber.Ctx) error {
 	c.Set("Content-type", "application/xml; charset=utf-8")
-	p := model.Plan{PlanCode: "test"}
-	p.UnitAmountInCents.AddCurrency("USD", 4000)
-	xmlstring, err := xml.MarshalIndent(p, "", "  ")
+	menu, err := h.menuService.GetMenuByKeyPress("1")
 	if err != nil {
-		log.Println(err.Error())
+		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
 	}
-	xmlstring = []byte(xml.Header + string(xmlstring))
-	return c.Status(fiber.StatusOK).SendString(string(xmlstring))
+	return c.Status(fiber.StatusOK).SendString(string(menu.GetTemplateXML()))
 }
 
 func (h *IncomingHandler) LandingPage(c *fiber.Ctx) error {

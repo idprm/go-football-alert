@@ -1,13 +1,16 @@
 package entity
 
+import "strings"
+
 type Menu struct {
-	ID       int    `gorm:"primaryKey" json:"id"`
-	Name     string `gorm:"size:45" json:"name"`
-	KeyPress string `gorm:"size:6" json:"key_press"`
-	ParentID int    `gorm:"size:5" json:"parent_id"`
-	Child    int    `gorm:"size:5" json:"child"`
-	Action   string `gorm:"size:45" json:"action"`
-	IsActive bool   `gorm:"type:boolean;default:false;column:is_active" json:"is_active"`
+	ID          int    `gorm:"primaryKey" json:"id"`
+	Name        string `gorm:"size:45" json:"name"`
+	KeyPress    string `gorm:"size:6" json:"key_press"`
+	ParentID    int    `gorm:"size:5" json:"parent_id"`
+	Child       int    `gorm:"size:5" json:"child"`
+	Action      string `gorm:"size:45" json:"action"`
+	TemplateXML string `gorm:"type:text" json:"template_xml"`
+	IsActive    bool   `gorm:"type:boolean;default:false;column:is_active" json:"is_active"`
 }
 
 func (e *Menu) GetId() int {
@@ -32,4 +35,8 @@ func (e *Menu) GetChild() int {
 
 func (e *Menu) GetAction() string {
 	return e.Action
+}
+
+func (e *Menu) GetTemplateXML() string {
+	return strings.TrimSpace(e.TemplateXML)
 }

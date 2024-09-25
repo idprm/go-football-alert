@@ -8,7 +8,6 @@ import (
 	"github.com/idprm/go-football-alert/internal/domain/entity"
 	"github.com/idprm/go-football-alert/internal/domain/model"
 	"github.com/idprm/go-football-alert/internal/logger"
-	"github.com/idprm/go-football-alert/internal/providers/kannel"
 	"github.com/idprm/go-football-alert/internal/services"
 	"github.com/idprm/go-football-alert/internal/utils"
 	"github.com/wiliehidayat87/rmqp"
@@ -54,21 +53,12 @@ func (h *BulkHandler) Prediction() {
 			log.Println(err.Error())
 		}
 
-		content, err := h.getContentPrediction(h.sub.GetServiceId())
+		content, err := h.getContent(SMS_PREDICT_SUB)
 		if err != nil {
 			log.Println(err.Error())
 		}
 
 		trxId := utils.GenerateTrxId()
-
-		k := kannel.NewKannel(h.logger, service, content, h.sub)
-		sms, err := k.SMS(service.ScSubMT)
-		if err != nil {
-			log.Println(err.Error())
-		}
-
-		var respKannel *model.KannelResponse
-		json.Unmarshal(sms, &respKannel)
 
 		h.subscriptionService.Update(
 			&entity.Subscription{
@@ -94,6 +84,23 @@ func (h *BulkHandler) Prediction() {
 				CreatedAt:    time.Now(),
 			},
 		)
+
+		mt := &model.MTRequest{
+			Smsc:         "",
+			Subscription: h.sub,
+			Content:      content,
+		}
+
+		jsonData, err := json.Marshal(mt)
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		h.rmq.IntegratePublish(
+			RMQ_MT_EXCHANGE,
+			RMQ_MT_QUEUE,
+			RMQ_DATA_TYPE, "", string(jsonData),
+		)
 	}
 }
 
@@ -104,21 +111,12 @@ func (h *BulkHandler) FollowCompetition() {
 			log.Println(err.Error())
 		}
 
-		content, err := h.getContentNews(h.sub.GetServiceId())
+		content, err := h.getContent(SMS_FOLLOW_COMPETITION_SUB)
 		if err != nil {
 			log.Println(err.Error())
 		}
 
 		trxId := utils.GenerateTrxId()
-
-		k := kannel.NewKannel(h.logger, service, content, h.sub)
-		sms, err := k.SMS(service.ScSubMT)
-		if err != nil {
-			log.Println(err.Error())
-		}
-
-		var respKannel *model.KannelResponse
-		json.Unmarshal(sms, &respKannel)
 
 		h.subscriptionService.Update(
 			&entity.Subscription{
@@ -143,6 +141,23 @@ func (h *BulkHandler) FollowCompetition() {
 				Payload:      "-",
 				CreatedAt:    time.Now(),
 			},
+		)
+
+		mt := &model.MTRequest{
+			Smsc:         "",
+			Subscription: h.sub,
+			Content:      content,
+		}
+
+		jsonData, err := json.Marshal(mt)
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		h.rmq.IntegratePublish(
+			RMQ_MT_EXCHANGE,
+			RMQ_MT_QUEUE,
+			RMQ_DATA_TYPE, "", string(jsonData),
 		)
 	}
 }
@@ -154,21 +169,12 @@ func (h *BulkHandler) FollowTeam() {
 			log.Println(err.Error())
 		}
 
-		content, err := h.getContentNews(h.sub.GetServiceId())
+		content, err := h.getContent(SMS_FOLLOW_TEAM_SUB)
 		if err != nil {
 			log.Println(err.Error())
 		}
 
 		trxId := utils.GenerateTrxId()
-
-		k := kannel.NewKannel(h.logger, service, content, h.sub)
-		sms, err := k.SMS(service.ScSubMT)
-		if err != nil {
-			log.Println(err.Error())
-		}
-
-		var respKannel *model.KannelResponse
-		json.Unmarshal(sms, &respKannel)
 
 		h.subscriptionService.Update(
 			&entity.Subscription{
@@ -194,25 +200,32 @@ func (h *BulkHandler) FollowTeam() {
 				CreatedAt:    time.Now(),
 			},
 		)
+
+		mt := &model.MTRequest{
+			Smsc:         "",
+			Subscription: h.sub,
+			Content:      content,
+		}
+
+		jsonData, err := json.Marshal(mt)
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		h.rmq.IntegratePublish(
+			RMQ_MT_EXCHANGE,
+			RMQ_MT_QUEUE,
+			RMQ_DATA_TYPE, "", string(jsonData),
+		)
 	}
 }
 
-func (h *BulkHandler) getContentPrediction(serviceId int) (*entity.Content, error) {
+func (h *BulkHandler) getContent(name string) (*entity.Content, error) {
 	// if data not exist in table contents
-	if !h.contentService.IsContent(MT_PREDICTION) {
+	if !h.contentService.IsContent(name) {
 		return &entity.Content{
 			Value: "SAMPLE_TEXT",
 		}, nil
 	}
-	return h.contentService.Get(MT_PREDICTION)
-}
-
-func (h *BulkHandler) getContentNews(serviceId int) (*entity.Content, error) {
-	// if data not exist in table contents
-	if !h.contentService.IsContent(MT_NEWS) {
-		return &entity.Content{
-			Value: "SAMPLE_TEXT",
-		}, nil
-	}
-	return h.contentService.Get(MT_NEWS)
+	return h.contentService.Get(name)
 }

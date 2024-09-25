@@ -73,9 +73,7 @@ func (p *Processor) USSD(wg *sync.WaitGroup, message []byte) {
 		req,
 	)
 
-	if req.Action == "REG" {
-		h.Reg()
-	}
+	h.Registration()
 
 	wg.Done()
 }
@@ -195,12 +193,19 @@ func (p *Processor) MO(wg *sync.WaitGroup, message []byte) {
 
 func (p *Processor) MT(wg *sync.WaitGroup, message []byte) {
 
+	subscriptionRepo := repository.NewSubscriptionRepository(p.db)
+	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+	transactionRepo := repository.NewTransactionRepository(p.db)
+	transactionService := services.NewTransactionService(transactionRepo)
+
 	var req *model.MTRequest
 	json.Unmarshal([]byte(message), &req)
 
 	h := handler.NewMTHandler(
 		p.rmq,
 		p.logger,
+		subscriptionService,
+		transactionService,
 		req,
 	)
 

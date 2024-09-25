@@ -797,21 +797,3 @@ var consumerFollowTeamCmd = &cobra.Command{
 		<-forever
 	},
 }
-
-var consumerTestCmd = &cobra.Command{
-	Use:   "test",
-	Short: "Consumer Test Service CLI",
-	Long:  ``,
-	Run: func(cmd *cobra.Command, args []string) {
-		/**
-		 * connect mysql
-		 */
-		db, err := connectDb()
-		if err != nil {
-			panic(err)
-		}
-
-		//scrapingFixtures(db)
-		scrapingLineups(db)
-	},
-}

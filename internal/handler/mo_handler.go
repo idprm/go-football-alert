@@ -9,7 +9,6 @@ import (
 	"github.com/idprm/go-football-alert/internal/domain/entity"
 	"github.com/idprm/go-football-alert/internal/domain/model"
 	"github.com/idprm/go-football-alert/internal/logger"
-	"github.com/idprm/go-football-alert/internal/providers/kannel"
 	"github.com/idprm/go-football-alert/internal/providers/telco"
 	"github.com/idprm/go-football-alert/internal/services"
 	"github.com/idprm/go-football-alert/internal/utils"
@@ -214,15 +213,6 @@ func (h *MOHandler) Firstpush() {
 	// summary save
 	h.summaryService.Save(summary)
 
-	k := kannel.NewKannel(h.logger, service, content, subscription)
-	sms, err := k.SMS(service.ScSubMT)
-	if err != nil {
-		log.Println(err.Error())
-	}
-
-	var respKannel *model.KannelResponse
-	json.Unmarshal(sms, &respKannel)
-
 	// msg := &entity.Transaction{
 	// 	TrxId:          trxId,
 	// 	CountryID:      service.GetCountryId(),
@@ -252,6 +242,23 @@ func (h *MOHandler) Firstpush() {
 			Msisdn:    h.req.GetMsisdn(),
 			TotalSub:  sub.TotalSub + 1,
 		},
+	)
+
+	mt := &model.MTRequest{
+		Smsc:         "",
+		Subscription: &entity.Subscription{},
+		Content:      content,
+	}
+
+	jsonData, err := json.Marshal(mt)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	h.rmq.IntegratePublish(
+		RMQ_MT_EXCHANGE,
+		RMQ_MT_QUEUE,
+		RMQ_DATA_TYPE, "", string(jsonData),
 	)
 
 }
@@ -302,15 +309,6 @@ func (h *MOHandler) Unsub() {
 		log.Println(err)
 	}
 
-	k := kannel.NewKannel(h.logger, service, content, sub)
-	sms, err := k.SMS(service.ScUnsubMT)
-	if err != nil {
-		log.Println(err.Error())
-	}
-
-	var respKannel *model.KannelResponse
-	json.Unmarshal(sms, &respKannel)
-
 	h.subscriptionService.Update(
 		&entity.Subscription{
 			ServiceID:  service.GetId(),
@@ -353,6 +351,23 @@ func (h *MOHandler) Unsub() {
 	summary.SetTotalUnsub(1)
 	// save summary
 	h.summaryService.Save(summary)
+
+	mt := &model.MTRequest{
+		Smsc:         "",
+		Subscription: sub,
+		Content:      content,
+	}
+
+	jsonData, err := json.Marshal(mt)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	h.rmq.IntegratePublish(
+		RMQ_MT_EXCHANGE,
+		RMQ_MT_QUEUE,
+		RMQ_DATA_TYPE, "", string(jsonData),
+	)
 
 }
 

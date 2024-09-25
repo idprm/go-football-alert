@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"log"
 	"time"
 
@@ -11,6 +12,7 @@ import (
 	"github.com/idprm/go-football-alert/internal/services"
 	"github.com/idprm/go-football-alert/internal/utils"
 	"github.com/redis/go-redis/v9"
+	"github.com/sirupsen/logrus"
 	"github.com/wiliehidayat87/rmqp"
 )
 
@@ -103,6 +105,9 @@ const (
 )
 
 func (h *SMSHandler) Registration() {
+	l := h.logger.Init("sms", true)
+	l.WithFields(logrus.Fields{"request": h.req}).Info("SMS")
+
 	/**
 	 ** Credit Goal
 	 **/
@@ -133,6 +138,7 @@ func (h *SMSHandler) Registration() {
 }
 
 func (h *SMSHandler) CreditGoal() {
+
 	if h.leagueService.IsLeagueByName(h.req.GetText()) {
 		if !h.IsActiveSubByCategory(CATEGORY_CREDIT_GOAL) {
 			h.Confirmation()
@@ -314,6 +320,23 @@ func (h *SMSHandler) Subscription(category string) {
 			},
 		)
 	}
+
+	mt := &model.MTRequest{
+		Smsc:         h.req.GetSmsc(),
+		Subscription: &entity.Subscription{},
+		Content:      &entity.Content{},
+	}
+
+	jsonData, err := json.Marshal(mt)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	h.rmq.IntegratePublish(
+		RMQ_MT_EXCHANGE,
+		RMQ_MT_QUEUE,
+		RMQ_DATA_TYPE, "", string(jsonData),
+	)
 }
 
 func (h *SMSHandler) AlerteCompetition() {
@@ -325,9 +348,23 @@ func (h *SMSHandler) AlerteCompetition() {
 	if err != nil {
 		log.Println(err.Error())
 	}
-	k := kannel.NewKannel(h.logger, &entity.Service{}, content, &entity.Subscription{Msisdn: h.req.GetTo()})
-	// sent
-	k.SMS(h.req.GetSmsc())
+
+	mt := &model.MTRequest{
+		Smsc:         h.req.GetSmsc(),
+		Subscription: &entity.Subscription{},
+		Content:      content,
+	}
+
+	jsonData, err := json.Marshal(mt)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	h.rmq.IntegratePublish(
+		RMQ_MT_EXCHANGE,
+		RMQ_MT_QUEUE,
+		RMQ_DATA_TYPE, "", string(jsonData),
+	)
 }
 
 func (h *SMSHandler) AlerteEquipe() {
@@ -340,14 +377,43 @@ func (h *SMSHandler) AlerteEquipe() {
 	if err != nil {
 		log.Println(err.Error())
 	}
-	k := kannel.NewKannel(h.logger, &entity.Service{}, content, &entity.Subscription{Msisdn: h.req.GetTo()})
-	// sent
-	k.SMS(h.req.GetSmsc())
 
+	mt := &model.MTRequest{
+		Smsc:         h.req.GetSmsc(),
+		Subscription: &entity.Subscription{},
+		Content:      content,
+	}
+
+	jsonData, err := json.Marshal(mt)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	h.rmq.IntegratePublish(
+		RMQ_MT_EXCHANGE,
+		RMQ_MT_QUEUE,
+		RMQ_DATA_TYPE, "", string(jsonData),
+	)
 }
 
 func (h *SMSHandler) AlerteMatchs() {
 
+	mt := &model.MTRequest{
+		Smsc:         h.req.GetSmsc(),
+		Subscription: &entity.Subscription{},
+		Content:      &entity.Content{},
+	}
+
+	jsonData, err := json.Marshal(mt)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	h.rmq.IntegratePublish(
+		RMQ_MT_EXCHANGE,
+		RMQ_MT_QUEUE,
+		RMQ_DATA_TYPE, "", string(jsonData),
+	)
 }
 
 func (h *SMSHandler) Info() {
@@ -355,9 +421,22 @@ func (h *SMSHandler) Info() {
 	if err != nil {
 		log.Println(err.Error())
 	}
+	mt := &model.MTRequest{
+		Smsc:         h.req.GetSmsc(),
+		Subscription: &entity.Subscription{},
+		Content:      content,
+	}
 
-	k := kannel.NewKannel(h.logger, &entity.Service{}, content, &entity.Subscription{Msisdn: h.req.GetTo()})
-	k.SMS("")
+	jsonData, err := json.Marshal(mt)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	h.rmq.IntegratePublish(
+		RMQ_MT_EXCHANGE,
+		RMQ_MT_QUEUE,
+		RMQ_DATA_TYPE, "", string(jsonData),
+	)
 }
 
 func (h *SMSHandler) Stop() {
@@ -366,8 +445,22 @@ func (h *SMSHandler) Stop() {
 		log.Println(err.Error())
 	}
 
-	k := kannel.NewKannel(h.logger, &entity.Service{}, content, &entity.Subscription{Msisdn: h.req.GetTo()})
-	k.SMS("")
+	mt := &model.MTRequest{
+		Smsc:         h.req.GetSmsc(),
+		Subscription: &entity.Subscription{},
+		Content:      content,
+	}
+
+	jsonData, err := json.Marshal(mt)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	h.rmq.IntegratePublish(
+		RMQ_MT_EXCHANGE,
+		RMQ_MT_QUEUE,
+		RMQ_DATA_TYPE, "", string(jsonData),
+	)
 }
 
 func (h *SMSHandler) Unvalid() {
@@ -376,8 +469,22 @@ func (h *SMSHandler) Unvalid() {
 		log.Println(err.Error())
 	}
 
-	k := kannel.NewKannel(h.logger, &entity.Service{}, content, &entity.Subscription{Msisdn: h.req.GetTo()})
-	k.SMS(h.req.GetSmsc())
+	mt := &model.MTRequest{
+		Smsc:         h.req.GetSmsc(),
+		Subscription: &entity.Subscription{},
+		Content:      content,
+	}
+
+	jsonData, err := json.Marshal(mt)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	h.rmq.IntegratePublish(
+		RMQ_MT_EXCHANGE,
+		RMQ_MT_QUEUE,
+		RMQ_DATA_TYPE, "", string(jsonData),
+	)
 }
 
 func (h *SMSHandler) IsActiveSubByCategory(v string) bool {

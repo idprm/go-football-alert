@@ -153,8 +153,13 @@ func init() {
 	rootCmd.AddCommand(publisherFollowCompetitionCmd)
 
 	// Test command
-	rootCmd.AddCommand(consumerTestCmd)
-
+	rootCmd.AddCommand(consumerTestLeagueCmd)
+	rootCmd.AddCommand(consumerTestTeamCmd)
+	rootCmd.AddCommand(consumerTestFixtureCmd)
+	rootCmd.AddCommand(consumerTestPredictionCmd)
+	rootCmd.AddCommand(consumerTestStandingCmd)
+	rootCmd.AddCommand(consumerTestLineupCmd)
+	rootCmd.AddCommand(consumerTestNewsCmd)
 }
 
 func Execute() error {

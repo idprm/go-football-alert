@@ -571,35 +571,6 @@ func populateFollowTeam(db *gorm.DB, rmq rmqp.AMQP) {
 	}
 }
 
-func scrapingNews(db *gorm.DB) {
-	leagueRepo := repository.NewLeagueRepository(db)
-	leagueService := services.NewLeagueService(leagueRepo)
-	teamRepo := repository.NewTeamRepository(db)
-	teamService := services.NewTeamService(teamRepo)
-	fixtureRepo := repository.NewFixtureRepository(db)
-	fixtureService := services.NewFixtureService(fixtureRepo)
-	predictionRepo := repository.NewPredictionRepository(db)
-	predictionService := services.NewPredictionService(predictionRepo)
-	standingRepo := repository.NewStandingRepository(db)
-	standingService := services.NewStandingService(standingRepo)
-	lineupRepo := repository.NewLineupRepository(db)
-	lineupService := services.NewLineupService(lineupRepo)
-	newsRepo := repository.NewNewsRepository(db)
-	newsService := services.NewNewsService(newsRepo)
-
-	h := handler.NewScraperHandler(
-		leagueService,
-		teamService,
-		fixtureService,
-		predictionService,
-		standingService,
-		lineupService,
-		newsService,
-	)
-
-	h.News()
-}
-
 func scrapingLeagues(db *gorm.DB) {
 	leagueRepo := repository.NewLeagueRepository(db)
 	leagueService := services.NewLeagueService(leagueRepo)
@@ -771,4 +742,33 @@ func scrapingLineups(db *gorm.DB) {
 	)
 
 	h.Lineups()
+}
+
+func scrapingNews(db *gorm.DB) {
+	leagueRepo := repository.NewLeagueRepository(db)
+	leagueService := services.NewLeagueService(leagueRepo)
+	teamRepo := repository.NewTeamRepository(db)
+	teamService := services.NewTeamService(teamRepo)
+	fixtureRepo := repository.NewFixtureRepository(db)
+	fixtureService := services.NewFixtureService(fixtureRepo)
+	predictionRepo := repository.NewPredictionRepository(db)
+	predictionService := services.NewPredictionService(predictionRepo)
+	standingRepo := repository.NewStandingRepository(db)
+	standingService := services.NewStandingService(standingRepo)
+	lineupRepo := repository.NewLineupRepository(db)
+	lineupService := services.NewLineupService(lineupRepo)
+	newsRepo := repository.NewNewsRepository(db)
+	newsService := services.NewNewsService(newsRepo)
+
+	h := handler.NewScraperHandler(
+		leagueService,
+		teamService,
+		fixtureService,
+		predictionService,
+		standingService,
+		lineupService,
+		newsService,
+	)
+
+	h.News()
 }

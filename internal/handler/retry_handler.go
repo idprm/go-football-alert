@@ -9,7 +9,6 @@ import (
 	"github.com/idprm/go-football-alert/internal/domain/entity"
 	"github.com/idprm/go-football-alert/internal/domain/model"
 	"github.com/idprm/go-football-alert/internal/logger"
-	"github.com/idprm/go-football-alert/internal/providers/kannel"
 	"github.com/idprm/go-football-alert/internal/providers/telco"
 	"github.com/idprm/go-football-alert/internal/services"
 	"github.com/idprm/go-football-alert/internal/utils"
@@ -120,14 +119,22 @@ func (h *RetryHandler) Firstpush() {
 		// summary save
 		h.summaryService.Save(summary)
 
-		k := kannel.NewKannel(h.logger, service, content, h.sub)
-		sms, err := k.SMS(service.ScSubMT)
+		mt := &model.MTRequest{
+			Smsc:         "",
+			Subscription: h.sub,
+			Content:      content,
+		}
+
+		jsonData, err := json.Marshal(mt)
 		if err != nil {
 			log.Println(err.Error())
 		}
 
-		var respKannel *model.KannelResponse
-		json.Unmarshal(sms, &respKannel)
+		h.rmq.IntegratePublish(
+			RMQ_MT_EXCHANGE,
+			RMQ_MT_QUEUE,
+			RMQ_DATA_TYPE, "", string(jsonData),
+		)
 	}
 }
 
@@ -203,14 +210,22 @@ func (h *RetryHandler) Dailypush() {
 		// summary save
 		h.summaryService.Save(summary)
 
-		k := kannel.NewKannel(h.logger, service, content, h.sub)
-		sms, err := k.SMS(service.ScSubMT)
+		mt := &model.MTRequest{
+			Smsc:         "",
+			Subscription: h.sub,
+			Content:      content,
+		}
+
+		jsonData, err := json.Marshal(mt)
 		if err != nil {
 			log.Println(err.Error())
 		}
 
-		var respKannel *model.KannelResponse
-		json.Unmarshal(sms, &respKannel)
+		h.rmq.IntegratePublish(
+			RMQ_MT_EXCHANGE,
+			RMQ_MT_QUEUE,
+			RMQ_DATA_TYPE, "", string(jsonData),
+		)
 	}
 }
 
