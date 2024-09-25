@@ -220,15 +220,9 @@ func (h *IncomingHandler) Callback(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).SendString(justString)
 }
 
-func (h *IncomingHandler) USSDMenu(c *fiber.Ctx) error {
-	return c.Status(fiber.StatusOK).SendString("TEST")
-}
-
 func (h *IncomingHandler) convertToArrayString(req *model.UssdRequest, subData []string) []string {
 	var menus []*entity.Menu
 	switch req.GetText() {
-	case "1*1":
-		menus = h.LiveMatch()
 	case "1*2":
 		menus = h.Schedule()
 	case "1*3":
@@ -237,8 +231,6 @@ func (h *IncomingHandler) convertToArrayString(req *model.UssdRequest, subData [
 		menus = h.MatchStats()
 	case "1*5":
 		menus = h.DisplayLiveMatch()
-	case "3":
-		menus = h.CreditGoal()
 	case "4*1":
 		menus = h.ChampResults()
 	case "4*2":
@@ -255,10 +247,6 @@ func (h *IncomingHandler) convertToArrayString(req *model.UssdRequest, subData [
 		menus = h.ChampSMSAlerte()
 	case "4*8":
 		menus = h.ChampSMSAlerteEquipe()
-	case "5":
-		menus = h.Prediction()
-	case "6*1":
-		menus = h.KitFoot()
 	case "6*2":
 		menus = h.Europe()
 	case "6*3":
@@ -352,12 +340,6 @@ func (h *IncomingHandler) getService(code string) (*entity.Service, error) {
 func (h *IncomingHandler) ChooseMenu(req *model.UssdRequest) {
 }
 
-func (h *IncomingHandler) LiveMatch() []*entity.Menu {
-	return []*entity.Menu{
-		{ID: 0, Name: "No Live Match", KeyPress: "0"},
-	}
-}
-
 func (h *IncomingHandler) Schedule() []*entity.Menu {
 	return []*entity.Menu{
 		{ID: 0, Name: "No Schedule", KeyPress: "0"},
@@ -379,20 +361,6 @@ func (h *IncomingHandler) MatchStats() []*entity.Menu {
 func (h *IncomingHandler) DisplayLiveMatch() []*entity.Menu {
 	return []*entity.Menu{
 		{ID: 0, Name: "No Display Live Match", KeyPress: "0"},
-	}
-}
-
-func (h *IncomingHandler) FlashNews() ([]*entity.News, error) {
-	news, err := h.newsService.GetAllUSSD()
-	if err != nil {
-		return nil, err
-	}
-	return news, nil
-}
-
-func (h *IncomingHandler) CreditGoal() []*entity.Menu {
-	return []*entity.Menu{
-		{ID: 0, Name: "No Credit Goal", KeyPress: "0"},
 	}
 }
 
@@ -441,18 +409,6 @@ func (h *IncomingHandler) ChampSMSAlerte() []*entity.Menu {
 func (h *IncomingHandler) ChampSMSAlerteEquipe() []*entity.Menu {
 	return []*entity.Menu{
 		{ID: 0, Name: "No Champ SMS Alerte Equipe", KeyPress: "0"},
-	}
-}
-
-func (h *IncomingHandler) Prediction() []*entity.Menu {
-	return []*entity.Menu{
-		{ID: 0, Name: "No Prediction", KeyPress: "0"},
-	}
-}
-
-func (h *IncomingHandler) KitFoot() []*entity.Menu {
-	return []*entity.Menu{
-		{ID: 0, Name: "No KitFoot", KeyPress: "0"},
 	}
 }
 

@@ -219,3 +219,35 @@ func (h *IncomingHandler) MessageOriginated(c *fiber.Ctx) error {
 		},
 	)
 }
+
+func (h *IncomingHandler) LiveMatch(c *fiber.Ctx) error {
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
+}
+
+func (h *IncomingHandler) FlashNews(c *fiber.Ctx) error {
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
+}
+
+func (h *IncomingHandler) CreditGoal(c *fiber.Ctx) error {
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
+}
+
+func (h *IncomingHandler) Champ(c *fiber.Ctx) error {
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
+}
+
+func (h *IncomingHandler) Prediction(c *fiber.Ctx) error {
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
+}
+
+func (h *IncomingHandler) SmsAlerte(c *fiber.Ctx) error {
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
+}
+
+func (h *IncomingHandler) KitFoot(c *fiber.Ctx) error {
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
+}
+
+func (h *IncomingHandler) FootEurope(c *fiber.Ctx) error {
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
+}
