@@ -22,28 +22,28 @@ func NewMenuRepository(
 }
 
 type IMenuRepository interface {
+	CountBySlug(string) (int64, error)
 	CountByKeyPress(string) (int64, error)
-	CountByAction(string) (int64, error)
 	GetAll() ([]*entity.Menu, error)
-	GetMenuByKeyPress(string) (*entity.Menu, error)
-	GetMenuByParentId(int) ([]*entity.Menu, error)
+	GetBySlug(string) (*entity.Menu, error)
+	GetByKeyPress(string) (*entity.Menu, error)
 	Save(*entity.Menu) (*entity.Menu, error)
 	Update(*entity.Menu) (*entity.Menu, error)
 	Delete(*entity.Menu) error
 }
 
-func (r *MenuRepository) CountByKeyPress(keyPress string) (int64, error) {
+func (r *MenuRepository) CountBySlug(slug string) (int64, error) {
 	var count int64
-	err := r.db.Model(&entity.Menu{}).Where("key_press = ?", keyPress).Count(&count).Error
+	err := r.db.Model(&entity.Menu{}).Where("slug = ?", slug).Count(&count).Error
 	if err != nil {
 		return count, err
 	}
 	return count, nil
 }
 
-func (r *MenuRepository) CountByAction(keyPress string) (int64, error) {
+func (r *MenuRepository) CountByKeyPress(keyPress string) (int64, error) {
 	var count int64
-	err := r.db.Model(&entity.Menu{}).Where("key_press = ?", keyPress).Where("action != ?", "").Count(&count).Error
+	err := r.db.Model(&entity.Menu{}).Where("key_press = ?", keyPress).Count(&count).Error
 	if err != nil {
 		return count, err
 	}
@@ -59,7 +59,7 @@ func (r *MenuRepository) GetAll() ([]*entity.Menu, error) {
 	return menus, nil
 }
 
-func (r *MenuRepository) GetMenuByKeyPress(keyPress string) (*entity.Menu, error) {
+func (r *MenuRepository) GetByKeyPress(keyPress string) (*entity.Menu, error) {
 	var menu *entity.Menu
 	err := r.db.Where(&entity.Menu{KeyPress: keyPress, IsActive: true}).Take(&menu).Error
 	if err != nil {
@@ -68,13 +68,13 @@ func (r *MenuRepository) GetMenuByKeyPress(keyPress string) (*entity.Menu, error
 	return menu, nil
 }
 
-func (r *MenuRepository) GetMenuByParentId(parentId int) ([]*entity.Menu, error) {
-	var menus []*entity.Menu
-	err := r.db.Where(&entity.Menu{ParentID: parentId, IsActive: true}).Order("child ASC").Find(&menus).Error
+func (r *MenuRepository) GetBySlug(slug string) (*entity.Menu, error) {
+	var menu *entity.Menu
+	err := r.db.Where(&entity.Menu{Slug: slug, IsActive: true}).Take(&menu).Error
 	if err != nil {
 		return nil, err
 	}
-	return menus, nil
+	return menu, nil
 }
 
 func (r *MenuRepository) Save(e *entity.Menu) (*entity.Menu, error) {

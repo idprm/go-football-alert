@@ -141,32 +141,12 @@ func ValidateStruct(data interface{}) []*model.ErrorResponse {
 	return errors
 }
 
-func (h *IncomingHandler) USSDSample(c *fiber.Ctx) error {
-	c.Set("Content-type", "application/xml; charset=utf-8")
-	data, err := os.ReadFile(PATH_VIEWS + "/xml/main.xml")
-	if err != nil {
-		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
-	}
-	replacer := strings.NewReplacer("{{ .url }}", APP_URL)
-	replace := replacer.Replace(string(data))
-	return c.Status(fiber.StatusOK).SendString(replace)
-}
-
 func (h *IncomingHandler) Sub(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
 }
 
 func (h *IncomingHandler) UnSub(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
-}
-
-func (h *IncomingHandler) TestUSSD(c *fiber.Ctx) error {
-	c.Set("Content-type", "application/xml; charset=utf-8")
-	menu, err := h.menuService.GetMenuByKeyPress("1")
-	if err != nil {
-		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
-	}
-	return c.Status(fiber.StatusOK).SendString(string(menu.GetTemplateXML()))
 }
 
 func (h *IncomingHandler) LandingPage(c *fiber.Ctx) error {
@@ -220,34 +200,122 @@ func (h *IncomingHandler) MessageOriginated(c *fiber.Ctx) error {
 	)
 }
 
-func (h *IncomingHandler) LiveMatch(c *fiber.Ctx) error {
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
+func (h *IncomingHandler) Main(c *fiber.Ctx) error {
+	c.Set("Content-type", "application/xml; charset=utf-8")
+	data, err := os.ReadFile(PATH_VIEWS + "/xml/main.xml")
+	if err != nil {
+		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
+	}
+	replacer := strings.NewReplacer("{{ .url }}", APP_URL)
+	replace := replacer.Replace(string(data))
+	return c.Status(fiber.StatusOK).SendString(replace)
+}
+
+func (h *IncomingHandler) SubMenu(c *fiber.Ctx) error {
+	c.Set("Content-type", "application/xml; charset=utf-8")
+	req := new(model.UssdRequest)
+	err := c.QueryParser(req)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusBadRequest,
+				Message:    err.Error(),
+			},
+		)
+	}
+	data, err := os.ReadFile(PATH_VIEWS + "/xml/404.xml")
+	if err != nil {
+		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
+	}
+
+	if !h.menuService.IsSlug(req.GetSlug()) {
+		replacer := strings.NewReplacer("{{ .url }}", APP_URL)
+		replace := replacer.Replace(string(data))
+		return c.Status(fiber.StatusOK).SendString(replace)
+	}
+	menu, err := h.menuService.GetBySlug(req.GetSlug())
+	if err != nil {
+		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
+	}
+	replacer := strings.NewReplacer("{{ .url }}", APP_URL)
+	replace := replacer.Replace(string(menu.GetTemplateXML()))
+	return c.Status(fiber.StatusOK).SendString(replace)
 }
 
 func (h *IncomingHandler) FlashNews(c *fiber.Ctx) error {
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
+	c.Set("Content-type", "application/xml; charset=utf-8")
+	menu, err := h.menuService.GetBySlug("flashnews")
+	if err != nil {
+		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
+	}
+	replacer := strings.NewReplacer("{{ .url }}", APP_URL)
+	replace := replacer.Replace(string(menu.GetTemplateXML()))
+	return c.Status(fiber.StatusOK).SendString(replace)
 }
 
 func (h *IncomingHandler) CreditGoal(c *fiber.Ctx) error {
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
+	c.Set("Content-type", "application/xml; charset=utf-8")
+	menu, err := h.menuService.GetBySlug("credit-goal")
+	if err != nil {
+		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
+	}
+	replacer := strings.NewReplacer("{{ .url }}", APP_URL)
+	replace := replacer.Replace(string(menu.GetTemplateXML()))
+	return c.Status(fiber.StatusOK).SendString(replace)
 }
 
 func (h *IncomingHandler) Champ(c *fiber.Ctx) error {
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
+	c.Set("Content-type", "application/xml; charset=utf-8")
+	menu, err := h.menuService.GetBySlug("champ")
+	if err != nil {
+		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
+	}
+	replacer := strings.NewReplacer("{{ .url }}", APP_URL)
+	replace := replacer.Replace(string(menu.GetTemplateXML()))
+	return c.Status(fiber.StatusOK).SendString(replace)
 }
 
 func (h *IncomingHandler) Prediction(c *fiber.Ctx) error {
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
+	c.Set("Content-type", "application/xml; charset=utf-8")
+	menu, err := h.menuService.GetBySlug("prediction")
+	if err != nil {
+		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
+	}
+	replacer := strings.NewReplacer("{{ .url }}", APP_URL)
+	replace := replacer.Replace(string(menu.GetTemplateXML()))
+	return c.Status(fiber.StatusOK).SendString(replace)
 }
 
 func (h *IncomingHandler) SmsAlerte(c *fiber.Ctx) error {
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
+	c.Set("Content-type", "application/xml; charset=utf-8")
+	menu, err := h.menuService.GetBySlug("sms-alerte")
+	if err != nil {
+		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
+	}
+	replacer := strings.NewReplacer("{{ .url }}", APP_URL)
+	replace := replacer.Replace(string(menu.GetTemplateXML()))
+	return c.Status(fiber.StatusOK).SendString(replace)
 }
 
 func (h *IncomingHandler) KitFoot(c *fiber.Ctx) error {
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
+	c.Set("Content-type", "application/xml; charset=utf-8")
+	menu, err := h.menuService.GetBySlug("kit-foot")
+	if err != nil {
+		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
+	}
+	replacer := strings.NewReplacer("{{ .url }}", APP_URL)
+	replace := replacer.Replace(string(menu.GetTemplateXML()))
+	return c.Status(fiber.StatusOK).SendString(replace)
 }
 
 func (h *IncomingHandler) FootEurope(c *fiber.Ctx) error {
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
+	c.Set("Content-type", "application/xml; charset=utf-8")
+	menu, err := h.menuService.GetBySlug("foot-europa")
+	if err != nil {
+		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
+	}
+	replacer := strings.NewReplacer("{{ .url }}", APP_URL)
+	replace := replacer.Replace(string(menu.GetTemplateXML()))
+	return c.Status(fiber.StatusOK).SendString(replace)
 }

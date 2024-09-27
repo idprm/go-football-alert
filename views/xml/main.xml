@@ -2,14 +2,14 @@
 <!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
 <pages>
   <page>
-    Orange Football Club, votre choix:
-    <a href="{{ .url }}/v1/ussd/live-match">Live Match</a>
-    <a href="{{ .url }}/v1/ussd/flash-news">Flash News</a>
-    <a href="{{ .url }}/v1/ussd/credit-goal">Crédit Goal</a>
-    <a href="{{ .url }}/v1/ussd/champ-mali">Champ. Mali</a>
-    <a href="{{ .url }}/v1/ussd/prediction">Prédiction</a>
-    <a href="{{ .url }}/v1/ussd/sms-alerte">SMS Alerte</a>
-    <a href="{{ .url }}/v1/ussd/kit-foot">Kit Foot</a>
-    <a href="{{ .url }}/v1/ussd/foot-europe">Foot Europe</a>
+    Orange Football Club, votre choix:<br/>
+    <a href="{{ .url }}/v1/ussd/q?slug=lm">Live Match</a>
+    <a href="{{ .url }}/v1/ussd/q?slug=flash-news">Flash News</a>
+    <a href="{{ .url }}/v1/ussd/q?slug=credit-goal">Crédit Goal</a>
+    <a href="{{ .url }}/v1/ussd/q?slug=champ-mali">Champ. Mali</a>
+    <a href="{{ .url }}/v1/ussd/q?slug=prediction">Prédiction</a>
+    <a href="{{ .url }}/v1/ussd/q?slug=sms-alerte">SMS Alerte</a>
+    <a href="{{ .url }}/v1/ussd/q?slug=kit-foot">Kit Foot</a>
+    <a href="{{ .url }}/v1/ussd/q?slug=foot-europe">Foot Europe</a>
   </page>
 </pages>

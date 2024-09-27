@@ -5,10 +5,8 @@ import "strings"
 type Menu struct {
 	ID          int    `gorm:"primaryKey" json:"id"`
 	Name        string `gorm:"size:45" json:"name"`
+	Slug        string `gorm:"size:45" json:"slug"`
 	KeyPress    string `gorm:"size:6" json:"key_press"`
-	ParentID    int    `gorm:"size:5" json:"parent_id"`
-	Child       int    `gorm:"size:5" json:"child"`
-	Action      string `gorm:"size:45" json:"action"`
 	TemplateXML string `gorm:"type:text" json:"template_xml"`
 	IsActive    bool   `gorm:"type:boolean;default:false;column:is_active" json:"is_active"`
 }
@@ -21,20 +19,12 @@ func (e *Menu) GetName() string {
 	return e.Name
 }
 
+func (e *Menu) GetSlug() string {
+	return e.Slug
+}
+
 func (e *Menu) GetKeyPress() string {
 	return e.KeyPress
-}
-
-func (e *Menu) GetParentId() int {
-	return e.ParentID
-}
-
-func (e *Menu) GetChild() int {
-	return e.Child
-}
-
-func (e *Menu) GetAction() string {
-	return e.Action
 }
 
 func (e *Menu) GetTemplateXML() string {

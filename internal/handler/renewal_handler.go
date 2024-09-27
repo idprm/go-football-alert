@@ -152,15 +152,6 @@ func (h *RenewalHandler) Dailypush() {
 		// summary save
 		h.summaryService.Save(summary)
 
-		// k := kannel.NewKannel(h.logger, service, content, h.sub)
-		// sms, err := k.SMS(service.ScSubMT)
-		// if err != nil {
-		// 	log.Println(err.Error())
-		// }
-
-		// var respKannel *model.KannelResponse
-		// json.Unmarshal(sms, &respKannel)
-
 		mt := &model.MTRequest{
 			Smsc:         "",
 			Subscription: h.sub,

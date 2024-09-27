@@ -10,11 +10,11 @@ type MenuService struct {
 }
 
 type IMenuService interface {
+	IsSlug(string) bool
 	IsKeyPress(string) bool
-	IsAction(string) bool
 	GetAll() ([]*entity.Menu, error)
-	GetMenuByKeyPress(string) (*entity.Menu, error)
-	GetMenuByParentId(int) ([]*entity.Menu, error)
+	GetBySlug(string) (*entity.Menu, error)
+	GetByKeyPress(string) (*entity.Menu, error)
 	Save(*entity.Menu) (*entity.Menu, error)
 	Update(*entity.Menu) (*entity.Menu, error)
 	Delete(*entity.Menu) error
@@ -28,13 +28,13 @@ func NewMenuService(
 	}
 }
 
-func (s *MenuService) IsKeyPress(keyPress string) bool {
-	count, _ := s.menuRepo.CountByKeyPress(keyPress)
+func (s *MenuService) IsSlug(keyPress string) bool {
+	count, _ := s.menuRepo.CountBySlug(keyPress)
 	return count > 0
 }
 
-func (s *MenuService) IsAction(keyPress string) bool {
-	count, _ := s.menuRepo.CountByAction(keyPress)
+func (s *MenuService) IsKeyPress(keyPress string) bool {
+	count, _ := s.menuRepo.CountByKeyPress(keyPress)
 	return count > 0
 }
 
@@ -42,12 +42,12 @@ func (s *MenuService) GetAll() ([]*entity.Menu, error) {
 	return s.menuRepo.GetAll()
 }
 
-func (s *MenuService) GetMenuByKeyPress(keyPress string) (*entity.Menu, error) {
-	return s.menuRepo.GetMenuByKeyPress(keyPress)
+func (s *MenuService) GetBySlug(slug string) (*entity.Menu, error) {
+	return s.menuRepo.GetBySlug(slug)
 }
 
-func (s *MenuService) GetMenuByParentId(parentId int) ([]*entity.Menu, error) {
-	return s.menuRepo.GetMenuByParentId(parentId)
+func (s *MenuService) GetByKeyPress(keyPress string) (*entity.Menu, error) {
+	return s.menuRepo.GetByKeyPress(keyPress)
 }
 
 func (s *MenuService) Save(e *entity.Menu) (*entity.Menu, error) {

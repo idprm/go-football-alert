@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE pages SYSTEM "cellflash.dtd">
+
+<pages descr="Football Alerts Menu">
+
+  <!-- Main Menu -->
+  <page tag="main_menu">
+    <title>Football Alerts</title>
+    Welcome to Football Alerts!<br/>
+    <a href="#subscribe_duration">1. Subscribe to Alerts</a><br/>
+    <a href="#unsubscribe">2. Unsubscribe</a><br/>
+    <a href="#exit">3. Exit</a><br/>
+    <a href="#main_menu">00. Home</a><br/>
+  </page>
+
+  <!-- Select Subscription Duration -->
+  <page tag="subscribe_duration">
+    <title>Select Duration</title>
+    Choose your subscription duration:<br/>
+    <a href="#confirm_subscription_daily">1. Daily (100 units)</a><br/>
+    <a href="#confirm_subscription_weekly">2. Weekly (500 units)</a><br/>
+    <a href="#confirm_subscription_monthly">3. Monthly (1500 units)</a><br/>
+    <a href="#main_menu">00. Home</a><br/>
+    <a href="#main_menu">0. Back</a><br/>
+  </page>
+
+  <!-- Confirmation Pages for Subscription -->
+
+  <!-- Daily Subscription Confirmation -->
+  <page tag="confirm_subscription_daily">
+    <title>Confirm Subscription</title>
+    You are about to subscribe to Football Alerts for *1 day* at 100 units.<br/>
+    <a href="#subscribe_success_daily">1. Confirm</a><br/>
+    <a href="#subscribe_duration">0. Back</a><br/>
+    <a href="#main_menu">00. Home</a><br/>
+  </page>
+
+  <!-- Weekly Subscription Confirmation -->
+  <page tag="confirm_subscription_weekly">
+    <title>Confirm Subscription</title>
+    You are about to subscribe to Football Alerts for *1 week* at 500 units.<br/>
+    <a href="#subscribe_success_weekly">1. Confirm</a><br/>
+    <a href="#subscribe_duration">0. Back</a><br/>
+    <a href="#main_menu">00. Home</a><br/>
+  </page>
+
+  <!-- Monthly Subscription Confirmation -->
+  <page tag="confirm_subscription_monthly">
+    <title>Confirm Subscription</title>
+    You are about to subscribe to Football Alerts for *1 month* at 1500 units.<br/>
+    <a href="#subscribe_success_monthly">1. Confirm</a><br/>
+    <a href="#subscribe_duration">0. Back</a><br/>
+    <a href="#main_menu">00. Home</a><br/>
+  </page>
+
+  <!-- Success Pages for Subscriptions -->
+
+  <!-- Daily Subscription Success -->
+  <page tag="subscribe_success_daily">
+    <title>Subscription Success</title>
+    You have successfully subscribed to Football Alerts for 1 day at 100 units!<br/>
+    <a href="#main_menu">00. Home</a><br/>
+  </page>
+
+  <!-- Weekly Subscription Success -->
+  <page tag="subscribe_success_weekly">
+    <title>Subscription Success</title>
+    You have successfully subscribed to Football Alerts for 1 week at 500 units!<br/>
+    <a href="#main_menu">00. Home</a><br/>
+  </page>
+
+  <!-- Monthly Subscription Success -->
+  <page tag="subscribe_success_monthly">
+    <title>Subscription Success</title>
+    You have successfully subscribed to Football Alerts for 1 month at 1500 units!<br/>
+    <a href="#main_menu">00. Home</a><br/>
+  </page>
+
+  <!-- Unsubscribe Option -->
+  <page tag="unsubscribe" nav="default">
+    <title>Unsubscribe</title>
+    You have successfully unsubscribed from Football Alerts.<br/>
+    <a href="#main_menu">00. Home</a><br/>
+    <a href="#main_menu">0. Back</a><br/>
+  </page>
+
+  <!-- Exit -->
+  <page tag="exit" nav="end">
+    <title>Exit</title>
+    Thank you for using Football Alerts. Goodbye!<br/>
+  </page>
+
+</pages>

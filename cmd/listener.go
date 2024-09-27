@@ -222,19 +222,9 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 
 	// callback
 	ussd := v1.Group("ussd")
-	ussd.Get("sample", h.USSDSample)
-	ussd.Get("test", h.TestUSSD)
-	ussd.Post("callback", h.Callback)
-
 	// main menu in ussd
-	ussd.Get("live-match", h.LiveMatch)
-	ussd.Get("flash-news", h.FlashNews)
-	ussd.Get("credit-goal", h.CreditGoal)
-	ussd.Get("champ-mali", h.Champ)
-	ussd.Get("prediction", h.Prediction)
-	ussd.Get("sms-alerte", h.SmsAlerte)
-	ussd.Get("kit-foot", h.KitFoot)
-	ussd.Get("foot-europe", h.FootEurope)
+	ussd.Get("/", h.Main)
+	ussd.Get("/q", h.SubMenu)
 
 	// landing page
 	p := v1.Group("p")

@@ -55,7 +55,6 @@ func (h *UssdHandler) Registration() {
 	l := h.logger.Init("ussd", true)
 	l.WithFields(logrus.Fields{"request": h.req}).Info("USSD")
 }
-
 func (h *UssdHandler) FlashNews(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
 }
@@ -65,6 +64,7 @@ func (h *UssdHandler) CreditGoal(c *fiber.Ctx) error {
 }
 
 func (h *UssdHandler) LiveMatch(c *fiber.Ctx) error {
+
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
 }
 

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
+<pages descr="{{ .title }}">
+    <page>
+        {{ .title }}<br/>
+        <a href="{{ .link }}">{{ .submenu }}</a><br/>
+    </page>
+</pages>
+
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
+<pages descr="Live Match">
+    <page>
+        Live Match<br/>
+        <a href="{{ .url }}/v1/ussd/q?lm-live-match">Live Match</a>
+        <a href="{{ .url }}/v1/ussd/q?lm-schedule">Schedule</a>
+        <a href="{{ .url }}/v1/ussd/q?lm-lineup">Line Up</a>
+        <a href="{{ .url }}/v1/ussd/q?lm-display">Display Live match</a>
+    </page>
+</pages>
+
+
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
+<pages descr="Live Match">
+    <page>
+        Live Match<br/>
+        <a href="{{ .url }}/v1/ussd/q?slug=lm-live-match">Live Match</a>
+        <a href="{{ .url }}/v1/ussd/q?slug=lm-schedule">Schedule</a>
+        <a href="{{ .url }}/v1/ussd/q?slug=lm-lineup">Line Up</a>
+        <a href="{{ .url }}/v1/ussd/q?slug=lm-display">Display Live match</a>
+    </page>
+</pages>
+
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
+<pages descr="Champ. Mali">
+    <page>
+        Champ. Mali<br/>
+        <a href="{{ .url }}/v1/ussd/q?slug=champ-results">Results</a>
+        <a href="{{ .url }}/v1/ussd/q?slug=champ-standings">Standings</a>
+        <a href="{{ .url }}/v1/ussd/q?slug=champ-schedule">Schedule</a>
+        <a href="{{ .url }}/v1/ussd/q?slug=champ-team">Team</a>
+        <a href="{{ .url }}/v1/ussd/q?slug=champ-credit-score">Crédit Score</a>
+        <a href="{{ .url }}/v1/ussd/q?slug=champ-credit-goal">Crédit Goal</a>
+        <a href="{{ .url }}/v1/ussd/q?slug=champ-sms-alerte">SMS Alerte</a>
+        <a href="{{ .url }}/v1/ussd/q?slug=champ-sms-alerte-equipe">SMS Alerte Equipe</a>
+    </page>
+</pages>
+
+
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
+<pages descr="SMS Alerte">
+    <page>
+        SMS Alerte<br/>
+        <a href="{{ .url }}/v1/ussd/q?slug=champ-results">Kit Foot</a>
+        <a href="{{ .url }}/v1/ussd/q?slug=champ-standings">Europe</a>
+        <a href="{{ .url }}/v1/ussd/q?slug=champ-schedule">Afrique</a>
+        <a href="{{ .url }}/v1/ussd/q?slug=champ-team">SMS Alerte Equipe</a>
+        <a href="{{ .url }}/v1/ussd/q?slug=champ-team">Foot International</a>
+    </page>
+</pages>
+
+
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
+<pages descr="SMS Alerte">
+    <page>
+        SMS Alerte<br/>
+        <a href="{{ .url }}/v1/ussd/q?slug=sms-kit-foot">Kit Foot</a>
+        <a href="{{ .url }}/v1/ussd/q?slug=sms-foot-europe">Europe</a>
+        <a href="{{ .url }}/v1/ussd/q?slug=sms-foot-afrique">Afrique</a>
+        <a href="{{ .url }}/v1/ussd/q?slug=sms-alerte-equipe">SMS Alerte Equipe</a>
+        <a href="{{ .url }}/v1/ussd/q?slug=sms-foot-international">Foot International</a>
+    </page>
+</pages>
+
+
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
+<pages descr="Kit Foot">
+    <page>
+        Kit Foot<br/>
+        <a href="{{ .url }}/v1/ussd/q?slug=kit-foot-champ-mali">Alerte Champ. Mali + Equipe</a>
+        <a href="{{ .url }}/v1/ussd/q?slug=kit-foot-premier-league">Alerte Premier League + Equipe</a>
+        <a href="{{ .url }}/v1/ussd/q?slug=kit-foot-la-liga">Alerte La Liga + Equipe</a>
+        <a href="{{ .url }}/v1/ussd/q?slug=kit-foot-ligue-1">Alerte Ligue 1 + Equipe</a>
+        <a href="{{ .url }}/v1/ussd/q?slug=kit-foot-serie-a">Alerte Serie A + Equipe</a>
+    </page>
+</pages>
+
+
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
+<pages descr="Foot Europe">
+    <page>
+        Foot Europe<br/>
+        <a href="{{ .url }}/v1/ussd/q?slug=foot-europe-champion-league">Champion League</a>
+        <a href="{{ .url }}/v1/ussd/q?slug=foot-europe-premier-league">Premier League</a>
+        <a href="{{ .url }}/v1/ussd/q?slug=foot-europe-la-liga">La Liga</a>
+        <a href="{{ .url }}/v1/ussd/q?slug=foot-europe-ligue-1">Ligue 1</a>
+        <a href="{{ .url }}/v1/ussd/q?slug=foot-europe-l-europa">L. Europa</a>
+    </page>
+</pages>
