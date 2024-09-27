@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
+<pages descr="S'abonner">
+	<page>
+		{{ .title }}<br/>
+        <a href="{{ .url }}/v1/ussd/buy?slug={{ .slug }}&category={{ .category }}&package=daily">S'abonner au jour (315 GNF/jour)</a>
+        <a href="{{ .url }}/v1/ussd/buy?slug={{ .slug }}&category={{ .category }}&package=weekly">S'abonner a la semaine (1033 GNF/semaine)</a>
+        <a href="{{ .url }}/v1/ussd/buy?slug={{ .slug }}&category={{ .category }}&package=monthly">S'abonner au mois (3049 GNF/mois)</a>
+    </page>
+</pages>

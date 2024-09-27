@@ -12,12 +12,27 @@ const (
 )
 
 type UssdRequest struct {
-	Slug   string `validate:"required" query:"slug" json:"slug"`
-	Msisdn string `json:"msisdn"`
+	Slug     string `validate:"required" query:"slug" json:"slug,omitempty"`
+	Title    string `query:"title" json:"title,omitempty"`
+	Category string `query:"category" json:"category,omitempty"`
+	Package  string `query:"package" json:"package,omitempty"`
+	Msisdn   string `json:"msisdn,omitempty"`
 }
 
 func (m *UssdRequest) GetSlug() string {
 	return m.Slug
+}
+
+func (m *UssdRequest) GetTitle() string {
+	return m.Title
+}
+
+func (m *UssdRequest) GetCategory() string {
+	return m.Category
+}
+
+func (m *UssdRequest) GetPackage() string {
+	return m.Package
 }
 
 func (m *UssdRequest) GetMsisdn() string {

@@ -103,3 +103,35 @@
         <a href="{{ .url }}/v1/ussd/q?slug=foot-europe-l-europa">L. Europa</a>
     </page>
 </pages>
+
+
+
+
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
+<pages descr="Crédit Goal">
+	<page>
+		Crédit Goal<br/>
+        {{ .data }}
+		<form action="{{ .url }}/v1/ussd/q/?slug={{ .slug }}">
+			<entry kind="digits" var="package">
+				<prompt></prompt>
+			</entry>
+		</form>
+	</page>
+</pages>
+
+
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
+<pages descr="Prédiction">
+	<page>
+		Prédiction<br/>
+        {{ .data }}
+		<form action="{{ .url }}/v1/ussd/q/?slug={{ .slug }}">
+			<entry kind="digits" var="package">
+				<prompt></prompt>
+			</entry>
+		</form>
+	</page>
+</pages>

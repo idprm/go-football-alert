@@ -224,7 +224,8 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	ussd := v1.Group("ussd")
 	// main menu in ussd
 	ussd.Get("/", h.Main)
-	ussd.Get("/q", h.SubMenu)
+	ussd.Get("/q", h.Menu)
+	ussd.Get("/buy", h.Buy)
 
 	// landing page
 	p := v1.Group("p")

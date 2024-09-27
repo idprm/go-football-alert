@@ -3,13 +3,13 @@
 <pages>
   <page>
     Orange Football Club, votre choix:<br/>
-    <a href="{{ .url }}/v1/ussd/q?slug=lm">Live Match</a>
-    <a href="{{ .url }}/v1/ussd/q?slug=flash-news">Flash News</a>
-    <a href="{{ .url }}/v1/ussd/q?slug=credit-goal">Crédit Goal</a>
-    <a href="{{ .url }}/v1/ussd/q?slug=champ-mali">Champ. Mali</a>
-    <a href="{{ .url }}/v1/ussd/q?slug=prediction">Prédiction</a>
-    <a href="{{ .url }}/v1/ussd/q?slug=sms-alerte">SMS Alerte</a>
-    <a href="{{ .url }}/v1/ussd/q?slug=kit-foot">Kit Foot</a>
-    <a href="{{ .url }}/v1/ussd/q?slug=foot-europe">Foot Europe</a>
+    <a href="{{ .url }}/v1/ussd/q?slug=lm&title=Live+Match">Live Match</a>
+    <a href="{{ .url }}/v1/ussd/q?slug=flash-news&title=Flash+News">Flash News</a>
+    <a href="{{ .url }}/v1/ussd/q?slug=credit-goal&title=Crédit+Goal">Crédit Goal</a>
+    <a href="{{ .url }}/v1/ussd/q?slug=champ-mali&title=Champ.+Mali">Champ. Mali</a>
+    <a href="{{ .url }}/v1/ussd/q?slug=prediction&title=Prédiction">Prédiction</a>
+    <a href="{{ .url }}/v1/ussd/q?slug=sms-alerte&title=SMS+Alerte">SMS Alerte</a>
+    <a href="{{ .url }}/v1/ussd/q?slug=kit-foot&title=Kit+Foot">Kit Foot</a>
+    <a href="{{ .url }}/v1/ussd/q?slug=foot-europe&title=Foot+Europe">Foot Europe</a>
   </page>
 </pages>
