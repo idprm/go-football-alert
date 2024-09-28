@@ -389,7 +389,6 @@ func (h *ScraperHandler) News() {
 	}
 	var resp model.MaxfootRSSResponse
 	xml.Unmarshal(n, &resp)
-	log.Println()
 
 	for _, el := range resp.Channel.Item {
 
@@ -398,8 +397,6 @@ func (h *ScraperHandler) News() {
 		if !h.newsService.IsNews(slug.Make(el.Title), d.Format("2006-01-02")) {
 			h.newsService.Save(
 				&entity.News{
-					LeagueID:    1,
-					TeamID:      1,
 					Title:       el.Title,
 					Slug:        slug.Make(el.Title),
 					Description: el.Description,

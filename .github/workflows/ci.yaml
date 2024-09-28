@@ -36,6 +36,8 @@ jobs:
             image: idprm/fb-alert-follow-competition-service
           - dockerfile: ./Dockerfile.pub_scraping
             image: idprm/fb-alert-pub-scraping-service
+          - dockerfile: ./Dockerfile.pub_scraping_news
+            image: idprm/fb-alert-pub-scraping-news-service
           - dockerfile: ./Dockerfile.pub_renewal
             image: idprm/fb-alert-pub-renewal-service
           - dockerfile: ./Dockerfile.pub_retry

@@ -303,6 +303,36 @@ var publisherScrapingCmd = &cobra.Command{
 	},
 }
 
+var publisherScrapingNewsCmd = &cobra.Command{
+	Use:   "pub_scraping_news",
+	Short: "Publisher Scraping News Service CLI",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		// connect db
+		db, err := connectDb()
+		if err != nil {
+			panic(err)
+		}
+
+		// DEBUG ON CONSOLE
+		db.Logger = loggerDb.Default.LogMode(loggerDb.Info)
+
+		/**
+		 * Looping schedule
+		 */
+		timeDuration := time.Duration(90)
+
+		for {
+
+			go func() {
+				scrapingNews(db)
+			}()
+
+			time.Sleep(timeDuration * time.Minute)
+		}
+	},
+}
+
 var publisherFollowCompetitionCmd = &cobra.Command{
 	Use:   "pub_follow_competition",
 	Short: "Publisher Follow Competition CLI",
