@@ -19,6 +19,7 @@ type ILineupRepository interface {
 	Count(int) (int64, error)
 	CountByFixtureId(int) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
+	GetAllUSSD() ([]*entity.Lineup, error)
 	Get(int) (*entity.Lineup, error)
 	GetByFixtureId(int) (*entity.Lineup, error)
 	Save(*entity.Lineup) (*entity.Lineup, error)
@@ -53,6 +54,15 @@ func (r *LineupRepository) GetAllPaginate(pagination *entity.Pagination) (*entit
 	}
 	pagination.Rows = lineups
 	return pagination, nil
+}
+
+func (r *LineupRepository) GetAllUSSD() ([]*entity.Lineup, error) {
+	var c []*entity.Lineup
+	err := r.db.Where("DATE(fixture_date) <= DATE(NOW())").Order("DATE(fixture_date) DESC").Limit(10).Find(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
 }
 
 func (r *LineupRepository) Get(id int) (*entity.Lineup, error) {

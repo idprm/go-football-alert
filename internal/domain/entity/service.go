@@ -2,6 +2,7 @@ package entity
 
 import (
 	"net/url"
+	"strconv"
 	"strings"
 )
 
@@ -56,6 +57,10 @@ func (s *Service) GetPackage() string {
 
 func (s *Service) GetPrice() float64 {
 	return s.Price
+}
+
+func (s *Service) GetPriceToString() string {
+	return strconv.FormatFloat(s.GetPrice(), 'f', 0, 64)
 }
 
 func (s *Service) GetRenewalDay() int {

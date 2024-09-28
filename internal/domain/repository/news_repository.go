@@ -47,7 +47,7 @@ func (r *NewsRepository) GetAllPaginate(pagination *entity.Pagination) (*entity.
 
 func (r *NewsRepository) GetAllUSSD() ([]*entity.News, error) {
 	var c []*entity.News
-	err := r.db.Where("DATE(publish_at) = DATE(NOW())").Limit(10).Find(&c).Error
+	err := r.db.Where("DATE(publish_at) <= DATE(NOW())").Order("DATE(publish_at) DESC").Limit(10).Find(&c).Error
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +56,7 @@ func (r *NewsRepository) GetAllUSSD() ([]*entity.News, error) {
 
 func (r *NewsRepository) GetByTeamUSSD(pubAt string, teamId int) (*entity.News, error) {
 	var c entity.News
-	err := r.db.Where("DATE(publish_at) = DATE(?)", pubAt).Where("team_id = ?", teamId).Take(&c).Error
+	err := r.db.Where("DATE(publish_at)  <= DATE(NOW())", pubAt).Where("team_id = ?", teamId).Take(&c).Error
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +65,7 @@ func (r *NewsRepository) GetByTeamUSSD(pubAt string, teamId int) (*entity.News, 
 
 func (r *NewsRepository) Get(slug, pubAt string) (*entity.News, error) {
 	var c entity.News
-	err := r.db.Where("slug = ?", slug).Where("DATE(publish_at) = DATE(?)", pubAt).Take(&c).Error
+	err := r.db.Where("slug = ?", slug).Where("DATE(publish_at) <= DATE(NOW())", pubAt).Take(&c).Error
 	if err != nil {
 		return nil, err
 	}

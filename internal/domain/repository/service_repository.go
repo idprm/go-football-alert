@@ -20,6 +20,7 @@ type IServiceRepository interface {
 	CountById(int) (int64, error)
 	CountByPackage(string, string) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
+	GetAllByCategory(string) ([]*entity.Service, error)
 	Get(string) (*entity.Service, error)
 	GetById(int) (*entity.Service, error)
 	GetByPackage(string, string) (*entity.Service, error)
@@ -63,6 +64,15 @@ func (r *ServiceRepository) GetAllPaginate(pagination *entity.Pagination) (*enti
 	}
 	pagination.Rows = services
 	return pagination, nil
+}
+
+func (r *ServiceRepository) GetAllByCategory(code string) ([]*entity.Service, error) {
+	var services []*entity.Service
+	err := r.db.Where("category = ?", code).Find(&services).Error
+	if err != nil {
+		return nil, err
+	}
+	return services, nil
 }
 
 func (r *ServiceRepository) Get(code string) (*entity.Service, error) {

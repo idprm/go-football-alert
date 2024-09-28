@@ -19,6 +19,7 @@ type ILineupService interface {
 	IsLineup(int) bool
 	IsLineupByFixtureId(int) bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
+	GetAllUSSD() ([]*entity.Lineup, error)
 	Get(int) (*entity.Lineup, error)
 	GetByFixtureId(int) (*entity.Lineup, error)
 	Save(*entity.Lineup) (*entity.Lineup, error)
@@ -39,6 +40,10 @@ func (s *LineupService) IsLineupByFixtureId(primaryId int) bool {
 
 func (s *LineupService) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {
 	return s.lineupRepo.GetAllPaginate(pagination)
+}
+
+func (s *LineupService) GetAllUSSD() ([]*entity.Lineup, error) {
+	return s.lineupRepo.GetAllUSSD()
 }
 
 func (s *LineupService) Get(fixtureId int) (*entity.Lineup, error) {

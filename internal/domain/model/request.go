@@ -16,6 +16,8 @@ type UssdRequest struct {
 	Title    string `query:"title" json:"title,omitempty"`
 	Category string `query:"category" json:"category,omitempty"`
 	Package  string `query:"package" json:"package,omitempty"`
+	Code     string `query:"code" json:"code,omitempty"`
+	Action   string `query:"action" json:"action,omitempty"`
 	Msisdn   string `json:"msisdn,omitempty"`
 }
 
@@ -33,6 +35,18 @@ func (m *UssdRequest) GetCategory() string {
 
 func (m *UssdRequest) GetPackage() string {
 	return m.Package
+}
+
+func (m *UssdRequest) GetCode() string {
+	return m.Code
+}
+
+func (m *UssdRequest) GetAction() string {
+	return m.Action
+}
+
+func (m *UssdRequest) IsYes() bool {
+	return m.GetAction() == "yes"
 }
 
 func (m *UssdRequest) GetMsisdn() string {

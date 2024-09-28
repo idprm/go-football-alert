@@ -4,7 +4,9 @@
 	<page nav="stop">
 		Confirm<br/>
         To signup to {{ .service }} charging {{ .price }} per SMS. Please reply with YES to confirm or NO to decline
-        <a href="{{ .url }}/v1/ussd/buy?slug={{ .slug }}&category={{ .category }}&package={{ .package }}">Yes</a>
-        <a href="{{ .url }}/v1/ussd/buy?slug={{ .slug }}&category={{ .category }}&package={{ .package }}">No</a>
+        <a href="{{ .url }}/v1/ussd/buy?slug={{ .slug }}&code={{ .code }}&action=yes">Yes</a>
+        <a href="{{ .url }}/v1/ussd/buy?slug={{ .slug }}&code={{ .code }}&action=no">No</a>
+        <br/>
+        <a href="{{ .url }}/v1/ussd/">Back to Home</a>
     </page>
 </pages>

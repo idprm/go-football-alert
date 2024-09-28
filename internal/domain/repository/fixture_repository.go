@@ -23,6 +23,7 @@ type IFixtureRepository interface {
 	CountByFixtureDate(time.Time) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetAll() ([]*entity.Fixture, error)
+	GetAllUSSD() ([]*entity.Fixture, error)
 	GetAllByFixtureDate(time.Time) ([]*entity.Fixture, error)
 	Get(int) (*entity.Fixture, error)
 	Save(*entity.Fixture) (*entity.Fixture, error)
@@ -71,6 +72,15 @@ func (r *FixtureRepository) GetAllPaginate(pagination *entity.Pagination) (*enti
 func (r *FixtureRepository) GetAll() ([]*entity.Fixture, error) {
 	var c []*entity.Fixture
 	err := r.db.Where("", "").Order("id ASC").Find(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
+func (r *FixtureRepository) GetAllUSSD() ([]*entity.Fixture, error) {
+	var c []*entity.Fixture
+	err := r.db.Where("DATE(fixture_date) BETWEEN DATE(?) AND DATE(? + INTERVAL 1 DAY)", time.Now(), time.Now()).Preload("Home").Preload("Away").Order("DATE(fixture_date) DESC").Limit(10).Find(&c).Error
 	if err != nil {
 		return nil, err
 	}

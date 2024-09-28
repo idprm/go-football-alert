@@ -2,12 +2,14 @@ package handler
 
 import (
 	"encoding/json"
+	"log"
 	"os"
 	"strconv"
 	"strings"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"github.com/idprm/go-football-alert/internal/domain/entity"
 	"github.com/idprm/go-football-alert/internal/domain/model"
 	"github.com/idprm/go-football-alert/internal/logger"
 	"github.com/idprm/go-football-alert/internal/services"
@@ -65,6 +67,8 @@ var (
 	SUBJECT_UNSUB       string = "UNSUB"
 	ACT_PREDICTION      string = "PREDICTION"
 	ACT_NEWS            string = "NEWS"
+	CHANNEL_USSD        string = "USSD"
+	CHANNEL_SMS         string = "SMS"
 )
 
 type IncomingHandler struct {
@@ -227,6 +231,8 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 		)
 	}
 
+	req.SetMsisdn(c.Get("User-MSISDN"))
+
 	// if menu unavailable
 	if !h.menuService.IsSlug(req.GetSlug()) {
 		data, err := os.ReadFile(PATH_VIEWS + "/xml/404.xml")
@@ -246,18 +252,57 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 	// if is_confirm = true
 	if menu.IsConfirm {
 		// if sub not active
-		if !h.subscriptionService.IsActiveSubscription(1, req.GetMsisdn()) {
+		if !h.subscriptionService.IsActiveSubscriptionByCategory(menu.GetCategory(), req.GetMsisdn()) {
 			data, err := os.ReadFile(PATH_VIEWS + "/xml/package.xml")
 			if err != nil {
 				return c.Status(fiber.StatusBadGateway).SendString(err.Error())
 			}
+
+			services, err := h.serviceService.GetAllByCategory(menu.GetCategory())
+			if err != nil {
+				return c.Status(fiber.StatusBadGateway).SendString(err.Error())
+			}
+
+			// package
+			var servicesData []string
+			for _, s := range services {
+				row := `<a href="` + APP_URL + `/v1/ussd/select?slug=` + req.GetSlug() + `&category=` + menu.GetCategory() + `&package=` + s.GetPackage() + `">` + s.GetName() + " (" + s.GetPriceToString() + ")" + "</a>"
+				servicesData = append(servicesData, row)
+			}
+			servicesString := strings.Join(servicesData, "\n")
+
 			replacer := strings.NewReplacer(
-				"{{ .url }}", APP_URL,
-				"{{ .slug }}", req.GetSlug(),
 				"{{ .title }}", req.GetTitle(),
-				"{{ .category }}", menu.GetCategory(),
+				"{{ .data }}", servicesString,
 			)
 			replace := replacer.Replace(string(data))
+			return c.Status(fiber.StatusOK).SendString(replace)
+		}
+
+		if req.GetSlug() == "flash-news" {
+			replacer := strings.NewReplacer(
+				"{{ .url }}", APP_URL,
+				"{{ .data }}", h.FlashNews(),
+			)
+			replace := replacer.Replace(string(menu.GetTemplateXML()))
+			return c.Status(fiber.StatusOK).SendString(replace)
+		}
+
+		if req.GetSlug() == "lm-live-match" {
+			replacer := strings.NewReplacer(
+				"{{ .url }}", APP_URL,
+				"{{ .data }}", h.LiveMatchs(),
+			)
+			replace := replacer.Replace(string(menu.GetTemplateXML()))
+			return c.Status(fiber.StatusOK).SendString(replace)
+		}
+
+		if req.GetSlug() == "lm-schedule" {
+			replacer := strings.NewReplacer(
+				"{{ .url }}", APP_URL,
+				"{{ .data }}", h.Schedules(),
+			)
+			replace := replacer.Replace(string(menu.GetTemplateXML()))
 			return c.Status(fiber.StatusOK).SendString(replace)
 		}
 
@@ -268,6 +313,54 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 
 	replacer := strings.NewReplacer("{{ .url }}", APP_URL)
 	replace := replacer.Replace(string(menu.GetTemplateXML()))
+	return c.Status(fiber.StatusOK).SendString(replace)
+}
+
+func (h *IncomingHandler) Select(c *fiber.Ctx) error {
+	c.Set("Content-type", "application/xml; charset=utf-8")
+	req := new(model.UssdRequest)
+
+	err := c.QueryParser(req)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusBadRequest,
+				Message:    err.Error(),
+			},
+		)
+	}
+
+	req.SetMsisdn(c.Get("User-MSISDN"))
+
+	// if menu unavailable
+	if !h.menuService.IsSlug(req.GetSlug()) {
+		data, err := os.ReadFile(PATH_VIEWS + "/xml/404.xml")
+		if err != nil {
+			return c.Status(fiber.StatusBadGateway).SendString(err.Error())
+		}
+		replacer := strings.NewReplacer("{{ .url }}", APP_URL)
+		replace := replacer.Replace(string(data))
+		return c.Status(fiber.StatusOK).SendString(replace)
+	}
+
+	service, err := h.serviceService.GetByPackage(req.GetCategory(), req.GetPackage())
+	if err != nil {
+		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
+	}
+
+	menu, err := os.ReadFile(PATH_VIEWS + "/xml/confirm.xml")
+	if err != nil {
+		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
+	}
+	replacer := strings.NewReplacer(
+		"{{ .url }}", APP_URL,
+		"{{ .slug }}", req.GetSlug(),
+		"{{ .code }}", service.GetCode(),
+		"{{ .service }}", service.GetName(),
+		"{{ .price }}", service.GetPriceToString(),
+	)
+	replace := replacer.Replace(string(menu))
 	return c.Status(fiber.StatusOK).SendString(replace)
 }
 
@@ -286,26 +379,45 @@ func (h *IncomingHandler) Buy(c *fiber.Ctx) error {
 		)
 	}
 
+	req.SetMsisdn(c.Get("User-MSISDN"))
+
 	// if menu unavailable
 	if !h.menuService.IsSlug(req.GetSlug()) {
 		data, err := os.ReadFile(PATH_VIEWS + "/xml/404.xml")
 		if err != nil {
-			return c.Status(fiber.StatusBadGateway).SendString(err.Error())
+			return c.Status(fiber.StatusNotFound).SendString(err.Error())
 		}
 		replacer := strings.NewReplacer("{{ .url }}", APP_URL)
 		replace := replacer.Replace(string(data))
 		return c.Status(fiber.StatusOK).SendString(replace)
 	}
 
-	service, err := h.serviceService.GetByPackage(req.GetCategory(), req.GetPackage())
+	// if service unavailable
+	if !h.serviceService.IsService(req.GetCode()) {
+		data, err := os.ReadFile(PATH_VIEWS + "/xml/404.xml")
+		if err != nil {
+			return c.Status(fiber.StatusNotFound).SendString(err.Error())
+		}
+		replacer := strings.NewReplacer("{{ .url }}", APP_URL)
+		replace := replacer.Replace(string(data))
+		return c.Status(fiber.StatusOK).SendString(replace)
+	}
+
+	service, err := h.serviceService.Get(req.GetCode())
 	if err != nil {
 		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
 	}
 
-	data, err := os.ReadFile(PATH_VIEWS + "/xml/confirm.xml")
+	success, err := os.ReadFile(PATH_VIEWS + "/xml/success.xml")
 	if err != nil {
 		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
 	}
+
+	failed, err := os.ReadFile(PATH_VIEWS + "/xml/failed.xml")
+	if err != nil {
+		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
+	}
+
 	replacer := strings.NewReplacer(
 		"{{ .url }}", APP_URL,
 		"{{ .slug }}", req.GetSlug(),
@@ -314,72 +426,83 @@ func (h *IncomingHandler) Buy(c *fiber.Ctx) error {
 		"{{ .service }}", service.GetName(),
 		"{{ .price }}", strconv.FormatFloat(service.GetPrice(), 'f', 0, 64),
 	)
-	replace := replacer.Replace(string(data))
+
+	if req.IsYes() {
+		h.subscriptionService.Save(
+			&entity.Subscription{
+				ServiceID:   service.GetId(),
+				Category:    service.GetCategory(),
+				Msisdn:      req.GetMsisdn(),
+				Channel:     CHANNEL_USSD,
+				LatestTrxId: "",
+				IsActive:    true,
+			},
+		)
+		replace := replacer.Replace(string(success))
+		return c.Status(fiber.StatusOK).SendString(replace)
+	}
+
+	replace := replacer.Replace(string(failed))
 	return c.Status(fiber.StatusOK).SendString(replace)
 }
 
-func (h *IncomingHandler) CreditGoal(c *fiber.Ctx) error {
-	c.Set("Content-type", "application/xml; charset=utf-8")
-	menu, err := h.menuService.GetBySlug("credit-goal")
+func (h *IncomingHandler) LiveMatchs() string {
+	livematchs, err := h.fixtureService.GetAllUSSD()
 	if err != nil {
-		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
+		log.Println(err.Error())
 	}
-	replacer := strings.NewReplacer("{{ .url }}", APP_URL)
-	replace := replacer.Replace(string(menu.GetTemplateXML()))
-	return c.Status(fiber.StatusOK).SendString(replace)
+
+	var liveMatchsData []string
+	for _, s := range livematchs {
+		row := s.Home.GetName() + " - " + s.Away.GetName()
+		liveMatchsData = append(liveMatchsData, row)
+	}
+	liveMatchsString := strings.Join(liveMatchsData, "\n")
+	return liveMatchsString
 }
 
-func (h *IncomingHandler) Champ(c *fiber.Ctx) error {
-	c.Set("Content-type", "application/xml; charset=utf-8")
-	menu, err := h.menuService.GetBySlug("champ")
+func (h *IncomingHandler) Schedules() string {
+	schedules, err := h.fixtureService.GetAllUSSD()
 	if err != nil {
-		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
+		log.Println(err.Error())
 	}
-	replacer := strings.NewReplacer("{{ .url }}", APP_URL)
-	replace := replacer.Replace(string(menu.GetTemplateXML()))
-	return c.Status(fiber.StatusOK).SendString(replace)
+
+	var schedulesData []string
+	for _, s := range schedules {
+		row := s.Home.GetName() + " - " + s.Away.GetName() + " (" + s.GetFixtureDateToString() + ")"
+		schedulesData = append(schedulesData, row)
+	}
+	schedulesString := strings.Join(schedulesData, "\n")
+	return schedulesString
 }
 
-func (h *IncomingHandler) Prediction(c *fiber.Ctx) error {
-	c.Set("Content-type", "application/xml; charset=utf-8")
-	menu, err := h.menuService.GetBySlug("prediction")
+func (h *IncomingHandler) FlashNews() string {
+	news, err := h.newsService.GetAllUSSD()
 	if err != nil {
-		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
+		log.Println(err.Error())
 	}
-	replacer := strings.NewReplacer("{{ .url }}", APP_URL)
-	replace := replacer.Replace(string(menu.GetTemplateXML()))
-	return c.Status(fiber.StatusOK).SendString(replace)
+
+	var newsData []string
+	for _, s := range news {
+		row := s.GetTitle()
+		newsData = append(newsData, row)
+	}
+	newsString := strings.Join(newsData, "\n")
+	return newsString
 }
 
-func (h *IncomingHandler) SmsAlerte(c *fiber.Ctx) error {
-	c.Set("Content-type", "application/xml; charset=utf-8")
-	menu, err := h.menuService.GetBySlug("sms-alerte")
-	if err != nil {
-		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
-	}
-	replacer := strings.NewReplacer("{{ .url }}", APP_URL)
-	replace := replacer.Replace(string(menu.GetTemplateXML()))
-	return c.Status(fiber.StatusOK).SendString(replace)
+func (h *IncomingHandler) ChampionLeagues() string {
+	return ""
 }
 
-func (h *IncomingHandler) KitFoot(c *fiber.Ctx) error {
-	c.Set("Content-type", "application/xml; charset=utf-8")
-	menu, err := h.menuService.GetBySlug("kit-foot")
-	if err != nil {
-		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
-	}
-	replacer := strings.NewReplacer("{{ .url }}", APP_URL)
-	replace := replacer.Replace(string(menu.GetTemplateXML()))
-	return c.Status(fiber.StatusOK).SendString(replace)
+func (h *IncomingHandler) PremierLeagues() string {
+	return ""
 }
 
-func (h *IncomingHandler) FootEurope(c *fiber.Ctx) error {
-	c.Set("Content-type", "application/xml; charset=utf-8")
-	menu, err := h.menuService.GetBySlug("foot-europa")
-	if err != nil {
-		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
-	}
-	replacer := strings.NewReplacer("{{ .url }}", APP_URL)
-	replace := replacer.Replace(string(menu.GetTemplateXML()))
-	return c.Status(fiber.StatusOK).SendString(replace)
+func (h *IncomingHandler) LaLigas() string {
+	return ""
+}
+
+func (h *IncomingHandler) Ligue1s() string {
+	return ""
 }

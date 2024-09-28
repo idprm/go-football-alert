@@ -39,6 +39,10 @@ func (e *Fixture) GetDate() time.Time {
 	return e.FixtureDate
 }
 
+func (e *Fixture) GetFixtureDateToString() string {
+	return e.FixtureDate.Format("02 Jan 06 15:04")
+}
+
 func (e *Fixture) GetTimeStamp() int {
 	return e.TimeStamp
 }

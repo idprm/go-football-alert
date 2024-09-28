@@ -36,7 +36,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:         1,
 			CountryID:  1,
-			Category:   "CREDIT-GOAL",
+			Category:   "creditgoal",
 			Name:       "Credit Goal Daily",
 			Code:       "CG1",
 			Package:    "daily",
@@ -59,7 +59,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:         2,
 			CountryID:  1,
-			Category:   "PREDICTION",
+			Category:   "prediction",
 			Name:       "Prediction & Win Daily",
 			Code:       "PW1",
 			Package:    "daily",
@@ -82,7 +82,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:         3,
 			CountryID:  1,
-			Category:   "FOLLOW-TEAM",
+			Category:   "follow-team",
 			Name:       "Follow Team Daily",
 			Code:       "FT1",
 			Package:    "daily",
@@ -105,7 +105,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:         4,
 			CountryID:  1,
-			Category:   "FOLLOW-COMPETITION",
+			Category:   "follow-competition",
 			Name:       "Follow Competition Daily",
 			Code:       "FC",
 			Package:    "daily",
@@ -128,7 +128,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:         5,
 			CountryID:  1,
-			Category:   "CREDIT-GOAL",
+			Category:   "creditgoal",
 			Name:       "Credit Goal Weekly",
 			Code:       "CG7",
 			Package:    "weekly",
@@ -151,7 +151,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:         6,
 			CountryID:  1,
-			Category:   "PREDICTION",
+			Category:   "prediction",
 			Name:       "Prediction & Win Weekly",
 			Code:       "PW7",
 			Package:    "weekly",
@@ -174,7 +174,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:         7,
 			CountryID:  1,
-			Category:   "FOLLOW-TEAM",
+			Category:   "follow-team",
 			Name:       "Follow Team Weekly",
 			Code:       "FT7",
 			Package:    "weekly",
@@ -197,7 +197,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:         8,
 			CountryID:  1,
-			Category:   "FOLLOW-COMPETITION",
+			Category:   "follow-competition",
 			Name:       "Follow Competition Weekly",
 			Code:       "FC",
 			Package:    "weekly",
@@ -220,7 +220,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:         9,
 			CountryID:  1,
-			Category:   "CREDIT-GOAL",
+			Category:   "creditgoal",
 			Name:       "Credit Goal Monthly",
 			Code:       "CG30",
 			Package:    "monthly",
@@ -243,7 +243,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:         10,
 			CountryID:  1,
-			Category:   "PREDICTION",
+			Category:   "prediction",
 			Name:       "Prediction & Win Monthly",
 			Code:       "PW30",
 			Package:    "monthly",
@@ -266,7 +266,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:         11,
 			CountryID:  1,
-			Category:   "FOLLOW-TEAM",
+			Category:   "follow-team",
 			Name:       "Follow Team Monthly",
 			Code:       "FT30",
 			Package:    "monthly",
@@ -289,7 +289,7 @@ func seederDB(db *gorm.DB) {
 		{
 			ID:         12,
 			CountryID:  1,
-			Category:   "FOLLOW-COMPETITION",
+			Category:   "follow-competition",
 			Name:       "Follow Competition Monthly",
 			Code:       "FC30",
 			Package:    "monthly",
@@ -429,7 +429,7 @@ func seederDB(db *gorm.DB) {
 		{
 			Category: ACT_CONFIRMATION,
 			Channel:  ACT_SMS,
-			Name:     SMS_FOLLOW_COMPETITION_INVALID_SUB,
+			Name:     SMS_FOLLOW_COMPETITION_UNVALID_SUB,
 			Value:    "SMS Alerte: Desole, mais votre choix n est pas valide. Renvoyez au {sc} la competition que vous voulez suivre en direct. {price}{currency}/SMS",
 		},
 		{
@@ -497,7 +497,7 @@ func seederDB(db *gorm.DB) {
 	}
 
 	/**
-	1.  #101#36#1 : Live Match (Confirm Message)
+	1.  #101#36#1 : Live match (Confirm Message)
 	2.  #101#36#2 : Flash News (Confirm Message)
 	3.  #101#36#3 : Crédit Goal (Confirm Message)
 	4.  #101#36#4 : Champ. Mali (Confirm Message)
@@ -511,70 +511,70 @@ func seederDB(db *gorm.DB) {
 	var menus = []entity.Menu{
 		{
 			ID:        1,
-			Category:  "MATCH",
-			Name:      "Live Match",
+			Category:  "follow-competition",
+			Name:      "Live match",
 			Slug:      "lm",
 			KeyPress:  "1",
-			IsConfirm: false,
+			IsConfirm: true,
 			IsActive:  true,
 		},
 		{
 			ID:        2,
-			Category:  "MATCH",
-			Name:      "Live Match",
+			Category:  "follow-competition",
+			Name:      "Live match",
 			Slug:      "lm-live-match",
 			KeyPress:  "1",
-			IsConfirm: false,
+			IsConfirm: true,
 			IsActive:  true,
 		},
 		{
 			ID:        3,
-			Category:  "MATCH",
+			Category:  "follow-competition",
 			Name:      "Schedule",
 			Slug:      "lm-schedule",
 			KeyPress:  "2",
-			IsConfirm: false,
+			IsConfirm: true,
 			IsActive:  true,
 		},
 		{
 			ID:        4,
-			Category:  "MATCH",
+			Category:  "follow-competition",
 			Name:      "Line Up",
 			Slug:      "lm-line-up",
 			KeyPress:  "3",
-			IsConfirm: false,
+			IsConfirm: true,
 			IsActive:  true,
 		},
 		{
 			ID:        5,
-			Category:  "MATCH",
-			Name:      "Match Stats",
+			Category:  "follow-competition",
+			Name:      "match Stats",
 			Slug:      "lm-match-stats",
 			KeyPress:  "4",
-			IsConfirm: false,
+			IsConfirm: true,
 			IsActive:  true,
 		},
 		{
 			ID:        6,
-			Category:  "MATCH",
+			Category:  "follow-competition",
 			Name:      "Display Live match",
 			Slug:      "lm-display-livematch",
 			KeyPress:  "5",
-			IsConfirm: false,
+			IsConfirm: true,
 			IsActive:  true,
 		},
 		{
 			ID:        7,
-			Category:  "FOLLOW-TEAM",
+			Category:  "follow-competition",
 			Name:      "Flash News",
-			Slug:      "lm-flash-news",
+			Slug:      "flash-news",
 			KeyPress:  "2",
-			IsConfirm: false,
+			IsConfirm: true,
 			IsActive:  true,
 		},
 		{
 			ID:        8,
-			Category:  "CREDIT-GOAL",
+			Category:  "creditgoal",
 			Name:      "Crédit Goal",
 			Slug:      "credit-goal",
 			KeyPress:  "3",
@@ -583,7 +583,7 @@ func seederDB(db *gorm.DB) {
 		},
 		{
 			ID:        9,
-			Category:  "FOLLOW-TEAM",
+			Category:  "follow-team",
 			Name:      "Champ. Mali",
 			Slug:      "champ",
 			KeyPress:  "4",
@@ -592,7 +592,7 @@ func seederDB(db *gorm.DB) {
 		},
 		{
 			ID:        10,
-			Category:  "FOLLOW-TEAM",
+			Category:  "follow-team",
 			Name:      "Results",
 			Slug:      "champ-results",
 			KeyPress:  "1",
@@ -601,7 +601,7 @@ func seederDB(db *gorm.DB) {
 		},
 		{
 			ID:        11,
-			Category:  "FOLLOW-TEAM",
+			Category:  "follow-team",
 			Name:      "Standings",
 			Slug:      "champ-standings",
 			KeyPress:  "2",
@@ -610,7 +610,7 @@ func seederDB(db *gorm.DB) {
 		},
 		{
 			ID:        12,
-			Category:  "FOLLOW-TEAM",
+			Category:  "follow-team",
 			Name:      "Schedule",
 			Slug:      "champ-schedule",
 			KeyPress:  "3",
@@ -619,7 +619,7 @@ func seederDB(db *gorm.DB) {
 		},
 		{
 			ID:        13,
-			Category:  "FOLLOW-TEAM",
+			Category:  "follow-team",
 			Name:      "Team",
 			Slug:      "champ-team",
 			KeyPress:  "4",
@@ -628,7 +628,7 @@ func seederDB(db *gorm.DB) {
 		},
 		{
 			ID:        14,
-			Category:  "FOLLOW-TEAM",
+			Category:  "follow-team",
 			Name:      "Crédit Score",
 			Slug:      "champ-credit-score",
 			KeyPress:  "5",
@@ -637,16 +637,16 @@ func seederDB(db *gorm.DB) {
 		},
 		{
 			ID:        15,
-			Category:  "FOLLOW-TEAM",
+			Category:  "follow-team",
 			Name:      "Crédit Goal",
-			Slug:      "champ-credit-goal",
+			Slug:      "champ-creditgoal",
 			KeyPress:  "6",
 			IsConfirm: true,
 			IsActive:  true,
 		},
 		{
 			ID:        16,
-			Category:  "FOLLOW-TEAM",
+			Category:  "follow-team",
 			Name:      "SMS Alerte",
 			Slug:      "champ-sms-alerte",
 			KeyPress:  "7",
@@ -655,7 +655,7 @@ func seederDB(db *gorm.DB) {
 		},
 		{
 			ID:        17,
-			Category:  "FOLLOW-TEAM",
+			Category:  "follow-team",
 			Name:      "SMS Alerte Equipe",
 			Slug:      "champ-sms-alerte-equipe",
 			KeyPress:  "8",
@@ -664,7 +664,7 @@ func seederDB(db *gorm.DB) {
 		},
 		{
 			ID:        18,
-			Category:  "PREDICTION",
+			Category:  "prediction",
 			Name:      "Prédiction",
 			Slug:      "prediction",
 			KeyPress:  "5",
@@ -673,7 +673,7 @@ func seederDB(db *gorm.DB) {
 		},
 		{
 			ID:        19,
-			Category:  "FOLLOW-COMPETITION",
+			Category:  "follow-competition",
 			Name:      "SMS Alerte",
 			Slug:      "sms-alerte",
 			KeyPress:  "6",
@@ -682,7 +682,7 @@ func seederDB(db *gorm.DB) {
 		},
 		{
 			ID:        20,
-			Category:  "FOLLOW-COMPETITION",
+			Category:  "follow-competition",
 			Name:      "Kit Foot",
 			Slug:      "sms-kit-foot",
 			KeyPress:  "1",
@@ -691,7 +691,7 @@ func seederDB(db *gorm.DB) {
 		},
 		{
 			ID:        21,
-			Category:  "FOLLOW-COMPETITION",
+			Category:  "follow-competition",
 			Name:      "Europe",
 			Slug:      "sms-foot-europe",
 			KeyPress:  "2",
@@ -700,7 +700,7 @@ func seederDB(db *gorm.DB) {
 		},
 		{
 			ID:        22,
-			Category:  "FOLLOW-COMPETITION",
+			Category:  "follow-competition",
 			Name:      "Afrique",
 			Slug:      "sms-foot-afrique",
 			KeyPress:  "3",
@@ -709,7 +709,7 @@ func seederDB(db *gorm.DB) {
 		},
 		{
 			ID:        23,
-			Category:  "FOLLOW-COMPETITION",
+			Category:  "follow-competition",
 			Name:      "SMS Alerte Equipe",
 			Slug:      "sms-alerte-equipe",
 			KeyPress:  "4",
@@ -718,7 +718,7 @@ func seederDB(db *gorm.DB) {
 		},
 		{
 			ID:        24,
-			Category:  "FOLLOW-COMPETITION",
+			Category:  "follow-competition",
 			Name:      "Foot International",
 			Slug:      "sms-foot-international",
 			KeyPress:  "5",
@@ -727,7 +727,7 @@ func seederDB(db *gorm.DB) {
 		},
 		{
 			ID:        25,
-			Category:  "FOLLOW-COMPETITION",
+			Category:  "follow-competition",
 			Name:      "Kit Foot",
 			Slug:      "kit-foot",
 			KeyPress:  "7",
@@ -736,7 +736,7 @@ func seederDB(db *gorm.DB) {
 		},
 		{
 			ID:        26,
-			Category:  "FOLLOW-COMPETITION",
+			Category:  "follow-competition",
 			Name:      "Alerte Champ. Mali + Equipe",
 			KeyPress:  "1",
 			Slug:      "kit-foot-champ",
@@ -745,7 +745,7 @@ func seederDB(db *gorm.DB) {
 		},
 		{
 			ID:        27,
-			Category:  "FOLLOW-COMPETITION",
+			Category:  "follow-competition",
 			Name:      "Alerte Premier League + Equipe",
 			Slug:      "kit-foot-premier-league",
 			KeyPress:  "2",
@@ -754,7 +754,7 @@ func seederDB(db *gorm.DB) {
 		},
 		{
 			ID:        28,
-			Category:  "FOLLOW-COMPETITION",
+			Category:  "follow-competition",
 			Name:      "Alerte La Liga + Equipe",
 			Slug:      "kit-foot-la-liga",
 			KeyPress:  "3",
@@ -763,7 +763,7 @@ func seederDB(db *gorm.DB) {
 		},
 		{
 			ID:        29,
-			Category:  "FOLLOW-COMPETITION",
+			Category:  "follow-competition",
 			Name:      "Alerte Ligue 1 + Equipe",
 			Slug:      "kit-foot-ligue-1",
 			KeyPress:  "4",
@@ -772,7 +772,7 @@ func seederDB(db *gorm.DB) {
 		},
 		{
 			ID:        30,
-			Category:  "FOLLOW-COMPETITION",
+			Category:  "follow-competition",
 			Name:      "Alerte Serie A + Equipe",
 			Slug:      "kit-foot-serie-a",
 			KeyPress:  "5",
@@ -781,7 +781,7 @@ func seederDB(db *gorm.DB) {
 		},
 		{
 			ID:        31,
-			Category:  "FOLLOW-COMPETITION",
+			Category:  "follow-competition",
 			Name:      "Alerte Bundesligue + Equipe",
 			KeyPress:  "6",
 			Slug:      "kit-foot-bundesligue",
@@ -790,16 +790,16 @@ func seederDB(db *gorm.DB) {
 		},
 		{
 			ID:        32,
-			Category:  "FOLLOW-COMPETITION",
+			Category:  "follow-competition",
 			Name:      "Foot Europe",
 			KeyPress:  "7",
 			Slug:      "foot-europe",
-			IsConfirm: true,
+			IsConfirm: false,
 			IsActive:  true,
 		},
 		{
 			ID:        33,
-			Category:  "FOLLOW-COMPETITION",
+			Category:  "follow-competition",
 			Name:      "Champion League",
 			Slug:      "foot-europe-champion-league",
 			KeyPress:  "1",
@@ -808,7 +808,7 @@ func seederDB(db *gorm.DB) {
 		},
 		{
 			ID:        34,
-			Category:  "FOLLOW-COMPETITION",
+			Category:  "follow-competition",
 			Name:      "Premier League",
 			KeyPress:  "2",
 			Slug:      "foot-europe-premier-league",
@@ -817,7 +817,7 @@ func seederDB(db *gorm.DB) {
 		},
 		{
 			ID:        35,
-			Category:  "FOLLOW-COMPETITION",
+			Category:  "follow-competition",
 			Name:      "La Liga",
 			Slug:      "foot-europe-la-liga",
 			KeyPress:  "3",
@@ -826,7 +826,7 @@ func seederDB(db *gorm.DB) {
 		},
 		{
 			ID:        36,
-			Category:  "FOLLOW-COMPETITION",
+			Category:  "follow-competition",
 			Name:      "Ligue 1",
 			Slug:      "foot-europe-ligue-1",
 			KeyPress:  "4",
@@ -835,7 +835,7 @@ func seederDB(db *gorm.DB) {
 		},
 		{
 			ID:        37,
-			Category:  "FOLLOW-COMPETITION",
+			Category:  "follow-competition",
 			Name:      "L. Europa",
 			Slug:      "foot-europe-l-europa",
 			KeyPress:  "5",
@@ -844,7 +844,7 @@ func seederDB(db *gorm.DB) {
 		},
 		{
 			ID:        38,
-			Category:  "FOLLOW-COMPETITION",
+			Category:  "follow-competition",
 			Name:      "Serie A",
 			Slug:      "foot-europe-serie-a",
 			KeyPress:  "6",
@@ -853,7 +853,7 @@ func seederDB(db *gorm.DB) {
 		},
 		{
 			ID:        39,
-			Category:  "FOLLOW-COMPETITION",
+			Category:  "follow-competition",
 			Name:      "Bundesligua",
 			Slug:      "foot-europe-bundesligua",
 			KeyPress:  "7",
@@ -862,7 +862,7 @@ func seederDB(db *gorm.DB) {
 		},
 		{
 			ID:        40,
-			Category:  "FOLLOW-COMPETITION",
+			Category:  "follow-competition",
 			Name:      "Champ Portugal",
 			Slug:      "foot-europe-champ-portugal",
 			KeyPress:  "8",
