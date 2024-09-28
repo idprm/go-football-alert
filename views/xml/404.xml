@@ -3,6 +3,6 @@
 <pages>
   <page>
     Menu not found<br/>
-    <a href="{{ .url }}/v1/ussd">Home</a>
+    <a href="{{.url}}/{{.version}}/ussd">Home</a>
   </page>
 </pages>

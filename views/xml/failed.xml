@@ -3,6 +3,6 @@
 <pages descr="Failed">
 	<page>
 		Failed<br/>
-        <a href="{{ .url }}/v1/ussd/">Back to Home</a>
+        <a href="{{.url}}/{{.version}}/ussd/">Back to Home</a>
     </page>
 </pages>

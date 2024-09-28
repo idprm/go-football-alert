@@ -3,52 +3,52 @@
 <pages>
  <page tag="live-match">
     Live Match
-    <a href="{{ .url }}/v1/ussd/lm/live-match">Live Match</a>
-    <a href="{{ .url }}/v1/ussd/lm/line-up">Line Up</a>
-    <a href="{{ .url }}/v1/ussd/lm/schedule">Schedule</a>
-    <a href="{{ .url }}/v1/ussd/lm/match-stats">Match Stats</a>
+    <a href="{{.url}}/{{.version}}/ussd/lm/live-match">Live Match</a>
+    <a href="{{.url}}/{{.version}}/ussd/lm/line-up">Line Up</a>
+    <a href="{{.url}}/{{.version}}/ussd/lm/schedule">Schedule</a>
+    <a href="{{.url}}/{{.version}}/ussd/lm/match-stats">Match Stats</a>
   </page>
   <page tag="champ-mali">
     Champ. Mali
-    <a href="{{ .url }}/v1/ussd/champ/results">Results</a>
-    <a href="{{ .url }}/v1/ussd/champ/standings">Standings</a>
-    <a href="{{ .url }}/v1/ussd/champ/schedule">Schedule</a>
-    <a href="{{ .url }}/v1/ussd/champ/credit-victoire">Crédit Victoire</a>
-    <a href="{{ .url }}/v1/ussd/champ/credit-goal">Crédit Goal</a>
-    <a href="{{ .url }}/v1/ussd/champ/sms-alerte">SMS Alerte</a>
-    <a href="{{ .url }}/v1/ussd/champ/sms-alerte-equipe">SMS Alerte Equipe</a>
+    <a href="{{.url}}/{{.version}}/ussd/champ/results">Results</a>
+    <a href="{{.url}}/{{.version}}/ussd/champ/standings">Standings</a>
+    <a href="{{.url}}/{{.version}}/ussd/champ/schedule">Schedule</a>
+    <a href="{{.url}}/{{.version}}/ussd/champ/credit-victoire">Crédit Victoire</a>
+    <a href="{{.url}}/{{.version}}/ussd/champ/credit-goal">Crédit Goal</a>
+    <a href="{{.url}}/{{.version}}/ussd/champ/sms-alerte">SMS Alerte</a>
+    <a href="{{.url}}/{{.version}}/ussd/champ/sms-alerte-equipe">SMS Alerte Equipe</a>
   </page>
   <page tag="prediction">
     Prédiction
-    <a href="{{ .url }}/v1/ussd/prediction/safe-of-the-day">Safe of the Day</a>
-    <a href="{{ .url }}/v1/ussd/prediction/daily-combined-bets">Daily combined bets</a>
-    <a href="{{ .url }}/v1/ussd/prediction/vip-prono">VIP Prono</a>
+    <a href="{{.url}}/{{.version}}/ussd/prediction/safe-of-the-day">Safe of the Day</a>
+    <a href="{{.url}}/{{.version}}/ussd/prediction/daily-combined-bets">Daily combined bets</a>
+    <a href="{{.url}}/{{.version}}/ussd/prediction/vip-prono">VIP Prono</a>
   </page>
   <page tag="sms-alerte">
     SMS Alerte
     <a href="#kit-foot">Kit Foot</a>
-    <a href="{{ .url }}/v1/ussd/sms-alerte/europe">Europe</a>
-    <a href="{{ .url }}/v1/ussd/sms-alerte/afrique">Afrique</a>
+    <a href="{{.url}}/{{.version}}/ussd/sms-alerte/europe">Europe</a>
+    <a href="{{.url}}/{{.version}}/ussd/sms-alerte/afrique">Afrique</a>
   </page>
   <page tag="kit-foot">
     Kit Foot
-    <a href="{{ .url }}/v1/ussd/kit-foot/safe-of-the-day">Alerte Champ. Mali + Equipe</a>
-    <a href="{{ .url }}/v1/ussd/kit-foot/premier-league">Alerte Premier League + Equipe</a>
-    <a href="{{ .url }}/v1/ussd/kit-foot/la-liga">Alerte La Liga + Equipe</a>
-    <a href="{{ .url }}/v1/ussd/kit-foot/ligue-1">Alerte Ligue 1 + Equipe</a>
-    <a href="{{ .url }}/v1/ussd/kit-foot/vip-prono">Alerte Serie A + Equipe</a>
-    <a href="{{ .url }}/v1/ussd/kit-foot/bundesliga">Alerte Bundesligue + Equipe</a>
+    <a href="{{.url}}/{{.version}}/ussd/kit-foot/safe-of-the-day">Alerte Champ. Mali + Equipe</a>
+    <a href="{{.url}}/{{.version}}/ussd/kit-foot/premier-league">Alerte Premier League + Equipe</a>
+    <a href="{{.url}}/{{.version}}/ussd/kit-foot/la-liga">Alerte La Liga + Equipe</a>
+    <a href="{{.url}}/{{.version}}/ussd/kit-foot/ligue-1">Alerte Ligue 1 + Equipe</a>
+    <a href="{{.url}}/{{.version}}/ussd/kit-foot/vip-prono">Alerte Serie A + Equipe</a>
+    <a href="{{.url}}/{{.version}}/ussd/kit-foot/bundesliga">Alerte Bundesligue + Equipe</a>
   </page>
   <page tag="foot-europe">
     Foot Europe
-    <a href="{{ .url }}/v1/ussd/foot-europe/safe-of-the-day">Champion League</a>
-    <a href="{{ .url }}/v1/ussd/foot-europe/daily-combined-bets">Premier League</a>
-    <a href="{{ .url }}/v1/ussd/foot-europe/la-liga">La Liga</a>
-    <a href="{{ .url }}/v1/ussd/foot-europe/ligue-1">Ligue 1</a>
-    <a href="{{ .url }}/v1/ussd/foot-europe/l-europa">L. Europa</a>
-    <a href="{{ .url }}/v1/ussd/foot-europe/serie-a">Serie A</a>
-    <a href="{{ .url }}/v1/ussd/foot-europe/bundesligua">Bundesligua</a>
-    <a href="{{ .url }}/v1/ussd/foot-europe/champ-portugal">Champ Portugal</a>
+    <a href="{{.url}}/{{.version}}/ussd/foot-europe/safe-of-the-day">Champion League</a>
+    <a href="{{.url}}/{{.version}}/ussd/foot-europe/daily-combined-bets">Premier League</a>
+    <a href="{{.url}}/{{.version}}/ussd/foot-europe/la-liga">La Liga</a>
+    <a href="{{.url}}/{{.version}}/ussd/foot-europe/ligue-1">Ligue 1</a>
+    <a href="{{.url}}/{{.version}}/ussd/foot-europe/l-europa">L. Europa</a>
+    <a href="{{.url}}/{{.version}}/ussd/foot-europe/serie-a">Serie A</a>
+    <a href="{{.url}}/{{.version}}/ussd/foot-europe/bundesligua">Bundesligua</a>
+    <a href="{{.url}}/{{.version}}/ussd/foot-europe/champ-portugal">Champ Portugal</a>
   </page>
 </pages>
 
@@ -57,8 +57,9 @@
 <pages descr="Flash News">
 	<page>
 		Flash News<br/>
-{{ .data }}
-    <a href="{{ .url }}/v1/ussd/">Back to Home</a>
+{{.data}}
+    <br/>
+    <a href="{{.url}}/{{.version}}/ussd/">Back to Home</a>
 	</page>
 </pages>
 
@@ -68,8 +69,9 @@
 <pages descr="Live Match">
 	<page>
 		Live Match<br/>
-{{ .data }}
-    <a href="{{ .url }}/v1/ussd/">Back to Home</a>
+{{.data}}
+    <br/>
+    <a href="{{.url}}/{{.version}}/ussd/">Back to Home</a>
 	</page>
 </pages>
 
@@ -78,7 +80,43 @@
 <pages descr="Schedule">
 	<page>
 		Schedule<br/>
-{{ .data }}
-    <a href="{{ .url }}/v1/ussd/">Back to Home</a>
+{{.data}}
+    <br/>
+    <a href="{{.url}}/{{.version}}/ussd/">Back to Home</a>
 	</page>
 </pages>
+
+
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
+<pages descr="Lineup">
+	<page>
+		Lineup<br/>
+    No data
+    <br/>
+    <a href="{{.url}}/{{.version}}/ussd/">Back to Home</a>
+	</page>
+</pages>
+
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
+<pages descr="Match Stats">
+	<page>
+		Match Stats<br/>
+    No data
+    <br/>
+    <a href="{{.url}}/{{.version}}/ussd/">Back to Home</a>
+	</page>
+</pages>
+
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
+<pages descr="Display">
+	<page>
+		Display<br/>
+    No data
+    <br/>
+    <a href="{{.url}}/{{.version}}/ussd/">Back to Home</a>
+	</page>
+</pages>
+

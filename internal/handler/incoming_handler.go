@@ -211,7 +211,7 @@ func (h *IncomingHandler) Main(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
 	}
-	replacer := strings.NewReplacer("{{ .url }}", APP_URL)
+	replacer := strings.NewReplacer("{{.url}}", APP_URL, "{{.version}}", API_VERSION)
 	replace := replacer.Replace(string(data))
 	return c.Status(fiber.StatusOK).SendString(replace)
 }
@@ -239,7 +239,7 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 		if err != nil {
 			return c.Status(fiber.StatusBadGateway).SendString(err.Error())
 		}
-		replacer := strings.NewReplacer("{{ .url }}", APP_URL)
+		replacer := strings.NewReplacer("{{.url}}", APP_URL, "{{.version}}", API_VERSION)
 		replace := replacer.Replace(string(data))
 		return c.Status(fiber.StatusOK).SendString(replace)
 	}
@@ -266,52 +266,78 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 			// package
 			var servicesData []string
 			for _, s := range services {
-				row := `<a href="` + APP_URL + `/v1/ussd/select?slug=` + req.GetSlug() + `&category=` + menu.GetCategory() + `&package=` + s.GetPackage() + `">` + s.GetName() + " (" + s.GetPriceToString() + ")" + "</a>"
+				row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/select?slug=` + req.GetSlug() + `&category=` + menu.GetCategory() + `&package=` + s.GetPackage() + `">` + s.GetName() + " (" + s.GetPriceToString() + ")" + "</a>"
 				servicesData = append(servicesData, row)
 			}
 			servicesString := strings.Join(servicesData, "\n")
 
 			replacer := strings.NewReplacer(
-				"{{ .title }}", req.GetTitle(),
-				"{{ .data }}", servicesString,
+				"{{.url}}", APP_URL,
+				"{{.version}}", API_VERSION,
+				"{{.title}}", req.GetTitle(),
+				"{{.data}}", servicesString,
 			)
 			replace := replacer.Replace(string(data))
 			return c.Status(fiber.StatusOK).SendString(replace)
 		}
 
-		if req.GetSlug() == "flash-news" {
-			replacer := strings.NewReplacer(
-				"{{ .url }}", APP_URL,
-				"{{ .data }}", h.FlashNews(),
-			)
-			replace := replacer.Replace(string(menu.GetTemplateXML()))
-			return c.Status(fiber.StatusOK).SendString(replace)
-		}
+		var data string
 
 		if req.GetSlug() == "lm-live-match" {
-			replacer := strings.NewReplacer(
-				"{{ .url }}", APP_URL,
-				"{{ .data }}", h.LiveMatchs(),
-			)
-			replace := replacer.Replace(string(menu.GetTemplateXML()))
-			return c.Status(fiber.StatusOK).SendString(replace)
+			data = h.LiveMatchs()
 		}
 
 		if req.GetSlug() == "lm-schedule" {
-			replacer := strings.NewReplacer(
-				"{{ .url }}", APP_URL,
-				"{{ .data }}", h.Schedules(),
-			)
-			replace := replacer.Replace(string(menu.GetTemplateXML()))
-			return c.Status(fiber.StatusOK).SendString(replace)
+			data = h.Schedules()
 		}
 
-		replacer := strings.NewReplacer("{{ .url }}", APP_URL)
+		if req.GetSlug() == "lm-schedule" {
+			data = h.Schedules()
+		}
+
+		if req.GetSlug() == "flash-news" {
+			data = h.FlashNews()
+		}
+
+		replacer := strings.NewReplacer(
+			"{{.url}}", APP_URL,
+			"{{.version}}", API_VERSION,
+			"{{.data}}", data,
+		)
 		replace := replacer.Replace(string(menu.GetTemplateXML()))
 		return c.Status(fiber.StatusOK).SendString(replace)
 	}
 
-	replacer := strings.NewReplacer("{{ .url }}", APP_URL)
+	var data string
+	if req.GetSlug() == "foot-europe-premier-league" {
+		data = h.PremierLeagues()
+	}
+
+	if req.GetSlug() == "foot-europe-la-liga" {
+		data = h.LaLigas()
+	}
+
+	if req.GetSlug() == "foot-europe-ligue-1" {
+		data = h.Ligue1s()
+	}
+
+	if req.GetSlug() == "foot-europe-serie-a" {
+		data = h.SerieA()
+	}
+
+	if req.GetSlug() == "foot-europe-bundesligua" {
+		data = h.Bundesliguas()
+	}
+
+	if req.GetSlug() == "foot-europe-champ-portugal" {
+		data = h.PrimeiraLigas()
+	}
+
+	replacer := strings.NewReplacer(
+		"{{.url}}", APP_URL,
+		"{{.version}}", API_VERSION,
+		"{{.data}}", data,
+	)
 	replace := replacer.Replace(string(menu.GetTemplateXML()))
 	return c.Status(fiber.StatusOK).SendString(replace)
 }
@@ -339,7 +365,7 @@ func (h *IncomingHandler) Select(c *fiber.Ctx) error {
 		if err != nil {
 			return c.Status(fiber.StatusBadGateway).SendString(err.Error())
 		}
-		replacer := strings.NewReplacer("{{ .url }}", APP_URL)
+		replacer := strings.NewReplacer("{{.url}}", APP_URL, "{{.version}}", API_VERSION)
 		replace := replacer.Replace(string(data))
 		return c.Status(fiber.StatusOK).SendString(replace)
 	}
@@ -354,11 +380,12 @@ func (h *IncomingHandler) Select(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
 	}
 	replacer := strings.NewReplacer(
-		"{{ .url }}", APP_URL,
-		"{{ .slug }}", req.GetSlug(),
-		"{{ .code }}", service.GetCode(),
-		"{{ .service }}", service.GetName(),
-		"{{ .price }}", service.GetPriceToString(),
+		"{{.url}}", APP_URL,
+		"{{.version}}", API_VERSION,
+		"{{.slug}}", req.GetSlug(),
+		"{{.code}}", service.GetCode(),
+		"{{.service}}", service.GetName(),
+		"{{.price}}", service.GetPriceToString(),
 	)
 	replace := replacer.Replace(string(menu))
 	return c.Status(fiber.StatusOK).SendString(replace)
@@ -387,7 +414,7 @@ func (h *IncomingHandler) Buy(c *fiber.Ctx) error {
 		if err != nil {
 			return c.Status(fiber.StatusNotFound).SendString(err.Error())
 		}
-		replacer := strings.NewReplacer("{{ .url }}", APP_URL)
+		replacer := strings.NewReplacer("{{.url}}", APP_URL, "{{.version}}", API_VERSION)
 		replace := replacer.Replace(string(data))
 		return c.Status(fiber.StatusOK).SendString(replace)
 	}
@@ -398,7 +425,7 @@ func (h *IncomingHandler) Buy(c *fiber.Ctx) error {
 		if err != nil {
 			return c.Status(fiber.StatusNotFound).SendString(err.Error())
 		}
-		replacer := strings.NewReplacer("{{ .url }}", APP_URL)
+		replacer := strings.NewReplacer("{{.url}}", APP_URL, "{{.version}}", API_VERSION)
 		replace := replacer.Replace(string(data))
 		return c.Status(fiber.StatusOK).SendString(replace)
 	}
@@ -419,12 +446,13 @@ func (h *IncomingHandler) Buy(c *fiber.Ctx) error {
 	}
 
 	replacer := strings.NewReplacer(
-		"{{ .url }}", APP_URL,
-		"{{ .slug }}", req.GetSlug(),
-		"{{ .category }}", req.GetCategory(),
-		"{{ .package }}", req.GetPackage(),
-		"{{ .service }}", service.GetName(),
-		"{{ .price }}", strconv.FormatFloat(service.GetPrice(), 'f', 0, 64),
+		"{{.url}}", APP_URL,
+		"{{.version}}", API_VERSION,
+		"{{.slug}}", req.GetSlug(),
+		"{{.category}}", req.GetCategory(),
+		"{{.package}}", req.GetPackage(),
+		"{{.service}}", service.GetName(),
+		"{{.price}}", strconv.FormatFloat(service.GetPrice(), 'f', 0, 64),
 	)
 
 	if req.IsYes() {
@@ -447,7 +475,7 @@ func (h *IncomingHandler) Buy(c *fiber.Ctx) error {
 }
 
 func (h *IncomingHandler) LiveMatchs() string {
-	livematchs, err := h.fixtureService.GetAllUSSD()
+	livematchs, err := h.fixtureService.GetAll()
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -462,7 +490,7 @@ func (h *IncomingHandler) LiveMatchs() string {
 }
 
 func (h *IncomingHandler) Schedules() string {
-	schedules, err := h.fixtureService.GetAllUSSD()
+	schedules, err := h.fixtureService.GetAllScheduleUSSD()
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -492,17 +520,144 @@ func (h *IncomingHandler) FlashNews() string {
 }
 
 func (h *IncomingHandler) ChampionLeagues() string {
-	return ""
+
+	fixtures, err := h.fixtureService.GetAllByLeagueIdUSSD(1)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	var fixturesData []string
+	var fixturesString string
+	if len(fixtures) > 0 {
+		for _, s := range fixtures {
+			row := s.Home.GetName() + " - " + s.Away.GetName() + " (" + s.GetFixtureDateToString() + ")"
+			fixturesData = append(fixturesData, row)
+		}
+		fixturesString = strings.Join(fixturesData, "\n")
+	} else {
+		fixturesString = "No match"
+	}
+
+	return fixturesString
 }
 
 func (h *IncomingHandler) PremierLeagues() string {
-	return ""
+	fixtures, err := h.fixtureService.GetAllByLeagueIdUSSD(124)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	var fixturesData []string
+	var fixturesString string
+	if len(fixtures) > 0 {
+		for _, s := range fixtures {
+			row := s.Home.GetName() + " - " + s.Away.GetName() + " (" + s.GetFixtureDateToString() + ")"
+			fixturesData = append(fixturesData, row)
+		}
+		fixturesString = strings.Join(fixturesData, "\n")
+	} else {
+		fixturesString = "No match"
+	}
+	return fixturesString
 }
 
 func (h *IncomingHandler) LaLigas() string {
-	return ""
+	fixtures, err := h.fixtureService.GetAllByLeagueIdUSSD(297)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	var fixturesData []string
+	var fixturesString string
+	if len(fixtures) > 0 {
+		for _, s := range fixtures {
+			row := s.Home.GetName() + " - " + s.Away.GetName() + " (" + s.GetFixtureDateToString() + ")"
+			fixturesData = append(fixturesData, row)
+		}
+		fixturesString = strings.Join(fixturesData, "\n")
+	} else {
+		fixturesString = "No match"
+	}
+	return fixturesString
 }
 
 func (h *IncomingHandler) Ligue1s() string {
-	return ""
+	fixtures, err := h.fixtureService.GetAllByLeagueIdUSSD(236)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	var fixturesData []string
+	var fixturesString string
+	if len(fixtures) > 0 {
+		for _, s := range fixtures {
+			row := s.Home.GetName() + " - " + s.Away.GetName() + " (" + s.GetFixtureDateToString() + ")"
+			fixturesData = append(fixturesData, row)
+		}
+		fixturesString = strings.Join(fixturesData, "\n")
+	} else {
+		fixturesString = "No match"
+	}
+	return fixturesString
+}
+
+func (h *IncomingHandler) SerieA() string {
+	fixtures, err := h.fixtureService.GetAllByLeagueIdUSSD(295)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	var fixturesData []string
+	var fixturesString string
+	if len(fixtures) > 0 {
+		for _, s := range fixtures {
+			row := s.Home.GetName() + " - " + s.Away.GetName() + " (" + s.GetFixtureDateToString() + ")"
+			fixturesData = append(fixturesData, row)
+		}
+		fixturesString = strings.Join(fixturesData, "\n")
+	} else {
+		fixturesString = "No match"
+	}
+	return fixturesString
+}
+
+func (h *IncomingHandler) Bundesliguas() string {
+	fixtures, err := h.fixtureService.GetAllByLeagueIdUSSD(384)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	var fixturesData []string
+	var fixturesString string
+	if len(fixtures) > 0 {
+		for _, s := range fixtures {
+			row := s.Home.GetName() + " - " + s.Away.GetName() + " (" + s.GetFixtureDateToString() + ")"
+			fixturesData = append(fixturesData, row)
+		}
+		fixturesString = strings.Join(fixturesData, "\n")
+	} else {
+		fixturesString = "No match"
+	}
+	return fixturesString
+}
+
+func (h *IncomingHandler) PrimeiraLigas() string {
+	fixtures, err := h.fixtureService.GetAllByLeagueIdUSSD(441)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	var fixturesData []string
+	var fixturesString string
+	if len(fixtures) > 0 {
+		for _, s := range fixtures {
+			row := s.Home.GetName() + " - " + s.Away.GetName() + " (" + s.GetFixtureDateToString() + ")"
+			fixturesData = append(fixturesData, row)
+		}
+		fixturesString = strings.Join(fixturesData, "\n")
+	} else {
+		fixturesString = "No match"
+	}
+
+	return fixturesString
 }
