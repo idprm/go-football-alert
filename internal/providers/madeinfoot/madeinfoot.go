@@ -1,4 +1,4 @@
-package maxifoot
+package madeinfoot
 
 import (
 	"errors"
@@ -10,18 +10,18 @@ import (
 )
 
 var (
-	URL_MAXFOOT string = utils.GetEnv("URL_MAXFOOT")
+	URL_MADEINFOOT string = utils.GetEnv("URL_MADEINFOOT")
 )
 
-type Maxifoot struct {
+type MadeInFoot struct {
 }
 
-func NewMaxifoot() *Maxifoot {
-	return &Maxifoot{}
+func NewMadeInFoot() *MadeInFoot {
+	return &MadeInFoot{}
 }
 
-func (p *Maxifoot) GetNews() ([]byte, error) {
-	req, err := http.NewRequest("GET", URL_MAXFOOT, nil)
+func (p *MadeInFoot) GetNews() ([]byte, error) {
+	req, err := http.NewRequest("GET", URL_MADEINFOOT, nil)
 	if err != nil {
 		return nil, errors.New(err.Error())
 	}

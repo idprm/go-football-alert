@@ -1,4 +1,4 @@
-package maxifoot
+package footmercato
 
 import (
 	"errors"
@@ -10,18 +10,18 @@ import (
 )
 
 var (
-	URL_MAXFOOT string = utils.GetEnv("URL_MAXFOOT")
+	URL_FOOTMERCATO string = utils.GetEnv("URL_FOOTMERCATO")
 )
 
-type Maxifoot struct {
+type FootMercato struct {
 }
 
-func NewMaxifoot() *Maxifoot {
-	return &Maxifoot{}
+func NewFootMercato() *FootMercato {
+	return &FootMercato{}
 }
 
-func (p *Maxifoot) GetNews() ([]byte, error) {
-	req, err := http.NewRequest("GET", URL_MAXFOOT, nil)
+func (p *FootMercato) GetNews() ([]byte, error) {
+	req, err := http.NewRequest("GET", URL_FOOTMERCATO, nil)
 	if err != nil {
 		return nil, errors.New(err.Error())
 	}

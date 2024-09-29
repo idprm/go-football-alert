@@ -800,5 +800,12 @@ func scrapingNews(db *gorm.DB) {
 		newsService,
 	)
 
-	h.News()
+	// maxifoot
+	h.NewsMaxiFoot()
+	// madeinfoot
+	h.NewsMadeInFoot()
+	// africatopsports
+	h.NewsAfricaTopSports()
+	// footmercato
+	h.NewsFootMercato()
 }

@@ -10,7 +10,10 @@ import (
 	"github.com/gosimple/slug"
 	"github.com/idprm/go-football-alert/internal/domain/entity"
 	"github.com/idprm/go-football-alert/internal/domain/model"
+	"github.com/idprm/go-football-alert/internal/providers/africatopsports"
 	"github.com/idprm/go-football-alert/internal/providers/apifb"
+	"github.com/idprm/go-football-alert/internal/providers/footmercato"
+	"github.com/idprm/go-football-alert/internal/providers/madeinfoot"
 	"github.com/idprm/go-football-alert/internal/providers/maxifoot"
 	"github.com/idprm/go-football-alert/internal/services"
 )
@@ -381,7 +384,7 @@ func (h *ScraperHandler) Lineups() {
 	}
 }
 
-func (h *ScraperHandler) News() {
+func (h *ScraperHandler) NewsMaxiFoot() {
 	mf := maxifoot.NewMaxifoot()
 	n, err := mf.GetNews()
 	if err != nil {
@@ -389,7 +392,6 @@ func (h *ScraperHandler) News() {
 	}
 	var resp model.MaxfootRSSResponse
 	xml.Unmarshal(n, &resp)
-
 	for _, el := range resp.Channel.Item {
 
 		d, _ := time.Parse(time.RFC1123Z, el.PubDate)
@@ -407,4 +409,83 @@ func (h *ScraperHandler) News() {
 		}
 
 	}
+}
+
+func (h *ScraperHandler) NewsMadeInFoot() {
+	mf := madeinfoot.NewMadeInFoot()
+	n, err := mf.GetNews()
+	if err != nil {
+		log.Println(err.Error())
+	}
+	var resp model.MadeInFootRSSResponse
+	xml.Unmarshal(n, &resp)
+	for _, el := range resp.Channel.Item {
+
+		d, _ := time.Parse(time.RFC1123Z, el.PubDate)
+
+		if !h.newsService.IsNews(slug.Make(el.Title), d.Format("2006-01-02")) {
+			h.newsService.Save(
+				&entity.News{
+					Title:       el.Title,
+					Slug:        slug.Make(el.Title),
+					Description: el.Description,
+					Source:      "MADEINFOOT",
+					PublishAt:   d,
+				},
+			)
+		}
+
+	}
+}
+
+func (h *ScraperHandler) NewsAfricaTopSports() {
+	m := africatopsports.NewAfricaTopSports()
+	n, err := m.GetNews()
+	if err != nil {
+		log.Println(err.Error())
+	}
+	var resp model.AfricaTopSportsRSSResponse
+	xml.Unmarshal(n, &resp)
+	for _, el := range resp.Channel.Item {
+
+		d, _ := time.Parse(time.RFC1123Z, el.PubDate)
+
+		if !h.newsService.IsNews(slug.Make(el.Title), d.Format("2006-01-02")) {
+			h.newsService.Save(
+				&entity.News{
+					Title:       el.Title,
+					Slug:        slug.Make(el.Title),
+					Description: "-",
+					Source:      "AFRICATOPSPORTS",
+					PublishAt:   d,
+				},
+			)
+		}
+	}
+}
+
+func (h *ScraperHandler) NewsFootMercato() {
+	m := footmercato.NewFootMercato()
+	n, err := m.GetNews()
+	if err != nil {
+		log.Println(err.Error())
+	}
+	var resp model.FootMercatoSitemapResponse
+	xml.Unmarshal(n, &resp)
+
+	for _, el := range resp.Url.News {
+		d, _ := time.Parse(time.RFC3339, el.PubDate)
+		if !h.newsService.IsNews(slug.Make(el.Title), d.Format("2006-01-02")) {
+			h.newsService.Save(
+				&entity.News{
+					Title:       el.Title,
+					Slug:        slug.Make(el.Title),
+					Description: el.Keywords,
+					Source:      "FOOTMERCATO",
+					PublishAt:   d,
+				},
+			)
+		}
+	}
+
 }

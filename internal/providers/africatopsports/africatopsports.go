@@ -1,4 +1,4 @@
-package maxifoot
+package africatopsports
 
 import (
 	"errors"
@@ -10,18 +10,18 @@ import (
 )
 
 var (
-	URL_MAXFOOT string = utils.GetEnv("URL_MAXFOOT")
+	URL_AFRICATOPSPORTS string = utils.GetEnv("URL_AFRICATOPSPORTS")
 )
 
-type Maxifoot struct {
+type AfricaTopSports struct {
 }
 
-func NewMaxifoot() *Maxifoot {
-	return &Maxifoot{}
+func NewAfricaTopSports() *AfricaTopSports {
+	return &AfricaTopSports{}
 }
 
-func (p *Maxifoot) GetNews() ([]byte, error) {
-	req, err := http.NewRequest("GET", URL_MAXFOOT, nil)
+func (p *AfricaTopSports) GetNews() ([]byte, error) {
+	req, err := http.NewRequest("GET", URL_AFRICATOPSPORTS, nil)
 	if err != nil {
 		return nil, errors.New(err.Error())
 	}

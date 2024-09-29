@@ -212,3 +212,42 @@ type MaxfootItem struct {
 	Description string `xml:"description"`
 	PubDate     string `xml:"pubDate"`
 }
+
+type MadeInFootRSSResponse struct {
+	Channel struct {
+		Item []MadeInFootItem `xml:"item"`
+	} `xml:"channel"`
+}
+
+type MadeInFootItem struct {
+	Title       string `xml:"title"`
+	Link        string `xml:"link"`
+	Description string `xml:"description"`
+	PubDate     string `xml:"pubDate"`
+}
+
+type AfricaTopSportsRSSResponse struct {
+	Channel struct {
+		Item []AfricaTopSportsItem `xml:"item"`
+	} `xml:"channel"`
+}
+
+type AfricaTopSportsItem struct {
+	Title       string `xml:"title"`
+	Link        string `xml:"link"`
+	Description string `xml:"description"`
+	PubDate     string `xml:"pubDate"`
+}
+
+type FootMercatoSitemapResponse struct {
+	Url struct {
+		News []FootMercatoItem `xml:"news"`
+	} `xml:"url"`
+}
+
+type FootMercatoItem struct {
+	Title       string `xml:"title"`
+	Description string `xml:"description"`
+	PubDate     string `xml:"publication_date"`
+	Keywords    string `xml:"keywords"`
+}
