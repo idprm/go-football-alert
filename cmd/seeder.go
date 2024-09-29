@@ -14,7 +14,7 @@ func seederDB(db *gorm.DB) {
 	var content []entity.Content
 	var schedule []entity.Schedule
 	var menu []entity.Menu
-	//
+
 	var countries = []entity.Country{
 		{
 			ID:       1,
