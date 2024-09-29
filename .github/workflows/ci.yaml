@@ -30,6 +30,8 @@ jobs:
             image: idprm/fb-alert-prediction-service
           - dockerfile: ./Dockerfile.credit_goal
             image: idprm/fb-alert-credit-goal-service
+          - dockerfile: ./Dockerfile.news
+            image: idprm/fb-alert-news-service
           - dockerfile: ./Dockerfile.follow_team
             image: idprm/fb-alert-follow-team-service
           - dockerfile: ./Dockerfile.follow_competition
