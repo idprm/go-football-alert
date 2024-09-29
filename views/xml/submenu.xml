@@ -172,7 +172,7 @@
 
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
-<pages descr="Crédit Score">
+<pages descr="Crédit Goal">
 	<page>
 		Crédit Goal<br/>
         {{.data}}

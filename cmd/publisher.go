@@ -14,6 +14,22 @@ import (
 	loggerDb "gorm.io/gorm/logger"
 )
 
+/**
+	RENEWAL at
+	RETRY at
+	SCRAPING_FIXTURES at
+	SCRAPING_CREDITGOAL at
+	SCRAPING_PREDICTION at
+	CREDIT_GOAL at
+	PREDICTION at
+	FOLLOW_COMPETITION at
+	FOLLOW_COMPETITION at
+	FOLLOW_COMPETITION at
+	FOLLOW_TEAM at
+	FOLLOW_TEAM at
+	FOLLOW_TEAM at
+**/
+
 var publisherRenewalCmd = &cobra.Command{
 	Use:   "pub_renewal",
 	Short: "Renewal CLI",
@@ -371,6 +387,19 @@ var publisherScrapingNewsCmd = &cobra.Command{
 		db.Logger = loggerDb.Default.LogMode(loggerDb.Info)
 
 		/**
+		 * connect rabbitmq
+		 */
+		rmq, err := connectRabbitMq()
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * SETUP CHANNEL
+		 */
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_FOLLOW_COMPETITION_EXCHANGE, true, RMQ_FOLLOW_COMPETITION_QUEUE)
+
+		/**
 		 * Looping schedule
 		 */
 		timeDuration := time.Duration(90)
@@ -378,7 +407,7 @@ var publisherScrapingNewsCmd = &cobra.Command{
 		for {
 
 			go func() {
-				scrapingNews(db)
+				scrapingNews(db, rmq)
 			}()
 
 			time.Sleep(timeDuration * time.Minute)
@@ -671,6 +700,7 @@ func scrapingLeagues(db *gorm.DB) {
 	newsService := services.NewNewsService(newsRepo)
 
 	h := handler.NewScraperHandler(
+		rmqp.AMQP{},
 		leagueService,
 		teamService,
 		fixtureService,
@@ -700,6 +730,7 @@ func scrapingTeams(db *gorm.DB) {
 	newsService := services.NewNewsService(newsRepo)
 
 	h := handler.NewScraperHandler(
+		rmqp.AMQP{},
 		leagueService,
 		teamService,
 		fixtureService,
@@ -728,6 +759,7 @@ func scrapingFixtures(db *gorm.DB) {
 	newsService := services.NewNewsService(newsRepo)
 
 	h := handler.NewScraperHandler(
+		rmqp.AMQP{},
 		leagueService,
 		teamService,
 		fixtureService,
@@ -757,6 +789,7 @@ func scrapingPredictions(db *gorm.DB) {
 	newsService := services.NewNewsService(newsRepo)
 
 	h := handler.NewScraperHandler(
+		rmqp.AMQP{},
 		leagueService,
 		teamService,
 		fixtureService,
@@ -786,6 +819,7 @@ func scrapingStandings(db *gorm.DB) {
 	newsService := services.NewNewsService(newsRepo)
 
 	h := handler.NewScraperHandler(
+		rmqp.AMQP{},
 		leagueService,
 		teamService,
 		fixtureService,
@@ -815,6 +849,7 @@ func scrapingLineups(db *gorm.DB) {
 	newsService := services.NewNewsService(newsRepo)
 
 	h := handler.NewScraperHandler(
+		rmqp.AMQP{},
 		leagueService,
 		teamService,
 		fixtureService,
@@ -827,7 +862,7 @@ func scrapingLineups(db *gorm.DB) {
 	h.Lineups()
 }
 
-func scrapingNews(db *gorm.DB) {
+func scrapingNews(db *gorm.DB, rmq rmqp.AMQP) {
 	leagueRepo := repository.NewLeagueRepository(db)
 	leagueService := services.NewLeagueService(leagueRepo)
 	teamRepo := repository.NewTeamRepository(db)
@@ -844,6 +879,7 @@ func scrapingNews(db *gorm.DB) {
 	newsService := services.NewNewsService(newsRepo)
 
 	h := handler.NewScraperHandler(
+		rmq,
 		leagueService,
 		teamService,
 		fixtureService,

@@ -8,14 +8,20 @@ import (
 )
 
 type NewsHandler struct {
-	newsService services.INewsService
+	newsService              services.INewsService
+	followCompetitionService services.IFollowCompetitionService
+	followTeamService        services.IFollowTeamService
 }
 
 func NewNewsHandler(
 	newsService services.INewsService,
+	followCompetitionService services.IFollowCompetitionService,
+	followTeamService services.IFollowTeamService,
 ) *NewsHandler {
 	return &NewsHandler{
-		newsService: newsService,
+		newsService:              newsService,
+		followCompetitionService: followCompetitionService,
+		followTeamService:        followTeamService,
 	}
 }
 
@@ -60,4 +66,8 @@ func (h *NewsHandler) Update(c *fiber.Ctx) error {
 
 func (h *NewsHandler) Delete(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
+}
+
+func (h *NewsHandler) Mapping() {
+
 }

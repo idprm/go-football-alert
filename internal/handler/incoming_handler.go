@@ -48,6 +48,8 @@ var (
 	RMQ_MO_QUEUE        string = "Q_MO"
 	RMQ_MT_EXCHANGE     string = "E_MT"
 	RMQ_MT_QUEUE        string = "Q_MT"
+	RMQ_NEWS_EXCHANGE   string = "E_NEWS"
+	RMQ_NEWS_QUEUE      string = "Q_NEWS"
 	MT_FIRSTPUSH        string = "FIRSTPUSH"
 	MT_RENEWAL          string = "RENEWAL"
 	MT_PREDICTION       string = "PREDICTION"

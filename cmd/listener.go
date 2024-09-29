@@ -141,6 +141,12 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	newsRepo := repository.NewNewsRepository(db)
 	newsService := services.NewNewsService(newsRepo)
 
+	followCompetitionRepo := repository.NewFollowCompetitionRepository(db)
+	followCompetitionService := services.NewFollowCompetitionService(followCompetitionRepo)
+
+	followTeamRepo := repository.NewFollowTeamRepository(db)
+	followTeamService := services.NewFollowTeamService(followTeamRepo)
+
 	scheduleRepo := repository.NewScheduleRepository(db)
 	scheduleService := services.NewScheduleService(scheduleRepo)
 
@@ -185,7 +191,7 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	teamHandler := handler.NewTeamHandler(teamService)
 	fixtureHandler := handler.NewFixtureHandler(fixtureService)
 	predictionHandler := handler.NewPredictionHandler(predictionService)
-	newsHandler := handler.NewNewsHandler(newsService)
+	newsHandler := handler.NewNewsHandler(newsService, followCompetitionService, followTeamService)
 
 	app.Post("/mo", h.MessageOriginated)
 

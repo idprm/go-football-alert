@@ -367,6 +367,28 @@ func (p *Processor) CreditGoal(wg *sync.WaitGroup, message []byte) {
 	wg.Done()
 }
 
+func (p *Processor) News(wg *sync.WaitGroup, message []byte) {
+	/**
+	 * load repo
+	 */
+	newsRepo := repository.NewNewsRepository(p.db)
+	newsService := services.NewNewsService(newsRepo)
+	followCompetitionRepo := repository.NewFollowCompetitionRepository(p.db)
+	followCompetitionService := services.NewFollowCompetitionService(followCompetitionRepo)
+	followTeamRepo := repository.NewFollowTeamRepository(p.db)
+	followTeamService := services.NewFollowTeamService(followTeamRepo)
+
+	h := handler.NewNewsHandler(
+		newsService,
+		followCompetitionService,
+		followTeamService,
+	)
+
+	h.Mapping()
+
+	wg.Done()
+}
+
 func (p *Processor) FollowCompetition(wg *sync.WaitGroup, message []byte) {
 	/**
 	 * load repo

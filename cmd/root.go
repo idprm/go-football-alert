@@ -59,6 +59,8 @@ const (
 	RMQ_PREDICTION_QUEUE            string = "Q_PREDICTION"
 	RMQ_CREDIT_EXCHANGE             string = "E_CREDIT_GOAL"
 	RMQ_CREDIT_QUEUE                string = "Q_CREDIT_GOAL"
+	RMQ_NEWS_EXCHANGE               string = "E_NEWS"
+	RMQ_NEWS_QUEUE                  string = "Q_NEWS"
 	RMQ_FOLLOW_COMPETITION_EXCHANGE string = "E_FOLLOW_COMPETITION"
 	RMQ_FOLLOW_COMPETITION_QUEUE    string = "Q_FOLLOW_COMPETITION"
 	RMQ_FOLLOW_TEAM_EXCHANGE        string = "E_FOLLOW_TEAM"
@@ -138,6 +140,7 @@ func init() {
 	rootCmd.AddCommand(consumerRetryCmd)
 	rootCmd.AddCommand(consumerCreditGoalCmd)
 	rootCmd.AddCommand(consumerPredictionCmd)
+	rootCmd.AddCommand(consumerNewsCmd)
 	rootCmd.AddCommand(consumerFollowTeamCmd)
 	rootCmd.AddCommand(consumerFollowCompetitionCmd)
 

@@ -1,6 +1,9 @@
 package cmd
 
-import "github.com/spf13/cobra"
+import (
+	"github.com/spf13/cobra"
+	"github.com/wiliehidayat87/rmqp"
+)
 
 var consumerTestLeagueCmd = &cobra.Command{
 	Use:   "test_league",
@@ -117,6 +120,6 @@ var consumerTestNewsCmd = &cobra.Command{
 			panic(err)
 		}
 
-		scrapingNews(db)
+		scrapingNews(db, rmqp.AMQP{})
 	},
 }
