@@ -144,7 +144,8 @@ func init() {
 	/**
 	 * Publisher Scraping service
 	 */
-	rootCmd.AddCommand(publisherScrapingCmd)
+	rootCmd.AddCommand(publisherScrapingFixturesCmd)
+	rootCmd.AddCommand(publisherScrapingPredictionCmd)
 	rootCmd.AddCommand(publisherScrapingNewsCmd)
 	rootCmd.AddCommand(publisherRenewalCmd)
 	rootCmd.AddCommand(publisherRetryCmd)

@@ -250,9 +250,9 @@ var publisherCreditCmd = &cobra.Command{
 	},
 }
 
-var publisherScrapingCmd = &cobra.Command{
-	Use:   "pub_scraping",
-	Short: "Publisher Scraping Service CLI",
+var publisherScrapingFixturesCmd = &cobra.Command{
+	Use:   "pub_scraping_fixtures",
+	Short: "Publisher Scraping Fixture Service CLI",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		// connect db
@@ -284,7 +284,60 @@ var publisherScrapingCmd = &cobra.Command{
 				)
 
 				go func() {
-					scrapingNews(db)
+					scrapingFixtures(db)
+				}()
+			}
+
+			if scheduleService.IsUnlocked(ACT_SCRAPING, timeNow) {
+				scheduleService.Update(
+					&entity.Schedule{
+						Name:       ACT_SCRAPING,
+						IsUnlocked: true,
+					},
+				)
+
+			}
+
+			time.Sleep(timeDuration * time.Minute)
+		}
+	},
+}
+
+var publisherScrapingPredictionCmd = &cobra.Command{
+	Use:   "pub_scraping_prediction",
+	Short: "Publisher Scraping Prediction Service CLI",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		// connect db
+		db, err := connectDb()
+		if err != nil {
+			panic(err)
+		}
+
+		// DEBUG ON CONSOLE
+		db.Logger = loggerDb.Default.LogMode(loggerDb.Info)
+
+		/**
+		 * Looping schedule
+		 */
+		timeDuration := time.Duration(1)
+
+		for {
+			timeNow := time.Now().Format("15:04")
+
+			scheduleRepo := repository.NewScheduleRepository(db)
+			scheduleService := services.NewScheduleService(scheduleRepo)
+
+			if scheduleService.IsUnlocked(ACT_SCRAPING, timeNow) {
+
+				scheduleService.UpdateLocked(
+					&entity.Schedule{
+						Name: ACT_SCRAPING,
+					},
+				)
+
+				go func() {
+					scrapingPredictions(db)
 				}()
 			}
 
