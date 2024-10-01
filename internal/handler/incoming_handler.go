@@ -209,12 +209,16 @@ func (h *IncomingHandler) MessageOriginated(c *fiber.Ctx) error {
 
 func (h *IncomingHandler) Main(c *fiber.Ctx) error {
 	c.Set("Content-type", "application/xml; charset=utf-8")
-	data, err := os.ReadFile(PATH_VIEWS + "/xml/main.xml")
+	menu, err := h.menuService.GetBySlug("home")
 	if err != nil {
 		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
 	}
-	replacer := strings.NewReplacer("{{.url}}", APP_URL, "{{.version}}", API_VERSION, "&", "&amp;")
-	replace := replacer.Replace(string(data))
+	replacer := strings.NewReplacer(
+		"{{.url}}", APP_URL,
+		"{{.version}}", API_VERSION,
+		"&", "&amp;",
+	)
+	replace := replacer.Replace(menu.GetTemplateXML())
 	return c.Status(fiber.StatusOK).SendString(replace)
 }
 
@@ -251,40 +255,40 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 
 	// if is_confirm = true
 	if menu.IsConfirm {
-		// if sub not active
-		if !h.subscriptionService.IsActiveSubscriptionByCategory(menu.GetCategory(), req.GetMsisdn()) {
-			data, err := os.ReadFile(PATH_VIEWS + "/xml/package.xml")
-			if err != nil {
-				return c.Status(fiber.StatusBadGateway).SendString(err.Error())
-			}
+		// // if sub not active
+		// if !h.subscriptionService.IsActiveSubscriptionByCategory(menu.GetCategory(), req.GetMsisdn()) {
+		// 	services, err := h.serviceService.GetAllByCategory(menu.GetCategory())
+		// 	if err != nil {
+		// 		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
+		// 	}
 
-			services, err := h.serviceService.GetAllByCategory(menu.GetCategory())
-			if err != nil {
-				return c.Status(fiber.StatusBadGateway).SendString(err.Error())
-			}
+		// 	// package
+		// 	var servicesData []string
+		// 	for _, s := range services {
+		// 		row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/select?slug=` + req.GetSlug() + `&category=` + menu.GetCategory() + `&package=` + s.GetPackage() + `">` + s.GetName() + " (" + s.GetPriceToString() + ")" + "</a>"
+		// 		servicesData = append(servicesData, row)
+		// 	}
+		// 	servicesString := strings.Join(servicesData, "\n")
 
-			// package
-			var servicesData []string
-			for _, s := range services {
-				row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/select?slug=` + req.GetSlug() + `&category=` + menu.GetCategory() + `&package=` + s.GetPackage() + `">` + s.GetName() + " (" + s.GetPriceToString() + ")" + "</a>"
-				servicesData = append(servicesData, row)
-			}
-			servicesString := strings.Join(servicesData, "\n")
+		// 	replacer := strings.NewReplacer(
+		// 		"{{.url}}", APP_URL,
+		// 		"{{.version}}", API_VERSION,
+		// 		"{{.title}}", req.GetTitle(),
+		// 		"{{.data}}", servicesString,
+		// 		"&", "&amp;",
+		// 	)
 
-			replacer := strings.NewReplacer(
-				"{{.url}}", APP_URL,
-				"{{.version}}", API_VERSION,
-				"{{.title}}", req.GetTitle(),
-				"{{.data}}", servicesString,
-				"&", "&amp;",
-			)
-			replace := replacer.Replace(string(data))
-			return c.Status(fiber.StatusOK).SendString(replace)
-		}
+		// 	data, err := os.ReadFile(PATH_VIEWS + "/xml/package.xml")
+		// 	if err != nil {
+		// 		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
+		// 	}
+		// 	replace := replacer.Replace(string(data))
+		// 	return c.Status(fiber.StatusOK).SendString(replace)
+		// }
 
 		var data string
 		page := strconv.Itoa(req.GetPage() + 1)
-		paginate := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q?slug=` + req.GetSlug() + `&page=` + page + `">Suiv</a>`
+		paginate := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q?slug=` + req.GetSlug() + `&amp;page=` + page + `">Suiv</a>`
 
 		if req.GetSlug() == "lm-live-match" {
 			data = h.LiveMatchs()
@@ -307,7 +311,6 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 			"{{.version}}", API_VERSION,
 			"{{.data}}", data,
 			"{{.paginate}}", paginate,
-			"&", "&amp;",
 		)
 		replace := replacer.Replace(string(menu.GetTemplateXML()))
 		return c.Status(fiber.StatusOK).SendString(replace)
@@ -339,7 +342,7 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 	}
 
 	page := strconv.Itoa(req.GetPage() + 1)
-	paginate := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q?slug=` + req.GetSlug() + `&page=` + page + `">Suiv</a>`
+	paginate := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q?slug=` + req.GetSlug() + `&amp;page=` + page + `">Suiv</a>`
 	replacer := strings.NewReplacer(
 		"{{.url}}", APP_URL,
 		"{{.version}}", API_VERSION,
@@ -617,10 +620,9 @@ func (h *IncomingHandler) FlashNews(page int) string {
 
 	var newsData []string
 	for _, s := range news {
-		row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q/detail?slug=flash-news&title=` + s.GetTitleQueryEscape() + `">` + s.GetTitleLimited(20) + "</a>"
+		row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q/detail?slug=flash-news&amp;title=` + s.GetTitleQueryEscape() + `">` + s.GetTitleLimited(20) + "</a>"
 		newsData = append(newsData, row)
 	}
-	//{{.paginate}}
 	newsString := strings.Join(newsData, "\n")
 	return newsString
 }
