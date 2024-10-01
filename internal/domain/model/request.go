@@ -19,6 +19,7 @@ type UssdRequest struct {
 	Code     string `query:"code" json:"code,omitempty"`
 	Action   string `query:"action" json:"action,omitempty"`
 	Msisdn   string `json:"msisdn,omitempty"`
+	Page     int    `query:"page" json:"page,omitempty"`
 }
 
 func (m *UssdRequest) GetSlug() string {
@@ -51,6 +52,10 @@ func (m *UssdRequest) IsYes() bool {
 
 func (m *UssdRequest) GetMsisdn() string {
 	return m.Msisdn
+}
+
+func (m *UssdRequest) GetPage() int {
+	return m.Page
 }
 
 func (m *UssdRequest) SetMsisdn(v string) {

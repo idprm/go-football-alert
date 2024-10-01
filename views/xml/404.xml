@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
-<pages>
-  <page>
-    Menu not found<br/>
-    <a href="{{.url}}/{{.version}}/ussd">Home</a>
-  </page>
-</pages>

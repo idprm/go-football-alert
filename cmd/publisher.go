@@ -398,6 +398,7 @@ var publisherScrapingNewsCmd = &cobra.Command{
 		 * SETUP CHANNEL
 		 */
 		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_FOLLOW_COMPETITION_EXCHANGE, true, RMQ_FOLLOW_COMPETITION_QUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_NEWS_EXCHANGE, true, RMQ_NEWS_QUEUE)
 
 		/**
 		 * Looping schedule

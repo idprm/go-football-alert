@@ -61,7 +61,7 @@ func (r *MenuRepository) GetAll() ([]*entity.Menu, error) {
 
 func (r *MenuRepository) GetByKeyPress(keyPress string) (*entity.Menu, error) {
 	var menu *entity.Menu
-	err := r.db.Where(&entity.Menu{KeyPress: keyPress, IsActive: true}).Take(&menu).Error
+	err := r.db.Where(&entity.Menu{IsActive: true}).Take(&menu).Error
 	if err != nil {
 		return nil, err
 	}

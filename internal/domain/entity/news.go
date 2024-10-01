@@ -1,6 +1,9 @@
 package entity
 
-import "time"
+import (
+	"net/url"
+	"time"
+)
 
 type News struct {
 	ID          int64     `gorm:"primaryKey" json:"id"`
@@ -17,6 +20,17 @@ func (e *News) GetId() int64 {
 
 func (e *News) GetTitle() string {
 	return e.Title
+}
+
+func (e *News) GetTitleLimited(maxLength int) string {
+	if len(e.Title) > maxLength {
+		return e.Title[:maxLength]
+	}
+	return e.GetTitle()
+}
+
+func (e *News) GetTitleQueryEscape() string {
+	return url.QueryEscape(e.GetTitle())
 }
 
 func (e *News) GetSlug() string {

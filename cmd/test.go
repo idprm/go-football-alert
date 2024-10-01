@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/wiliehidayat87/rmqp"
 )
 
 var consumerTestLeagueCmd = &cobra.Command{
@@ -120,6 +119,19 @@ var consumerTestNewsCmd = &cobra.Command{
 			panic(err)
 		}
 
-		scrapingNews(db, rmqp.AMQP{})
+		/**
+		 * connect rabbitmq
+		 */
+		rmq, err := connectRabbitMq()
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * SETUP CHANNEL
+		 */
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_NEWS_EXCHANGE, true, RMQ_NEWS_QUEUE)
+
+		scrapingNews(db, rmq)
 	},
 }

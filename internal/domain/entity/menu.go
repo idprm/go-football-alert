@@ -7,7 +7,6 @@ type Menu struct {
 	Category    string `gorm:"size:50;not null" json:"category"`
 	Name        string `gorm:"size:45" json:"name"`
 	Slug        string `gorm:"size:45" json:"slug"`
-	KeyPress    string `gorm:"size:6" json:"key_press"`
 	TemplateXML string `gorm:"type:text" json:"template_xml"`
 	IsConfirm   bool   `gorm:"type:boolean;default:false;column:is_confirm" json:"is_confirm"`
 	IsActive    bool   `gorm:"type:boolean;default:false;column:is_active" json:"is_active"`
@@ -27,10 +26,6 @@ func (e *Menu) GetName() string {
 
 func (e *Menu) GetSlug() string {
 	return e.Slug
-}
-
-func (e *Menu) GetKeyPress() string {
-	return e.KeyPress
 }
 
 func (e *Menu) GetTemplateXML() string {

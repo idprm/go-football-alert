@@ -18,7 +18,7 @@ func NewNewsService(newsRepo repository.INewsRepository) *NewsService {
 type INewsService interface {
 	IsNews(string, string) bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
-	GetAllUSSD() ([]*entity.News, error)
+	GetAllUSSD(int) ([]*entity.News, error)
 	GetByTeamUSSD(string, int) (*entity.News, error)
 	Get(string, string) (*entity.News, error)
 	Save(*entity.News) (*entity.News, error)
@@ -35,8 +35,8 @@ func (s *NewsService) GetAllPaginate(pagination *entity.Pagination) (*entity.Pag
 	return s.newsRepo.GetAllPaginate(pagination)
 }
 
-func (s *NewsService) GetAllUSSD() ([]*entity.News, error) {
-	return s.newsRepo.GetAllUSSD()
+func (s *NewsService) GetAllUSSD(page int) ([]*entity.News, error) {
+	return s.newsRepo.GetAllUSSD(page)
 }
 
 func (s *NewsService) GetByTeamUSSD(pubAt string, teamId int) (*entity.News, error) {
