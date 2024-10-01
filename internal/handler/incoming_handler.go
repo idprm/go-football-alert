@@ -306,11 +306,92 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 			data = h.FlashNews(req.GetPage() + 1)
 		}
 
+		if req.GetSlug() == "credit-goal" {
+			data = ""
+		}
+
+		if req.GetSlug() == "champ" {
+			data = ""
+		}
+
+		if req.GetSlug() == "champ-results" {
+			data = ""
+		}
+
+		if req.GetSlug() == "champ-standings" {
+			data = ""
+		}
+
+		if req.GetSlug() == "champ-schedule" {
+			data = ""
+		}
+
+		if req.GetSlug() == "champ-team" {
+			data = ""
+		}
+
+		if req.GetSlug() == "champ-credit-score" {
+			data = ""
+		}
+
+		if req.GetSlug() == "champ-creditgoal" {
+			data = ""
+		}
+
+		if req.GetSlug() == "champ-sms-alerte" {
+			data = ""
+		}
+
+		if req.GetSlug() == "champ-sms-alerte-equipe" {
+			data = ""
+		}
+
+		if req.GetSlug() == "prediction" {
+			data = ""
+		}
+
+		if req.GetSlug() == "sms-alerte" {
+			data = ""
+		}
+
+		if req.GetSlug() == "sms-kit-foot" {
+			data = ""
+		}
+
+		if req.GetSlug() == "sms-foot-europe" {
+			data = ""
+		}
+
+		if req.GetSlug() == "sms-foot-afrique" {
+			data = ""
+		}
+
+		if req.GetSlug() == "sms-alerte-equipe" {
+			data = ""
+		}
+
+		if req.GetSlug() == "sms-foot-international" {
+			data = ""
+		}
+
+		if req.GetSlug() == "kit-foot" {
+			data = ""
+		}
+
+		if req.GetSlug() == "kit-foot-champ" {
+			data = ""
+		}
+
+		if req.GetSlug() == "kit-foot-premier-league" {
+			data = ""
+		}
+
 		replacer := strings.NewReplacer(
 			"{{.url}}", APP_URL,
 			"{{.version}}", API_VERSION,
 			"{{.data}}", data,
 			"{{.paginate}}", paginate,
+			"&", "&amp;",
 		)
 		replace := replacer.Replace(string(menu.GetTemplateXML()))
 		return c.Status(fiber.StatusOK).SendString(replace)

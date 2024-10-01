@@ -270,6 +270,7 @@ var menus = []entity.Menu{
 		Flash News<br/>
 {{.data}}
     <br/>
+    {{.paginate}}
     <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
 	</page>
 </pages>		
