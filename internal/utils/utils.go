@@ -1,9 +1,11 @@
 package utils
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -30,4 +32,18 @@ func EscapeChar(res []byte) []byte {
 
 func IsSMSSuccess(v string) bool {
 	return strings.HasPrefix(v, "Success")
+}
+
+func FormatFR(t time.Time) string {
+	return fmt.Sprintf("%s %d %s.",
+		days[t.Weekday()], t.Day(), months[t.Month()-1],
+	)
+}
+
+var days = [...]string{
+	"Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"}
+
+var months = [...]string{
+	"Janvier", "Fevrier", "Mars", "Avril", "Mai", "Juin",
+	"Juillet", "Aout", "Septembre", "Octobre", "Novembre", "Decembre",
 }

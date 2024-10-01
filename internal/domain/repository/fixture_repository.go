@@ -23,6 +23,7 @@ type IFixtureRepository interface {
 	CountByFixtureDate(time.Time) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetAll() ([]*entity.Fixture, error)
+	GetAllLiveMatchUSSD(int) ([]*entity.Fixture, error)
 	GetAllScheduleUSSD() ([]*entity.Fixture, error)
 	GetAllByLeagueIdUSSD(leagueId int) ([]*entity.Fixture, error)
 	GetAllByFixtureDate(time.Time) ([]*entity.Fixture, error)
@@ -72,7 +73,16 @@ func (r *FixtureRepository) GetAllPaginate(pagination *entity.Pagination) (*enti
 
 func (r *FixtureRepository) GetAll() ([]*entity.Fixture, error) {
 	var c []*entity.Fixture
-	err := r.db.Where("", "").Order("id ASC").Find(&c).Error
+	err := r.db.Order("id ASC").Find(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
+func (r *FixtureRepository) GetAllLiveMatchUSSD(page int) ([]*entity.Fixture, error) {
+	var c []*entity.Fixture
+	err := r.db.Where("DATE(fixture_date) BETWEEN DATE(NOW()) AND DATE(NOW() + INTERVAL 1 DAY)").Preload("Home").Preload("Away").Order("DATE(fixture_date) ASC").Offset((page - 1) * 5).Limit(5).Find(&c).Error
 	if err != nil {
 		return nil, err
 	}
@@ -81,7 +91,7 @@ func (r *FixtureRepository) GetAll() ([]*entity.Fixture, error) {
 
 func (r *FixtureRepository) GetAllScheduleUSSD() ([]*entity.Fixture, error) {
 	var c []*entity.Fixture
-	err := r.db.Where("DATE(fixture_date) BETWEEN DATE(?) AND DATE(? + INTERVAL 1 DAY)", time.Now(), time.Now()).Preload("Home").Preload("Away").Order("DATE(fixture_date) DESC").Limit(10).Find(&c).Error
+	err := r.db.Where("DATE(fixture_date) BETWEEN DATE(NOW()) AND DATE(NOW() + INTERVAL 1 DAY)").Preload("Home").Preload("Away").Order("DATE(fixture_date) ASC").Limit(5).Find(&c).Error
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +100,7 @@ func (r *FixtureRepository) GetAllScheduleUSSD() ([]*entity.Fixture, error) {
 
 func (r *FixtureRepository) GetAllByLeagueIdUSSD(leagueId int) ([]*entity.Fixture, error) {
 	var c []*entity.Fixture
-	err := r.db.Where("league_id = ?", leagueId).Where("DATE(fixture_date) BETWEEN DATE(?) AND DATE(? + INTERVAL 1 DAY)", time.Now(), time.Now()).Preload("Home").Preload("Away").Order("DATE(fixture_date) DESC").Limit(10).Find(&c).Error
+	err := r.db.Where("league_id = ?", leagueId).Where("DATE(fixture_date) BETWEEN DATE(NOW()) AND DATE(NOW() + INTERVAL 1 DAY)").Preload("Home").Preload("Away").Order("DATE(fixture_date) ASC").Limit(5).Find(&c).Error
 	if err != nil {
 		return nil, err
 	}

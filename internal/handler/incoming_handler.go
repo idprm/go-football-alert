@@ -6,6 +6,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
@@ -291,7 +292,7 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 		paginate := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q?slug=` + req.GetSlug() + `&amp;page=` + page + `">Suiv</a>`
 
 		if req.GetSlug() == "lm-live-match" {
-			data = h.LiveMatchs()
+			data = h.LiveMatchs(req.GetPage() + 1)
 		}
 
 		if req.GetSlug() == "lm-schedule" {
@@ -389,6 +390,7 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 		replacer := strings.NewReplacer(
 			"{{.url}}", APP_URL,
 			"{{.version}}", API_VERSION,
+			"{{.date}}", utils.FormatFR(time.Now()),
 			"{{.data}}", data,
 			"{{.paginate}}", paginate,
 			"&", "&amp;",
@@ -427,6 +429,7 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 	replacer := strings.NewReplacer(
 		"{{.url}}", APP_URL,
 		"{{.version}}", API_VERSION,
+		"{{.date}}", utils.FormatFR(time.Now()),
 		"{{.data}}", data,
 		"{{.paginate}}", paginate,
 		"&", "&amp;",
@@ -453,6 +456,7 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 	replacer := strings.NewReplacer(
 		"{{.url}}", APP_URL,
 		"{{.version}}", API_VERSION,
+		"{{.date}}", utils.FormatFR(time.Now()),
 		"{{.slug}}", req.GetSlug(),
 		"{{.title}}", req.GetTitle(),
 		"&", "&amp;",
@@ -612,6 +616,7 @@ func (h *IncomingHandler) Buy(c *fiber.Ctx) error {
 		replacer := strings.NewReplacer(
 			"{{.url}}", APP_URL,
 			"{{.version}}", API_VERSION,
+			"{{.date}}", utils.FormatFR(time.Now()),
 			"&", "&amp;",
 		)
 		replace := replacer.Replace(menu.GetTemplateXML())
@@ -636,6 +641,7 @@ func (h *IncomingHandler) Buy(c *fiber.Ctx) error {
 	replacer := strings.NewReplacer(
 		"{{.url}}", APP_URL,
 		"{{.version}}", API_VERSION,
+		"{{.date}}", utils.FormatFR(time.Now()),
 		"{{.slug}}", req.GetSlug(),
 		"{{.category}}", req.GetCategory(),
 		"{{.package}}", req.GetPackage(),
@@ -663,8 +669,8 @@ func (h *IncomingHandler) Buy(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).SendString(replace)
 }
 
-func (h *IncomingHandler) LiveMatchs() string {
-	livematchs, err := h.fixtureService.GetAll()
+func (h *IncomingHandler) LiveMatchs(page int) string {
+	livematchs, err := h.fixtureService.GetAllLiveMatchUSSD(page)
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -701,7 +707,7 @@ func (h *IncomingHandler) FlashNews(page int) string {
 
 	var newsData []string
 	for _, s := range news {
-		row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q/detail?slug=flash-news&amp;title=` + s.GetTitleQueryEscape() + `">` + s.GetTitleLimited(20) + "</a>"
+		row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q/detail?slug=flash-news&amp;title=` + s.GetTitleQueryEscape() + `">` + s.GetTitleLimited(20) + `</a>`
 		newsData = append(newsData, row)
 	}
 	newsString := strings.Join(newsData, "\n")

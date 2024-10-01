@@ -2,6 +2,7 @@ package entity
 
 import (
 	"net/url"
+	"strings"
 	"time"
 )
 
@@ -19,12 +20,17 @@ func (e *News) GetId() int64 {
 }
 
 func (e *News) GetTitle() string {
-	return e.Title
+	replacer := strings.NewReplacer(
+		"é", "e",
+		`"`, "",
+	)
+	return replacer.Replace(e.Title)
+
 }
 
 func (e *News) GetTitleLimited(maxLength int) string {
-	if len(e.Title) > maxLength {
-		return e.Title[:maxLength]
+	if len(e.Title) >= maxLength {
+		return e.GetTitle()[:maxLength]
 	}
 	return e.GetTitle()
 }

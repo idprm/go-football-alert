@@ -175,7 +175,9 @@ var menus = []entity.Menu{
 <pages descr="Live Match">
 	<page>
 	Live Match<br/>
-	{{ .data }}
+	{{.data}}
+	<br/>
+	{{.paginate}}
     <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
 	</page>
 </pages>		
@@ -192,9 +194,11 @@ var menus = []entity.Menu{
 <!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
 <pages descr="Schedule">
 	<page>
-		Schedule<br/>
-{{ .data }}
-    <a href="{{ .url }}/v1/ussd/">Accueil</a>
+	Schedule<br/>
+	{{.data}}
+	<br/>
+	{{.paginate}}
+    <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
 	</page>
 </pages>		
 		`,
@@ -211,8 +215,9 @@ var menus = []entity.Menu{
 <pages descr="Lineup">
 	<page>
 		Lineup<br/>
-    No data
-    <br/>
+    {{.data}}
+	<br/>
+	{{.paginate}}
     <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
 	</page>
 </pages>		
@@ -229,9 +234,10 @@ var menus = []entity.Menu{
 <!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
 <pages descr="Match Stats">
 	<page>
-		Match Stats<br/>
-    No data
-    <br/>
+	Match Stats<br/>
+	{{.data}}
+	<br/>
+	{{.paginate}}
     <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
 	</page>
 </pages>		
@@ -248,9 +254,9 @@ var menus = []entity.Menu{
 <!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
 <pages descr="Display Live match">
 	<page>
-		Display Live match<br/>
-    No data
-    <br/>
+	Display Live match<br/>
+	<br/>
+	{{.paginate}}
     <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
 	</page>
 </pages>		
@@ -267,10 +273,10 @@ var menus = []entity.Menu{
 <!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
 <pages descr="Flash News">
 	<page>
-		Flash News<br/>
-{{.data}}
-    <br/>
-    {{.paginate}}
+		Flash News {{.date}}<br/>
+		{{.data}}
+	<br/>
+	{{.paginate}}
     <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
 	</page>
 </pages>		
@@ -288,9 +294,10 @@ var menus = []entity.Menu{
 <pages descr="Crédit Goal">
 	<page>
 		Crédit Goal<br/>
-        {{ .data }}
-        <br />
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        {{.data}}
+		<br/>
+		{{.paginate}}
+		<a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
 	</page>
 </pages>		
 		`,
@@ -298,7 +305,7 @@ var menus = []entity.Menu{
 	{
 		Category:  "follow-team",
 		Name:      "Champ. Mali",
-		Slug:      "champ",
+		Slug:      "champ-mali",
 		IsConfirm: true,
 		IsActive:  true,
 		TemplateXML: `
@@ -315,8 +322,9 @@ var menus = []entity.Menu{
         <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-credit-goal">Crédit Goal</a>
         <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-sms-alerte">SMS Alerte</a>
         <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-sms-alerte-equipe">SMS Alerte Equipe</a>
-        <br />
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+		<br/>
+		{{.paginate}}
+		<a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
     </page>
 </pages>		
 		`,
@@ -334,8 +342,9 @@ var menus = []entity.Menu{
 	<page>
 		Results<br/>
         {{.data}}
-        <br />
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali">Prev</a>
+		<br/>
+		{{.paginate}}
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali">Dos</a>
         <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
 	</page>
 </pages>			
@@ -354,8 +363,9 @@ var menus = []entity.Menu{
 	<page>
 		Standings<br/>
         {{.data}}
-        <br />
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali">Prev</a>
+        <br/>
+		{{.paginate}}
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali">Dos</a>
         <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
 	</page>
 </pages>		
@@ -375,7 +385,8 @@ var menus = []entity.Menu{
 		Schedule<br/>
         {{.data}}
         <br />
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali">Prev</a>
+		{{.paginate}}
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali">Dos</a>
         <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
 	</page>
 </pages>	
@@ -395,7 +406,8 @@ var menus = []entity.Menu{
 		Team<br/>
         {{.data}}
         <br />
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali">Prev</a>
+		{{.paginate}}
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali">Dos</a>
         <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
 	</page>
 </pages>		
@@ -415,7 +427,8 @@ var menus = []entity.Menu{
 		Crédit Score<br/>
         {{.data}}
         <br />
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali">Prev</a>
+		{{.paginate}}
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali">DOs</a>
         <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
 	</page>
 </pages>		
@@ -493,7 +506,7 @@ var menus = []entity.Menu{
 <pages descr="Prédiction">
 	<page>
 		Prédiction<br/>
-        {{ .data }}
+        {{.data}}
 		<form action="{{ .url }}/v1/ussd/q/?slug={{.slug}}">
 			<entry kind="digits" var="package">
 				<prompt></prompt>
@@ -698,7 +711,9 @@ var menus = []entity.Menu{
     <page>
         Champion League<br/>
         {{.data}}
-        <br />
+        <br/>
+		{{.paginate}}
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe">Dos</a>
         <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
     </page>
 </pages>		
@@ -718,7 +733,8 @@ var menus = []entity.Menu{
         Premier League<br/>
         {{.data}}
         <br />
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe">Prev</a>
+		{{.paginate}}
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe">Dos</a>
         <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
     </page>
 </pages>		
@@ -737,8 +753,9 @@ var menus = []entity.Menu{
     <page>
         La Liga<br/>
         {{.data}}
-        <br />
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe">Prev</a>
+        <br/>
+		{{.paginate}}
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe">Dos</a>
         <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
     </page>
 </pages>		
@@ -757,8 +774,9 @@ var menus = []entity.Menu{
     <page>
         Ligue 1<br/>
         {{.data}}
-        <br />
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe">Prev</a>
+        <br/>
+		{{.paginate}}
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe">Dos</a>
         <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
     </page>
 </pages>		
@@ -777,8 +795,9 @@ var menus = []entity.Menu{
     <page>
         L. Europa<br/>
         {{.data}}
-        <br />
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe">Prev</a>
+        <br/>
+		{{.paginate}}
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe">Dos</a>
         <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
     </page>
 </pages>		
@@ -797,8 +816,9 @@ var menus = []entity.Menu{
 	<page>
 		Serie A<br/>
         {{.data}}
-        <br />
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe">Prev</a>
+        <br/>
+		{{.paginate}}
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe">Dos</a>
         <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
 	</page>
 </pages>		
@@ -817,8 +837,9 @@ var menus = []entity.Menu{
 	<page>
 		Bundesligua<br/>
         {{.data}}
-        <br />
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe">Prev</a>
+        <br/>
+		{{.paginate}}
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe">Dos</a>
         <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
 	</page>
 </pages>		
@@ -837,8 +858,9 @@ var menus = []entity.Menu{
 	<page>
 		Champ Portugal<br/>
         {{.data}}
-        <br />
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe">Prev</a>
+        <br/>
+		{{.paginate}}
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe">Dos</a>
         <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
 	</page>
 </pages>		
@@ -853,12 +875,11 @@ var menus = []entity.Menu{
 		TemplateXML: `
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
-<pages descr="Champ Portugal">
+<pages descr="Foot Africa">
 	<page>
-		Champ Portugal<br/>
+		Foot Africa<br/>
         {{.data}}
         <br />
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe">Prev</a>
         <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
 	</page>
 </pages>			
