@@ -20,6 +20,7 @@ type ITeamRepository interface {
 	CountByPrimaryId(int) (int64, error)
 	CountByName(string) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
+	GetAllTeamUSSD(int) ([]*entity.Team, error)
 	Get(string) (*entity.Team, error)
 	GetByPrimaryId(int) (*entity.Team, error)
 	GetByName(string) (*entity.Team, error)
@@ -64,6 +65,15 @@ func (r *TeamRepository) GetAllPaginate(pagination *entity.Pagination) (*entity.
 	}
 	pagination.Rows = teams
 	return pagination, nil
+}
+
+func (r *TeamRepository) GetAllTeamUSSD(page int) ([]*entity.Team, error) {
+	var c []*entity.Team
+	err := r.db.Where("country = ?", "Mali").Order("name ASC").Offset((page - 1) * 5).Limit(5).Find(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
 }
 
 func (r *TeamRepository) Get(slug string) (*entity.Team, error) {

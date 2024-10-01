@@ -328,7 +328,7 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 		}
 
 		if req.GetSlug() == "champ-team" {
-			data = ""
+			data = h.ChampTeam(req.GetPage() + 1)
 		}
 
 		if req.GetSlug() == "champ-credit-score" {
@@ -711,6 +711,20 @@ func (h *IncomingHandler) FlashNews(page int) string {
 		newsData = append(newsData, row)
 	}
 	newsString := strings.Join(newsData, "\n")
+	return newsString
+}
+
+func (h *IncomingHandler) ChampTeam(page int) string {
+	teams, err := h.teamService.GetAllTeamUSSD(page)
+	if err != nil {
+		log.Println(err.Error())
+	}
+	var teamsData []string
+	for _, s := range teams {
+		row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q/detail?slug=champ-mali&amp;title=` + s.GetNameQueryEscape() + `">` + s.GetName() + `</a>`
+		teamsData = append(teamsData, row)
+	}
+	newsString := strings.Join(teamsData, "\n")
 	return newsString
 }
 

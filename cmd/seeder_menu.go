@@ -505,13 +505,71 @@ var menus = []entity.Menu{
 <!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
 <pages descr="Prédiction">
 	<page>
-		Prédiction<br/>
+		Prédiction {{.date}}
+		<br/>
         {{.data}}
-		<form action="{{ .url }}/v1/ussd/q/?slug={{.slug}}">
-			<entry kind="digits" var="package">
-				<prompt></prompt>
-			</entry>
-		</form>
+		<br />
+        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+	</page>
+</pages>		
+		`,
+	},
+	{
+		Category:  "prediction",
+		Name:      "Safe of the Day",
+		Slug:      "prediction-safe-of-the-day",
+		IsConfirm: true,
+		IsActive:  true,
+		TemplateXML: `
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
+<pages descr="Safe of the Day">
+	<page>
+		Safe of the Day {{.date}}<br/>
+        {{.data}}
+		<br />
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=prediction&title=Prédiction">Prev</a>
+        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+	</page>
+</pages>		
+		`,
+	},
+	{
+		Category:  "prediction",
+		Name:      "Daily combined bets",
+		Slug:      "prediction-daily-combined-bets",
+		IsConfirm: true,
+		IsActive:  true,
+		TemplateXML: `
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
+<pages descr="Daily combined bets">
+	<page>
+		Daily combined bets {{.date}}<br/>
+        {{.data}}
+		<br />
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=prediction&title=Prédiction">Prev</a>
+        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+	</page>
+</pages>		
+		`,
+	},
+	{
+		Category:  "prediction",
+		Name:      "VIP Prono",
+		Slug:      "prediction-vip-prono",
+		IsConfirm: true,
+		IsActive:  true,
+		TemplateXML: `
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
+<pages descr="VIP Prono">
+	<page>
+		VIP Prono {{.date}}<br/>
+        {{.data}}
+		<br />
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=prediction&title=Prédiction">Prev</a>
+        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
 	</page>
 </pages>		
 		`,
@@ -569,7 +627,16 @@ var menus = []entity.Menu{
 		IsConfirm: true,
 		IsActive:  true,
 		TemplateXML: `
-		
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
+<pages descr="Europe">
+	<page>
+		Europe {{.date}}<br/>
+        {{.data}}
+		<br />
+        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+	</page>
+</pages>			
 		`,
 	},
 	{
@@ -579,7 +646,16 @@ var menus = []entity.Menu{
 		IsConfirm: true,
 		IsActive:  true,
 		TemplateXML: `
-		
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
+<pages descr="Afrique">
+	<page>
+		Afrique {{.date}}<br/>
+        {{.data}}
+		<br />
+        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+	</page>
+</pages>
 		`,
 	},
 	{
@@ -589,7 +665,16 @@ var menus = []entity.Menu{
 		IsConfirm: true,
 		IsActive:  true,
 		TemplateXML: `
-		
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
+<pages descr="SMS Alerte Equipe">
+	<page>
+		SMS Alerte Equipe {{.date}}<br/>
+        {{.data}}
+		<br />
+        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+	</page>
+</pages>		
 		`,
 	},
 	{
@@ -599,7 +684,16 @@ var menus = []entity.Menu{
 		IsConfirm: true,
 		IsActive:  true,
 		TemplateXML: `
-		
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
+<pages descr="Foot International">
+	<page>
+		Foot International {{.date}}<br/>
+        {{.data}}
+		<br />
+        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+	</page>
+</pages>			
 		`,
 	},
 	{
@@ -609,7 +703,16 @@ var menus = []entity.Menu{
 		IsConfirm: true,
 		IsActive:  true,
 		TemplateXML: `
-		
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
+<pages descr="Kit Foot">
+	<page>
+		Kit Foot {{.date}}<br/>
+        {{.data}}
+		<br />
+        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+	</page>
+</pages>			
 		`,
 	},
 	{
@@ -619,7 +722,16 @@ var menus = []entity.Menu{
 		IsConfirm: true,
 		IsActive:  true,
 		TemplateXML: `
-		
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
+<pages descr="Alerte Champ. Mali + Equipe">
+	<page>
+		Alerte Champ. Mali + Equipe {{.date}}<br/>
+        {{.data}}
+		<br />
+        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+	</page>
+</pages>			
 		`,
 	},
 	{
@@ -629,7 +741,16 @@ var menus = []entity.Menu{
 		IsConfirm: true,
 		IsActive:  true,
 		TemplateXML: `
-		
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
+<pages descr="Alerte Premier League + Equipe">
+	<page>
+		Alerte Premier League + Equipe {{.date}}<br/>
+        {{.data}}
+		<br />
+        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+	</page>
+</pages>		
 		`,
 	},
 	{
@@ -639,7 +760,16 @@ var menus = []entity.Menu{
 		IsConfirm: true,
 		IsActive:  true,
 		TemplateXML: `
-		
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
+<pages descr="Alerte La Liga + Equipe">
+	<page>
+		Alerte La Liga + Equipe {{.date}}<br/>
+        {{.data}}
+		<br />
+        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+	</page>
+</pages>		
 		`,
 	},
 	{
@@ -649,7 +779,16 @@ var menus = []entity.Menu{
 		IsConfirm: true,
 		IsActive:  true,
 		TemplateXML: `
-		
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
+<pages descr="Alerte Ligue 1 + Equipe">
+	<page>
+		Alerte Ligue 1 + Equipe {{.date}}<br/>
+        {{.data}}
+		<br />
+        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+	</page>
+</pages>		
 		`,
 	},
 	{
@@ -659,7 +798,16 @@ var menus = []entity.Menu{
 		IsConfirm: true,
 		IsActive:  true,
 		TemplateXML: `
-		
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
+<pages descr="Alerte Serie A + Equipe">
+	<page>
+		Alerte Serie A + Equipe {{.date}}<br/>
+        {{.data}}
+		<br />
+        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+	</page>
+</pages>		
 		`,
 	},
 	{
@@ -669,7 +817,16 @@ var menus = []entity.Menu{
 		IsConfirm: true,
 		IsActive:  true,
 		TemplateXML: `
-		
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
+<pages descr="Alerte Bundesligue + Equipe">
+	<page>
+		Alerte Bundesligue + Equipe {{.date}}<br/>
+        {{.data}}
+		<br />
+        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+	</page>
+</pages>			
 		`,
 	},
 	{

@@ -20,6 +20,7 @@ type ITeamService interface {
 	IsTeamByPrimaryId(int) bool
 	IsTeamByName(string) bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
+	GetAllTeamUSSD(int) ([]*entity.Team, error)
 	Get(string) (*entity.Team, error)
 	GetByPrimaryId(int) (*entity.Team, error)
 	GetByName(string) (*entity.Team, error)
@@ -46,6 +47,10 @@ func (s *TeamService) IsTeamByName(name string) bool {
 
 func (s *TeamService) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {
 	return s.teamRepo.GetAllPaginate(pagination)
+}
+
+func (s *TeamService) GetAllTeamUSSD(page int) ([]*entity.Team, error) {
+	return s.teamRepo.GetAllTeamUSSD(page)
 }
 
 func (s *TeamService) Get(slug string) (*entity.Team, error) {

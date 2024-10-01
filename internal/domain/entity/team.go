@@ -1,5 +1,7 @@
 package entity
 
+import "net/url"
+
 type Team struct {
 	ID        int64  `gorm:"primaryKey" json:"id"`
 	PrimaryID int64  `json:"primary_id"`
@@ -17,6 +19,10 @@ func (e *Team) GetId() int64 {
 
 func (e *Team) GetName() string {
 	return e.Name
+}
+
+func (e *Team) GetNameQueryEscape() string {
+	return url.QueryEscape(e.GetName())
 }
 
 func (e *Team) GetSlug() string {
