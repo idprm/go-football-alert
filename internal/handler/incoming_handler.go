@@ -296,11 +296,7 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 		}
 
 		if req.GetSlug() == "lm-schedule" {
-			data = h.Schedules()
-		}
-
-		if req.GetSlug() == "lm-schedule" {
-			data = h.Schedules()
+			data = h.Schedules(req.GetPage() + 1)
 		}
 
 		if req.GetSlug() == "flash-news" {
@@ -684,15 +680,15 @@ func (h *IncomingHandler) LiveMatchs(page int) string {
 	return liveMatchsString
 }
 
-func (h *IncomingHandler) Schedules() string {
-	schedules, err := h.fixtureService.GetAllScheduleUSSD()
+func (h *IncomingHandler) Schedules(page int) string {
+	schedules, err := h.fixtureService.GetAllScheduleUSSD(page)
 	if err != nil {
 		log.Println(err.Error())
 	}
 
 	var schedulesData []string
 	for _, s := range schedules {
-		row := s.Home.GetName() + " - " + s.Away.GetName() + " (" + s.GetFixtureDateToString() + ")"
+		row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q/detail?slug=lm-schedule&amp;title=` + s.GetFixtureNameQueryEscape() + `">` + s.GetFixtureName() + `</a>`
 		schedulesData = append(schedulesData, row)
 	}
 	schedulesString := strings.Join(schedulesData, "\n")

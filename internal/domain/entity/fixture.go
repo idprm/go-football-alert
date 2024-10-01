@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"net/url"
 	"time"
 
 	"gorm.io/gorm"
@@ -39,8 +40,16 @@ func (e *Fixture) GetDate() time.Time {
 	return e.FixtureDate
 }
 
+func (e *Fixture) GetFixtureName() string {
+	return e.Home.GetName() + " - " + e.Away.GetName() + " (" + e.GetFixtureDateToString() + ")"
+}
+
+func (e *Fixture) GetFixtureNameQueryEscape() string {
+	return url.QueryEscape(e.GetFixtureName())
+}
+
 func (e *Fixture) GetFixtureDateToString() string {
-	return e.FixtureDate.Format("02 Jan 06 15:04")
+	return e.FixtureDate.Format("2 Jan 06 15:04")
 }
 
 func (e *Fixture) GetTimeStamp() int {

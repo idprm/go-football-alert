@@ -24,7 +24,7 @@ type IFixtureRepository interface {
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetAll() ([]*entity.Fixture, error)
 	GetAllLiveMatchUSSD(int) ([]*entity.Fixture, error)
-	GetAllScheduleUSSD() ([]*entity.Fixture, error)
+	GetAllScheduleUSSD(int) ([]*entity.Fixture, error)
 	GetAllByLeagueIdUSSD(leagueId int) ([]*entity.Fixture, error)
 	GetAllByFixtureDate(time.Time) ([]*entity.Fixture, error)
 	Get(int) (*entity.Fixture, error)
@@ -89,9 +89,9 @@ func (r *FixtureRepository) GetAllLiveMatchUSSD(page int) ([]*entity.Fixture, er
 	return c, nil
 }
 
-func (r *FixtureRepository) GetAllScheduleUSSD() ([]*entity.Fixture, error) {
+func (r *FixtureRepository) GetAllScheduleUSSD(page int) ([]*entity.Fixture, error) {
 	var c []*entity.Fixture
-	err := r.db.Where("DATE(fixture_date) BETWEEN DATE(NOW()) AND DATE(NOW() + INTERVAL 1 DAY)").Preload("Home").Preload("Away").Order("DATE(fixture_date) ASC").Limit(5).Find(&c).Error
+	err := r.db.Where("DATE(fixture_date) BETWEEN DATE(NOW()) AND DATE(NOW() + INTERVAL 5 DAY)").Preload("Home").Preload("Away").Order("DATE(fixture_date) ASC").Offset((page - 1) * 5).Limit(5).Find(&c).Error
 	if err != nil {
 		return nil, err
 	}
