@@ -21,7 +21,6 @@ func (e *News) GetId() int64 {
 
 func (e *News) GetTitle() string {
 	replacer := strings.NewReplacer(
-		"é", "e",
 		`"`, "",
 	)
 	return replacer.Replace(e.Title)

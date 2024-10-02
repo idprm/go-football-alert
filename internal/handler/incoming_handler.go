@@ -209,7 +209,7 @@ func (h *IncomingHandler) MessageOriginated(c *fiber.Ctx) error {
 }
 
 func (h *IncomingHandler) Main(c *fiber.Ctx) error {
-	c.Set("Content-type", "application/xml; charset=utf-8")
+	c.Set("Content-type", "text/xml; charset=iso-8859-1")
 	menu, err := h.menuService.GetBySlug("home")
 	if err != nil {
 		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
@@ -224,7 +224,7 @@ func (h *IncomingHandler) Main(c *fiber.Ctx) error {
 }
 
 func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
-	c.Set("Content-type", "application/xml; charset=utf-8")
+	c.Set("Content-type", "text/xml; charset=iso-8859-1")
 	req := new(model.UssdRequest)
 
 	err := c.QueryParser(req)
@@ -440,7 +440,7 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 }
 
 func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
-	c.Set("Content-type", "application/xml; charset=utf-8")
+	c.Set("Content-type", "text/xml; charset=iso-8859-1")
 	req := new(model.UssdRequest)
 
 	err := c.QueryParser(req)
@@ -467,7 +467,7 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 }
 
 func (h *IncomingHandler) Select(c *fiber.Ctx) error {
-	c.Set("Content-type", "application/xml; charset=utf-8")
+	c.Set("Content-type", "text/xml; charset=iso-8859-1")
 	req := new(model.UssdRequest)
 
 	err := c.QueryParser(req)
@@ -522,7 +522,7 @@ func (h *IncomingHandler) Select(c *fiber.Ctx) error {
 }
 
 func (h *IncomingHandler) Pagination(c *fiber.Ctx) error {
-	c.Set("Content-type", "application/xml; charset=utf-8")
+	c.Set("Content-type", "text/xml; charset=iso-8859-1")
 	req := new(model.UssdRequest)
 
 	err := c.QueryParser(req)
@@ -577,7 +577,7 @@ func (h *IncomingHandler) Pagination(c *fiber.Ctx) error {
 }
 
 func (h *IncomingHandler) Buy(c *fiber.Ctx) error {
-	c.Set("Content-type", "application/xml; charset=utf-8")
+	c.Set("Content-type", "text/xml; charset=iso-8859-1")
 	req := new(model.UssdRequest)
 
 	err := c.QueryParser(req)
