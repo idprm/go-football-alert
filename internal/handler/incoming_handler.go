@@ -396,28 +396,33 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 	}
 
 	var data string
+
+	if req.GetSlug() == "foot-europe" {
+		data = h.PremierLeagues(req.GetPage() + 1)
+	}
+
 	if req.GetSlug() == "foot-europe-premier-league" {
-		data = h.PremierLeagues()
+		data = h.PremierLeagues(req.GetPage() + 1)
 	}
 
 	if req.GetSlug() == "foot-europe-la-liga" {
-		data = h.LaLigas()
+		data = h.LaLigas(req.GetPage() + 1)
 	}
 
 	if req.GetSlug() == "foot-europe-ligue-1" {
-		data = h.Ligue1s()
+		data = h.Ligue1s(req.GetPage() + 1)
 	}
 
 	if req.GetSlug() == "foot-europe-serie-a" {
-		data = h.SerieA()
+		data = h.SerieA(req.GetPage() + 1)
 	}
 
 	if req.GetSlug() == "foot-europe-bundesligua" {
-		data = h.Bundesliguas()
+		data = h.Bundesliguas(req.GetPage() + 1)
 	}
 
 	if req.GetSlug() == "foot-europe-champ-portugal" {
-		data = h.PrimeiraLigas()
+		data = h.PrimeiraLigas(req.GetPage() + 1)
 	}
 
 	page := strconv.Itoa(req.GetPage() + 1)
@@ -724,9 +729,8 @@ func (h *IncomingHandler) ChampTeam(page int) string {
 	return newsString
 }
 
-func (h *IncomingHandler) ChampionLeagues() string {
-
-	fixtures, err := h.fixtureService.GetAllByLeagueIdUSSD(1)
+func (h *IncomingHandler) ChampionLeagues(page int) string {
+	fixtures, err := h.fixtureService.GetAllByLeagueIdUSSD(1, page)
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -735,7 +739,7 @@ func (h *IncomingHandler) ChampionLeagues() string {
 	var fixturesString string
 	if len(fixtures) > 0 {
 		for _, s := range fixtures {
-			row := s.Home.GetName() + " - " + s.Away.GetName() + " (" + s.GetFixtureDateToString() + ")"
+			row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q/detail?slug=foot-europe-champion-league&amp;title=` + s.GetFixtureNameQueryEscape() + `">` + s.GetFixtureName() + `</a>`
 			fixturesData = append(fixturesData, row)
 		}
 		fixturesString = strings.Join(fixturesData, "\n")
@@ -746,8 +750,8 @@ func (h *IncomingHandler) ChampionLeagues() string {
 	return fixturesString
 }
 
-func (h *IncomingHandler) PremierLeagues() string {
-	fixtures, err := h.fixtureService.GetAllByLeagueIdUSSD(124)
+func (h *IncomingHandler) PremierLeagues(page int) string {
+	fixtures, err := h.fixtureService.GetAllByLeagueIdUSSD(124, page)
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -756,7 +760,7 @@ func (h *IncomingHandler) PremierLeagues() string {
 	var fixturesString string
 	if len(fixtures) > 0 {
 		for _, s := range fixtures {
-			row := s.Home.GetName() + " - " + s.Away.GetName() + " (" + s.GetFixtureDateToString() + ")"
+			row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q/detail?slug=foot-europe-premier-league&amp;title=` + s.GetFixtureNameQueryEscape() + `">` + s.GetFixtureName() + `</a>`
 			fixturesData = append(fixturesData, row)
 		}
 		fixturesString = strings.Join(fixturesData, "\n")
@@ -766,8 +770,8 @@ func (h *IncomingHandler) PremierLeagues() string {
 	return fixturesString
 }
 
-func (h *IncomingHandler) LaLigas() string {
-	fixtures, err := h.fixtureService.GetAllByLeagueIdUSSD(297)
+func (h *IncomingHandler) LaLigas(page int) string {
+	fixtures, err := h.fixtureService.GetAllByLeagueIdUSSD(297, page)
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -776,7 +780,7 @@ func (h *IncomingHandler) LaLigas() string {
 	var fixturesString string
 	if len(fixtures) > 0 {
 		for _, s := range fixtures {
-			row := s.Home.GetName() + " - " + s.Away.GetName() + " (" + s.GetFixtureDateToString() + ")"
+			row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q/detail?slug=foot-europe-la-liga&amp;title=` + s.GetFixtureNameQueryEscape() + `">` + s.GetFixtureName() + `</a>`
 			fixturesData = append(fixturesData, row)
 		}
 		fixturesString = strings.Join(fixturesData, "\n")
@@ -786,8 +790,8 @@ func (h *IncomingHandler) LaLigas() string {
 	return fixturesString
 }
 
-func (h *IncomingHandler) Ligue1s() string {
-	fixtures, err := h.fixtureService.GetAllByLeagueIdUSSD(236)
+func (h *IncomingHandler) Ligue1s(page int) string {
+	fixtures, err := h.fixtureService.GetAllByLeagueIdUSSD(236, page)
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -796,7 +800,7 @@ func (h *IncomingHandler) Ligue1s() string {
 	var fixturesString string
 	if len(fixtures) > 0 {
 		for _, s := range fixtures {
-			row := s.Home.GetName() + " - " + s.Away.GetName() + " (" + s.GetFixtureDateToString() + ")"
+			row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q/detail?slug=foot-europe-ligue-1&amp;title=` + s.GetFixtureNameQueryEscape() + `">` + s.GetFixtureName() + `</a>`
 			fixturesData = append(fixturesData, row)
 		}
 		fixturesString = strings.Join(fixturesData, "\n")
@@ -806,8 +810,8 @@ func (h *IncomingHandler) Ligue1s() string {
 	return fixturesString
 }
 
-func (h *IncomingHandler) SerieA() string {
-	fixtures, err := h.fixtureService.GetAllByLeagueIdUSSD(295)
+func (h *IncomingHandler) SerieA(page int) string {
+	fixtures, err := h.fixtureService.GetAllByLeagueIdUSSD(295, page)
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -816,7 +820,7 @@ func (h *IncomingHandler) SerieA() string {
 	var fixturesString string
 	if len(fixtures) > 0 {
 		for _, s := range fixtures {
-			row := s.Home.GetName() + " - " + s.Away.GetName() + " (" + s.GetFixtureDateToString() + ")"
+			row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q/detail?slug=foot-europe-serie-a&amp;title=` + s.GetFixtureNameQueryEscape() + `">` + s.GetFixtureName() + `</a>`
 			fixturesData = append(fixturesData, row)
 		}
 		fixturesString = strings.Join(fixturesData, "\n")
@@ -826,8 +830,8 @@ func (h *IncomingHandler) SerieA() string {
 	return fixturesString
 }
 
-func (h *IncomingHandler) Bundesliguas() string {
-	fixtures, err := h.fixtureService.GetAllByLeagueIdUSSD(384)
+func (h *IncomingHandler) Bundesliguas(page int) string {
+	fixtures, err := h.fixtureService.GetAllByLeagueIdUSSD(384, page)
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -836,7 +840,7 @@ func (h *IncomingHandler) Bundesliguas() string {
 	var fixturesString string
 	if len(fixtures) > 0 {
 		for _, s := range fixtures {
-			row := s.Home.GetName() + " - " + s.Away.GetName() + " (" + s.GetFixtureDateToString() + ")"
+			row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q/detail?slug=foot-europe-bundesligua&amp;title=` + s.GetFixtureNameQueryEscape() + `">` + s.GetFixtureName() + `</a>`
 			fixturesData = append(fixturesData, row)
 		}
 		fixturesString = strings.Join(fixturesData, "\n")
@@ -846,8 +850,8 @@ func (h *IncomingHandler) Bundesliguas() string {
 	return fixturesString
 }
 
-func (h *IncomingHandler) PrimeiraLigas() string {
-	fixtures, err := h.fixtureService.GetAllByLeagueIdUSSD(441)
+func (h *IncomingHandler) PrimeiraLigas(page int) string {
+	fixtures, err := h.fixtureService.GetAllByLeagueIdUSSD(441, page)
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -856,7 +860,7 @@ func (h *IncomingHandler) PrimeiraLigas() string {
 	var fixturesString string
 	if len(fixtures) > 0 {
 		for _, s := range fixtures {
-			row := s.Home.GetName() + " - " + s.Away.GetName() + " (" + s.GetFixtureDateToString() + ")"
+			row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q/detail?slug=foot-europe-champ-portugal&amp;title=` + s.GetFixtureNameQueryEscape() + `">` + s.GetFixtureName() + `</a>`
 			fixturesData = append(fixturesData, row)
 		}
 		fixturesString = strings.Join(fixturesData, "\n")

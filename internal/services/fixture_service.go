@@ -25,7 +25,7 @@ type IFixtureService interface {
 	GetAll() ([]*entity.Fixture, error)
 	GetAllLiveMatchUSSD(int) ([]*entity.Fixture, error)
 	GetAllScheduleUSSD(int) ([]*entity.Fixture, error)
-	GetAllByLeagueIdUSSD(leagueId int) ([]*entity.Fixture, error)
+	GetAllByLeagueIdUSSD(int, int) ([]*entity.Fixture, error)
 	GetAllByFixtureDate(time.Time) ([]*entity.Fixture, error)
 	Get(int) (*entity.Fixture, error)
 	Save(*entity.Fixture) (*entity.Fixture, error)
@@ -65,8 +65,8 @@ func (s *FixtureService) GetAllScheduleUSSD(page int) ([]*entity.Fixture, error)
 	return s.fixtureRepo.GetAllScheduleUSSD(page)
 }
 
-func (s *FixtureService) GetAllByLeagueIdUSSD(leagueId int) ([]*entity.Fixture, error) {
-	return s.fixtureRepo.GetAllByLeagueIdUSSD(leagueId)
+func (s *FixtureService) GetAllByLeagueIdUSSD(leagueId, page int) ([]*entity.Fixture, error) {
+	return s.fixtureRepo.GetAllByLeagueIdUSSD(leagueId, page)
 }
 
 func (s *FixtureService) GetAllByFixtureDate(fixDate time.Time) ([]*entity.Fixture, error) {
