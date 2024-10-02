@@ -307,7 +307,7 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 			data = ""
 		}
 
-		if req.GetSlug() == "champ" {
+		if req.GetSlug() == "champ-mali" {
 			data = ""
 		}
 
@@ -677,11 +677,16 @@ func (h *IncomingHandler) LiveMatchs(page int) string {
 	}
 
 	var liveMatchsData []string
-	for _, s := range livematchs {
-		row := s.Home.GetName() + " - " + s.Away.GetName()
-		liveMatchsData = append(liveMatchsData, row)
+	var liveMatchsString string
+	if len(livematchs) > 0 {
+		for _, s := range livematchs {
+			row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q/detail?slug=lm-live-match&amp;title=` + s.GetFixtureNameQueryEscape() + `">` + s.GetFixtureName() + `</a>`
+			liveMatchsData = append(liveMatchsData, row)
+		}
+		liveMatchsString = strings.Join(liveMatchsData, "\n")
+	} else {
+		liveMatchsString = "No data"
 	}
-	liveMatchsString := strings.Join(liveMatchsData, "\n")
 	return liveMatchsString
 }
 
@@ -692,11 +697,16 @@ func (h *IncomingHandler) Schedules(page int) string {
 	}
 
 	var schedulesData []string
-	for _, s := range schedules {
-		row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q/detail?slug=lm-schedule&amp;title=` + s.GetFixtureNameQueryEscape() + `">` + s.GetFixtureName() + `</a>`
-		schedulesData = append(schedulesData, row)
+	var schedulesString string
+	if len(schedules) > 0 {
+		for _, s := range schedules {
+			row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q/detail?slug=lm-schedule&amp;title=` + s.GetFixtureNameQueryEscape() + `">` + s.GetFixtureName() + `</a>`
+			schedulesData = append(schedulesData, row)
+		}
+		schedulesString = strings.Join(schedulesData, "\n")
+	} else {
+		schedulesString = "No data"
 	}
-	schedulesString := strings.Join(schedulesData, "\n")
 	return schedulesString
 }
 
@@ -707,11 +717,16 @@ func (h *IncomingHandler) FlashNews(page int) string {
 	}
 
 	var newsData []string
-	for _, s := range news {
-		row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q/detail?slug=flash-news&amp;title=` + s.GetTitleQueryEscape() + `">` + s.GetTitleLimited(20) + `</a>`
-		newsData = append(newsData, row)
+	var newsString string
+	if len(news) > 0 {
+		for _, s := range news {
+			row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q/detail?slug=flash-news&amp;title=` + s.GetTitleQueryEscape() + `">` + s.GetTitleLimited(20) + `</a>`
+			newsData = append(newsData, row)
+		}
+		newsString = strings.Join(newsData, "\n")
+	} else {
+		newsString = "No data"
 	}
-	newsString := strings.Join(newsData, "\n")
 	return newsString
 }
 
@@ -721,12 +736,19 @@ func (h *IncomingHandler) ChampTeam(page int) string {
 		log.Println(err.Error())
 	}
 	var teamsData []string
-	for _, s := range teams {
-		row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q/detail?slug=champ-mali&amp;title=` + s.GetNameQueryEscape() + `">` + s.GetName() + `</a>`
-		teamsData = append(teamsData, row)
+	var teamsString string
+
+	if len(teams) > 0 {
+		for _, s := range teams {
+			row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q/detail?slug=champ-mali&amp;title=` + s.GetNameQueryEscape() + `">` + s.GetName() + `</a>`
+			teamsData = append(teamsData, row)
+		}
+		teamsString = strings.Join(teamsData, "\n")
+	} else {
+		teamsString = "No match"
 	}
-	newsString := strings.Join(teamsData, "\n")
-	return newsString
+
+	return teamsString
 }
 
 func (h *IncomingHandler) ChampionLeagues(page int) string {

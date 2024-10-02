@@ -13,7 +13,7 @@ var menus = []entity.Menu{
 		IsActive:  true,
 		TemplateXML: `<?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
-<pages>
+<pages descr="Orange Football Club">
   <page>
     Orange Football Club, votre choix:<br/>
     <a href="{{.url}}/{{.version}}/ussd/q?slug=lm&title=Live+Match">Live Match</a>
@@ -42,7 +42,7 @@ var menus = []entity.Menu{
 		{{.title}}<br/>
         {{.data}}
         <br/>
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
     </page>
 </pages>
 		`,
@@ -63,7 +63,7 @@ var menus = []entity.Menu{
         <a href="{{.url}}/{{.version}}/ussd/buy?slug={{.slug}}&code={{.code}}&action=yes">Yes</a>
         <a href="{{.url}}/{{.version}}/ussd/buy?slug={{.slug}}&code={{.code}}&action=no">No</a>
         <br/>
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
     </page>
 </pages>
 		`,
@@ -81,7 +81,7 @@ var menus = []entity.Menu{
 	<page>
 		Success<br/>
         <a href="{{.url}}/{{.version}}/ussd/q?slug={{.slug}}">{{.title}}</a>
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
     </page>
 </pages>
 		`,
@@ -100,7 +100,7 @@ var menus = []entity.Menu{
 		{{.title}}<br/>
         {{.data}}
         <br/>
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
     </page>
 </pages>
 		`,
@@ -118,8 +118,8 @@ var menus = []entity.Menu{
   <page descr="{{.title}}">
   	{{.title}}
 	<br/>
-    <a href="{{.url}}/{{.version}}/ussd/q?slug={{.slug}}">Dos</a>
-	<a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+    <a href="{{.url}}/{{.version}}/ussd/q?slug={{.slug}}" key="0">Dos</a>
+	<a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
   </page>
 </pages>
 		`,
@@ -136,7 +136,7 @@ var menus = []entity.Menu{
 <pages>
   <page>
   	Menu non trouvé<br/>
-    <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+    <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
   </page>
 </pages>
 		`,
@@ -158,7 +158,7 @@ var menus = []entity.Menu{
         <a href="{{.url}}/{{.version}}/ussd/q?slug=lm-lineup">Line Up</a>
         <a href="{{.url}}/{{.version}}/ussd/q?slug=lm-display">Display Live match</a>
         <br />
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
     </page>
 </pages>		
 		`,
@@ -178,7 +178,8 @@ var menus = []entity.Menu{
 	{{.data}}
 	<br/>
 	{{.paginate}}
-    <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+    <a href="{{.url}}/{{.version}}/ussd/q?slug=lm&title=Live+Match" key="0">Dos</a>
+	<a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
 		`,
@@ -198,7 +199,8 @@ var menus = []entity.Menu{
 	{{.data}}
 	<br/>
 	{{.paginate}}
-    <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+    <a href="{{.url}}/{{.version}}/ussd/q?slug=lm&title=Live+Match" key="0">Dos</a>
+    <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
 		`,
@@ -218,7 +220,8 @@ var menus = []entity.Menu{
     {{.data}}
 	<br/>
 	{{.paginate}}
-    <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+    <a href="{{.url}}/{{.version}}/ussd/q?slug=lm&title=Live+Match" key="0">Dos</a>
+    <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
 		`,
@@ -238,7 +241,8 @@ var menus = []entity.Menu{
 	{{.data}}
 	<br/>
 	{{.paginate}}
-    <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+    <a href="{{.url}}/{{.version}}/ussd/q?slug=lm&title=Live+Match" key="0">Dos</a>
+    <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
 		`,
@@ -257,7 +261,8 @@ var menus = []entity.Menu{
 	Display Live match<br/>
 	<br/>
 	{{.paginate}}
-    <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+    <a href="{{.url}}/{{.version}}/ussd/q?slug=lm&title=Live+Match" key="0">Dos</a>
+    <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
 		`,
@@ -277,7 +282,7 @@ var menus = []entity.Menu{
 		{{.data}}
 	<br/>
 	{{.paginate}}
-    <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+    <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
 		`,
@@ -297,7 +302,7 @@ var menus = []entity.Menu{
         {{.data}}
 		<br/>
 		{{.paginate}}
-		<a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+		<a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
 		`,
@@ -324,7 +329,7 @@ var menus = []entity.Menu{
         <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-sms-alerte-equipe">SMS Alerte Equipe</a>
 		<br/>
 		{{.paginate}}
-		<a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+		<a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
     </page>
 </pages>		
 		`,
@@ -344,8 +349,8 @@ var menus = []entity.Menu{
         {{.data}}
 		<br/>
 		{{.paginate}}
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali">Dos</a>
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali" key="0">Dos</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>			
 		`,
@@ -365,8 +370,8 @@ var menus = []entity.Menu{
         {{.data}}
         <br/>
 		{{.paginate}}
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali">Dos</a>
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali" key="0">Dos</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
 		`,
@@ -386,8 +391,8 @@ var menus = []entity.Menu{
         {{.data}}
         <br />
 		{{.paginate}}
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali">Dos</a>
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali" key="0">Dos</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>	
 		`,
@@ -407,8 +412,8 @@ var menus = []entity.Menu{
         {{.data}}
         <br />
 		{{.paginate}}
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali">Dos</a>
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali" key="0">Dos</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
 		`,
@@ -428,8 +433,8 @@ var menus = []entity.Menu{
         {{.data}}
         <br />
 		{{.paginate}}
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali">DOs</a>
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali" key="0">Dos</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
 		`,
@@ -449,7 +454,7 @@ var menus = []entity.Menu{
         {{.data}}
         <br />
         <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali">Prev</a>
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
 		`,
@@ -469,7 +474,7 @@ var menus = []entity.Menu{
         {{.data}}
         <br />
         <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali">Prev</a>
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
 		`,
@@ -489,7 +494,7 @@ var menus = []entity.Menu{
         {{.data}}
         <br />
         <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali">Prev</a>
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
 		`,
@@ -508,7 +513,7 @@ var menus = []entity.Menu{
 		Prédiction {{.date}}<br/>
         {{.data}}
 		<br />
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
 		`,
@@ -528,7 +533,7 @@ var menus = []entity.Menu{
         {{.data}}
 		<br />
         <a href="{{.url}}/{{.version}}/ussd/q?slug=prediction&title=Prédiction">Prev</a>
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
 		`,
@@ -548,7 +553,7 @@ var menus = []entity.Menu{
         {{.data}}
 		<br />
         <a href="{{.url}}/{{.version}}/ussd/q?slug=prediction&title=Prédiction">Prev</a>
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
 		`,
@@ -568,7 +573,7 @@ var menus = []entity.Menu{
         {{.data}}
 		<br />
         <a href="{{.url}}/{{.version}}/ussd/q?slug=prediction&title=Prédiction">Prev</a>
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
 		`,
@@ -591,7 +596,7 @@ var menus = []entity.Menu{
         <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-team">SMS Alerte Equipe</a>
         <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-team">Foot International</a>
         <br />
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
     </page>
 </pages>		
 		`,
@@ -614,7 +619,7 @@ var menus = []entity.Menu{
         <a href="{{.url}}/{{.version}}/ussd/q?slug=kit-foot-ligue-1">Alerte Ligue 1 + Equipe</a>
         <a href="{{.url}}/{{.version}}/ussd/q?slug=kit-foot-serie-a">Alerte Serie A + Equipe</a>
         <br />
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
     </page>
 </pages>		
 		`,
@@ -633,7 +638,7 @@ var menus = []entity.Menu{
 		Europe {{.date}}<br/>
         {{.data}}
 		<br />
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>			
 		`,
@@ -652,7 +657,7 @@ var menus = []entity.Menu{
 		Afrique {{.date}}<br/>
         {{.data}}
 		<br />
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>
 		`,
@@ -671,7 +676,7 @@ var menus = []entity.Menu{
 		SMS Alerte Equipe {{.date}}<br/>
         {{.data}}
 		<br />
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
 		`,
@@ -690,7 +695,7 @@ var menus = []entity.Menu{
 		Foot International {{.date}}<br/>
         {{.data}}
 		<br />
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>			
 		`,
@@ -709,7 +714,7 @@ var menus = []entity.Menu{
 		Kit Foot {{.date}}<br/>
         {{.data}}
 		<br />
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>			
 		`,
@@ -728,7 +733,7 @@ var menus = []entity.Menu{
 		Alerte Champ. Mali + Equipe {{.date}}<br/>
         {{.data}}
 		<br />
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>			
 		`,
@@ -747,7 +752,7 @@ var menus = []entity.Menu{
 		Alerte Premier League + Equipe {{.date}}<br/>
         {{.data}}
 		<br />
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
 		`,
@@ -766,7 +771,7 @@ var menus = []entity.Menu{
 		Alerte La Liga + Equipe {{.date}}<br/>
         {{.data}}
 		<br />
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
 		`,
@@ -785,7 +790,7 @@ var menus = []entity.Menu{
 		Alerte Ligue 1 + Equipe {{.date}}<br/>
         {{.data}}
 		<br />
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
 		`,
@@ -804,7 +809,7 @@ var menus = []entity.Menu{
 		Alerte Serie A + Equipe {{.date}}<br/>
         {{.data}}
 		<br />
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
 		`,
@@ -823,7 +828,7 @@ var menus = []entity.Menu{
 		Alerte Bundesligue + Equipe {{.date}}<br/>
         {{.data}}
 		<br />
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>			
 		`,
@@ -849,7 +854,7 @@ var menus = []entity.Menu{
         <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe-bundesligua">Bundesligua</a>
         <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe-champ-portugal">Champ Portugal</a>
         <br />
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
     </page>
 </pages>		
 		`,
@@ -869,8 +874,8 @@ var menus = []entity.Menu{
         {{.data}}
         <br/>
 		{{.paginate}}
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe">Dos</a>
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe" key="0">Dos</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
     </page>
 </pages>		
 		`,
@@ -890,8 +895,8 @@ var menus = []entity.Menu{
         {{.data}}
         <br />
 		{{.paginate}}
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe">Dos</a>
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe" key="0">Dos</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
     </page>
 </pages>		
 		`,
@@ -911,8 +916,8 @@ var menus = []entity.Menu{
         {{.data}}
         <br/>
 		{{.paginate}}
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe">Dos</a>
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe" key="0">Dos</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
     </page>
 </pages>		
 		`,
@@ -932,8 +937,8 @@ var menus = []entity.Menu{
         {{.data}}
         <br/>
 		{{.paginate}}
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe">Dos</a>
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe" key="0">Dos</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
     </page>
 </pages>		
 		`,
@@ -953,8 +958,8 @@ var menus = []entity.Menu{
         {{.data}}
         <br/>
 		{{.paginate}}
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe">Dos</a>
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe" key="0">Dos</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
     </page>
 </pages>		
 		`,
@@ -974,8 +979,8 @@ var menus = []entity.Menu{
         {{.data}}
         <br/>
 		{{.paginate}}
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe">Dos</a>
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe" key="0">Dos</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
 		`,
@@ -995,8 +1000,8 @@ var menus = []entity.Menu{
         {{.data}}
         <br/>
 		{{.paginate}}
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe">Dos</a>
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe" key="0">Dos</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
 		`,
@@ -1016,8 +1021,8 @@ var menus = []entity.Menu{
         {{.data}}
         <br/>
 		{{.paginate}}
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe">Dos</a>
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe" key="0">Dos</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
 		`,
@@ -1036,7 +1041,7 @@ var menus = []entity.Menu{
 		Foot Africa {{.date}}<br/>
         {{.data}}
         <br />
-        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>			
 		`,
