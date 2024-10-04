@@ -28,6 +28,7 @@ var (
 	RMQ_URL           string = getEnv("RMQ_URL")
 	AUTH_SECRET       string = getEnv("AUTH_SECRET")
 	PATH_STATIC       string = getEnv("PATH_STATIC")
+	PATH_LOG          string = getEnv("PATH_LOG")
 	PATH_IMAGE        string = getEnv("PATH_IMAGE")
 	API_FOOTBALL_URL  string = getEnv("API_FOOTBALL_URL")
 	API_FOOTBALL_KEY  string = getEnv("API_FOOTBALL_KEY")

@@ -6,6 +6,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	loggerFiber "github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/template/html/v2"
 	"github.com/idprm/go-football-alert/internal/domain/entity"
 	"github.com/idprm/go-football-alert/internal/domain/repository"
@@ -116,6 +117,20 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 		},
 	)
 
+	f, err := logAccess()
+	if err != nil {
+		log.Println(err)
+	}
+
+	app.Use(loggerFiber.New(
+		loggerFiber.Config{
+			Format:     "${time} | ${status} | ${latency} | ${ip} | ${method} | ${url} | ${referer} | ${error}\n",
+			TimeFormat: "02-Jan-2006 15:04:05",
+			TimeZone:   APP_TZ,
+			Output:     f,
+		},
+	))
+
 	app.Static(PATH_STATIC, path+"/public")
 
 	app.Use(cors.New())
@@ -193,7 +208,7 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	predictionHandler := handler.NewPredictionHandler(predictionService)
 	newsHandler := handler.NewNewsHandler(newsService, followCompetitionService, followTeamService)
 
-	app.Post("/mo", h.MessageOriginated)
+	app.Get("/mo", h.MessageOriginated)
 
 	lp := app.Group("p")
 	lp.Get("/:service", h.LandingPage)
@@ -249,4 +264,13 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	p.Get("unsub", h.UnSub)
 
 	return app
+}
+
+func logAccess() (*os.File, error) {
+	file, err := os.OpenFile(PATH_LOG+"/access/access.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatalf("error opening file: %v", err)
+		return nil, err
+	}
+	return file, nil
 }

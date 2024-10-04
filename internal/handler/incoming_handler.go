@@ -169,7 +169,7 @@ func (h *IncomingHandler) MessageOriginated(c *fiber.Ctx) error {
 
 	req := new(model.MORequest)
 
-	err := c.BodyParser(req)
+	err := c.QueryParser(req)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			&model.WebResponse{
@@ -304,23 +304,19 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 		}
 
 		if req.GetSlug() == "credit-goal" {
-			data = ""
-		}
-
-		if req.GetSlug() == "champ-mali" {
-			data = ""
+			data = h.CreditGoal(req.GetPage() + 1)
 		}
 
 		if req.GetSlug() == "champ-results" {
-			data = ""
+			data = h.ChampResults(req.GetPage() + 1)
 		}
 
 		if req.GetSlug() == "champ-standings" {
-			data = ""
+			data = h.ChampStandings(req.GetPage() + 1)
 		}
 
 		if req.GetSlug() == "champ-schedule" {
-			data = ""
+			data = h.ChampSchedules(req.GetPage() + 1)
 		}
 
 		if req.GetSlug() == "champ-team" {
@@ -328,59 +324,59 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 		}
 
 		if req.GetSlug() == "champ-credit-score" {
-			data = ""
+			data = h.ChampCreditScore(req.GetPage() + 1)
 		}
 
 		if req.GetSlug() == "champ-creditgoal" {
-			data = ""
+			data = h.ChampCreditGoal(req.GetPage() + 1)
 		}
 
 		if req.GetSlug() == "champ-sms-alerte" {
-			data = ""
+			data = h.ChampSMSAlerte(req.GetPage() + 1)
 		}
 
 		if req.GetSlug() == "champ-sms-alerte-equipe" {
-			data = ""
+			data = h.ChampSMSAlerteEquipe(req.GetPage() + 1)
 		}
 
 		if req.GetSlug() == "prediction" {
-			data = ""
+			data = h.Prediction(req.GetPage() + 1)
 		}
 
 		if req.GetSlug() == "sms-alerte" {
-			data = ""
+			data = h.SMSAlerte(req.GetPage() + 1)
 		}
 
 		if req.GetSlug() == "sms-kit-foot" {
-			data = ""
+			data = h.SMSKitFoot(req.GetPage() + 1)
 		}
 
 		if req.GetSlug() == "sms-foot-europe" {
-			data = ""
+			data = h.SMSFootEurope(req.GetPage() + 1)
 		}
 
 		if req.GetSlug() == "sms-foot-afrique" {
-			data = ""
+			data = h.SMSFootAfrique(req.GetPage() + 1)
 		}
 
 		if req.GetSlug() == "sms-alerte-equipe" {
-			data = ""
+			data = h.SMSAlerteEquipe(req.GetPage() + 1)
 		}
 
 		if req.GetSlug() == "sms-foot-international" {
-			data = ""
+			data = h.SMSFootInternational(req.GetPage() + 1)
 		}
 
 		if req.GetSlug() == "kit-foot" {
-			data = ""
+			data = h.KitFoot(req.GetPage() + 1)
 		}
 
 		if req.GetSlug() == "kit-foot-champ" {
-			data = ""
+			data = h.KitFootChamp(req.GetPage() + 1)
 		}
 
 		if req.GetSlug() == "kit-foot-premier-league" {
-			data = ""
+			data = h.KitFootPremierLeague(req.GetPage() + 1)
 		}
 
 		replacer := strings.NewReplacer(
@@ -730,6 +726,22 @@ func (h *IncomingHandler) FlashNews(page int) string {
 	return newsString
 }
 
+func (h *IncomingHandler) CreditGoal(page int) string {
+	return ""
+}
+
+func (h *IncomingHandler) ChampResults(page int) string {
+	return ""
+}
+
+func (h *IncomingHandler) ChampStandings(page int) string {
+	return ""
+}
+
+func (h *IncomingHandler) ChampSchedules(page int) string {
+	return ""
+}
+
 func (h *IncomingHandler) ChampTeam(page int) string {
 	teams, err := h.teamService.GetAllTeamUSSD(page)
 	if err != nil {
@@ -749,6 +761,62 @@ func (h *IncomingHandler) ChampTeam(page int) string {
 	}
 
 	return teamsString
+}
+
+func (h *IncomingHandler) ChampCreditScore(page int) string {
+	return ""
+}
+
+func (h *IncomingHandler) ChampCreditGoal(page int) string {
+	return ""
+}
+
+func (h *IncomingHandler) ChampSMSAlerte(page int) string {
+	return ""
+}
+
+func (h *IncomingHandler) ChampSMSAlerteEquipe(page int) string {
+	return ""
+}
+
+func (h *IncomingHandler) Prediction(page int) string {
+	return ""
+}
+
+func (h *IncomingHandler) SMSAlerte(page int) string {
+	return ""
+}
+
+func (h *IncomingHandler) SMSKitFoot(page int) string {
+	return ""
+}
+
+func (h *IncomingHandler) SMSFootEurope(page int) string {
+	return ""
+}
+
+func (h *IncomingHandler) SMSFootAfrique(page int) string {
+	return ""
+}
+
+func (h *IncomingHandler) SMSAlerteEquipe(page int) string {
+	return ""
+}
+
+func (h *IncomingHandler) SMSFootInternational(page int) string {
+	return ""
+}
+
+func (h *IncomingHandler) KitFoot(page int) string {
+	return ""
+}
+
+func (h *IncomingHandler) KitFootChamp(page int) string {
+	return ""
+}
+
+func (h *IncomingHandler) KitFootPremierLeague(page int) string {
+	return ""
 }
 
 func (h *IncomingHandler) ChampionLeagues(page int) string {

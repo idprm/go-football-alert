@@ -199,3 +199,122 @@ type AfricasTalkingRequest struct {
 	PhoneNumber string `form:"phoneNumber" json:"phone_number"`
 	Text        string `form:"text" json:"text"`
 }
+
+/**
+**/
+
+func (m *UssdRequest) IsLmLiveMatch() bool {
+	return m.GetSlug() == "lm-live-match"
+}
+
+func (m *UssdRequest) IsLmSchedule() bool {
+	return m.GetSlug() == "lm-schedule"
+}
+
+func (m *UssdRequest) IsFlashNews() bool {
+	return m.GetSlug() == "flash-news"
+}
+
+func (m *UssdRequest) IsCreditGoal() bool {
+	return m.GetSlug() == "credit-goal"
+}
+
+func (m *UssdRequest) IsChampResults() bool {
+	return m.GetSlug() == "champ-results"
+}
+
+func (m *UssdRequest) IsChampStandings() bool {
+	return m.GetSlug() == "champ-standings"
+}
+
+func (m *UssdRequest) IsChampSchedules() bool {
+	return m.GetSlug() == "champ-schedule"
+}
+
+func (m *UssdRequest) IsChampTeam() bool {
+	return m.GetSlug() == "champ-team"
+}
+
+func (m *UssdRequest) IsChampCreditScore() bool {
+	return m.GetSlug() == "champ-credit-score"
+}
+
+func (m *UssdRequest) IsChampCreditGoal() bool {
+	return m.GetSlug() == "champ-creditgoal"
+}
+
+func (m *UssdRequest) IsChampSMSAlerte() bool {
+	return m.GetSlug() == "champ-sms-alerte"
+}
+
+func (m *UssdRequest) IsChampSMSAlerteEquipe() bool {
+	return m.GetSlug() == "champ-sms-alerte-equipe"
+}
+
+func (m *UssdRequest) IsPrediction() bool {
+	return m.GetSlug() == "prediction"
+}
+
+func (m *UssdRequest) IsSMSAlerte() bool {
+	return m.GetSlug() == "sms-alerte"
+}
+
+func (m *UssdRequest) IsSMSKitFoot() bool {
+	return m.GetSlug() == "sms-kit-foot"
+}
+
+func (m *UssdRequest) IsSMSFootEurope() bool {
+	return m.GetSlug() == "sms-foot-europe"
+}
+
+func (m *UssdRequest) IsSMSFootAfrique() bool {
+	return m.GetSlug() == "sms-foot-afrique"
+}
+
+func (m *UssdRequest) IsSMSAlerteEquipe() bool {
+	return m.GetSlug() == "sms-alerte-equipe"
+}
+
+func (m *UssdRequest) IsSMSFootInternational() bool {
+	return m.GetSlug() == "sms-foot-international"
+}
+
+func (m *UssdRequest) IsKitFoot() bool {
+	return m.GetSlug() == "kit-foot"
+}
+
+func (m *UssdRequest) IsKitFootChamp() bool {
+	return m.GetSlug() == "kit-foot-champ"
+}
+
+func (m *UssdRequest) IsKitFootPremierLeague() bool {
+	return m.GetSlug() == "kit-foot-premier-league"
+}
+
+func (m *UssdRequest) IsPremierLeagues() bool {
+	return m.GetSlug() == "foot-europe-premier-league"
+}
+
+func (m *UssdRequest) IsLaLigas() bool {
+	return m.GetSlug() == "foot-europe-la-liga"
+}
+
+func (m *UssdRequest) IsLigue1s() bool {
+	return m.GetSlug() == "foot-europe-ligue-1"
+}
+
+func (m *UssdRequest) IsSerieA() bool {
+	return m.GetSlug() == "foot-europe-serie-a"
+}
+
+// if req.GetSlug() == "foot-europe-serie-a" {
+// data = h.SerieA(req.GetPage() + 1)
+// }
+
+// if req.GetSlug() == "foot-europe-bundesligua" {
+// data = h.Bundesliguas(req.GetPage() + 1)
+// }
+
+// if req.GetSlug() == "foot-europe-champ-portugal" {
+// data = h.PrimeiraLigas(req.GetPage() + 1)
+// }

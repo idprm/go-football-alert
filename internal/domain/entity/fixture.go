@@ -44,11 +44,19 @@ func (e *Fixture) GetFixtureName() string {
 	return e.Home.GetName() + " - " + e.Away.GetName() + " (" + e.GetFixtureDateToString() + ")"
 }
 
+func (e *Fixture) GetFixtureAndTimeName() string {
+	return e.Home.GetName() + " - " + e.Away.GetName() + " (" + e.GetFixtureDateAndTimeToString() + ")"
+}
+
 func (e *Fixture) GetFixtureNameQueryEscape() string {
-	return url.QueryEscape(e.GetFixtureName())
+	return url.QueryEscape(e.GetFixtureAndTimeName())
 }
 
 func (e *Fixture) GetFixtureDateToString() string {
+	return e.FixtureDate.Format("2 Jan 06")
+}
+
+func (e *Fixture) GetFixtureDateAndTimeToString() string {
 	return e.FixtureDate.Format("2 Jan 06 15:04")
 }
 
