@@ -211,7 +211,7 @@ func (h *IncomingHandler) Main(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
 	}
 	replacer := strings.NewReplacer(
-		"{{.url}}", APP_URL,
+		"{{.url}}", c.BaseURL(),
 		"{{.version}}", API_VERSION,
 		"&", "&amp;",
 	)
@@ -237,7 +237,7 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 			return c.Status(fiber.StatusBadGateway).SendString(err.Error())
 		}
 		replacer := strings.NewReplacer(
-			"{{.url}}", APP_URL,
+			"{{.url}}", c.BaseURL(),
 			"{{.version}}", API_VERSION,
 			"{{.title}}", req.GetTitle(),
 			"&", "&amp;",
@@ -263,13 +263,13 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 		// 	// package
 		// 	var servicesData []string
 		// 	for _, s := range services {
-		// 		row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/select?slug=` + req.GetSlug() + `&category=` + menu.GetCategory() + `&package=` + s.GetPackage() + `">` + s.GetName() + " (" + s.GetPriceToString() + ")" + "</a>"
+		// 		row := `<a href="` + c.BaseURL() + `/` + API_VERSION + `/ussd/select?slug=` + req.GetSlug() + `&category=` + menu.GetCategory() + `&package=` + s.GetPackage() + `">` + s.GetName() + " (" + s.GetPriceToString() + ")" + "</a>"
 		// 		servicesData = append(servicesData, row)
 		// 	}
 		// 	servicesString := strings.Join(servicesData, "\n")
 
 		// 	replacer := strings.NewReplacer(
-		// 		"{{.url}}", APP_URL,
+		// 		"{{.url}}", c.BaseURL(),
 		// 		"{{.version}}", API_VERSION,
 		// 		"{{.title}}", req.GetTitle(),
 		// 		"{{.data}}", servicesString,
@@ -287,80 +287,80 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 		var data string
 
 		if req.IsLmLiveMatch() {
-			data = h.LiveMatchs(req.GetPage() + 1)
+			data = h.LiveMatchs(c.BaseURL(), req.GetPage()+1)
 		}
 
 		if req.IsLmLiveMatch() {
-			data = h.Schedules(req.GetPage() + 1)
+			data = h.Schedules(c.BaseURL(), req.GetPage()+1)
 		}
 
 		if req.IsFlashNews() {
-			data = h.FlashNews(req.GetPage() + 1)
+			data = h.FlashNews(c.BaseURL(), req.GetPage()+1)
 		}
 
 		if req.IsCreditGoal() {
-			data = h.CreditGoal(req.GetPage() + 1)
+			data = h.CreditGoal(c.BaseURL(), req.GetPage()+1)
 		}
 
 		if req.IsChampResults() {
-			data = h.ChampResults(req.GetPage() + 1)
+			data = h.ChampResults(c.BaseURL(), req.GetPage()+1)
 		}
 
 		if req.IsChampStandings() {
-			data = h.ChampStandings(req.GetPage() + 1)
+			data = h.ChampStandings(c.BaseURL(), req.GetPage()+1)
 		}
 
 		if req.IsChampSchedules() {
-			data = h.ChampSchedules(req.GetPage() + 1)
+			data = h.ChampSchedules(c.BaseURL(), req.GetPage()+1)
 		}
 
 		if req.IsChampTeam() {
-			data = h.ChampTeam(req.GetPage() + 1)
+			data = h.ChampTeam(c.BaseURL(), req.GetPage()+1)
 		}
 
 		if req.IsChampCreditScore() {
-			data = h.ChampCreditScore(req.GetPage() + 1)
+			data = h.ChampCreditScore(c.BaseURL(), req.GetPage()+1)
 		}
 
 		if req.IsChampCreditGoal() {
-			data = h.ChampCreditGoal(req.GetPage() + 1)
+			data = h.ChampCreditGoal(c.BaseURL(), req.GetPage()+1)
 		}
 
 		if req.GetSlug() == "champ-sms-alerte" {
-			data = h.ChampSMSAlerte(req.GetPage() + 1)
+			data = h.ChampSMSAlerte(c.BaseURL(), req.GetPage()+1)
 		}
 
 		if req.GetSlug() == "champ-sms-alerte-equipe" {
-			data = h.ChampSMSAlerteEquipe(req.GetPage() + 1)
+			data = h.ChampSMSAlerteEquipe(c.BaseURL(), req.GetPage()+1)
 		}
 
 		if req.IsPrediction() {
-			data = h.Prediction(req.GetPage() + 1)
+			data = h.Prediction(c.BaseURL(), req.GetPage()+1)
 		}
 
 		if req.GetSlug() == "sms-alerte" {
-			data = h.SMSAlerte(req.GetPage() + 1)
+			data = h.SMSAlerte(c.BaseURL(), req.GetPage()+1)
 		}
 
 		if req.GetSlug() == "sms-alerte-equipe" {
-			data = h.SMSAlerteEquipe(req.GetPage() + 1)
+			data = h.SMSAlerteEquipe(c.BaseURL(), req.GetPage()+1)
 		}
 
 		if req.GetSlug() == "kit-foot" {
-			data = h.KitFoot(req.GetPage() + 1)
+			data = h.KitFoot(c.BaseURL(), req.GetPage()+1)
 		}
 
 		if req.GetSlug() == "kit-foot-by-league" {
-			data = h.KitFootByLeague(req.GetLeagueId(), req.GetPage()+1)
+			data = h.KitFootByLeague(c.BaseURL(), req.GetLeagueId(), req.GetPage()+1)
 		}
 
 		leagueId := strconv.Itoa(req.GetLeagueId())
 		teamId := strconv.Itoa(req.GetTeamId())
 		page := strconv.Itoa(req.GetPage() + 1)
 
-		paginate := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q?slug=` + req.GetSlug() + `&amp;title=` + req.GetTitleQueryEscape() + `&amp;league_id=` + leagueId + `&amp;team_id=` + teamId + `&amp;page=` + page + `">Suiv</a>`
+		paginate := `<a href="` + c.BaseURL() + `/` + API_VERSION + `/ussd/q?slug=` + req.GetSlug() + `&amp;title=` + req.GetTitleQueryEscape() + `&amp;league_id=` + leagueId + `&amp;team_id=` + teamId + `&amp;page=` + page + `">Suiv</a>`
 		replacer := strings.NewReplacer(
-			"{{.url}}", APP_URL,
+			"{{.url}}", c.BaseURL(),
 			"{{.version}}", API_VERSION,
 			"{{.date}}", utils.FormatFR(time.Now()),
 			"{{.data}}", data,
@@ -375,16 +375,16 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 	var data string
 
 	if req.GetSlug() == "foot-europe" {
-		data = h.KitFoot(req.GetPage() + 1)
+		data = h.KitFoot(c.BaseURL(), req.GetPage()+1)
 	}
 
 	leagueId := strconv.Itoa(req.GetLeagueId())
 	teamId := strconv.Itoa(req.GetTeamId())
 	page := strconv.Itoa(req.GetPage() + 1)
 
-	paginate := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q?slug=` + req.GetSlug() + `&amp;title=` + req.GetTitleQueryEscape() + `&amp;league_id=` + leagueId + `&amp;team_id=` + teamId + `&amp;page=` + page + `">Suiv</a>`
+	paginate := `<a href="` + c.BaseURL() + `/` + API_VERSION + `/ussd/q?slug=` + req.GetSlug() + `&amp;title=` + req.GetTitleQueryEscape() + `&amp;league_id=` + leagueId + `&amp;team_id=` + teamId + `&amp;page=` + page + `">Suiv</a>`
 	replacer := strings.NewReplacer(
-		"{{.url}}", APP_URL,
+		"{{.url}}", c.BaseURL(),
 		"{{.version}}", API_VERSION,
 		"{{.date}}", utils.FormatFR(time.Now()),
 		"{{.data}}", data,
@@ -412,7 +412,7 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
 	}
 	replacer := strings.NewReplacer(
-		"{{.url}}", APP_URL,
+		"{{.url}}", c.BaseURL(),
 		"{{.version}}", API_VERSION,
 		"{{.date}}", utils.FormatFR(time.Now()),
 		"{{.slug}}", req.GetSlug(),
@@ -448,7 +448,7 @@ func (h *IncomingHandler) Select(c *fiber.Ctx) error {
 			return c.Status(fiber.StatusBadGateway).SendString(err.Error())
 		}
 		replacer := strings.NewReplacer(
-			"{{.url}}", APP_URL,
+			"{{.url}}", c.BaseURL(),
 			"{{.version}}", API_VERSION,
 			"&", "&amp;",
 		)
@@ -466,7 +466,7 @@ func (h *IncomingHandler) Select(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
 	}
 	replacer := strings.NewReplacer(
-		"{{.url}}", APP_URL,
+		"{{.url}}", c.BaseURL(),
 		"{{.version}}", API_VERSION,
 		"{{.slug}}", req.GetSlug(),
 		"{{.code}}", service.GetCode(),
@@ -502,7 +502,7 @@ func (h *IncomingHandler) Pagination(c *fiber.Ctx) error {
 			return c.Status(fiber.StatusNotFound).SendString(err.Error())
 		}
 		replacer := strings.NewReplacer(
-			"{{.url}}", APP_URL,
+			"{{.url}}", c.BaseURL(),
 			"{{.version}}", API_VERSION,
 			"&", "&amp;",
 		)
@@ -517,7 +517,7 @@ func (h *IncomingHandler) Pagination(c *fiber.Ctx) error {
 			return c.Status(fiber.StatusNotFound).SendString(err.Error())
 		}
 		replacer := strings.NewReplacer(
-			"{{.url}}", APP_URL,
+			"{{.url}}", c.BaseURL(),
 			"{{.version}}", API_VERSION,
 			"&", "&amp;",
 		)
@@ -525,7 +525,7 @@ func (h *IncomingHandler) Pagination(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).SendString(replace)
 	}
 	replacer := strings.NewReplacer(
-		"{{.url}}", APP_URL,
+		"{{.url}}", c.BaseURL(),
 		"{{.version}}", API_VERSION,
 		"&", "&amp;",
 	)
@@ -557,7 +557,7 @@ func (h *IncomingHandler) Buy(c *fiber.Ctx) error {
 			return c.Status(fiber.StatusNotFound).SendString(err.Error())
 		}
 		replacer := strings.NewReplacer(
-			"{{.url}}", APP_URL,
+			"{{.url}}", c.BaseURL(),
 			"{{.version}}", API_VERSION,
 			"&", "&amp;",
 		)
@@ -572,7 +572,7 @@ func (h *IncomingHandler) Buy(c *fiber.Ctx) error {
 			return c.Status(fiber.StatusNotFound).SendString(err.Error())
 		}
 		replacer := strings.NewReplacer(
-			"{{.url}}", APP_URL,
+			"{{.url}}", c.BaseURL(),
 			"{{.version}}", API_VERSION,
 			"{{.date}}", utils.FormatFR(time.Now()),
 			"&", "&amp;",
@@ -597,7 +597,7 @@ func (h *IncomingHandler) Buy(c *fiber.Ctx) error {
 	}
 
 	replacer := strings.NewReplacer(
-		"{{.url}}", APP_URL,
+		"{{.url}}", c.BaseURL(),
 		"{{.version}}", API_VERSION,
 		"{{.date}}", utils.FormatFR(time.Now()),
 		"{{.slug}}", req.GetSlug(),
@@ -627,7 +627,7 @@ func (h *IncomingHandler) Buy(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).SendString(replace)
 }
 
-func (h *IncomingHandler) LiveMatchs(page int) string {
+func (h *IncomingHandler) LiveMatchs(baseUrl string, page int) string {
 	livematchs, err := h.fixtureService.GetAllLiveMatchUSSD(page)
 	if err != nil {
 		log.Println(err.Error())
@@ -637,7 +637,7 @@ func (h *IncomingHandler) LiveMatchs(page int) string {
 	var liveMatchsString string
 	if len(livematchs) > 0 {
 		for _, s := range livematchs {
-			row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q/detail?slug=lm-live-match&amp;title=` + s.GetFixtureNameQueryEscape() + `">` + s.GetFixtureName() + `</a>`
+			row := `<a href="` + baseUrl + `/` + API_VERSION + `/ussd/q/detail?slug=lm-live-match&amp;title=` + s.GetFixtureNameQueryEscape() + `">` + s.GetFixtureName() + `</a>`
 			liveMatchsData = append(liveMatchsData, row)
 		}
 		liveMatchsString = strings.Join(liveMatchsData, "\n")
@@ -647,7 +647,7 @@ func (h *IncomingHandler) LiveMatchs(page int) string {
 	return liveMatchsString
 }
 
-func (h *IncomingHandler) Schedules(page int) string {
+func (h *IncomingHandler) Schedules(baseUrl string, page int) string {
 	schedules, err := h.fixtureService.GetAllScheduleUSSD(page)
 	if err != nil {
 		log.Println(err.Error())
@@ -657,7 +657,7 @@ func (h *IncomingHandler) Schedules(page int) string {
 	var schedulesString string
 	if len(schedules) > 0 {
 		for _, s := range schedules {
-			row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q/detail?slug=lm-schedule&amp;title=` + s.GetFixtureNameQueryEscape() + `">` + s.GetFixtureName() + `</a>`
+			row := `<a href="` + baseUrl + `/` + API_VERSION + `/ussd/q/detail?slug=lm-schedule&amp;title=` + s.GetFixtureNameQueryEscape() + `">` + s.GetFixtureName() + `</a>`
 			schedulesData = append(schedulesData, row)
 		}
 		schedulesString = strings.Join(schedulesData, "\n")
@@ -667,7 +667,7 @@ func (h *IncomingHandler) Schedules(page int) string {
 	return schedulesString
 }
 
-func (h *IncomingHandler) FlashNews(page int) string {
+func (h *IncomingHandler) FlashNews(baseUrl string, page int) string {
 	news, err := h.newsService.GetAllUSSD(page)
 	if err != nil {
 		log.Println(err.Error())
@@ -677,7 +677,7 @@ func (h *IncomingHandler) FlashNews(page int) string {
 	var newsString string
 	if len(news) > 0 {
 		for _, s := range news {
-			row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q/detail?slug=flash-news&amp;title=` + s.GetTitleQueryEscape() + `">` + s.GetTitleLimited(20) + `</a>`
+			row := `<a href="` + baseUrl + `/` + API_VERSION + `/ussd/q/detail?slug=flash-news&amp;title=` + s.GetTitleQueryEscape() + `">` + s.GetTitleLimited(20) + `</a>`
 			newsData = append(newsData, row)
 		}
 		newsString = strings.Join(newsData, "\n")
@@ -687,23 +687,23 @@ func (h *IncomingHandler) FlashNews(page int) string {
 	return newsString
 }
 
-func (h *IncomingHandler) CreditGoal(page int) string {
+func (h *IncomingHandler) CreditGoal(baseUrl string, page int) string {
 	return ""
 }
 
-func (h *IncomingHandler) ChampResults(page int) string {
+func (h *IncomingHandler) ChampResults(baseUrl string, page int) string {
 	return ""
 }
 
-func (h *IncomingHandler) ChampStandings(page int) string {
+func (h *IncomingHandler) ChampStandings(baseUrl string, page int) string {
 	return ""
 }
 
-func (h *IncomingHandler) ChampSchedules(page int) string {
+func (h *IncomingHandler) ChampSchedules(baseUrl string, page int) string {
 	return ""
 }
 
-func (h *IncomingHandler) ChampTeam(page int) string {
+func (h *IncomingHandler) ChampTeam(baseUrl string, page int) string {
 	teams, err := h.teamService.GetAllTeamUSSD(1, page)
 	if err != nil {
 		log.Println(err.Error())
@@ -713,7 +713,7 @@ func (h *IncomingHandler) ChampTeam(page int) string {
 
 	if len(teams) > 0 {
 		for _, s := range teams {
-			row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q/detail?slug=champ-mali&amp;title=` + s.Team.GetNameQueryEscape() + `">` + s.Team.GetName() + `</a>`
+			row := `<a href="` + baseUrl + `/` + API_VERSION + `/ussd/q/detail?slug=champ-mali&amp;title=` + s.Team.GetNameQueryEscape() + `">` + s.Team.GetName() + `</a>`
 			teamsData = append(teamsData, row)
 		}
 		teamsString = strings.Join(teamsData, "\n")
@@ -724,31 +724,31 @@ func (h *IncomingHandler) ChampTeam(page int) string {
 	return teamsString
 }
 
-func (h *IncomingHandler) ChampCreditScore(page int) string {
+func (h *IncomingHandler) ChampCreditScore(baseUrl string, page int) string {
 	return ""
 }
 
-func (h *IncomingHandler) ChampCreditGoal(page int) string {
+func (h *IncomingHandler) ChampCreditGoal(baseUrl string, page int) string {
 	return ""
 }
 
-func (h *IncomingHandler) ChampSMSAlerte(page int) string {
+func (h *IncomingHandler) ChampSMSAlerte(baseUrl string, page int) string {
 	return ""
 }
 
-func (h *IncomingHandler) ChampSMSAlerteEquipe(page int) string {
+func (h *IncomingHandler) ChampSMSAlerteEquipe(baseUrl string, page int) string {
 	return ""
 }
 
-func (h *IncomingHandler) Prediction(page int) string {
+func (h *IncomingHandler) Prediction(baseUrl string, page int) string {
 	return ""
 }
 
-func (h *IncomingHandler) SMSAlerte(page int) string {
+func (h *IncomingHandler) SMSAlerte(baseUrl string, page int) string {
 	return ""
 }
 
-func (h *IncomingHandler) KitFoot(page int) string {
+func (h *IncomingHandler) KitFoot(baseUrl string, page int) string {
 	leagues, err := h.leagueService.GetAllUSSD(page)
 	if err != nil {
 		log.Println(err.Error())
@@ -758,7 +758,7 @@ func (h *IncomingHandler) KitFoot(page int) string {
 	var leagueString string
 	if len(leagues) > 0 {
 		for _, s := range leagues {
-			row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q?slug=kit-foot-by-league&amp;league_id=` + s.GetIdToString() + `&amp;title=` + s.GetNameQueryEscape() + `">Alerte ` + s.GetName() + `</a>`
+			row := `<a href="` + baseUrl + `/` + API_VERSION + `/ussd/q?slug=kit-foot-by-league&amp;league_id=` + s.GetIdToString() + `&amp;title=` + s.GetNameQueryEscape() + `">Alerte ` + s.GetName() + `</a>`
 			leaguesData = append(leaguesData, row)
 		}
 		leagueString = strings.Join(leaguesData, "\n")
@@ -768,7 +768,7 @@ func (h *IncomingHandler) KitFoot(page int) string {
 	return leagueString
 }
 
-func (h *IncomingHandler) KitFootByLeague(leagueId, page int) string {
+func (h *IncomingHandler) KitFootByLeague(baseUrl string, leagueId, page int) string {
 	teams, err := h.teamService.GetAllTeamUSSD(leagueId, page)
 	if err != nil {
 		log.Println(err.Error())
@@ -778,7 +778,7 @@ func (h *IncomingHandler) KitFootByLeague(leagueId, page int) string {
 	var teamsString string
 	if len(teams) > 0 {
 		for _, s := range teams {
-			row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q/detail?slug=kit-foot">` + s.Team.GetName() + `</a>`
+			row := `<a href="` + baseUrl + `/` + API_VERSION + `/ussd/q/detail?slug=kit-foot">` + s.Team.GetName() + `</a>`
 			teamsData = append(teamsData, row)
 		}
 		teamsString = strings.Join(teamsData, "\n")
@@ -788,19 +788,19 @@ func (h *IncomingHandler) KitFootByLeague(leagueId, page int) string {
 	return teamsString
 }
 
-func (h *IncomingHandler) SMSAlerteEquipe(page int) string {
+func (h *IncomingHandler) SMSAlerteEquipe(baseUrl string, page int) string {
 	return ""
 }
 
-func (h *IncomingHandler) SMSFootInternational(page int) string {
+func (h *IncomingHandler) SMSFootInternational(baseUrl string, page int) string {
 	return ""
 }
 
-func (h *IncomingHandler) KitFootChamp(page int) string {
+func (h *IncomingHandler) KitFootChamp(baseUrl string, page int) string {
 	return ""
 }
 
-func (h *IncomingHandler) ChampionLeagues(page int) string {
+func (h *IncomingHandler) ChampionLeagues(baseUrl string, page int) string {
 	fixtures, err := h.fixtureService.GetAllByLeagueIdUSSD(1, page)
 	if err != nil {
 		log.Println(err.Error())
@@ -810,7 +810,7 @@ func (h *IncomingHandler) ChampionLeagues(page int) string {
 	var fixturesString string
 	if len(fixtures) > 0 {
 		for _, s := range fixtures {
-			row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q/detail?slug=foot-europe-champion-league&amp;title=` + s.GetFixtureNameQueryEscape() + `">` + s.GetFixtureName() + `</a>`
+			row := `<a href="` + baseUrl + `/` + API_VERSION + `/ussd/q/detail?slug=foot-europe-champion-league&amp;title=` + s.GetFixtureNameQueryEscape() + `">` + s.GetFixtureName() + `</a>`
 			fixturesData = append(fixturesData, row)
 		}
 		fixturesString = strings.Join(fixturesData, "\n")
@@ -821,7 +821,7 @@ func (h *IncomingHandler) ChampionLeagues(page int) string {
 	return fixturesString
 }
 
-func (h *IncomingHandler) PremierLeagues(page int) string {
+func (h *IncomingHandler) PremierLeagues(baseUrl string, page int) string {
 	fixtures, err := h.fixtureService.GetAllByLeagueIdUSSD(124, page)
 	if err != nil {
 		log.Println(err.Error())
@@ -831,7 +831,7 @@ func (h *IncomingHandler) PremierLeagues(page int) string {
 	var fixturesString string
 	if len(fixtures) > 0 {
 		for _, s := range fixtures {
-			row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q/detail?slug=foot-europe-premier-league&amp;title=` + s.GetFixtureNameQueryEscape() + `">` + s.GetFixtureName() + `</a>`
+			row := `<a href="` + baseUrl + `/` + API_VERSION + `/ussd/q/detail?slug=foot-europe-premier-league&amp;title=` + s.GetFixtureNameQueryEscape() + `">` + s.GetFixtureName() + `</a>`
 			fixturesData = append(fixturesData, row)
 		}
 		fixturesString = strings.Join(fixturesData, "\n")
