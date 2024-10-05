@@ -24,6 +24,10 @@ type INewsService interface {
 	Save(*entity.News) (*entity.News, error)
 	Update(*entity.News) (*entity.News, error)
 	Delete(*entity.News) error
+	SaveNewsLeague(*entity.NewsLeagues) (*entity.NewsLeagues, error)
+	UpdateNewsLeague(*entity.NewsLeagues) (*entity.NewsLeagues, error)
+	SaveNewsTeam(*entity.NewsTeams) (*entity.NewsTeams, error)
+	UpdateNewsTeam(*entity.NewsTeams) (*entity.NewsTeams, error)
 }
 
 func (s *NewsService) IsNews(slug, pubAt string) bool {
@@ -57,4 +61,20 @@ func (s *NewsService) Update(a *entity.News) (*entity.News, error) {
 
 func (s *NewsService) Delete(a *entity.News) error {
 	return s.newsRepo.Delete(a)
+}
+
+func (s *NewsService) SaveNewsLeague(a *entity.NewsLeagues) (*entity.NewsLeagues, error) {
+	return s.newsRepo.SaveNewsLeague(a)
+}
+
+func (s *NewsService) UpdateNewsLeague(a *entity.NewsLeagues) (*entity.NewsLeagues, error) {
+	return s.newsRepo.UpdateNewsLeague(a)
+}
+
+func (s *NewsService) SaveNewsTeam(a *entity.NewsTeams) (*entity.NewsTeams, error) {
+	return s.newsRepo.SaveNewsTeam(a)
+}
+
+func (s *NewsService) UpdateNewsTeam(a *entity.NewsTeams) (*entity.NewsTeams, error) {
+	return s.newsRepo.UpdateNewsTeam(a)
 }

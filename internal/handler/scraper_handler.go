@@ -127,6 +127,14 @@ func (h *ScraperHandler) Teams() {
 						Country:   el.Team.Country,
 					},
 				)
+
+				team, _ := h.teamService.GetByPrimaryId(el.Team.ID)
+				h.teamService.SaveLeagueTeam(
+					&entity.LeagueTeam{
+						LeagueID: l.ID,
+						TeamID:   team.GetId(),
+					},
+				)
 			} else {
 				h.teamService.UpdateByPrimaryId(
 					&entity.Team{
@@ -139,6 +147,15 @@ func (h *ScraperHandler) Teams() {
 						Country:   el.Team.Country,
 					},
 				)
+				team, _ := h.teamService.GetByPrimaryId(el.Team.ID)
+				if !h.teamService.IsLeagueTeam(&entity.LeagueTeam{LeagueID: l.ID, TeamID: team.GetId()}) {
+					h.teamService.SaveLeagueTeam(
+						&entity.LeagueTeam{
+							LeagueID: l.ID,
+							TeamID:   team.GetId(),
+						},
+					)
+				}
 			}
 			log.Println(string(f))
 		}

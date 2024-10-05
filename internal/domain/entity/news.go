@@ -4,6 +4,8 @@ import (
 	"net/url"
 	"strings"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type News struct {
@@ -13,6 +15,7 @@ type News struct {
 	Description string    `gorm:"type:text" json:"description"`
 	Source      string    `gorm:"size:45" json:"source"`
 	PublishAt   time.Time `json:"publish_at"`
+	gorm.Model  `json:"-"`
 }
 
 func (e *News) GetId() int64 {
@@ -24,7 +27,6 @@ func (e *News) GetTitle() string {
 		`"`, "",
 	)
 	return replacer.Replace(e.Title)
-
 }
 
 func (e *News) GetTitleLimited(maxLength int) string {
@@ -54,27 +56,28 @@ func (e *News) GetPublishAt() time.Time {
 	return e.PublishAt
 }
 
-func (e *News) GetParseTitle() string {
-	if strings.Contains(e.GetTitle(), ":") {
-		return strings.TrimSpace(e.Title[:strings.IndexByte(e.Title, ':')])
-	}
-	return ""
+func (e *News) GetParseTitleLeft() string {
+	return strings.TrimSpace(e.Title[:strings.IndexByte(e.Title, ':')])
+}
+
+func (e *News) GetParseTitleRight() string {
+	return strings.TrimSpace(e.Title[strings.IndexByte(e.Title, ':')+1:])
 }
 
 func (e *News) GetHomeTeam() string {
-	return strings.TrimSpace(e.GetParseTitle()[:strings.IndexByte(e.GetParseTitle(), '-')])
+	return strings.TrimSpace(e.GetParseTitleLeft()[:strings.IndexByte(e.GetParseTitleLeft(), '-')])
 }
 
 func (e *News) GetAwayTeam() string {
-	return strings.TrimSpace(e.GetParseTitle()[strings.IndexByte(e.GetParseTitle(), '-')+1:])
+	return strings.TrimSpace(e.GetParseTitleLeft()[strings.IndexByte(e.GetParseTitleLeft(), '-')+1:])
 }
 
-func (e *News) IsParseTitle() bool {
-	return e.GetParseTitle() != ""
+func (e *News) IsHeadTitle() bool {
+	return strings.Contains(e.GetTitle(), ":")
 }
 
 func (e *News) IsMatch() bool {
-	return strings.Contains(e.GetParseTitle(), "-")
+	return strings.Contains(e.GetParseTitleLeft(), "-")
 }
 
 func (e *News) IsMaxiFoot() bool {
@@ -93,11 +96,20 @@ func (e *News) IsFootMercato() bool {
 	return e.Source == "FOOTMERCATO"
 }
 
-type NewsSubsciption struct {
-	ID             int64         `gorm:"primaryKey" json:"id"`
-	SubscriptionID int64         `json:"subscription_id"`
-	Subscription   *Subscription `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"subscription,omitempty"`
-	TeamID         int64         `json:"team_id"`
-	Team           *Team         `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"team,omitempty"`
-	CreatedAt      time.Time     `json:"created_at"`
+type NewsLeagues struct {
+	ID         int64   `gorm:"primaryKey" json:"id"`
+	NewsID     int64   `json:"news_id"`
+	News       *News   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"news,omitempty"`
+	LeagueID   int64   `json:"league_id"`
+	League     *League `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"league,omitempty"`
+	gorm.Model `json:"-"`
+}
+
+type NewsTeams struct {
+	ID         int64 `gorm:"primaryKey" json:"id"`
+	NewsID     int64 `json:"news_id"`
+	News       *News `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"news,omitempty"`
+	TeamID     int64 `json:"team_id"`
+	Team       *Team `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"team,omitempty"`
+	gorm.Model `json:"-"`
 }

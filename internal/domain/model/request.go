@@ -1,14 +1,10 @@
 package model
 
 import (
+	"net/url"
 	"strings"
 
 	"github.com/idprm/go-football-alert/internal/domain/entity"
-)
-
-const (
-	MO_REG   string = "REG"
-	MO_UNREG string = "UNREG"
 )
 
 type UssdRequest struct {
@@ -18,6 +14,8 @@ type UssdRequest struct {
 	Package  string `query:"package" json:"package,omitempty"`
 	Code     string `query:"code" json:"code,omitempty"`
 	Action   string `query:"action" json:"action,omitempty"`
+	LeagueId int    `query:"league_id" json:"league_id,omitempty"`
+	TeamId   int    `query:"team_id" json:"team_id,omitempty"`
 	Msisdn   string `json:"msisdn,omitempty"`
 	Page     int    `query:"page" json:"page,omitempty"`
 }
@@ -28,6 +26,10 @@ func (m *UssdRequest) GetSlug() string {
 
 func (m *UssdRequest) GetTitle() string {
 	return m.Title
+}
+
+func (m *UssdRequest) GetTitleQueryEscape() string {
+	return url.QueryEscape(m.GetTitle())
 }
 
 func (m *UssdRequest) GetCategory() string {
@@ -48,6 +50,14 @@ func (m *UssdRequest) GetAction() string {
 
 func (m *UssdRequest) IsYes() bool {
 	return m.GetAction() == "yes"
+}
+
+func (m *UssdRequest) GetLeagueId() int {
+	return m.LeagueId
+}
+
+func (m *UssdRequest) GetTeamId() int {
+	return m.TeamId
 }
 
 func (m *UssdRequest) GetMsisdn() string {

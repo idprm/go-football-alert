@@ -239,6 +239,7 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 		replacer := strings.NewReplacer(
 			"{{.url}}", APP_URL,
 			"{{.version}}", API_VERSION,
+			"{{.title}}", req.GetTitle(),
 			"&", "&amp;",
 		)
 		replace := replacer.Replace(menu.GetTemplateXML())
@@ -284,46 +285,44 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 		// }
 
 		var data string
-		page := strconv.Itoa(req.GetPage() + 1)
-		paginate := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q?slug=` + req.GetSlug() + `&amp;page=` + page + `">Suiv</a>`
 
-		if req.GetSlug() == "lm-live-match" {
+		if req.IsLmLiveMatch() {
 			data = h.LiveMatchs(req.GetPage() + 1)
 		}
 
-		if req.GetSlug() == "lm-schedule" {
+		if req.IsLmLiveMatch() {
 			data = h.Schedules(req.GetPage() + 1)
 		}
 
-		if req.GetSlug() == "flash-news" {
+		if req.IsFlashNews() {
 			data = h.FlashNews(req.GetPage() + 1)
 		}
 
-		if req.GetSlug() == "credit-goal" {
+		if req.IsCreditGoal() {
 			data = h.CreditGoal(req.GetPage() + 1)
 		}
 
-		if req.GetSlug() == "champ-results" {
+		if req.IsChampResults() {
 			data = h.ChampResults(req.GetPage() + 1)
 		}
 
-		if req.GetSlug() == "champ-standings" {
+		if req.IsChampStandings() {
 			data = h.ChampStandings(req.GetPage() + 1)
 		}
 
-		if req.GetSlug() == "champ-schedule" {
+		if req.IsChampSchedules() {
 			data = h.ChampSchedules(req.GetPage() + 1)
 		}
 
-		if req.GetSlug() == "champ-team" {
+		if req.IsChampTeam() {
 			data = h.ChampTeam(req.GetPage() + 1)
 		}
 
-		if req.GetSlug() == "champ-credit-score" {
+		if req.IsChampCreditScore() {
 			data = h.ChampCreditScore(req.GetPage() + 1)
 		}
 
-		if req.GetSlug() == "champ-creditgoal" {
+		if req.IsChampCreditGoal() {
 			data = h.ChampCreditGoal(req.GetPage() + 1)
 		}
 
@@ -335,7 +334,7 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 			data = h.ChampSMSAlerteEquipe(req.GetPage() + 1)
 		}
 
-		if req.GetSlug() == "prediction" {
+		if req.IsPrediction() {
 			data = h.Prediction(req.GetPage() + 1)
 		}
 
@@ -343,43 +342,29 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 			data = h.SMSAlerte(req.GetPage() + 1)
 		}
 
-		if req.GetSlug() == "sms-kit-foot" {
-			data = h.SMSKitFoot(req.GetPage() + 1)
-		}
-
-		if req.GetSlug() == "sms-foot-europe" {
-			data = h.SMSFootEurope(req.GetPage() + 1)
-		}
-
-		if req.GetSlug() == "sms-foot-afrique" {
-			data = h.SMSFootAfrique(req.GetPage() + 1)
-		}
-
 		if req.GetSlug() == "sms-alerte-equipe" {
 			data = h.SMSAlerteEquipe(req.GetPage() + 1)
-		}
-
-		if req.GetSlug() == "sms-foot-international" {
-			data = h.SMSFootInternational(req.GetPage() + 1)
 		}
 
 		if req.GetSlug() == "kit-foot" {
 			data = h.KitFoot(req.GetPage() + 1)
 		}
 
-		if req.GetSlug() == "kit-foot-champ" {
-			data = h.KitFootChamp(req.GetPage() + 1)
+		if req.GetSlug() == "kit-foot-by-league" {
+			data = h.KitFootByLeague(req.GetLeagueId(), req.GetPage()+1)
 		}
 
-		if req.GetSlug() == "kit-foot-premier-league" {
-			data = h.KitFootPremierLeague(req.GetPage() + 1)
-		}
+		leagueId := strconv.Itoa(req.GetLeagueId())
+		teamId := strconv.Itoa(req.GetTeamId())
+		page := strconv.Itoa(req.GetPage() + 1)
 
+		paginate := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q?slug=` + req.GetSlug() + `&amp;title=` + req.GetTitleQueryEscape() + `&amp;league_id=` + leagueId + `&amp;team_id=` + teamId + `&amp;page=` + page + `">Suiv</a>`
 		replacer := strings.NewReplacer(
 			"{{.url}}", APP_URL,
 			"{{.version}}", API_VERSION,
 			"{{.date}}", utils.FormatFR(time.Now()),
 			"{{.data}}", data,
+			"{{.title}}", req.GetTitle(),
 			"{{.paginate}}", paginate,
 			"&", "&amp;",
 		)
@@ -390,40 +375,20 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 	var data string
 
 	if req.GetSlug() == "foot-europe" {
-		data = h.PremierLeagues(req.GetPage() + 1)
+		data = h.KitFoot(req.GetPage() + 1)
 	}
 
-	if req.GetSlug() == "foot-europe-premier-league" {
-		data = h.PremierLeagues(req.GetPage() + 1)
-	}
-
-	if req.GetSlug() == "foot-europe-la-liga" {
-		data = h.LaLigas(req.GetPage() + 1)
-	}
-
-	if req.GetSlug() == "foot-europe-ligue-1" {
-		data = h.Ligue1s(req.GetPage() + 1)
-	}
-
-	if req.GetSlug() == "foot-europe-serie-a" {
-		data = h.SerieA(req.GetPage() + 1)
-	}
-
-	if req.GetSlug() == "foot-europe-bundesligua" {
-		data = h.Bundesliguas(req.GetPage() + 1)
-	}
-
-	if req.GetSlug() == "foot-europe-champ-portugal" {
-		data = h.PrimeiraLigas(req.GetPage() + 1)
-	}
-
+	leagueId := strconv.Itoa(req.GetLeagueId())
+	teamId := strconv.Itoa(req.GetTeamId())
 	page := strconv.Itoa(req.GetPage() + 1)
-	paginate := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q?slug=` + req.GetSlug() + `&amp;page=` + page + `">Suiv</a>`
+
+	paginate := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q?slug=` + req.GetSlug() + `&amp;title=` + req.GetTitleQueryEscape() + `&amp;league_id=` + leagueId + `&amp;team_id=` + teamId + `&amp;page=` + page + `">Suiv</a>`
 	replacer := strings.NewReplacer(
 		"{{.url}}", APP_URL,
 		"{{.version}}", API_VERSION,
 		"{{.date}}", utils.FormatFR(time.Now()),
 		"{{.data}}", data,
+		"{{.title}}", req.GetTitle(),
 		"{{.paginate}}", paginate,
 		"&", "&amp;",
 	)
@@ -739,7 +704,7 @@ func (h *IncomingHandler) ChampSchedules(page int) string {
 }
 
 func (h *IncomingHandler) ChampTeam(page int) string {
-	teams, err := h.teamService.GetAllTeamUSSD(page)
+	teams, err := h.teamService.GetAllTeamUSSD(1, page)
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -748,7 +713,7 @@ func (h *IncomingHandler) ChampTeam(page int) string {
 
 	if len(teams) > 0 {
 		for _, s := range teams {
-			row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q/detail?slug=champ-mali&amp;title=` + s.GetNameQueryEscape() + `">` + s.GetName() + `</a>`
+			row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q/detail?slug=champ-mali&amp;title=` + s.Team.GetNameQueryEscape() + `">` + s.Team.GetName() + `</a>`
 			teamsData = append(teamsData, row)
 		}
 		teamsString = strings.Join(teamsData, "\n")
@@ -783,16 +748,44 @@ func (h *IncomingHandler) SMSAlerte(page int) string {
 	return ""
 }
 
-func (h *IncomingHandler) SMSKitFoot(page int) string {
-	return ""
+func (h *IncomingHandler) KitFoot(page int) string {
+	leagues, err := h.leagueService.GetAllUSSD(page)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	var leaguesData []string
+	var leagueString string
+	if len(leagues) > 0 {
+		for _, s := range leagues {
+			row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q?slug=kit-foot-by-league&amp;league_id=` + s.GetIdToString() + `&amp;title=` + s.GetNameQueryEscape() + `">Alerte ` + s.GetName() + `</a>`
+			leaguesData = append(leaguesData, row)
+		}
+		leagueString = strings.Join(leaguesData, "\n")
+	} else {
+		leagueString = "No data"
+	}
+	return leagueString
 }
 
-func (h *IncomingHandler) SMSFootEurope(page int) string {
-	return ""
-}
+func (h *IncomingHandler) KitFootByLeague(leagueId, page int) string {
+	teams, err := h.teamService.GetAllTeamUSSD(leagueId, page)
+	if err != nil {
+		log.Println(err.Error())
+	}
 
-func (h *IncomingHandler) SMSFootAfrique(page int) string {
-	return ""
+	var teamsData []string
+	var teamsString string
+	if len(teams) > 0 {
+		for _, s := range teams {
+			row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q/detail?slug=kit-foot">` + s.Team.GetName() + `</a>`
+			teamsData = append(teamsData, row)
+		}
+		teamsString = strings.Join(teamsData, "\n")
+	} else {
+		teamsString = "No data"
+	}
+	return teamsString
 }
 
 func (h *IncomingHandler) SMSAlerteEquipe(page int) string {
@@ -803,15 +796,7 @@ func (h *IncomingHandler) SMSFootInternational(page int) string {
 	return ""
 }
 
-func (h *IncomingHandler) KitFoot(page int) string {
-	return ""
-}
-
 func (h *IncomingHandler) KitFootChamp(page int) string {
-	return ""
-}
-
-func (h *IncomingHandler) KitFootPremierLeague(page int) string {
 	return ""
 }
 
@@ -853,106 +838,5 @@ func (h *IncomingHandler) PremierLeagues(page int) string {
 	} else {
 		fixturesString = "No match"
 	}
-	return fixturesString
-}
-
-func (h *IncomingHandler) LaLigas(page int) string {
-	fixtures, err := h.fixtureService.GetAllByLeagueIdUSSD(297, page)
-	if err != nil {
-		log.Println(err.Error())
-	}
-
-	var fixturesData []string
-	var fixturesString string
-	if len(fixtures) > 0 {
-		for _, s := range fixtures {
-			row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q/detail?slug=foot-europe-la-liga&amp;title=` + s.GetFixtureNameQueryEscape() + `">` + s.GetFixtureName() + `</a>`
-			fixturesData = append(fixturesData, row)
-		}
-		fixturesString = strings.Join(fixturesData, "\n")
-	} else {
-		fixturesString = "No match"
-	}
-	return fixturesString
-}
-
-func (h *IncomingHandler) Ligue1s(page int) string {
-	fixtures, err := h.fixtureService.GetAllByLeagueIdUSSD(236, page)
-	if err != nil {
-		log.Println(err.Error())
-	}
-
-	var fixturesData []string
-	var fixturesString string
-	if len(fixtures) > 0 {
-		for _, s := range fixtures {
-			row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q/detail?slug=foot-europe-ligue-1&amp;title=` + s.GetFixtureNameQueryEscape() + `">` + s.GetFixtureName() + `</a>`
-			fixturesData = append(fixturesData, row)
-		}
-		fixturesString = strings.Join(fixturesData, "\n")
-	} else {
-		fixturesString = "No match"
-	}
-	return fixturesString
-}
-
-func (h *IncomingHandler) SerieA(page int) string {
-	fixtures, err := h.fixtureService.GetAllByLeagueIdUSSD(295, page)
-	if err != nil {
-		log.Println(err.Error())
-	}
-
-	var fixturesData []string
-	var fixturesString string
-	if len(fixtures) > 0 {
-		for _, s := range fixtures {
-			row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q/detail?slug=foot-europe-serie-a&amp;title=` + s.GetFixtureNameQueryEscape() + `">` + s.GetFixtureName() + `</a>`
-			fixturesData = append(fixturesData, row)
-		}
-		fixturesString = strings.Join(fixturesData, "\n")
-	} else {
-		fixturesString = "No match"
-	}
-	return fixturesString
-}
-
-func (h *IncomingHandler) Bundesliguas(page int) string {
-	fixtures, err := h.fixtureService.GetAllByLeagueIdUSSD(384, page)
-	if err != nil {
-		log.Println(err.Error())
-	}
-
-	var fixturesData []string
-	var fixturesString string
-	if len(fixtures) > 0 {
-		for _, s := range fixtures {
-			row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q/detail?slug=foot-europe-bundesligua&amp;title=` + s.GetFixtureNameQueryEscape() + `">` + s.GetFixtureName() + `</a>`
-			fixturesData = append(fixturesData, row)
-		}
-		fixturesString = strings.Join(fixturesData, "\n")
-	} else {
-		fixturesString = "No match"
-	}
-	return fixturesString
-}
-
-func (h *IncomingHandler) PrimeiraLigas(page int) string {
-	fixtures, err := h.fixtureService.GetAllByLeagueIdUSSD(441, page)
-	if err != nil {
-		log.Println(err.Error())
-	}
-
-	var fixturesData []string
-	var fixturesString string
-	if len(fixtures) > 0 {
-		for _, s := range fixtures {
-			row := `<a href="` + APP_URL + `/` + API_VERSION + `/ussd/q/detail?slug=foot-europe-champ-portugal&amp;title=` + s.GetFixtureNameQueryEscape() + `">` + s.GetFixtureName() + `</a>`
-			fixturesData = append(fixturesData, row)
-		}
-		fixturesString = strings.Join(fixturesData, "\n")
-	} else {
-		fixturesString = "No match"
-	}
-
 	return fixturesString
 }

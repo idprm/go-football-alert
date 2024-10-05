@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/gofiber/fiber/v2"
@@ -37,9 +36,8 @@ func NewNewsHandler(
 	}
 }
 
-func (h *NewsHandler) Mapping() {
-	if h.news.IsParseTitle() {
-		fmt.Println(h.news.GetParseTitle())
+func (h *NewsHandler) Filter() {
+	if h.news.IsHeadTitle() {
 		if h.news.IsMatch() {
 			// home
 			if h.teamService.IsTeamByName(h.news.GetHomeTeam()) {
@@ -47,6 +45,13 @@ func (h *NewsHandler) Mapping() {
 				if err != nil {
 					log.Println(err.Error())
 				}
+				// save
+				h.newsService.SaveNewsTeam(
+					&entity.NewsTeams{
+						NewsID: h.news.GetId(),
+						TeamID: team.GetId(),
+					},
+				)
 				log.Println(team)
 			}
 			// away
@@ -55,30 +60,107 @@ func (h *NewsHandler) Mapping() {
 				if err != nil {
 					log.Println(err.Error())
 				}
+				// save
+				h.newsService.SaveNewsTeam(
+					&entity.NewsTeams{
+						NewsID: h.news.GetId(),
+						TeamID: team.GetId(),
+					},
+				)
 				log.Println(team)
 			}
 		} else {
-			// income data by slug
-			if h.leagueService.IsLeagueByName(h.news.GetParseTitle()) {
-				league, err := h.leagueService.GetByName(h.news.GetParseTitle())
+			if h.leagueService.IsLeagueByName(h.news.GetParseTitleLeft()) {
+				league, err := h.leagueService.GetByName(h.news.GetParseTitleLeft())
 				if err != nil {
 					log.Println(err.Error())
 				}
+				// save
+				h.newsService.SaveNewsLeague(
+					&entity.NewsLeagues{
+						NewsID:   h.news.GetId(),
+						LeagueID: league.GetId(),
+					},
+				)
 				log.Println(league)
-
 			}
 
-			if h.teamService.IsTeamByName(h.news.GetParseTitle()) {
-				team, err := h.teamService.GetByName(h.news.GetParseTitle())
+			if h.leagueService.IsLeagueByName(h.news.GetParseTitleRight()) {
+				league, err := h.leagueService.GetByName(h.news.GetParseTitleRight())
 				if err != nil {
 					log.Println(err.Error())
 				}
+				// save
+				h.newsService.SaveNewsLeague(
+					&entity.NewsLeagues{
+						NewsID:   h.news.GetId(),
+						LeagueID: league.GetId(),
+					},
+				)
+				log.Println(league)
+			}
+
+			if h.teamService.IsTeamByName(h.news.GetParseTitleLeft()) {
+				team, err := h.teamService.GetByName(h.news.GetParseTitleLeft())
+				if err != nil {
+					log.Println(err.Error())
+				}
+				// save
+				h.newsService.SaveNewsTeam(
+					&entity.NewsTeams{
+						NewsID: h.news.GetId(),
+						TeamID: team.GetId(),
+					},
+				)
+				log.Println(team)
+			}
+
+			if h.teamService.IsTeamByName(h.news.GetParseTitleRight()) {
+				team, err := h.teamService.GetByName(h.news.GetParseTitleRight())
+				if err != nil {
+					log.Println(err.Error())
+				}
+				// save
+				h.newsService.SaveNewsTeam(
+					&entity.NewsTeams{
+						NewsID: h.news.GetId(),
+						TeamID: team.GetId(),
+					},
+				)
 				log.Println(team)
 			}
 		}
+	} else {
+		if h.leagueService.IsLeagueByName(h.news.GetTitle()) {
+			league, err := h.leagueService.GetByName(h.news.GetTitle())
+			if err != nil {
+				log.Println(err.Error())
+			}
+			// save
+			h.newsService.SaveNewsLeague(
+				&entity.NewsLeagues{
+					NewsID:   h.news.GetId(),
+					LeagueID: league.GetId(),
+				},
+			)
+			log.Println(league)
+		}
 
+		if h.teamService.IsTeamByName(h.news.GetTitle()) {
+			team, err := h.teamService.GetByName(h.news.GetTitle())
+			if err != nil {
+				log.Println(err.Error())
+			}
+			// save
+			h.newsService.SaveNewsTeam(
+				&entity.NewsTeams{
+					NewsID: h.news.GetId(),
+					TeamID: team.GetId(),
+				},
+			)
+			log.Println(team)
+		}
 	}
-
 }
 
 func (h *NewsHandler) GetAllPaginate(c *fiber.Ctx) error {

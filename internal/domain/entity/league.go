@@ -1,5 +1,10 @@
 package entity
 
+import (
+	"net/url"
+	"strconv"
+)
+
 type League struct {
 	ID        int64  `gorm:"primaryKey" json:"id"`
 	PrimaryID int64  `json:"primary_id"`
@@ -15,8 +20,16 @@ func (e *League) GetId() int64 {
 	return e.ID
 }
 
+func (e *League) GetIdToString() string {
+	return strconv.Itoa(int(e.ID))
+}
+
 func (e *League) GetName() string {
 	return e.Name
+}
+
+func (e *League) GetNameQueryEscape() string {
+	return url.QueryEscape(e.GetName())
 }
 
 func (e *League) GetSlug() string {

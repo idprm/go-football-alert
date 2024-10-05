@@ -50,7 +50,7 @@ var menus = []entity.Menu{
 	{
 		Category:  "none",
 		Name:      "Confirm",
-		Slug:      "confirm",
+		Slug:      "confirm-buy",
 		IsConfirm: false,
 		IsActive:  true,
 		TemplateXML: `
@@ -63,6 +63,28 @@ var menus = []entity.Menu{
         <a href="{{.url}}/{{.version}}/ussd/buy?slug={{.slug}}&code={{.code}}&action=yes">Yes</a>
         <a href="{{.url}}/{{.version}}/ussd/buy?slug={{.slug}}&code={{.code}}&action=no">No</a>
         <br/>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
+    </page>
+</pages>
+		`,
+	},
+	{
+		Category:  "none",
+		Name:      "Confirm",
+		Slug:      "confirm-sms-alerte",
+		IsConfirm: false,
+		IsActive:  true,
+		TemplateXML: `
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
+<pages descr="{{.league}} SMS Alerte">
+	<page nav="stop">
+		{{.league}} <br/>
+        SMS Alerte Competition Obtenez en direct toutes les informations sur votre mobile sur la {{.league}}. Confirmez-vous votre inscription aux alertes?<br/>
+		Prix : {{.price}} / 1 mois.
+        <a href="{{.url}}/{{.version}}/ussd/buy?slug={{.slug}}&code={{.code}}&action=yes">Oui</a>
+        <br/>
+		<a href="{{.url}}/{{.version}}/ussd/q?slug=sms-alerte&title=SMS+Alerte" key="0">Ecran Précédent</a>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
     </page>
 </pages>
@@ -118,7 +140,7 @@ var menus = []entity.Menu{
   <page descr="{{.title}}">
   	{{.title}}
 	<br/>
-    <a href="{{.url}}/{{.version}}/ussd/q?slug={{.slug}}" key="0">Dos</a>
+    <a href="{{.url}}/{{.version}}/ussd/q?slug={{.slug}}" key="0">Ecran Précédent</a>
 	<a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
   </page>
 </pages>
@@ -178,7 +200,7 @@ var menus = []entity.Menu{
 	{{.data}}
 	<br/>
 	{{.paginate}}
-    <a href="{{.url}}/{{.version}}/ussd/q?slug=lm&title=Live+Match" key="0">Dos</a>
+    <a href="{{.url}}/{{.version}}/ussd/q?slug=lm&title=Live+Match" key="0">Ecran Précédent</a>
 	<a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
@@ -199,7 +221,7 @@ var menus = []entity.Menu{
 	{{.data}}
 	<br/>
 	{{.paginate}}
-    <a href="{{.url}}/{{.version}}/ussd/q?slug=lm&title=Live+Match" key="0">Dos</a>
+    <a href="{{.url}}/{{.version}}/ussd/q?slug=lm&title=Live+Match" key="0">Ecran Précédent</a>
     <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
@@ -220,7 +242,7 @@ var menus = []entity.Menu{
     {{.data}}
 	<br/>
 	{{.paginate}}
-    <a href="{{.url}}/{{.version}}/ussd/q?slug=lm&title=Live+Match" key="0">Dos</a>
+    <a href="{{.url}}/{{.version}}/ussd/q?slug=lm&title=Live+Match" key="0">Ecran Précédent</a>
     <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
@@ -241,7 +263,7 @@ var menus = []entity.Menu{
 	{{.data}}
 	<br/>
 	{{.paginate}}
-    <a href="{{.url}}/{{.version}}/ussd/q?slug=lm&title=Live+Match" key="0">Dos</a>
+    <a href="{{.url}}/{{.version}}/ussd/q?slug=lm&title=Live+Match" key="0">Ecran Précédent</a>
     <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
@@ -261,7 +283,7 @@ var menus = []entity.Menu{
 	Display Live match<br/>
 	<br/>
 	{{.paginate}}
-    <a href="{{.url}}/{{.version}}/ussd/q?slug=lm&title=Live+Match" key="0">Dos</a>
+    <a href="{{.url}}/{{.version}}/ussd/q?slug=lm&title=Live+Match" key="0">Ecran Précédent</a>
     <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
@@ -349,7 +371,7 @@ var menus = []entity.Menu{
         {{.data}}
 		<br/>
 		{{.paginate}}
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali" key="0">Dos</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali" key="0">Ecran Précédent</a>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>			
@@ -370,7 +392,7 @@ var menus = []entity.Menu{
         {{.data}}
         <br/>
 		{{.paginate}}
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali" key="0">Dos</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali" key="0">Ecran Précédent</a>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
@@ -391,7 +413,7 @@ var menus = []entity.Menu{
         {{.data}}
         <br />
 		{{.paginate}}
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali" key="0">Dos</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali" key="0">Ecran Précédent</a>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>	
@@ -412,7 +434,7 @@ var menus = []entity.Menu{
         {{.data}}
         <br />
 		{{.paginate}}
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali" key="0">Dos</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali" key="0">Ecran Précédent</a>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
@@ -433,7 +455,7 @@ var menus = []entity.Menu{
         {{.data}}
         <br />
 		{{.paginate}}
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali" key="0">Dos</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali" key="0">Ecran Précédent</a>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
@@ -468,12 +490,12 @@ var menus = []entity.Menu{
 		TemplateXML: `
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
-<pages descr="Crédit Goal">
+<pages descr="SMS Alerte">
 	<page>
 		SMS Alerte {{.date}}<br/>
         {{.data}}
         <br />
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali">Prev</a>
+    	<a href="{{.url}}/{{.version}}/ussd/q?slug={{.slug}}" key="0">Ecran Précédent</a>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
@@ -493,7 +515,7 @@ var menus = []entity.Menu{
 		SMS Alerte Equipe {{.date}}<br/>
         {{.data}}
         <br />
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali">Prev</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug={{.slug}}" key="0">Ecran Précédent</a>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
@@ -532,7 +554,7 @@ var menus = []entity.Menu{
 		Safe of the Day {{.date}}<br/>
         {{.data}}
 		<br />
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=prediction&title=Prédiction">Prev</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug={{.slug}}" key="0">Ecran Précédent</a>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
@@ -590,11 +612,10 @@ var menus = []entity.Menu{
 <pages descr="SMS Alerte">
     <page>
         SMS Alerte {{.date}}<br/>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-results">Kit Foot</a>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-standings">Europe</a>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-schedule">Afrique</a>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-team">SMS Alerte Equipe</a>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-team">Foot International</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=kit-foot">Kit Foot</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe">Europe</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-afrique">Afrique</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-international">Foot International</a>
         <br />
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
     </page>
@@ -604,7 +625,7 @@ var menus = []entity.Menu{
 	{
 		Category:  "follow-competition",
 		Name:      "Kit Foot",
-		Slug:      "sms-kit-foot",
+		Slug:      "kit-foot",
 		IsConfirm: true,
 		IsActive:  true,
 		TemplateXML: `
@@ -613,12 +634,30 @@ var menus = []entity.Menu{
 <pages descr="Kit Foot">
     <page>
         Kit Foot {{.date}}<br/>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=kit-foot-champ-mali">Alerte Champ. Mali + Equipe</a>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=kit-foot-premier-league">Alerte Premier League + Equipe</a>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=kit-foot-la-liga">Alerte La Liga + Equipe</a>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=kit-foot-ligue-1">Alerte Ligue 1 + Equipe</a>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=kit-foot-serie-a">Alerte Serie A + Equipe</a>
+		{{.data}}
         <br />
+		{{.paginate}}
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
+    </page>
+</pages>		
+		`,
+	},
+	{
+		Category:  "follow-competition",
+		Name:      "Kit Foot By League",
+		Slug:      "kit-foot-by-league",
+		IsConfirm: true,
+		IsActive:  true,
+		TemplateXML: `
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
+<pages descr="{{.title}}">
+    <page>
+        {{.title}} {{.date}}<br/>
+		{{.data}}
+        <br />
+		{{.paginate}}
+		<a href="{{.url}}/{{.version}}/ussd/q?slug=kit-foot" key="0">Ecran Précédent</a>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
     </page>
 </pages>		
@@ -627,16 +666,22 @@ var menus = []entity.Menu{
 	{
 		Category:  "follow-competition",
 		Name:      "Europe",
-		Slug:      "sms-foot-europe",
+		Slug:      "foot-europe",
 		IsConfirm: true,
 		IsActive:  true,
 		TemplateXML: `
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
-<pages descr="Europe">
+<pages descr="Foot Europe">
 	<page>
-		Europe {{.date}}<br/>
-        {{.data}}
+		Foot Europe {{.date}}<br/>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=kit-foot-premier-league">Alerte Premier League + Equipe</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=kit-foot-la-liga">Alerte La Liga + Equipe</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=kit-foot-ligue-1">Alerte Ligue 1 + Equipe</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=kit-foot-serie-a">Alerte Serie A + Equipe</a>
+		<a href="{{.url}}/{{.version}}/ussd/q?slug=kit-foot-bundesliga">Alerte Bundesliga + Equipe</a>
+		<a href="{{.url}}/{{.version}}/ussd/q?slug=kit-foot-primeira-liga">Alerte Primeira Liga + Equipe</a>
+		<a href="{{.url}}/{{.version}}/ussd/q?slug=kit-foot-jupiler-pro-league">Alerte Jupiler Pro League + Equipe</a>
 		<br />
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
@@ -652,10 +697,10 @@ var menus = []entity.Menu{
 		TemplateXML: `
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
-<pages descr="Afrique">
+<pages descr="Foot Afrique">
 	<page>
-		Afrique {{.date}}<br/>
-        {{.data}}
+		Foot Afrique {{.date}}<br/>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=kit-foot-premiere-division">Alerte Première Division + Equipe</a>
 		<br />
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
@@ -693,7 +738,9 @@ var menus = []entity.Menu{
 <pages descr="Foot International">
 	<page>
 		Foot International {{.date}}<br/>
-        {{.data}}
+		<a href="{{.url}}/{{.version}}/ussd/q?slug=kit-foot-uefa-champions-league">Alerte UEFA Champions League + Equipe</a>
+		<a href="{{.url}}/{{.version}}/ussd/q?slug=kit-foot-leagues-cup">Alerte Leagues Cup + Equipe</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=kit-foot-uefa-europa-league">Alerte UEFA Europa League + Equipe</a>
 		<br />
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
@@ -874,7 +921,7 @@ var menus = []entity.Menu{
         {{.data}}
         <br/>
 		{{.paginate}}
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe" key="0">Dos</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe" key="0">Ecran Précédent</a>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
     </page>
 </pages>		
@@ -895,7 +942,7 @@ var menus = []entity.Menu{
         {{.data}}
         <br />
 		{{.paginate}}
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe" key="0">Dos</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe" key="0">Ecran Précédent</a>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
     </page>
 </pages>		
@@ -916,7 +963,7 @@ var menus = []entity.Menu{
         {{.data}}
         <br/>
 		{{.paginate}}
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe" key="0">Dos</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe" key="0">Ecran Précédent</a>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
     </page>
 </pages>		
@@ -937,7 +984,7 @@ var menus = []entity.Menu{
         {{.data}}
         <br/>
 		{{.paginate}}
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe" key="0">Dos</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe" key="0">Ecran Précédent</a>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
     </page>
 </pages>		
@@ -958,7 +1005,7 @@ var menus = []entity.Menu{
         {{.data}}
         <br/>
 		{{.paginate}}
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe" key="0">Dos</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe" key="0">Ecran Précédent</a>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
     </page>
 </pages>		
@@ -979,7 +1026,7 @@ var menus = []entity.Menu{
         {{.data}}
         <br/>
 		{{.paginate}}
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe" key="0">Dos</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe" key="0">Ecran Précédent</a>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
@@ -1000,7 +1047,7 @@ var menus = []entity.Menu{
         {{.data}}
         <br/>
 		{{.paginate}}
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe" key="0">Dos</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe" key="0">Ecran Précédent</a>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
@@ -1021,7 +1068,7 @@ var menus = []entity.Menu{
         {{.data}}
         <br/>
 		{{.paginate}}
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe" key="0">Dos</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe" key="0">Ecran Précédent</a>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		

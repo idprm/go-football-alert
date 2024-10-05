@@ -19,8 +19,9 @@ type ITeamRepository interface {
 	Count(string) (int64, error)
 	CountByPrimaryId(int) (int64, error)
 	CountByName(string) (int64, error)
+	CountByLeagueTeam(*entity.LeagueTeam) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
-	GetAllTeamUSSD(int) ([]*entity.Team, error)
+	GetAllTeamUSSD(int, int) ([]*entity.LeagueTeam, error)
 	Get(string) (*entity.Team, error)
 	GetByPrimaryId(int) (*entity.Team, error)
 	GetByName(string) (*entity.Team, error)
@@ -28,6 +29,7 @@ type ITeamRepository interface {
 	Update(*entity.Team) (*entity.Team, error)
 	UpdateByPrimaryId(*entity.Team) (*entity.Team, error)
 	Delete(*entity.Team) error
+	SaveLeagueTeam(*entity.LeagueTeam) (*entity.LeagueTeam, error)
 }
 
 func (r *TeamRepository) Count(slug string) (int64, error) {
@@ -57,6 +59,15 @@ func (r *TeamRepository) CountByName(name string) (int64, error) {
 	return count, nil
 }
 
+func (r *TeamRepository) CountByLeagueTeam(v *entity.LeagueTeam) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.LeagueTeam{}).Where(&entity.LeagueTeam{LeagueID: v.LeagueID, TeamID: v.TeamID}).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
 func (r *TeamRepository) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {
 	var teams []*entity.Team
 	err := r.db.Scopes(Paginate(teams, pagination, r.db)).Find(&teams).Error
@@ -67,9 +78,9 @@ func (r *TeamRepository) GetAllPaginate(pagination *entity.Pagination) (*entity.
 	return pagination, nil
 }
 
-func (r *TeamRepository) GetAllTeamUSSD(page int) ([]*entity.Team, error) {
-	var c []*entity.Team
-	err := r.db.Where("country = ?", "Mali").Order("name ASC").Offset((page - 1) * 5).Limit(5).Find(&c).Error
+func (r *TeamRepository) GetAllTeamUSSD(leagueId, page int) ([]*entity.LeagueTeam, error) {
+	var c []*entity.LeagueTeam
+	err := r.db.Where("league_id = ?", leagueId).Preload("League").Preload("Team").Order("id ASC").Offset((page - 1) * 7).Limit(7).Find(&c).Error
 	if err != nil {
 		return nil, err
 	}
@@ -96,7 +107,7 @@ func (r *TeamRepository) GetByPrimaryId(primaryId int) (*entity.Team, error) {
 
 func (r *TeamRepository) GetByName(name string) (*entity.Team, error) {
 	var c entity.Team
-	err := r.db.Where("UPPER(name) LIKE UPPER(?)", "%"+name+"%").Or("UPPER(keyword) LIKE UPPER(?)", "%"+name+"%").Take(&c).Error
+	err := r.db.Where("UPPER(name) LIKE UPPER(?) OR UPPER(keyword) LIKE UPPER(?)", "%"+name+"%", "%"+name+"%").Take(&c).Error
 	if err != nil {
 		return nil, err
 	}
@@ -133,4 +144,12 @@ func (r *TeamRepository) Delete(c *entity.Team) error {
 		return err
 	}
 	return nil
+}
+
+func (r *TeamRepository) SaveLeagueTeam(c *entity.LeagueTeam) (*entity.LeagueTeam, error) {
+	err := r.db.Create(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
 }

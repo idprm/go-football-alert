@@ -335,7 +335,7 @@ func (p *Processor) News(wg *sync.WaitGroup, message []byte) {
 		news,
 	)
 
-	h.Mapping()
+	h.Filter()
 
 	wg.Done()
 }

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
+<pages descr="S'abonner">
+	<page>
+		{{.title}}<br/>
+        {{.data}}
+        <br/>
+        <a href="{{.url}}/{{.version}}/ussd/">Accueil</a>
+    </page>
+</pages>

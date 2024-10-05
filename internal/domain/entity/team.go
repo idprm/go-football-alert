@@ -1,6 +1,9 @@
 package entity
 
-import "net/url"
+import (
+	"net/url"
+	"strconv"
+)
 
 type Team struct {
 	ID        int64  `gorm:"primaryKey" json:"id"`
@@ -16,6 +19,10 @@ type Team struct {
 
 func (e *Team) GetId() int64 {
 	return e.ID
+}
+
+func (e *Team) GetIdToString() string {
+	return strconv.Itoa(int(e.ID))
 }
 
 func (e *Team) GetName() string {

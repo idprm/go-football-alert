@@ -24,6 +24,10 @@ type INewsRepository interface {
 	Save(*entity.News) (*entity.News, error)
 	Update(*entity.News) (*entity.News, error)
 	Delete(*entity.News) error
+	SaveNewsLeague(*entity.NewsLeagues) (*entity.NewsLeagues, error)
+	UpdateNewsLeague(*entity.NewsLeagues) (*entity.NewsLeagues, error)
+	SaveNewsTeam(*entity.NewsTeams) (*entity.NewsTeams, error)
+	UpdateNewsTeam(*entity.NewsTeams) (*entity.NewsTeams, error)
 }
 
 func (r *NewsRepository) Count(slug, pubAt string) (int64, error) {
@@ -94,4 +98,36 @@ func (r *NewsRepository) Delete(c *entity.News) error {
 		return err
 	}
 	return nil
+}
+
+func (r *NewsRepository) SaveNewsLeague(c *entity.NewsLeagues) (*entity.NewsLeagues, error) {
+	err := r.db.Create(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
+func (r *NewsRepository) UpdateNewsLeague(c *entity.NewsLeagues) (*entity.NewsLeagues, error) {
+	err := r.db.Where("news_id = ?", c.NewsID).Where("DATE(created_at) = DATE(NOW())").Updates(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
+func (r *NewsRepository) SaveNewsTeam(c *entity.NewsTeams) (*entity.NewsTeams, error) {
+	err := r.db.Create(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
+func (r *NewsRepository) UpdateNewsTeam(c *entity.NewsTeams) (*entity.NewsTeams, error) {
+	err := r.db.Where("news_id = ?", c.NewsID).Where("DATE(created_at) = DATE(NOW())").Updates(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
 }
