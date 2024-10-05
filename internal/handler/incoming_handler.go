@@ -45,6 +45,8 @@ var (
 	RMQ_DATA_TYPE       string = "application/json"
 	RMQ_USSD_EXCHANGE   string = "E_USSD"
 	RMQ_USSD_QUEUE      string = "Q_USSD"
+	RMQ_SMS_EXCHANGE    string = "E_SMS"
+	RMQ_SMS_QUEUE       string = "Q_SMS"
 	RMQ_MO_EXCHANGE     string = "E_MO"
 	RMQ_MO_QUEUE        string = "Q_MO"
 	RMQ_MT_EXCHANGE     string = "E_MT"
@@ -194,18 +196,12 @@ func (h *IncomingHandler) MessageOriginated(c *fiber.Ctx) error {
 	l.WithFields(logrus.Fields{"request": req}).Info("MO")
 
 	h.rmq.IntegratePublish(
-		RMQ_MO_EXCHANGE,
-		RMQ_MO_QUEUE,
+		RMQ_SMS_EXCHANGE,
+		RMQ_SMS_QUEUE,
 		RMQ_DATA_TYPE, "", string(jsonData),
 	)
 
-	return c.Status(fiber.StatusOK).JSON(
-		&model.WebResponse{
-			Error:      false,
-			StatusCode: fiber.StatusOK,
-			Message:    "Successful",
-		},
-	)
+	return c.Status(fiber.StatusOK).SendString("OK")
 }
 
 func (h *IncomingHandler) Main(c *fiber.Ctx) error {

@@ -42,8 +42,6 @@ const (
 	RMQ_USSD_QUEUE                  string = "Q_USSD"
 	RMQ_SMS_EXCHANGE                string = "E_SMS"
 	RMQ_SMS_QUEUE                   string = "Q_SMS"
-	RMQ_MO_EXCHANGE                 string = "E_MO"
-	RMQ_MO_QUEUE                    string = "Q_MO"
 	RMQ_MT_EXCHANGE                 string = "E_MT"
 	RMQ_MT_QUEUE                    string = "Q_MT"
 	RMQ_RENEWAL_EXCHANGE            string = "E_RENEWAL"
@@ -135,7 +133,6 @@ func init() {
 	 */
 	rootCmd.AddCommand(consumerUSSDCmd)
 	rootCmd.AddCommand(consumerSMSCmd)
-	rootCmd.AddCommand(consumerMOCmd)
 	rootCmd.AddCommand(consumerMTCmd)
 	rootCmd.AddCommand(consumerRenewalCmd)
 	rootCmd.AddCommand(consumerRetryCmd)

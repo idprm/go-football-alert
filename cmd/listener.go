@@ -94,7 +94,6 @@ var listenerCmd = &cobra.Command{
 		 */
 		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_USSD_EXCHANGE, true, RMQ_USSD_QUEUE)
 		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_SMS_EXCHANGE, true, RMQ_SMS_QUEUE)
-		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_MO_EXCHANGE, true, RMQ_MO_QUEUE)
 
 		r := routeUrlListener(db, rds, rmq, logger)
 		log.Fatal(r.Listen(":" + APP_PORT))

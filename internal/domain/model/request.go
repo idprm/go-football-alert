@@ -87,55 +87,19 @@ func (m *SMSRequest) GetText() string {
 	return strings.ToUpper(m.Text)
 }
 
-func (m *SMSRequest) IsInfo() bool {
-	return m.GetText() == "INFO"
-}
-
-func (m *SMSRequest) IsStop() bool {
-	return m.GetText() == "STOP"
-}
-
-func (m *SMSRequest) IsCreditGoal() bool {
-	return m.GetSmsc() == "8021"
-}
-
-func (m *SMSRequest) IsPrediction() bool {
-	return m.GetSmsc() == "8033"
-}
-
-func (m *SMSRequest) IsFollowTeam() bool {
-	return m.GetSmsc() == "8023"
-}
-
-func (m *SMSRequest) IsFollowCompetition() bool {
-	return m.GetSmsc() == "8024"
-}
-
-func (m *SMSRequest) IsChooseService() bool {
-	return m.GetText() == "1" || m.GetText() == "2" || m.GetText() == "3"
-}
-
-func (m *SMSRequest) GetServiceByNumber() string {
-	switch m.GetText() {
-	case "1":
-		return "daily"
-	case "2":
-		return "weekly"
-	case "3":
-		return "monthly"
-	default:
-		return ""
-	}
-}
-
 type MORequest struct {
-	SMS       string `validate:"required" json:"sms" xml:"sms"`
-	Msisdn    string `validate:"required" json:"msisdn" xml:"msisdn"`
+	SMS       string `validate:"required" query:"sms" json:"sms" xml:"sms"`
+	To        string `validate:"required" query:"to" json:"to" xml:"to"`
+	Msisdn    string `validate:"required" query:"msisdn" json:"msisdn" xml:"msisdn"`
 	IpAddress string `query:"ip_address" json:"ip_address"`
 }
 
-func (s *MORequest) GetKeyword() string {
+func (s *MORequest) GetSMS() string {
 	return strings.ToUpper(s.SMS)
+}
+
+func (s *MORequest) GetTo() string {
+	return s.To
 }
 
 func (s *MORequest) GetMsisdn() string {
@@ -178,6 +142,47 @@ func (s *MORequest) IsUNREG() bool {
 
 func (s *MORequest) GetIpAddress() string {
 	return s.IpAddress
+}
+
+func (m *MORequest) IsInfo() bool {
+	return m.GetSMS() == "INFO"
+}
+
+func (m *MORequest) IsStop() bool {
+	return m.GetSMS() == "STOP"
+}
+
+func (m *MORequest) IsCreditGoal(s *entity.Service) bool {
+	return m.GetTo() == s.ScUnsubMT
+}
+
+func (m *MORequest) IsPrediction(s *entity.Service) bool {
+	return m.GetTo() == s.ScUnsubMT
+}
+
+func (m *MORequest) IsFollowTeam(s *entity.Service) bool {
+	return m.GetTo() == s.ScSubMT
+}
+
+func (m *MORequest) IsFollowCompetition(s *entity.Service) bool {
+	return m.GetTo() == s.ScSubMT
+}
+
+func (m *MORequest) IsChooseService() bool {
+	return m.GetSMS() == "1" || m.GetSMS() == "2" || m.GetSMS() == "3"
+}
+
+func (m *MORequest) GetServiceByNumber() string {
+	switch m.GetSMS() {
+	case "1":
+		return "daily"
+	case "2":
+		return "weekly"
+	case "3":
+		return "monthly"
+	default:
+		return ""
+	}
 }
 
 type MTRequest struct {

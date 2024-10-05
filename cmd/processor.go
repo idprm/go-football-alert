@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"encoding/json"
-	"log"
 	"sync"
 
 	"github.com/idprm/go-football-alert/internal/domain/entity"
@@ -105,7 +104,7 @@ func (p *Processor) SMS(wg *sync.WaitGroup, message []byte) {
 	subscriptionFollowTeamRepo := repository.NewSubscriptionFollowTeamRepository(p.db)
 	subscriptionFollowTeamService := services.NewSubscriptionFollowTeamService(subscriptionFollowTeamRepo)
 
-	var req *model.SMSRequest
+	var req *model.MORequest
 	json.Unmarshal([]byte(message), &req)
 
 	h := handler.NewSMSHandler(
@@ -128,65 +127,6 @@ func (p *Processor) SMS(wg *sync.WaitGroup, message []byte) {
 	)
 
 	h.Registration()
-
-	wg.Done()
-}
-
-func (p *Processor) MO(wg *sync.WaitGroup, message []byte) {
-	/**
-	 * -. Filter REG / UNREG
-	 * -. Check Blacklist
-	 * -. Check Active Sub
-	 * -. MT API
-	 * -. Save Sub
-	 * -/ Save Transaction
-	 */
-	serviceRepo := repository.NewServiceRepository(p.db)
-	serviceService := services.NewServiceService(serviceRepo)
-	contentRepo := repository.NewContentRepository(p.db)
-	contentService := services.NewContentService(contentRepo)
-	subscriptionRepo := repository.NewSubscriptionRepository(p.db)
-	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
-	transactionRepo := repository.NewTransactionRepository(p.db)
-	transactionService := services.NewTransactionService(transactionRepo)
-	historyRepo := repository.NewHistoryRepository(p.db)
-	historyService := services.NewHistoryService(historyRepo)
-	summaryRepo := repository.NewSummaryRepository(p.db)
-	summaryService := services.NewSummaryService(summaryRepo)
-
-	var req *model.MORequest
-	json.Unmarshal([]byte(message), &req)
-
-	h := handler.NewMOHandler(
-		p.rmq,
-		p.logger,
-		serviceService,
-		contentService,
-		subscriptionService,
-		transactionService,
-		historyService,
-		summaryService,
-		req,
-	)
-
-	if h.IsService() {
-		// filter REG
-		if req.IsREG() {
-			if !h.IsActiveSub() {
-				h.Firstpush()
-			} else {
-				// already reg
-				log.Println("ALREADY_REG")
-			}
-		}
-		if req.IsUNREG() {
-			// active sub
-			if h.IsActiveSub() {
-				// unsub
-				h.Unsub()
-			}
-		}
-	}
 
 	wg.Done()
 }
