@@ -54,6 +54,45 @@ func (e *News) GetPublishAt() time.Time {
 	return e.PublishAt
 }
 
+func (e *News) GetParseTitle() string {
+	if strings.Contains(e.GetTitle(), ":") {
+		return strings.TrimSpace(e.Title[:strings.IndexByte(e.Title, ':')])
+	}
+	return ""
+}
+
+func (e *News) GetHomeTeam() string {
+	return strings.TrimSpace(e.GetParseTitle()[:strings.IndexByte(e.GetParseTitle(), '-')])
+}
+
+func (e *News) GetAwayTeam() string {
+	return strings.TrimSpace(e.GetParseTitle()[strings.IndexByte(e.GetParseTitle(), '-')+1:])
+}
+
+func (e *News) IsParseTitle() bool {
+	return e.GetParseTitle() != ""
+}
+
+func (e *News) IsMatch() bool {
+	return strings.Contains(e.GetParseTitle(), "-")
+}
+
+func (e *News) IsMaxiFoot() bool {
+	return e.Source == "MAXIFOOT"
+}
+
+func (e *News) IsMadeInFoot() bool {
+	return e.Source == "MADEINFOOT"
+}
+
+func (e *News) IsAfricaTopSports() bool {
+	return e.Source == "AFRICATOPSPORTS"
+}
+
+func (e *News) IsFootMercato() bool {
+	return e.Source == "FOOTMERCATO"
+}
+
 type NewsSubsciption struct {
 	ID             int64         `gorm:"primaryKey" json:"id"`
 	SubscriptionID int64         `json:"subscription_id"`

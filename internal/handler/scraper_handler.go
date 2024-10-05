@@ -19,6 +19,13 @@ import (
 	"github.com/wiliehidayat87/rmqp"
 )
 
+const (
+	SRC_MAXIFOOT        string = "MAXIFOOT"
+	SRC_MADEINFOOT      string = "MADEINFOOT"
+	SRC_AFRICATOPSPORTS string = "AFRICATOPSPORTS"
+	SRC_FOOTMERCATO     string = "FOOTMERCATO"
+)
+
 type ScraperHandler struct {
 	rmq               rmqp.AMQP
 	leagueService     services.ILeagueService
@@ -407,7 +414,7 @@ func (h *ScraperHandler) NewsMaxiFoot() {
 				Title:       el.Title,
 				Slug:        slug.Make(el.Title),
 				Description: el.Description,
-				Source:      "MAXIFOOT",
+				Source:      SRC_MAXIFOOT,
 				PublishAt:   d,
 			}
 			h.newsService.Save(news)
@@ -445,7 +452,7 @@ func (h *ScraperHandler) NewsMadeInFoot() {
 				Title:       el.Title,
 				Slug:        slug.Make(el.Title),
 				Description: el.Description,
-				Source:      "MADEINFOOT",
+				Source:      SRC_MADEINFOOT,
 				PublishAt:   d,
 			}
 
@@ -487,7 +494,7 @@ func (h *ScraperHandler) NewsAfricaTopSports() {
 				Title:       el.Title,
 				Slug:        slug.Make(el.Title),
 				Description: "-",
-				Source:      "AFRICATOPSPORTS",
+				Source:      SRC_AFRICATOPSPORTS,
 				PublishAt:   d,
 			}
 
@@ -524,7 +531,7 @@ func (h *ScraperHandler) NewsFootMercato() {
 				Title:       el.Title,
 				Slug:        slug.Make(el.Title),
 				Description: el.Keywords,
-				Source:      "FOOTMERCATO",
+				Source:      SRC_FOOTMERCATO,
 				PublishAt:   d,
 			}
 

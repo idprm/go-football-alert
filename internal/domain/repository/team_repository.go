@@ -50,7 +50,7 @@ func (r *TeamRepository) CountByPrimaryId(primaryId int) (int64, error) {
 
 func (r *TeamRepository) CountByName(name string) (int64, error) {
 	var count int64
-	err := r.db.Model(&entity.Team{}).Where("UPPER(name) LIKE UPPER(?)", "%"+name+"%").Count(&count).Error
+	err := r.db.Model(&entity.Team{}).Where("UPPER(name) LIKE UPPER(?)", "%"+name+"%").Or("UPPER(keyword) LIKE UPPER(?)", "%"+name+"%").Count(&count).Error
 	if err != nil {
 		return count, err
 	}
@@ -96,7 +96,7 @@ func (r *TeamRepository) GetByPrimaryId(primaryId int) (*entity.Team, error) {
 
 func (r *TeamRepository) GetByName(name string) (*entity.Team, error) {
 	var c entity.Team
-	err := r.db.Where("UPPER(name) LIKE UPPER(?)", "%"+name+"%").Take(&c).Error
+	err := r.db.Where("UPPER(name) LIKE UPPER(?)", "%"+name+"%").Or("UPPER(keyword) LIKE UPPER(?)", "%"+name+"%").Take(&c).Error
 	if err != nil {
 		return nil, err
 	}

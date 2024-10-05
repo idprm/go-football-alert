@@ -311,6 +311,10 @@ func (p *Processor) News(wg *sync.WaitGroup, message []byte) {
 	/**
 	 * load repo
 	 */
+	leagueRepo := repository.NewLeagueRepository(p.db)
+	leagueService := services.NewLeagueService(leagueRepo)
+	teamRepo := repository.NewTeamRepository(p.db)
+	teamService := services.NewTeamService(teamRepo)
 	newsRepo := repository.NewNewsRepository(p.db)
 	newsService := services.NewNewsService(newsRepo)
 	followCompetitionRepo := repository.NewFollowCompetitionRepository(p.db)
@@ -318,10 +322,17 @@ func (p *Processor) News(wg *sync.WaitGroup, message []byte) {
 	followTeamRepo := repository.NewFollowTeamRepository(p.db)
 	followTeamService := services.NewFollowTeamService(followTeamRepo)
 
+	// parsing json to string
+	var news *entity.News
+	json.Unmarshal(message, &news)
+
 	h := handler.NewNewsHandler(
+		leagueService,
+		teamService,
 		newsService,
 		followCompetitionService,
 		followTeamService,
+		news,
 	)
 
 	h.Mapping()

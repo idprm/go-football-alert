@@ -489,18 +489,6 @@ func (h *SMSHandler) IsActiveSubByCategory(v string) bool {
 	return h.subscriptionService.IsActiveSubscriptionByCategory(v, h.req.GetMsisdn())
 }
 
-func (h *SMSHandler) getContent(name string) (*entity.Content, error) {
-	// if data not exist in table contents
-	if !h.contentService.IsContent(name) {
-		return &entity.Content{
-			Category: "CATEGORY",
-			Channel:  "SMS",
-			Value:    "SAMPLE_TEXT",
-		}, nil
-	}
-	return h.contentService.Get(name)
-}
-
 func (h *SMSHandler) Firstpush() {
 	service, err := h.getService()
 	if err != nil {
@@ -835,10 +823,19 @@ func (h *SMSHandler) IsSub() bool {
 	return h.subscriptionService.IsSubscription(service.GetId(), h.req.GetMsisdn())
 }
 
-func (h *SMSHandler) IsService() bool {
-	return h.serviceService.IsService(h.req.GetSubKeyword())
+// empty service
+func (h *SMSHandler) getService() (*entity.Service, error) {
+	return h.serviceService.Get("")
 }
 
-func (h *SMSHandler) getService() (*entity.Service, error) {
-	return h.serviceService.Get(h.req.GetSubKeyword())
+func (h *SMSHandler) getContent(v string) (*entity.Content, error) {
+	// if data not exist in table contents
+	if !h.contentService.IsContent(v) {
+		return &entity.Content{
+			Category: "CATEGORY",
+			Channel:  "SMS",
+			Value:    "SAMPLE_TEXT",
+		}, nil
+	}
+	return h.contentService.Get(v)
 }

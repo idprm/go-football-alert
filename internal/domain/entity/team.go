@@ -11,6 +11,7 @@ type Team struct {
 	Logo      string `json:"logo"`
 	Founded   int    `json:"founded"`
 	Country   string `json:"country"`
+	Keyword   string `json:"keyword"`
 }
 
 func (e *Team) GetId() int64 {
@@ -35,4 +36,8 @@ func (e *Team) GetCode() string {
 
 func (e *Team) GetLogo() string {
 	return e.Logo
+}
+
+func (e *Team) GetKeyword() string {
+	return e.Keyword
 }

@@ -205,7 +205,14 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	teamHandler := handler.NewTeamHandler(teamService)
 	fixtureHandler := handler.NewFixtureHandler(fixtureService)
 	predictionHandler := handler.NewPredictionHandler(predictionService)
-	newsHandler := handler.NewNewsHandler(newsService, followCompetitionService, followTeamService)
+	newsHandler := handler.NewNewsHandler(
+		leagueService,
+		teamService,
+		newsService,
+		followCompetitionService,
+		followTeamService,
+		&entity.News{},
+	)
 
 	app.Get("/mo", h.MessageOriginated)
 

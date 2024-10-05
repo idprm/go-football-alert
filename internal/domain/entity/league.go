@@ -8,6 +8,7 @@ type League struct {
 	Logo      string `gorm:"size:110" json:"logo"`
 	Country   string `gorm:"size:110" json:"country"`
 	IsActive  bool   `gorm:"type:boolean;default:false;column:is_active" json:"is_active"`
+	Keyword   string `json:"keyword"`
 }
 
 func (e *League) GetId() int64 {
@@ -28,4 +29,8 @@ func (e *League) GetLogo() string {
 
 func (e *League) GetCountry() string {
 	return e.Country
+}
+
+func (e *League) GetKeyword() string {
+	return e.Keyword
 }

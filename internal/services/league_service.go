@@ -40,8 +40,8 @@ func (s *LeagueService) IsLeagueByPrimaryId(primaryId int) bool {
 	return count > 0
 }
 
-func (s *LeagueService) IsLeagueByName(name string) bool {
-	count, _ := s.leagueRepo.CountByName(name)
+func (s *LeagueService) IsLeagueByName(v string) bool {
+	count, _ := s.leagueRepo.CountByName(v)
 	return count > 0
 }
 

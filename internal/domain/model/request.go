@@ -106,40 +106,6 @@ func (s *MORequest) GetMsisdn() string {
 	return s.Msisdn
 }
 
-func (s *MORequest) GetSubKeyword() string {
-	message := strings.ToUpper(s.SMS)
-	index := strings.Split(message, " ")
-
-	if index[0] == MO_REG || index[0] == MO_UNREG {
-		if strings.Contains(message, MO_REG) || strings.Contains(message, MO_UNREG) {
-			if len(index) > 1 {
-				return index[1]
-			}
-			return ""
-		}
-		return ""
-	}
-	return ""
-}
-
-func (s *MORequest) IsREG() bool {
-	message := strings.ToUpper(s.SMS)
-	index := strings.Split(message, " ")
-	if index[0] == MO_REG && (strings.Contains(message, MO_REG)) {
-		return true
-	}
-	return false
-}
-
-func (s *MORequest) IsUNREG() bool {
-	message := strings.ToUpper(s.SMS)
-	index := strings.Split(message, " ")
-	if index[0] == MO_UNREG && (strings.Contains(message, MO_UNREG)) {
-		return true
-	}
-	return false
-}
-
 func (s *MORequest) GetIpAddress() string {
 	return s.IpAddress
 }
