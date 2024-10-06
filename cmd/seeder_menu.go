@@ -50,27 +50,6 @@ var menus = []entity.Menu{
 	},
 	{
 		Category:  "none",
-		Name:      "Confirm Buy",
-		Slug:      "confirm-buy",
-		IsConfirm: false,
-		IsActive:  true,
-		TemplateXML: `
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
-<pages descr="Confirm">
-	<page nav="stop">
-		Confirm<br/>
-        To signup to {{.service}} charging {{.price}} per SMS. Please reply with YES to confirm or NO to decline
-        <a href="{{.url}}/{{.version}}/ussd/buy?slug={{.slug}}&code={{.code}}&action=yes">Yes</a>
-        <a href="{{.url}}/{{.version}}/ussd/buy?slug={{.slug}}&code={{.code}}&action=no">No</a>
-        <br/>
-        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
-    </page>
-</pages>
-		`,
-	},
-	{
-		Category:  "none",
 		Name:      "Confirm",
 		Slug:      "confirm-flashnews",
 		IsConfirm: false,
@@ -85,7 +64,7 @@ var menus = []entity.Menu{
 		Prix : {{.price}} / 1 {{.time}}.
         <a href="{{.url}}/{{.version}}/ussd/buy?slug={{.slug}}&code={{.code}}" key="1">Oui</a>
         <br/>
-		<a href="{{.url}}/{{.version}}/ussd/q?slug=sms-alerte&title=SMS+Alerte" key="0">Ecran Précédent</a>
+		<a href="{{.url}}/{{.version}}/ussd/q?slug=flash-news" key="0">Ecran Précédent</a>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
     </page>
 </pages>
@@ -107,7 +86,7 @@ var menus = []entity.Menu{
 		Prix : {{.price}} / 1 {{.time}}.
         <a href="{{.url}}/{{.version}}/ussd/buy?slug={{.slug}}&code={{.code}}&league_id={{.league_id}}" key="1">Oui</a>
         <br/>
-		<a href="{{.url}}/{{.version}}/ussd/q?slug=sms-alerte&title=SMS+Alerte" key="0">Ecran Précédent</a>
+		<a href="{{.url}}/{{.version}}/ussd/q?slug=kit-foot" key="0">Ecran Précédent</a>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
     </page>
 </pages>
@@ -129,7 +108,7 @@ var menus = []entity.Menu{
 		Prix : {{.price}} / 1 {{.time}}.
         <a href="{{.url}}/{{.version}}/ussd/buy?slug={{.slug}}&code={{.code}}&team_id={{.team_id}}" key="1">Oui</a>
         <br/>
-		<a href="{{.url}}/{{.version}}/ussd/q?slug=sms-alerte&title=SMS+Alerte" key="0">Ecran Précédent</a>
+		<a href="{{.url}}/{{.version}}/ussd/q?slug=kit-foot" key="0">Ecran Précédent</a>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
     </page>
 </pages>
@@ -403,14 +382,14 @@ var menus = []entity.Menu{
 <pages descr="Champ. Mali">
     <page>
         Champ. Mali {{.date}}<br/>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-results">Results</a>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-standings">Standings</a>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-schedule">Schedule</a>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-team">Team</a>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-credit-score">Crédit Score</a>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-credit-goal">Crédit Goal</a>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-sms-alerte">SMS Alerte</a>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-sms-alerte-equipe">SMS Alerte Equipe</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali-results">Results</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali-standings">Standings</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali-schedule">Schedule</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali-team">Team</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali-credit-score">Crédit Score</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali-credit-goal">Crédit Goal</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali-sms-alerte">SMS Alerte</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali-sms-alerte-equipe">SMS Alerte Equipe</a>
 		<br/>
 		{{.paginate}}
 		<a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
@@ -420,8 +399,8 @@ var menus = []entity.Menu{
 	},
 	{
 		Category:  "follow-team",
-		Name:      "Results",
-		Slug:      "champ-results",
+		Name:      "Champ. Mali Results",
+		Slug:      "champ-mali-results",
 		IsConfirm: true,
 		IsActive:  true,
 		TemplateXML: `
@@ -441,8 +420,8 @@ var menus = []entity.Menu{
 	},
 	{
 		Category:  "follow-team",
-		Name:      "Standings",
-		Slug:      "champ-standings",
+		Name:      "Champ. Mali Standings",
+		Slug:      "champ-mali-standings",
 		IsConfirm: true,
 		IsActive:  true,
 		TemplateXML: `
@@ -462,8 +441,8 @@ var menus = []entity.Menu{
 	},
 	{
 		Category:  "follow-team",
-		Name:      "Schedule",
-		Slug:      "champ-schedule",
+		Name:      "Champ. Mali Schedule",
+		Slug:      "champ-mali-schedule",
 		IsConfirm: true,
 		IsActive:  true,
 		TemplateXML: `
@@ -483,8 +462,8 @@ var menus = []entity.Menu{
 	},
 	{
 		Category:  "follow-team",
-		Name:      "Team",
-		Slug:      "champ-team",
+		Name:      "Champ. Mali Team",
+		Slug:      "champ-mali-team",
 		IsConfirm: true,
 		IsActive:  true,
 		TemplateXML: `
@@ -504,8 +483,8 @@ var menus = []entity.Menu{
 	},
 	{
 		Category:  "follow-team",
-		Name:      "Crédit Score",
-		Slug:      "champ-credit-score",
+		Name:      "Champ. Mali Crédit Score",
+		Slug:      "champ-mali-credit-score",
 		IsConfirm: true,
 		IsActive:  true,
 		TemplateXML: `
@@ -525,8 +504,8 @@ var menus = []entity.Menu{
 	},
 	{
 		Category:  "follow-team",
-		Name:      "Crédit Goal",
-		Slug:      "champ-creditgoal",
+		Name:      "Champ. Mali Crédit Goal",
+		Slug:      "champ-mali-credit-goal",
 		IsConfirm: true,
 		IsActive:  true,
 		TemplateXML: `
@@ -545,8 +524,8 @@ var menus = []entity.Menu{
 	},
 	{
 		Category:  "follow-team",
-		Name:      "SMS Alerte",
-		Slug:      "champ-sms-alerte",
+		Name:      "Champ. Mali SMS Alerte",
+		Slug:      "champ-mali-sms-alerte",
 		IsConfirm: true,
 		IsActive:  true,
 		TemplateXML: `
@@ -565,8 +544,8 @@ var menus = []entity.Menu{
 	},
 	{
 		Category:  "follow-team",
-		Name:      "SMS Alerte Equipe",
-		Slug:      "champ-sms-alerte-equipe",
+		Name:      "Champ. Mali SMS Alerte Equipe",
+		Slug:      "champ-mali-sms-alerte-equipe",
 		IsConfirm: true,
 		IsActive:  true,
 		TemplateXML: `
