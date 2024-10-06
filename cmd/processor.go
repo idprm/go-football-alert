@@ -154,6 +154,150 @@ func (p *Processor) MT(wg *sync.WaitGroup, message []byte) {
 	wg.Done()
 }
 
+func (p *Processor) News(wg *sync.WaitGroup, message []byte) {
+	/**
+	 * load repo
+	 */
+	leagueRepo := repository.NewLeagueRepository(p.db)
+	leagueService := services.NewLeagueService(leagueRepo)
+	teamRepo := repository.NewTeamRepository(p.db)
+	teamService := services.NewTeamService(teamRepo)
+	newsRepo := repository.NewNewsRepository(p.db)
+	newsService := services.NewNewsService(newsRepo)
+	followCompetitionRepo := repository.NewFollowCompetitionRepository(p.db)
+	followCompetitionService := services.NewFollowCompetitionService(followCompetitionRepo)
+	followTeamRepo := repository.NewFollowTeamRepository(p.db)
+	followTeamService := services.NewFollowTeamService(followTeamRepo)
+
+	// parsing json to string
+	var news *entity.News
+	json.Unmarshal(message, &news)
+
+	h := handler.NewNewsHandler(
+		leagueService,
+		teamService,
+		newsService,
+		followCompetitionService,
+		followTeamService,
+		news,
+	)
+
+	h.Filter()
+
+	wg.Done()
+}
+
+func (p *Processor) SMSAlerte(wg *sync.WaitGroup, message []byte) {
+	/**
+	 * load repo
+	 */
+	serviceRepo := repository.NewServiceRepository(p.db)
+	serviceService := services.NewServiceService(serviceRepo)
+	contentRepo := repository.NewContentRepository(p.db)
+	contentService := services.NewContentService(contentRepo)
+	subscriptionRepo := repository.NewSubscriptionRepository(p.db)
+	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+	transactionRepo := repository.NewTransactionRepository(p.db)
+	transactionService := services.NewTransactionService(transactionRepo)
+	newsRepo := repository.NewNewsRepository(p.db)
+	newsService := services.NewNewsService(newsRepo)
+
+	// parsing json to string
+	var sub *entity.Subscription
+	json.Unmarshal(message, &sub)
+
+	h := handler.NewSMSAlerteHandler(
+		p.rmq,
+		p.logger,
+		sub,
+		serviceService,
+		contentService,
+		subscriptionService,
+		transactionService,
+		newsService,
+	)
+
+	// Send SMS Alerte
+	h.SMSAlerte()
+
+	wg.Done()
+}
+
+func (p *Processor) CreditGoal(wg *sync.WaitGroup, message []byte) {
+	/**
+	 * load repo
+	 */
+	serviceRepo := repository.NewServiceRepository(p.db)
+	serviceService := services.NewServiceService(serviceRepo)
+	contentRepo := repository.NewContentRepository(p.db)
+	contentService := services.NewContentService(contentRepo)
+	subscriptionRepo := repository.NewSubscriptionRepository(p.db)
+	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+	transactionRepo := repository.NewTransactionRepository(p.db)
+	transactionService := services.NewTransactionService(transactionRepo)
+	rewardRepo := repository.NewRewardRepository(p.db)
+	rewardService := services.NewRewardService(rewardRepo)
+	summaryRepo := repository.NewSummaryRepository(p.db)
+	summaryService := services.NewSummaryService(summaryRepo)
+
+	// parsing json to string
+	var sub *entity.Subscription
+	json.Unmarshal(message, &sub)
+
+	h := handler.NewCreditGoalHandler(
+		p.rmq,
+		p.logger,
+		sub,
+		serviceService,
+		contentService,
+		subscriptionService,
+		transactionService,
+		rewardService,
+		summaryService,
+	)
+
+	// send credit goal
+	h.CreditGoal()
+
+	wg.Done()
+}
+
+func (p *Processor) Prediction(wg *sync.WaitGroup, message []byte) {
+	/**
+	 * load repo
+	 */
+	serviceRepo := repository.NewServiceRepository(p.db)
+	serviceService := services.NewServiceService(serviceRepo)
+	contentRepo := repository.NewContentRepository(p.db)
+	contentService := services.NewContentService(contentRepo)
+	subscriptionRepo := repository.NewSubscriptionRepository(p.db)
+	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+	transactionRepo := repository.NewTransactionRepository(p.db)
+	transactionService := services.NewTransactionService(transactionRepo)
+	predictionRepo := repository.NewPredictionRepository(p.db)
+	predictionService := services.NewPredictionService(predictionRepo)
+
+	// parsing json to string
+	var sub *entity.Subscription
+	json.Unmarshal(message, &sub)
+
+	h := handler.NewPredictionHandler(
+		p.rmq,
+		p.logger,
+		sub,
+		serviceService,
+		contentService,
+		subscriptionService,
+		transactionService,
+		predictionService,
+	)
+
+	// Send the prediction
+	h.Prediction()
+
+	wg.Done()
+}
+
 func (p *Processor) Renewal(wg *sync.WaitGroup, message []byte) {
 	/**
 	 * load repo
@@ -228,186 +372,6 @@ func (p *Processor) Retry(wg *sync.WaitGroup, message []byte) {
 	} else {
 		h.Dailypush()
 	}
-
-	wg.Done()
-}
-
-func (p *Processor) Prediction(wg *sync.WaitGroup, message []byte) {
-	/**
-	 * load repo
-	 */
-	serviceRepo := repository.NewServiceRepository(p.db)
-	serviceService := services.NewServiceService(serviceRepo)
-	contentRepo := repository.NewContentRepository(p.db)
-	contentService := services.NewContentService(contentRepo)
-	subscriptionRepo := repository.NewSubscriptionRepository(p.db)
-	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
-	transactionRepo := repository.NewTransactionRepository(p.db)
-	transactionService := services.NewTransactionService(transactionRepo)
-	newsRepo := repository.NewNewsRepository(p.db)
-	newsService := services.NewNewsService(newsRepo)
-
-	// parsing json to string
-	var sub *entity.Subscription
-	json.Unmarshal(message, &sub)
-
-	h := handler.NewBulkHandler(
-		p.rmq,
-		p.logger,
-		sub,
-		serviceService,
-		contentService,
-		subscriptionService,
-		transactionService,
-		newsService,
-	)
-
-	// Send the prediction
-	h.Prediction()
-
-	wg.Done()
-}
-
-func (p *Processor) CreditGoal(wg *sync.WaitGroup, message []byte) {
-	/**
-	 * load repo
-	 */
-	serviceRepo := repository.NewServiceRepository(p.db)
-	serviceService := services.NewServiceService(serviceRepo)
-	contentRepo := repository.NewContentRepository(p.db)
-	contentService := services.NewContentService(contentRepo)
-	subscriptionRepo := repository.NewSubscriptionRepository(p.db)
-	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
-	transactionRepo := repository.NewTransactionRepository(p.db)
-	transactionService := services.NewTransactionService(transactionRepo)
-	rewardRepo := repository.NewRewardRepository(p.db)
-	rewardService := services.NewRewardService(rewardRepo)
-	summaryRepo := repository.NewSummaryRepository(p.db)
-	summaryService := services.NewSummaryService(summaryRepo)
-
-	// parsing json to string
-	var sub *entity.Subscription
-	json.Unmarshal(message, &sub)
-
-	h := handler.NewCreditGoalHandler(
-		p.rmq,
-		p.logger,
-		sub,
-		serviceService,
-		contentService,
-		subscriptionService,
-		transactionService,
-		rewardService,
-		summaryService,
-	)
-
-	// send credit goal
-	h.CreditGoal()
-
-	wg.Done()
-}
-
-func (p *Processor) News(wg *sync.WaitGroup, message []byte) {
-	/**
-	 * load repo
-	 */
-	leagueRepo := repository.NewLeagueRepository(p.db)
-	leagueService := services.NewLeagueService(leagueRepo)
-	teamRepo := repository.NewTeamRepository(p.db)
-	teamService := services.NewTeamService(teamRepo)
-	newsRepo := repository.NewNewsRepository(p.db)
-	newsService := services.NewNewsService(newsRepo)
-	followCompetitionRepo := repository.NewFollowCompetitionRepository(p.db)
-	followCompetitionService := services.NewFollowCompetitionService(followCompetitionRepo)
-	followTeamRepo := repository.NewFollowTeamRepository(p.db)
-	followTeamService := services.NewFollowTeamService(followTeamRepo)
-
-	// parsing json to string
-	var news *entity.News
-	json.Unmarshal(message, &news)
-
-	h := handler.NewNewsHandler(
-		leagueService,
-		teamService,
-		newsService,
-		followCompetitionService,
-		followTeamService,
-		news,
-	)
-
-	h.Filter()
-
-	wg.Done()
-}
-
-func (p *Processor) FollowCompetition(wg *sync.WaitGroup, message []byte) {
-	/**
-	 * load repo
-	 */
-	serviceRepo := repository.NewServiceRepository(p.db)
-	serviceService := services.NewServiceService(serviceRepo)
-	contentRepo := repository.NewContentRepository(p.db)
-	contentService := services.NewContentService(contentRepo)
-	subscriptionRepo := repository.NewSubscriptionRepository(p.db)
-	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
-	transactionRepo := repository.NewTransactionRepository(p.db)
-	transactionService := services.NewTransactionService(transactionRepo)
-	newsRepo := repository.NewNewsRepository(p.db)
-	newsService := services.NewNewsService(newsRepo)
-
-	// parsing json to string
-	var sub *entity.Subscription
-	json.Unmarshal(message, &sub)
-
-	h := handler.NewBulkHandler(
-		p.rmq,
-		p.logger,
-		sub,
-		serviceService,
-		contentService,
-		subscriptionService,
-		transactionService,
-		newsService,
-	)
-
-	// Send the news
-	h.FollowCompetition()
-
-	wg.Done()
-}
-
-func (p *Processor) FollowTeam(wg *sync.WaitGroup, message []byte) {
-	/**
-	 * load repo
-	 */
-	serviceRepo := repository.NewServiceRepository(p.db)
-	serviceService := services.NewServiceService(serviceRepo)
-	contentRepo := repository.NewContentRepository(p.db)
-	contentService := services.NewContentService(contentRepo)
-	subscriptionRepo := repository.NewSubscriptionRepository(p.db)
-	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
-	transactionRepo := repository.NewTransactionRepository(p.db)
-	transactionService := services.NewTransactionService(transactionRepo)
-	newsRepo := repository.NewNewsRepository(p.db)
-	newsService := services.NewNewsService(newsRepo)
-
-	// parsing json to string
-	var sub *entity.Subscription
-	json.Unmarshal(message, &sub)
-
-	h := handler.NewBulkHandler(
-		p.rmq,
-		p.logger,
-		sub,
-		serviceService,
-		contentService,
-		subscriptionService,
-		transactionService,
-		newsService,
-	)
-
-	// Send the news
-	h.FollowCompetition()
 
 	wg.Done()
 }

@@ -5,7 +5,6 @@ import (
 	"log"
 	"time"
 
-	"github.com/gofiber/fiber/v2"
 	"github.com/idprm/go-football-alert/internal/domain/entity"
 	"github.com/idprm/go-football-alert/internal/domain/model"
 	"github.com/idprm/go-football-alert/internal/logger"
@@ -14,7 +13,7 @@ import (
 	"github.com/wiliehidayat87/rmqp"
 )
 
-type PredictionHandler struct {
+type SMSAlerteHandler struct {
 	rmq                 rmqp.AMQP
 	logger              *logger.Logger
 	sub                 *entity.Subscription
@@ -22,10 +21,10 @@ type PredictionHandler struct {
 	contentService      services.IContentService
 	subscriptionService services.ISubscriptionService
 	transactionService  services.ITransactionService
-	predictionService   services.IPredictionService
+	newsService         services.INewsService
 }
 
-func NewPredictionHandler(
+func NewSMSAlerteHandler(
 	rmq rmqp.AMQP,
 	logger *logger.Logger,
 	sub *entity.Subscription,
@@ -33,9 +32,9 @@ func NewPredictionHandler(
 	contentService services.IContentService,
 	subscriptionService services.ISubscriptionService,
 	transactionService services.ITransactionService,
-	predictionService services.IPredictionService,
-) *PredictionHandler {
-	return &PredictionHandler{
+	newsService services.INewsService,
+) *SMSAlerteHandler {
+	return &SMSAlerteHandler{
 		rmq:                 rmq,
 		logger:              logger,
 		sub:                 sub,
@@ -43,18 +42,18 @@ func NewPredictionHandler(
 		contentService:      contentService,
 		subscriptionService: subscriptionService,
 		transactionService:  transactionService,
-		predictionService:   predictionService,
+		newsService:         newsService,
 	}
 }
 
-func (h *PredictionHandler) Prediction() {
+func (h *SMSAlerteHandler) SMSAlerte() {
 	if h.subscriptionService.IsActiveSubscription(h.sub.GetServiceId(), h.sub.GetMsisdn()) {
 		service, err := h.serviceService.GetById(h.sub.GetServiceId())
 		if err != nil {
 			log.Println(err.Error())
 		}
 
-		content, err := h.getContent(SMS_PREDICT_SUB)
+		content, err := h.getContent(SMS_FOLLOW_COMPETITION_SUB)
 		if err != nil {
 			log.Println(err.Error())
 		}
@@ -66,7 +65,7 @@ func (h *PredictionHandler) Prediction() {
 				ServiceID:     service.GetId(),
 				Msisdn:        h.sub.GetMsisdn(),
 				LatestTrxId:   trxId,
-				LatestSubject: SUBJECT_PREDICTION,
+				LatestSubject: SUBJECT_NEWS,
 				LatestStatus:  STATUS_SUCCESS,
 			},
 		)
@@ -80,7 +79,7 @@ func (h *PredictionHandler) Prediction() {
 				Status:       STATUS_SUCCESS,
 				StatusCode:   "",
 				StatusDetail: "",
-				Subject:      SUBJECT_PREDICTION,
+				Subject:      SUBJECT_NEWS,
 				Payload:      "-",
 				CreatedAt:    time.Now(),
 			},
@@ -105,7 +104,7 @@ func (h *PredictionHandler) Prediction() {
 	}
 }
 
-func (h *PredictionHandler) getContent(name string) (*entity.Content, error) {
+func (h *SMSAlerteHandler) getContent(name string) (*entity.Content, error) {
 	// if data not exist in table contents
 	if !h.contentService.IsContent(name) {
 		return &entity.Content{
@@ -113,47 +112,4 @@ func (h *PredictionHandler) getContent(name string) (*entity.Content, error) {
 		}, nil
 	}
 	return h.contentService.Get(name)
-}
-
-func (h *PredictionHandler) GetAllPaginate(c *fiber.Ctx) error {
-	req := new(entity.Pagination)
-
-	err := c.QueryParser(req)
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(
-			&model.WebResponse{
-				Error:      true,
-				StatusCode: fiber.StatusBadRequest,
-				Message:    err.Error(),
-			},
-		)
-	}
-
-	predictions, err := h.predictionService.GetAllPaginate(req)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(
-			&model.WebResponse{
-				Error:      true,
-				StatusCode: fiber.StatusInternalServerError,
-				Message:    err.Error(),
-			},
-		)
-	}
-	return c.Status(fiber.StatusOK).JSON(predictions)
-}
-
-func (h *PredictionHandler) GetBySlug(c *fiber.Ctx) error {
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
-}
-
-func (h *PredictionHandler) Save(c *fiber.Ctx) error {
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
-}
-
-func (h *PredictionHandler) Update(c *fiber.Ctx) error {
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
-}
-
-func (h *PredictionHandler) Delete(c *fiber.Ctx) error {
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
 }

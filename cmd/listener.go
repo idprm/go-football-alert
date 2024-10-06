@@ -207,7 +207,18 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	leagueHandler := handler.NewLeagueHandler(leagueService)
 	teamHandler := handler.NewTeamHandler(teamService)
 	fixtureHandler := handler.NewFixtureHandler(fixtureService)
-	predictionHandler := handler.NewPredictionHandler(predictionService)
+
+	predictionHandler := handler.NewPredictionHandler(
+		rmq,
+		logger,
+		&entity.Subscription{},
+		serviceService,
+		contentService,
+		subscriptionService,
+		transactionService,
+		predictionService,
+	)
+
 	newsHandler := handler.NewNewsHandler(
 		leagueService,
 		teamService,

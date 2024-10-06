@@ -463,6 +463,8 @@ func (h *IncomingHandler) Confirm(c *fiber.Ctx) error {
 
 func (h *IncomingHandler) Buy(c *fiber.Ctx) error {
 	c.Set("Content-type", "text/xml; charset=iso-8859-1")
+
+	l := h.logger.Init("mo", true)
 	req := new(model.UssdRequest)
 
 	err := c.QueryParser(req)
@@ -497,6 +499,18 @@ func (h *IncomingHandler) Buy(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
 	}
+
+	jsonData, err := json.Marshal(req)
+	if err != nil {
+		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
+	}
+
+	l.WithFields(logrus.Fields{"request": req}).Info("MO")
+	h.rmq.IntegratePublish(
+		RMQ_USSD_EXCHANGE,
+		RMQ_USSD_QUEUE,
+		RMQ_DATA_TYPE, "", string(jsonData),
+	)
 
 	replacer := strings.NewReplacer(
 		"{{.url}}", c.BaseURL(),

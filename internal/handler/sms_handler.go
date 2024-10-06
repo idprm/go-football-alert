@@ -76,10 +76,15 @@ func NewSMSHandler(
 }
 
 const (
-	CATEGORY_CREDIT_GOAL                 string = "CREDIT-GOAL"
-	CATEGORY_PREDICT                     string = "PREDICTION"
-	CATEGORY_FOLLOW_TEAM                 string = "FOLLOW-TEAM"
-	CATEGORY_FOLLOW_COMPETITION          string = "FOLLOW-COMPETITION"
+	CATEGORY_LIVEMATCH   string = "LIVEMATCH"
+	CATEGORY_FLASHNEWS   string = "FLASHNEWS"
+	CATEGORY_SMSALERTE   string = "SMSALERTE"
+	CATEGORY_CREDIT_GOAL string = "CREDITGOAL"
+	CATEGORY_PREDICT     string = "PREDICTION"
+	CATEGORY_PRONOSTIC   string = "PRONOSTIC"
+)
+
+const (
 	SMS_CREDIT_GOAL_SUB                  string = "CREDIT_GOAL_SUB"
 	SMS_CREDIT_GOAL_ALREADY_SUB          string = "CREDIT_GOAL_ALREADY_SUB"
 	SMS_CREDIT_GOAL_UNVALID_SUB          string = "CREDIT_GOAL_UNVALID_SUB"
@@ -111,6 +116,11 @@ func (h *SMSHandler) Registration() {
 	l.WithFields(logrus.Fields{"request": h.req}).Info("SMS")
 
 	/**
+	 ** SMS Alerte
+	 **/
+	h.SMSAlerte()
+
+	/**
 	 ** Credit Goal
 	 **/
 	// if h.req.IsCreditGoal() {
@@ -124,15 +134,39 @@ func (h *SMSHandler) Registration() {
 	// 	h.Prediction()
 	// }
 
-	/**
-	 ** Follow Team
-	 **/
-	h.FollowTeam()
+}
 
-	/**
-	 ** Follow Competition
-	 **/
-	h.FollowCompetition()
+func (h *SMSHandler) SMSAlerte() {
+	if h.leagueService.IsLeagueByName(h.req.GetSMS()) {
+		if !h.IsActiveSubByCategory(CATEGORY_SMSALERTE) {
+			h.Confirmation()
+		} else {
+			// SMS-Alerte Competition
+			h.AlerteCompetition()
+			// SMS-Alerte Matchs
+		}
+	} else if h.teamService.IsTeamByName(h.req.GetSMS()) {
+		if !h.IsActiveSubByCategory(CATEGORY_SMSALERTE) {
+			h.Confirmation()
+		} else {
+			// SMS-Alerte Equipe
+			h.AlerteEquipe()
+			// SMS-Alerte Matchs
+		}
+	} else if h.req.IsInfo() {
+		h.Info()
+	} else if h.req.IsStop() {
+		if h.IsActiveSubByCategory(CATEGORY_SMSALERTE) {
+			h.Stop()
+		}
+	} else {
+		// user choose 1, 2, 3 package
+		if h.req.IsChooseService() {
+			h.Subscription(CATEGORY_SMSALERTE)
+		} else {
+			h.Unvalid()
+		}
+	}
 }
 
 func (h *SMSHandler) CreditGoal() {
@@ -196,56 +230,6 @@ func (h *SMSHandler) Prediction() {
 		// user choose 1, 2, 3 package
 		if h.req.IsChooseService() {
 			h.Subscription(CATEGORY_PREDICT)
-		} else {
-			h.Unvalid()
-		}
-	}
-}
-
-func (h *SMSHandler) FollowTeam() {
-	if h.teamService.IsTeamByName(h.req.GetSMS()) {
-		if !h.IsActiveSubByCategory(CATEGORY_FOLLOW_TEAM) {
-			h.Confirmation()
-		} else {
-			// SMS-Alerte Equipe
-			h.AlerteEquipe()
-			// SMS-Alerte Matchs
-		}
-	} else if h.req.IsInfo() {
-		h.Info()
-	} else if h.req.IsStop() {
-		if h.IsActiveSubByCategory(CATEGORY_FOLLOW_TEAM) {
-			h.Stop()
-		}
-	} else {
-		// user choose 1, 2, 3 package
-		if h.req.IsChooseService() {
-			h.Subscription(CATEGORY_FOLLOW_TEAM)
-		} else {
-			h.Unvalid()
-		}
-	}
-}
-
-func (h *SMSHandler) FollowCompetition() {
-	if h.leagueService.IsLeagueByName(h.req.GetSMS()) {
-		if !h.IsActiveSubByCategory(CATEGORY_FOLLOW_COMPETITION) {
-			h.Confirmation()
-		} else {
-			// SMS-Alerte Competition
-			h.AlerteCompetition()
-			// SMS-Alerte Matchs
-		}
-	} else if h.req.IsInfo() {
-		h.Info()
-	} else if h.req.IsStop() {
-		if h.IsActiveSubByCategory(CATEGORY_FOLLOW_COMPETITION) {
-			h.Stop()
-		}
-	} else {
-		// user choose 1, 2, 3 package
-		if h.req.IsChooseService() {
-			h.Subscription(CATEGORY_FOLLOW_COMPETITION)
 		} else {
 			h.Unvalid()
 		}

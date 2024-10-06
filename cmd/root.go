@@ -36,51 +36,47 @@ var (
 )
 
 const (
-	RMQ_EXCHANGE_TYPE               string = "direct"
-	RMQ_DATA_TYPE                   string = "application/json"
-	RMQ_USSD_EXCHANGE               string = "E_USSD"
-	RMQ_USSD_QUEUE                  string = "Q_USSD"
-	RMQ_SMS_EXCHANGE                string = "E_SMS"
-	RMQ_SMS_QUEUE                   string = "Q_SMS"
-	RMQ_MT_EXCHANGE                 string = "E_MT"
-	RMQ_MT_QUEUE                    string = "Q_MT"
-	RMQ_RENEWAL_EXCHANGE            string = "E_RENEWAL"
-	RMQ_RENEWAL_QUEUE               string = "Q_RENEWAL"
-	RMQ_RETRY_EXCHANGE              string = "E_RETRY"
-	RMQ_RETRY_QUEUE                 string = "Q_RETRY"
-	RMQ_NOTIF_EXCHANGE              string = "E_NOTIF"
-	RMQ_NOTIF_QUEUE                 string = "Q_NOTIF"
-	RMQ_POSTBACK_EXCHANGE           string = "E_POSTBACK"
-	RMQ_POSTBACK_QUEUE              string = "Q_POSTBACK"
-	RMQ_TRAFFIC_EXCHANGE            string = "E_TRAFFIC"
-	RMQ_TRAFFIC_QUEUE               string = "Q_TRAFFIC"
-	RMQ_PREDICTION_EXCHANGE         string = "E_PREDICTION"
-	RMQ_PREDICTION_QUEUE            string = "Q_PREDICTION"
-	RMQ_CREDIT_EXCHANGE             string = "E_CREDIT_GOAL"
-	RMQ_CREDIT_QUEUE                string = "Q_CREDIT_GOAL"
-	RMQ_NEWS_EXCHANGE               string = "E_NEWS"
-	RMQ_NEWS_QUEUE                  string = "Q_NEWS"
-	RMQ_FOLLOW_COMPETITION_EXCHANGE string = "E_FOLLOW_COMPETITION"
-	RMQ_FOLLOW_COMPETITION_QUEUE    string = "Q_FOLLOW_COMPETITION"
-	RMQ_FOLLOW_TEAM_EXCHANGE        string = "E_FOLLOW_TEAM"
-	RMQ_FOLLOW_TEAM_QUEUE           string = "Q_FOLLOW_TEAM"
-	ACT_USSD                        string = "USSD"
-	ACT_SMS                         string = "SMS"
-	ACT_CONFIRMATION                string = "CONFIRMATION"
-	ACT_NOTIFICATION                string = "NOTIFICATION"
-	ACT_MO                          string = "MO"
-	ACT_FIRSTPUSH                   string = "FIRSTPUSH"
-	ACT_RENEWAL                     string = "RENEWAL"
-	ACT_RETRY                       string = "RETRY"
-	ACT_PREDICTION                  string = "PREDICTION"
-	ACT_CREDIT_GOAL                 string = "CREDIT_GOAL"
-	ACT_FOLLOW_COMPETITION          string = "FOLLOW_COMPETITION"
-	ACT_FOLLOW_TEAM                 string = "FOLLOW_TEAM"
-	ACT_SUB_SMS_ALERT               string = "SUB_SMS_ALERT"
-	ACT_SUB                         string = "SUB"
-	ACT_UNSUB                       string = "UNSUB"
-	ACT_USER_LOSES                  string = "USER_LOSES"
-	ACT_SCRAPING                    string = "SCRAPING"
+	RMQ_EXCHANGE_TYPE       string = "direct"
+	RMQ_DATA_TYPE           string = "application/json"
+	RMQ_USSD_EXCHANGE       string = "E_USSD"
+	RMQ_USSD_QUEUE          string = "Q_USSD"
+	RMQ_SMS_EXCHANGE        string = "E_SMS"
+	RMQ_SMS_QUEUE           string = "Q_SMS"
+	RMQ_MT_EXCHANGE         string = "E_MT"
+	RMQ_MT_QUEUE            string = "Q_MT"
+	RMQ_RENEWAL_EXCHANGE    string = "E_RENEWAL"
+	RMQ_RENEWAL_QUEUE       string = "Q_RENEWAL"
+	RMQ_RETRY_EXCHANGE      string = "E_RETRY"
+	RMQ_RETRY_QUEUE         string = "Q_RETRY"
+	RMQ_NOTIF_EXCHANGE      string = "E_NOTIF"
+	RMQ_NOTIF_QUEUE         string = "Q_NOTIF"
+	RMQ_POSTBACK_EXCHANGE   string = "E_POSTBACK"
+	RMQ_POSTBACK_QUEUE      string = "Q_POSTBACK"
+	RMQ_TRAFFIC_EXCHANGE    string = "E_TRAFFIC"
+	RMQ_TRAFFIC_QUEUE       string = "Q_TRAFFIC"
+	RMQ_PREDICTION_EXCHANGE string = "E_PREDICTION"
+	RMQ_PREDICTION_QUEUE    string = "Q_PREDICTION"
+	RMQ_CREDIT_EXCHANGE     string = "E_CREDIT_GOAL"
+	RMQ_CREDIT_QUEUE        string = "Q_CREDIT_GOAL"
+	RMQ_NEWS_EXCHANGE       string = "E_NEWS"
+	RMQ_NEWS_QUEUE          string = "Q_NEWS"
+	RMQ_SMS_ALERTE_EXCHANGE string = "E_SMS_ALERTE"
+	RMQ_SMS_ALERTE_QUEUE    string = "Q_SMS_ALERTE"
+	ACT_USSD                string = "USSD"
+	ACT_SMS                 string = "SMS"
+	ACT_CONFIRMATION        string = "CONFIRMATION"
+	ACT_NOTIFICATION        string = "NOTIFICATION"
+	ACT_MO                  string = "MO"
+	ACT_FIRSTPUSH           string = "FIRSTPUSH"
+	ACT_RENEWAL             string = "RENEWAL"
+	ACT_RETRY               string = "RETRY"
+	ACT_SMS_ALERTE          string = "SMS_ALERTE"
+	ACT_CREDIT_GOAL         string = "CREDIT_GOAL"
+	ACT_PREDICTION          string = "PREDICTION"
+	ACT_SUB                 string = "SUB"
+	ACT_UNSUB               string = "UNSUB"
+	ACT_USER_LOSES          string = "USER_LOSES"
+	ACT_SCRAPING            string = "SCRAPING"
 )
 
 const (
@@ -133,14 +129,13 @@ func init() {
 	 */
 	rootCmd.AddCommand(consumerUSSDCmd)
 	rootCmd.AddCommand(consumerSMSCmd)
-	rootCmd.AddCommand(consumerMTCmd)
-	rootCmd.AddCommand(consumerRenewalCmd)
-	rootCmd.AddCommand(consumerRetryCmd)
+	rootCmd.AddCommand(consumerNewsCmd)
+	rootCmd.AddCommand(consumerSMSAlerteCmd)
 	rootCmd.AddCommand(consumerCreditGoalCmd)
 	rootCmd.AddCommand(consumerPredictionCmd)
-	rootCmd.AddCommand(consumerNewsCmd)
-	rootCmd.AddCommand(consumerFollowTeamCmd)
-	rootCmd.AddCommand(consumerFollowCompetitionCmd)
+	rootCmd.AddCommand(consumerRenewalCmd)
+	rootCmd.AddCommand(consumerRetryCmd)
+	rootCmd.AddCommand(consumerMTCmd)
 
 	/**
 	 * Publisher Scraping service
@@ -148,12 +143,11 @@ func init() {
 	rootCmd.AddCommand(publisherScrapingFixturesCmd)
 	rootCmd.AddCommand(publisherScrapingPredictionCmd)
 	rootCmd.AddCommand(publisherScrapingNewsCmd)
-	rootCmd.AddCommand(publisherRenewalCmd)
-	rootCmd.AddCommand(publisherRetryCmd)
+	rootCmd.AddCommand(publisherSMSAlerteCmd)
 	rootCmd.AddCommand(publisherCreditCmd)
 	rootCmd.AddCommand(publisherPredictionCmd)
-	rootCmd.AddCommand(publisherFollowTeamCmd)
-	rootCmd.AddCommand(publisherFollowCompetitionCmd)
+	rootCmd.AddCommand(publisherRenewalCmd)
+	rootCmd.AddCommand(publisherRetryCmd)
 
 	// Test command
 	rootCmd.AddCommand(consumerTestLeagueCmd)

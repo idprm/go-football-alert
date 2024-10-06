@@ -403,9 +403,9 @@ var consumerRetryCmd = &cobra.Command{
 	},
 }
 
-var consumerPredictionCmd = &cobra.Command{
-	Use:   "prediction",
-	Short: "Consumer Prediction Service CLI",
+var consumerNewsCmd = &cobra.Command{
+	Use:   "news",
+	Short: "Consumer News Service CLI",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		/**
@@ -443,10 +443,9 @@ var consumerPredictionCmd = &cobra.Command{
 		/**
 		 * SETUP CHANNEL
 		 */
-		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_PREDICTION_EXCHANGE, true, RMQ_PREDICTION_QUEUE)
-		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_MT_EXCHANGE, true, RMQ_MT_QUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_NEWS_EXCHANGE, true, RMQ_NEWS_QUEUE)
 
-		messagesData, errSub := rmq.Subscribe(1, false, RMQ_PREDICTION_QUEUE, RMQ_PREDICTION_EXCHANGE, RMQ_PREDICTION_QUEUE)
+		messagesData, errSub := rmq.Subscribe(1, false, RMQ_NEWS_QUEUE, RMQ_NEWS_EXCHANGE, RMQ_NEWS_QUEUE)
 		if errSub != nil {
 			panic(errSub)
 		}
@@ -466,7 +465,86 @@ var consumerPredictionCmd = &cobra.Command{
 			for d := range messagesData {
 
 				wg.Add(1)
-				p.Prediction(&wg, d.Body)
+				p.News(&wg, d.Body)
+				wg.Wait()
+
+				// Manual consume queue
+				d.Ack(false)
+
+			}
+
+		}()
+
+		fmt.Println("[*] Waiting for data...")
+
+		<-forever
+	},
+}
+
+var consumerSMSAlerteCmd = &cobra.Command{
+	Use:   "follow_competition",
+	Short: "Consumer Follow Competition Service CLI",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		/**
+		 * connect mysql
+		 */
+		db, err := connectDb()
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * connect redis
+		 */
+		rds, err := connectRedis()
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * connect rabbitmq
+		 */
+		rmq, err := connectRabbitMq()
+		if err != nil {
+			panic(err)
+		}
+
+		// DEBUG ON CONSOLE
+		db.Logger = loggerDb.Default.LogMode(loggerDb.Info)
+
+		/**
+		 * SETUP LOG
+		 */
+		logger := logger.NewLogger()
+
+		/**
+		 * SETUP CHANNEL
+		 */
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_SMS_ALERTE_EXCHANGE, true, RMQ_SMS_ALERTE_QUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_MT_EXCHANGE, true, RMQ_MT_QUEUE)
+
+		messagesData, errSub := rmq.Subscribe(1, false, RMQ_SMS_ALERTE_QUEUE, RMQ_SMS_ALERTE_EXCHANGE, RMQ_SMS_ALERTE_QUEUE)
+		if errSub != nil {
+			panic(errSub)
+		}
+
+		// Initial sync waiting group
+		var wg sync.WaitGroup
+
+		// Loop forever listening incoming data
+		forever := make(chan bool)
+
+		p := NewProcessor(db, rds, rmq, logger)
+
+		// Set into goroutine this listener
+		go func() {
+
+			// Loop every incoming data
+			for d := range messagesData {
+
+				wg.Add(1)
+				p.SMSAlerte(&wg, d.Body)
 				wg.Wait()
 
 				// Manual consume queue
@@ -561,9 +639,9 @@ var consumerCreditGoalCmd = &cobra.Command{
 	},
 }
 
-var consumerNewsCmd = &cobra.Command{
-	Use:   "news",
-	Short: "Consumer News Service CLI",
+var consumerPredictionCmd = &cobra.Command{
+	Use:   "prediction",
+	Short: "Consumer Prediction Service CLI",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		/**
@@ -601,88 +679,10 @@ var consumerNewsCmd = &cobra.Command{
 		/**
 		 * SETUP CHANNEL
 		 */
-		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_NEWS_EXCHANGE, true, RMQ_NEWS_QUEUE)
-
-		messagesData, errSub := rmq.Subscribe(1, false, RMQ_NEWS_QUEUE, RMQ_NEWS_EXCHANGE, RMQ_NEWS_QUEUE)
-		if errSub != nil {
-			panic(errSub)
-		}
-
-		// Initial sync waiting group
-		var wg sync.WaitGroup
-
-		// Loop forever listening incoming data
-		forever := make(chan bool)
-
-		p := NewProcessor(db, rds, rmq, logger)
-
-		// Set into goroutine this listener
-		go func() {
-
-			// Loop every incoming data
-			for d := range messagesData {
-
-				wg.Add(1)
-				p.News(&wg, d.Body)
-				wg.Wait()
-
-				// Manual consume queue
-				d.Ack(false)
-
-			}
-
-		}()
-
-		fmt.Println("[*] Waiting for data...")
-
-		<-forever
-	},
-}
-
-var consumerFollowCompetitionCmd = &cobra.Command{
-	Use:   "follow_competition",
-	Short: "Consumer Follow Competition Service CLI",
-	Long:  ``,
-	Run: func(cmd *cobra.Command, args []string) {
-		/**
-		 * connect mysql
-		 */
-		db, err := connectDb()
-		if err != nil {
-			panic(err)
-		}
-
-		/**
-		 * connect redis
-		 */
-		rds, err := connectRedis()
-		if err != nil {
-			panic(err)
-		}
-
-		/**
-		 * connect rabbitmq
-		 */
-		rmq, err := connectRabbitMq()
-		if err != nil {
-			panic(err)
-		}
-
-		// DEBUG ON CONSOLE
-		db.Logger = loggerDb.Default.LogMode(loggerDb.Info)
-
-		/**
-		 * SETUP LOG
-		 */
-		logger := logger.NewLogger()
-
-		/**
-		 * SETUP CHANNEL
-		 */
-		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_FOLLOW_COMPETITION_EXCHANGE, true, RMQ_FOLLOW_COMPETITION_QUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_PREDICTION_EXCHANGE, true, RMQ_PREDICTION_QUEUE)
 		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_MT_EXCHANGE, true, RMQ_MT_QUEUE)
 
-		messagesData, errSub := rmq.Subscribe(1, false, RMQ_FOLLOW_COMPETITION_QUEUE, RMQ_FOLLOW_COMPETITION_EXCHANGE, RMQ_FOLLOW_COMPETITION_QUEUE)
+		messagesData, errSub := rmq.Subscribe(1, false, RMQ_PREDICTION_QUEUE, RMQ_PREDICTION_EXCHANGE, RMQ_PREDICTION_QUEUE)
 		if errSub != nil {
 			panic(errSub)
 		}
@@ -702,86 +702,7 @@ var consumerFollowCompetitionCmd = &cobra.Command{
 			for d := range messagesData {
 
 				wg.Add(1)
-				p.FollowCompetition(&wg, d.Body)
-				wg.Wait()
-
-				// Manual consume queue
-				d.Ack(false)
-
-			}
-
-		}()
-
-		fmt.Println("[*] Waiting for data...")
-
-		<-forever
-	},
-}
-
-var consumerFollowTeamCmd = &cobra.Command{
-	Use:   "follow_team",
-	Short: "Consumer Follow Team Service CLI",
-	Long:  ``,
-	Run: func(cmd *cobra.Command, args []string) {
-		/**
-		 * connect mysql
-		 */
-		db, err := connectDb()
-		if err != nil {
-			panic(err)
-		}
-
-		/**
-		 * connect redis
-		 */
-		rds, err := connectRedis()
-		if err != nil {
-			panic(err)
-		}
-
-		/**
-		 * connect rabbitmq
-		 */
-		rmq, err := connectRabbitMq()
-		if err != nil {
-			panic(err)
-		}
-
-		// DEBUG ON CONSOLE
-		db.Logger = loggerDb.Default.LogMode(loggerDb.Info)
-
-		/**
-		 * SETUP LOG
-		 */
-		logger := logger.NewLogger()
-
-		/**
-		 * SETUP CHANNEL
-		 */
-		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_FOLLOW_TEAM_EXCHANGE, true, RMQ_FOLLOW_TEAM_QUEUE)
-		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_MT_EXCHANGE, true, RMQ_MT_QUEUE)
-
-		messagesData, errSub := rmq.Subscribe(1, false, RMQ_FOLLOW_TEAM_QUEUE, RMQ_FOLLOW_TEAM_EXCHANGE, RMQ_FOLLOW_TEAM_QUEUE)
-		if errSub != nil {
-			panic(errSub)
-		}
-
-		// Initial sync waiting group
-		var wg sync.WaitGroup
-
-		// Loop forever listening incoming data
-		forever := make(chan bool)
-
-		p := NewProcessor(db, rds, rmq, logger)
-
-		// Set into goroutine this listener
-		go func() {
-
-			// Loop every incoming data
-			for d := range messagesData {
-
-				wg.Add(1)
-				p.FollowTeam(&wg, d.Body)
+				p.Prediction(&wg, d.Body)
 				wg.Wait()
 
 				// Manual consume queue

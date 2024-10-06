@@ -10,6 +10,7 @@ type Service struct {
 	ID         int      `gorm:"primaryKey" json:"id"`
 	CountryID  int      `json:"country_id"`
 	Country    *Country `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"country,omitempty"`
+	Channel    string   `gorm:"size:10;not null" json:"channel"`
 	Category   string   `gorm:"size:50;not null" json:"category"`
 	Name       string   `gorm:"size:50;not null" json:"name"`
 	Code       string   `gorm:"size:15;not null" json:"code"`
@@ -17,7 +18,6 @@ type Service struct {
 	Price      float64  `gorm:"size:15" json:"price"`
 	RewardGoal float64  `gorm:"size:15" json:"reward_goal"`
 	RenewalDay int      `gorm:"size:2;default:0" json:"renewal_day"`
-	TrialDay   int      `gorm:"size:2;default:0" json:"trial_day"`
 	UrlTelco   string   `gorm:"size:350;not null" json:"url_telco"`
 	UserTelco  string   `gorm:"size:100;not null" json:"user_telco"`
 	PassTelco  string   `gorm:"size:100;not null" json:"pass_telco"`
@@ -37,6 +37,10 @@ func (e *Service) GetId() int {
 
 func (e *Service) GetCountryId() int {
 	return e.CountryID
+}
+
+func (e *Service) GetChannel() string {
+	return e.Channel
 }
 
 func (e *Service) GetName() string {
@@ -65,10 +69,6 @@ func (s *Service) GetPriceToString() string {
 
 func (s *Service) GetRenewalDay() int {
 	return s.RenewalDay
-}
-
-func (s *Service) GetTrialDay() int {
-	return s.TrialDay
 }
 
 func (e *Service) GetUrlTelco() string {

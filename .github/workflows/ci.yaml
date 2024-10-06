@@ -18,40 +18,36 @@ jobs:
             image: idprm/fb-alert-ussd-service
           - dockerfile: ./Dockerfile.sms
             image: idprm/fb-alert-sms-service
-          - dockerfile: ./Dockerfile.mt
-            image: idprm/fb-alert-mt-service
+          - dockerfile: ./Dockerfile.news
+            image: idprm/fb-alert-news-service
+          - dockerfile: ./Dockerfile.sms_alerte
+            image: idprm/fb-alert-sms-alerte-service
+          - dockerfile: ./Dockerfile.credit_goal
+            image: idprm/fb-alert-credit-goal-service
+          - dockerfile: ./Dockerfile.prediction
+            image: idprm/fb-alert-prediction-service
           - dockerfile: ./Dockerfile.renewal
             image: idprm/fb-alert-renewal-service
           - dockerfile: ./Dockerfile.retry
             image: idprm/fb-alert-retry-service
-          - dockerfile: ./Dockerfile.prediction
-            image: idprm/fb-alert-prediction-service
-          - dockerfile: ./Dockerfile.credit_goal
-            image: idprm/fb-alert-credit-goal-service
-          - dockerfile: ./Dockerfile.news
-            image: idprm/fb-alert-news-service
-          - dockerfile: ./Dockerfile.follow_team
-            image: idprm/fb-alert-follow-team-service
-          - dockerfile: ./Dockerfile.follow_competition
-            image: idprm/fb-alert-follow-competition-service
+          - dockerfile: ./Dockerfile.mt
+            image: idprm/fb-alert-mt-service
           - dockerfile: ./Dockerfile.pub_scraping_fixtures
             image: idprm/fb-alert-pub-scraping-fixtures-service
           - dockerfile: ./Dockerfile.pub_scraping_prediction
             image: idprm/fb-alert-pub-scraping-prediction-service
           - dockerfile: ./Dockerfile.pub_scraping_news
             image: idprm/fb-alert-pub-scraping-news-service
+          - dockerfile: ./Dockerfile.pub_sms_alerte
+            image: idprm/fb-alert-pub-sms-alerte-service
+          - dockerfile: ./Dockerfile.pub_credit_goal
+            image: idprm/fb-alert-pub-credit-goal-service
+          - dockerfile: ./Dockerfile.pub_prediction
+            image: idprm/fb-alert-pub-prediction-service
           - dockerfile: ./Dockerfile.pub_renewal
             image: idprm/fb-alert-pub-renewal-service
           - dockerfile: ./Dockerfile.pub_retry
             image: idprm/fb-alert-pub-retry-service
-          - dockerfile: ./Dockerfile.pub_prediction
-            image: idprm/fb-alert-pub-prediction-service
-          - dockerfile: ./Dockerfile.pub_credit_goal
-            image: idprm/fb-alert-pub-credit-goal-service
-          - dockerfile: ./Dockerfile.pub_follow_team
-            image: idprm/fb-alert-pub-follow-team-service
-          - dockerfile: ./Dockerfile.pub_follow_competition
-            image: idprm/fb-alert-pub-follow-competition-service
 
     permissions:
       contents: read
