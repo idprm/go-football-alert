@@ -263,8 +263,7 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	ussd.Get("/", h.Main)
 	ussd.Get("/q", h.Menu)
 	ussd.Get("/q/:name", h.Detail)
-	ussd.Get("/select", h.Select)
-	ussd.Get("/page", h.Pagination)
+	ussd.Get("/confirm", h.Confirm)
 	ussd.Get("/buy", h.Buy)
 
 	// landing page

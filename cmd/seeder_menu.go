@@ -50,7 +50,7 @@ var menus = []entity.Menu{
 	},
 	{
 		Category:  "none",
-		Name:      "Confirm",
+		Name:      "Confirm Buy",
 		Slug:      "confirm-buy",
 		IsConfirm: false,
 		IsActive:  true,
@@ -72,7 +72,7 @@ var menus = []entity.Menu{
 	{
 		Category:  "none",
 		Name:      "Confirm",
-		Slug:      "confirm-sms-alerte",
+		Slug:      "confirm-flashnews",
 		IsConfirm: false,
 		IsActive:  true,
 		TemplateXML: `
@@ -82,8 +82,52 @@ var menus = []entity.Menu{
 	<page nav="stop">
 		{{.title}} <br/>
         SMS Alerte Competition Obtenez en direct toutes les informations sur votre mobile sur la {{.title}}. Confirmez-vous votre inscription aux alertes?<br/>
-		Prix : {{.price}} / 1 mois.
-        <a href="{{.url}}/{{.version}}/ussd/buy?slug={{.slug}}&code={{.code}}&league_id={{.league_id}}&team_id={{.team_id}}&action=yes" key="1">Oui</a>
+		Prix : {{.price}} / 1 {{.time}}.
+        <a href="{{.url}}/{{.version}}/ussd/buy?slug={{.slug}}&code={{.code}}" key="1">Oui</a>
+        <br/>
+		<a href="{{.url}}/{{.version}}/ussd/q?slug=sms-alerte&title=SMS+Alerte" key="0">Ecran Précédent</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
+    </page>
+</pages>
+		`,
+	},
+	{
+		Category:  "none",
+		Name:      "Confirm Follow Competition",
+		Slug:      "confirm-follow-competition",
+		IsConfirm: false,
+		IsActive:  true,
+		TemplateXML: `
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
+<pages descr="{{.title}} SMS Alerte">
+	<page nav="stop">
+		{{.title}} <br/>
+        SMS Alerte Competition Obtenez en direct toutes les informations sur votre mobile sur la {{.title}}. Confirmez-vous votre inscription aux alertes?<br/>
+		Prix : {{.price}} / 1 {{.time}}.
+        <a href="{{.url}}/{{.version}}/ussd/buy?slug={{.slug}}&code={{.code}}&league_id={{.league_id}}" key="1">Oui</a>
+        <br/>
+		<a href="{{.url}}/{{.version}}/ussd/q?slug=sms-alerte&title=SMS+Alerte" key="0">Ecran Précédent</a>
+        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
+    </page>
+</pages>
+		`,
+	},
+	{
+		Category:  "none",
+		Name:      "Confirm Follow Team",
+		Slug:      "confirm-follow-team",
+		IsConfirm: false,
+		IsActive:  true,
+		TemplateXML: `
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
+<pages descr="{{.title}} SMS Alerte">
+	<page nav="stop">
+		{{.title}} <br/>
+        SMS Alerte Competition Obtenez en direct toutes les informations sur votre mobile sur la {{.title}}. Confirmez-vous votre inscription aux alertes?<br/>
+		Prix : {{.price}} / 1 {{.time}}.
+        <a href="{{.url}}/{{.version}}/ussd/buy?slug={{.slug}}&code={{.code}}&team_id={{.team_id}}" key="1">Oui</a>
         <br/>
 		<a href="{{.url}}/{{.version}}/ussd/q?slug=sms-alerte&title=SMS+Alerte" key="0">Ecran Précédent</a>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
@@ -159,6 +203,23 @@ var menus = []entity.Menu{
 <pages>
   <page>
   	Menu non trouvé<br/>
+    <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
+  </page>
+</pages>
+		`,
+	},
+	{
+		Category:  "none",
+		Name:      "Msisdn not found",
+		Slug:      "msisdn_not_found",
+		IsConfirm: false,
+		IsActive:  true,
+		TemplateXML: `
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
+<pages>
+  <page>
+  	Msisdn not found<br/>
     <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
   </page>
 </pages>

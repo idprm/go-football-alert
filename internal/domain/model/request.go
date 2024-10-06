@@ -48,10 +48,6 @@ func (m *UssdRequest) GetAction() string {
 	return m.Action
 }
 
-func (m *UssdRequest) IsYes() bool {
-	return m.GetAction() == "yes"
-}
-
 func (m *UssdRequest) GetLeagueId() int {
 	return m.LeagueId
 }

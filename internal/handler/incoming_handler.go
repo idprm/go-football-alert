@@ -3,14 +3,12 @@ package handler
 import (
 	"encoding/json"
 	"log"
-	"os"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
-	"github.com/idprm/go-football-alert/internal/domain/entity"
 	"github.com/idprm/go-football-alert/internal/domain/model"
 	"github.com/idprm/go-football-alert/internal/logger"
 	"github.com/idprm/go-football-alert/internal/services"
@@ -173,28 +171,15 @@ func (h *IncomingHandler) MessageOriginated(c *fiber.Ctx) error {
 
 	err := c.QueryParser(req)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(
-			&model.WebResponse{
-				Error:      true,
-				StatusCode: fiber.StatusBadRequest,
-				Message:    err.Error(),
-			},
-		)
+		return c.Status(fiber.StatusBadRequest).SendString(err.Error())
 	}
 
 	jsonData, err := json.Marshal(req)
 	if err != nil {
-		return c.Status(fiber.StatusBadGateway).JSON(
-			&model.WebResponse{
-				Error:      true,
-				StatusCode: fiber.StatusBadGateway,
-				Message:    err.Error(),
-			},
-		)
+		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
 	}
 
 	l.WithFields(logrus.Fields{"request": req}).Info("MO")
-
 	h.rmq.IntegratePublish(
 		RMQ_SMS_EXCHANGE,
 		RMQ_SMS_QUEUE,
@@ -228,22 +213,12 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
 	}
 
+	// set msisdn
 	req.SetMsisdn(c.Get("User-MSISDN"))
 
-	// if menu unavailable
+	// if menu or page not found
 	if !h.menuService.IsSlug(req.GetSlug()) {
-		menu, err := h.menuService.GetBySlug("404")
-		if err != nil {
-			return c.Status(fiber.StatusBadGateway).SendString(err.Error())
-		}
-		replacer := strings.NewReplacer(
-			"{{.url}}", c.BaseURL(),
-			"{{.version}}", API_VERSION,
-			"{{.title}}", req.GetTitle(),
-			"&", "&amp;",
-		)
-		replace := replacer.Replace(menu.GetTemplateXML())
-		return c.Status(fiber.StatusOK).SendString(replace)
+		return c.Status(fiber.StatusOK).SendString(h.MsisdnNotFound(c.BaseURL()))
 	}
 
 	menu, err := h.menuService.GetBySlug(req.GetSlug())
@@ -253,50 +228,10 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 
 	// if is_confirm = true
 	if menu.IsConfirm {
-		if !req.IsMsisdn() {
-			menu, err := h.menuService.GetBySlug("msisdn_not_found")
-			if err != nil {
-				return c.Status(fiber.StatusBadGateway).SendString(err.Error())
-			}
-			replacer := strings.NewReplacer(
-				"{{.url}}", c.BaseURL(),
-				"{{.version}}", API_VERSION,
-				"{{.title}}", req.GetTitle(),
-				"&", "&amp;",
-			)
-			replace := replacer.Replace(menu.GetTemplateXML())
-			return c.Status(fiber.StatusOK).SendString(replace)
+		// if sub not active
+		if !h.subscriptionService.IsActiveSubscriptionByCategory(menu.GetCategory(), req.GetMsisdn()) {
+			return c.Status(fiber.StatusOK).SendString(h.IsActiveSubscription(c.BaseURL(), req.GetSlug(), menu.GetCategory()))
 		}
-		// // if sub not active
-		// if !h.subscriptionService.IsActiveSubscriptionByCategory(menu.GetCategory(), req.GetMsisdn()) {
-		// 	services, err := h.serviceService.GetAllByCategory(menu.GetCategory())
-		// 	if err != nil {
-		// 		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
-		// 	}
-
-		// 	// package
-		// 	var servicesData []string
-		// 	for _, s := range services {
-		// 		row := `<a href="` + c.BaseURL() + `/` + API_VERSION + `/ussd/select?slug=` + req.GetSlug() + `&category=` + menu.GetCategory() + `&package=` + s.GetPackage() + `">` + s.GetName() + " (" + s.GetPriceToString() + ")" + "</a>"
-		// 		servicesData = append(servicesData, row)
-		// 	}
-		// 	servicesString := strings.Join(servicesData, "\n")
-
-		// 	replacer := strings.NewReplacer(
-		// 		"{{.url}}", c.BaseURL(),
-		// 		"{{.version}}", API_VERSION,
-		// 		"{{.title}}", req.GetTitle(),
-		// 		"{{.data}}", servicesString,
-		// 		"&", "&amp;",
-		// 	)
-
-		// 	data, err := os.ReadFile(PATH_VIEWS + "/xml/package.xml")
-		// 	if err != nil {
-		// 		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
-		// 	}
-		// 	replace := replacer.Replace(string(data))
-		// 	return c.Status(fiber.StatusOK).SendString(replace)
-		// }
 
 		var data string
 
@@ -392,6 +327,7 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 			`&amp;team_id=` + teamId +
 			`&amp;page=` + page +
 			`">Suiv</a>`
+
 		replacer := strings.NewReplacer(
 			"{{.url}}", c.BaseURL(),
 			"{{.version}}", API_VERSION,
@@ -441,12 +377,25 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
 	}
 
+	// setter msisdn
 	req.SetMsisdn(c.Get("User-MSISDN"))
 
-	menu, err := h.menuService.GetBySlug(c.Params("name"))
+	// check if msisdn not found
+	if !req.IsMsisdn() {
+		return c.Status(fiber.StatusOK).SendString(h.MsisdnNotFound(c.BaseURL()))
+	}
+
+	// get menu
+	menu, err := h.menuService.GetBySlug(req.GetSlug())
 	if err != nil {
 		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
 	}
+
+	// check sub is active
+	if !h.subscriptionService.IsActiveSubscriptionByCategory(menu.GetCategory(), req.GetMsisdn()) {
+		return c.Status(fiber.StatusOK).SendString(h.IsActiveSubscription(c.BaseURL(), req.GetSlug(), menu.GetCategory()))
+	}
+
 	replacer := strings.NewReplacer(
 		"{{.url}}", c.BaseURL(),
 		"{{.version}}", API_VERSION,
@@ -459,113 +408,56 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).SendString(replace)
 }
 
-func (h *IncomingHandler) Select(c *fiber.Ctx) error {
+func (h *IncomingHandler) Confirm(c *fiber.Ctx) error {
 	c.Set("Content-type", "text/xml; charset=iso-8859-1")
 	req := new(model.UssdRequest)
 
 	err := c.QueryParser(req)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(
-			&model.WebResponse{
-				Error:      true,
-				StatusCode: fiber.StatusBadRequest,
-				Message:    err.Error(),
-			},
-		)
+		return c.Status(fiber.StatusBadRequest).SendString(err.Error())
 	}
 
+	// setter msisdn
 	req.SetMsisdn(c.Get("User-MSISDN"))
 
-	// if menu unavailable
+	// check if msisdn not found
+	if !req.IsMsisdn() {
+		return c.Status(fiber.StatusOK).SendString(h.MsisdnNotFound(c.BaseURL()))
+	}
+
+	// if menu or page not found
 	if !h.menuService.IsSlug(req.GetSlug()) {
-
-		data, err := os.ReadFile(PATH_VIEWS + "/xml/404.xml")
-		if err != nil {
-			return c.Status(fiber.StatusBadGateway).SendString(err.Error())
-		}
-		replacer := strings.NewReplacer(
-			"{{.url}}", c.BaseURL(),
-			"{{.version}}", API_VERSION,
-			"&", "&amp;",
-		)
-		replace := replacer.Replace(string(data))
-		return c.Status(fiber.StatusOK).SendString(replace)
-	}
-
-	service, err := h.serviceService.GetByPackage(req.GetCategory(), req.GetPackage())
-	if err != nil {
-		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
-	}
-
-	menu, err := os.ReadFile(PATH_VIEWS + "/xml/confirm.xml")
-	if err != nil {
-		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
-	}
-	replacer := strings.NewReplacer(
-		"{{.url}}", c.BaseURL(),
-		"{{.version}}", API_VERSION,
-		"{{.slug}}", req.GetSlug(),
-		"{{.code}}", service.GetCode(),
-		"{{.service}}", service.GetName(),
-		"{{.price}}", service.GetPriceToString(),
-		"&", "&amp;",
-	)
-	replace := replacer.Replace(string(menu))
-	return c.Status(fiber.StatusOK).SendString(replace)
-}
-
-func (h *IncomingHandler) Pagination(c *fiber.Ctx) error {
-	c.Set("Content-type", "text/xml; charset=iso-8859-1")
-	req := new(model.UssdRequest)
-
-	err := c.QueryParser(req)
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(
-			&model.WebResponse{
-				Error:      true,
-				StatusCode: fiber.StatusBadRequest,
-				Message:    err.Error(),
-			},
-		)
-	}
-
-	req.SetMsisdn(c.Get("User-MSISDN"))
-
-	// if menu unavailable
-	if !h.menuService.IsSlug(req.GetSlug()) {
-		menu, err := h.menuService.GetBySlug("404")
-		if err != nil {
-			return c.Status(fiber.StatusNotFound).SendString(err.Error())
-		}
-		replacer := strings.NewReplacer(
-			"{{.url}}", c.BaseURL(),
-			"{{.version}}", API_VERSION,
-			"&", "&amp;",
-		)
-		replace := replacer.Replace(string(menu.GetTemplateXML()))
-		return c.Status(fiber.StatusOK).SendString(replace)
+		return c.Status(fiber.StatusOK).SendString(h.PageNotFound(c.BaseURL()))
 	}
 
 	// if service unavailable
 	if !h.serviceService.IsService(req.GetCode()) {
-		menu, err := h.menuService.GetBySlug("404")
-		if err != nil {
-			return c.Status(fiber.StatusNotFound).SendString(err.Error())
-		}
-		replacer := strings.NewReplacer(
-			"{{.url}}", c.BaseURL(),
-			"{{.version}}", API_VERSION,
-			"&", "&amp;",
-		)
-		replace := replacer.Replace(menu.GetTemplateXML())
-		return c.Status(fiber.StatusOK).SendString(replace)
+		return c.Status(fiber.StatusOK).SendString(h.PageNotFound(c.BaseURL()))
 	}
+
+	service, err := h.serviceService.Get(req.GetCode())
+	if err != nil {
+		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
+	}
+
+	menu, err := h.menuService.GetBySlug("confirm-sms-alerte")
+	if err != nil {
+		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
+	}
+
 	replacer := strings.NewReplacer(
 		"{{.url}}", c.BaseURL(),
 		"{{.version}}", API_VERSION,
+		"{{.slug}}", req.GetSlug(),
+		"{{.title}}", service.GetName(),
+		"{{.category}}", req.GetCategory(),
+		"{{.package}}", req.GetPackage(),
+		"{{.code}}", service.GetCode(),
+		"{{.price}}", service.GetPriceToString(),
 		"&", "&amp;",
 	)
-	replace := replacer.Replace(string(""))
+
+	replace := replacer.Replace(menu.GetTemplateXML())
 	return c.Status(fiber.StatusOK).SendString(replace)
 }
 
@@ -575,46 +467,30 @@ func (h *IncomingHandler) Buy(c *fiber.Ctx) error {
 
 	err := c.QueryParser(req)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(
-			&model.WebResponse{
-				Error:      true,
-				StatusCode: fiber.StatusBadRequest,
-				Message:    err.Error(),
-			},
-		)
+		return c.Status(fiber.StatusBadRequest).SendString(err.Error())
 	}
 
+	// setter msisdn
 	req.SetMsisdn(c.Get("User-MSISDN"))
 
-	// if menu unavailable
-	if !h.menuService.IsSlug(req.GetSlug()) {
-		menu, err := h.menuService.GetBySlug("404")
-		if err != nil {
-			return c.Status(fiber.StatusNotFound).SendString(err.Error())
-		}
-		replacer := strings.NewReplacer(
-			"{{.url}}", c.BaseURL(),
-			"{{.version}}", API_VERSION,
-			"&", "&amp;",
-		)
-		replace := replacer.Replace(menu.GetTemplateXML())
-		return c.Status(fiber.StatusOK).SendString(replace)
+	// check if msisdn not found
+	if !req.IsMsisdn() {
+		return c.Status(fiber.StatusOK).SendString(h.MsisdnNotFound(c.BaseURL()))
+	}
+
+	// if menu or page not found
+	if !h.menuService.IsSlug("success") {
+		return c.Status(fiber.StatusOK).SendString(h.PageNotFound(c.BaseURL()))
 	}
 
 	// if service unavailable
 	if !h.serviceService.IsService(req.GetCode()) {
-		menu, err := h.menuService.GetBySlug("404")
-		if err != nil {
-			return c.Status(fiber.StatusNotFound).SendString(err.Error())
-		}
-		replacer := strings.NewReplacer(
-			"{{.url}}", c.BaseURL(),
-			"{{.version}}", API_VERSION,
-			"{{.date}}", utils.FormatFR(time.Now()),
-			"&", "&amp;",
-		)
-		replace := replacer.Replace(menu.GetTemplateXML())
-		return c.Status(fiber.StatusOK).SendString(replace)
+		return c.Status(fiber.StatusOK).SendString(h.PageNotFound(c.BaseURL()))
+	}
+
+	menu, err := h.menuService.GetBySlug("success")
+	if err != nil {
+		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
 	}
 
 	service, err := h.serviceService.Get(req.GetCode())
@@ -622,47 +498,82 @@ func (h *IncomingHandler) Buy(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
 	}
 
-	menuSuccess, err := h.menuService.GetBySlug("success")
-	if err != nil {
-		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
-	}
-
-	menuFailed, err := h.menuService.GetBySlug("failed")
-	if err != nil {
-		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
-	}
-
 	replacer := strings.NewReplacer(
 		"{{.url}}", c.BaseURL(),
 		"{{.version}}", API_VERSION,
-		"{{.date}}", utils.FormatFR(time.Now()),
-		"{{.slug}}", req.GetSlug(),
-		"{{.category}}", req.GetCategory(),
-		"{{.package}}", req.GetPackage(),
 		"{{.service}}", service.GetName(),
-		"{{.price}}", service.GetPriceToString(),
 		"&", "&amp;",
 	)
-
-	if req.IsYes() {
-		h.subscriptionService.Save(
-			&entity.Subscription{
-				ServiceID:   service.GetId(),
-				Category:    service.GetCategory(),
-				Msisdn:      req.GetMsisdn(),
-				Channel:     CHANNEL_USSD,
-				LatestTrxId: "",
-				IsActive:    true,
-			},
-		)
-		replace := replacer.Replace(menuSuccess.GetTemplateXML())
-		return c.Status(fiber.StatusOK).SendString(replace)
-	}
-
-	replace := replacer.Replace(menuFailed.GetTemplateXML())
+	replace := replacer.Replace(menu.GetTemplateXML())
 	return c.Status(fiber.StatusOK).SendString(replace)
 }
 
+func (h *IncomingHandler) PageNotFound(baseUrl string) string {
+	menu, err := h.menuService.GetBySlug("404")
+	if err != nil {
+		return err.Error()
+	}
+	replacer := strings.NewReplacer(
+		"{{.url}}", baseUrl,
+		"{{.version}}", API_VERSION,
+		"&", "&amp;",
+	)
+	return replacer.Replace(menu.GetTemplateXML())
+}
+
+func (h *IncomingHandler) MsisdnNotFound(baseUrl string) string {
+	// check if msisdn not found
+	menu, err := h.menuService.GetBySlug("msisdn_not_found")
+	if err != nil {
+		log.Println(err.Error())
+	}
+	replacer := strings.NewReplacer(
+		"{{.url}}", baseUrl,
+		"{{.version}}", API_VERSION,
+		"&", "&amp;",
+	)
+	return replacer.Replace(menu.GetTemplateXML())
+}
+
+func (h *IncomingHandler) IsActiveSubscription(baseUrl, slug, category string) string {
+	services, err := h.serviceService.GetAllByCategory(category)
+	if err != nil {
+		return err.Error()
+	}
+
+	menu, err := h.menuService.GetBySlug("package")
+	if err != nil {
+		return err.Error()
+	}
+	// package
+	var servicesData []string
+	for _, s := range services {
+		row := `<a href="` +
+			baseUrl + `/` +
+			API_VERSION +
+			`/ussd/confirm?slug=` + slug +
+			`&code=` + s.Code +
+			`&category=` + category +
+			`&package=` + s.GetPackage() + `">` +
+			s.GetName() + " (" + s.GetPriceToString() + ")" +
+			"</a>"
+		servicesData = append(servicesData, row)
+	}
+	servicesString := strings.Join(servicesData, "\n")
+
+	replacer := strings.NewReplacer(
+		"{{.url}}", baseUrl,
+		"{{.version}}", API_VERSION,
+		"{{.title}}", "S'abonner",
+		"{{.data}}", servicesString,
+		"&", "&amp;",
+	)
+	return replacer.Replace(string(menu.GetTemplateXML()))
+}
+
+/**
+** Menu service
+**/
 func (h *IncomingHandler) LiveMatchs(baseUrl string, page int) string {
 	livematchs, err := h.fixtureService.GetAllLiveMatchUSSD(page)
 	if err != nil {
@@ -673,7 +584,12 @@ func (h *IncomingHandler) LiveMatchs(baseUrl string, page int) string {
 	var liveMatchsString string
 	if len(livematchs) > 0 {
 		for _, s := range livematchs {
-			row := `<a href="` + baseUrl + `/` + API_VERSION + `/ussd/q/detail?slug=lm-live-match&amp;title=` + s.GetFixtureNameQueryEscape() + `">` + s.GetFixtureName() + `</a>`
+			row := `<a href="` +
+				baseUrl + `/` +
+				API_VERSION + `/ussd/q/detail?slug=lm-live-match&amp;title=` +
+				s.GetFixtureNameQueryEscape() + `">` +
+				s.GetFixtureName() +
+				`</a>`
 			liveMatchsData = append(liveMatchsData, row)
 		}
 		liveMatchsString = strings.Join(liveMatchsData, "\n")
@@ -718,7 +634,12 @@ func (h *IncomingHandler) FlashNews(baseUrl string, page int) string {
 	var newsString string
 	if len(news) > 0 {
 		for _, s := range news {
-			row := `<a href="` + baseUrl + `/` + API_VERSION + `/ussd/q/detail?slug=flash-news&amp;title=` + s.GetTitleQueryEscape() + `">` + s.GetTitleLimited(20) + `</a>`
+			row := `<a href="` +
+				baseUrl + `/` +
+				API_VERSION + `/ussd/q/detail?slug=flash-news&amp;category=follow-competition&amp;title=` +
+				s.GetTitleQueryEscape() + `">` +
+				s.GetTitleLimited(20) +
+				`</a>`
 			newsData = append(newsData, row)
 		}
 		newsString = strings.Join(newsData, "\n")
