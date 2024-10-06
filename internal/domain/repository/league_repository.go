@@ -22,6 +22,9 @@ type ILeagueRepository interface {
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetAllByActive() ([]*entity.League, error)
 	GetAllUSSD(int) ([]*entity.League, error)
+	GetAllEuropeUSSD(int) ([]*entity.League, error)
+	GetAllAfriqueUSSD(int) ([]*entity.League, error)
+	GetAllWorldUSSD(int) ([]*entity.League, error)
 	Get(string) (*entity.League, error)
 	GetByPrimaryId(int) (*entity.League, error)
 	GetByName(string) (*entity.League, error)
@@ -80,6 +83,33 @@ func (r *LeagueRepository) GetAllByActive() ([]*entity.League, error) {
 func (r *LeagueRepository) GetAllUSSD(page int) ([]*entity.League, error) {
 	var c []*entity.League
 	err := r.db.Where("is_active = ?", true).Order("id ASC").Offset((page - 1) * 7).Limit(7).Find(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
+func (r *LeagueRepository) GetAllEuropeUSSD(page int) ([]*entity.League, error) {
+	var c []*entity.League
+	err := r.db.Where("is_active = ?", true).Where("country IN('England', 'Belgium', 'Portugal', 'France', 'Italy', 'Spain', 'Germany')").Order("id ASC").Offset((page - 1) * 7).Limit(7).Find(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
+func (r *LeagueRepository) GetAllAfriqueUSSD(page int) ([]*entity.League, error) {
+	var c []*entity.League
+	err := r.db.Where("is_active = ?", true).Where("country IN('Mali')").Order("id ASC").Offset((page - 1) * 7).Limit(7).Find(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
+func (r *LeagueRepository) GetAllWorldUSSD(page int) ([]*entity.League, error) {
+	var c []*entity.League
+	err := r.db.Where("is_active = ?", true).Where("country IN('World')").Order("id ASC").Offset((page - 1) * 7).Limit(7).Find(&c).Error
 	if err != nil {
 		return nil, err
 	}

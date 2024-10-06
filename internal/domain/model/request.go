@@ -72,6 +72,10 @@ func (m *UssdRequest) SetMsisdn(v string) {
 	m.Msisdn = v
 }
 
+func (m *UssdRequest) IsMsisdn() bool {
+	return m.GetMsisdn() != ""
+}
+
 type SMSRequest struct {
 	Smsc     string `query:"smsc,omitempty"`
 	Username string `query:"username,omitempty"`
@@ -181,9 +185,9 @@ type AfricasTalkingRequest struct {
 	Text        string `form:"text" json:"text"`
 }
 
-/**
-**/
-
+/***
+**
+***/
 func (m *UssdRequest) IsLmLiveMatch() bool {
 	return m.GetSlug() == "lm-live-match"
 }

@@ -22,6 +22,9 @@ type ILeagueService interface {
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetAllByActive() ([]*entity.League, error)
 	GetAllUSSD(int) ([]*entity.League, error)
+	GetAllEuropeUSSD(int) ([]*entity.League, error)
+	GetAllAfriqueUSSD(int) ([]*entity.League, error)
+	GetAllWorldUSSD(int) ([]*entity.League, error)
 	Get(string) (*entity.League, error)
 	GetByPrimaryId(int) (*entity.League, error)
 	GetByName(string) (*entity.League, error)
@@ -60,6 +63,18 @@ func (s *LeagueService) GetAllByActive() ([]*entity.League, error) {
 
 func (s *LeagueService) GetAllUSSD(page int) ([]*entity.League, error) {
 	return s.leagueRepo.GetAllUSSD(page)
+}
+
+func (s *LeagueService) GetAllEuropeUSSD(page int) ([]*entity.League, error) {
+	return s.leagueRepo.GetAllEuropeUSSD(page)
+}
+
+func (s *LeagueService) GetAllAfriqueUSSD(page int) ([]*entity.League, error) {
+	return s.leagueRepo.GetAllAfriqueUSSD(page)
+}
+
+func (s *LeagueService) GetAllWorldUSSD(page int) ([]*entity.League, error) {
+	return s.leagueRepo.GetAllWorldUSSD(page)
 }
 
 func (s *LeagueService) GetByPrimaryId(primaryId int) (*entity.League, error) {
