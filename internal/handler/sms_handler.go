@@ -282,14 +282,14 @@ func (h *SMSHandler) AlerteCompetition() {
 	// if err != nil {
 	// 	log.Println(err.Error())
 	// }
-	content, err := h.getContent(SMS_CREDIT_GOAL_SUB)
+	content, err := h.getContent(SMS_FOLLOW_COMPETITION_SUB)
 	if err != nil {
 		log.Println(err.Error())
 	}
 
 	mt := &model.MTRequest{
 		Smsc:         h.req.GetTo(),
-		Subscription: &entity.Subscription{},
+		Subscription: &entity.Subscription{Msisdn: h.req.GetMsisdn()},
 		Content:      content,
 	}
 
@@ -298,7 +298,7 @@ func (h *SMSHandler) AlerteCompetition() {
 		log.Println(err.Error())
 	}
 
-	h.Firstpush()
+	//h.Firstpush()
 
 	h.rmq.IntegratePublish(
 		RMQ_MT_EXCHANGE,

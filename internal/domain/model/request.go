@@ -163,6 +163,7 @@ func (m *MORequest) GetServiceByNumber() string {
 
 type MTRequest struct {
 	Smsc         string               `json:"smsc,omitempty"`
+	Service      *entity.Service      `json:"service,omitempty"`
 	Content      *entity.Content      `json:"content,omitempty"`
 	Subscription *entity.Subscription `json:"subscription,omitempty"`
 }
@@ -171,14 +172,6 @@ type ErrorResponse struct {
 	FailedField string `json:"failed_field" xml:"failed_field"`
 	Tag         string `json:"tag" xml:"tag"`
 	Value       string `json:"value" xml:"value"`
-}
-
-// Read the variables sent via POST from our API
-type AfricasTalkingRequest struct {
-	SessionId   string `form:"sessionId" json:"session_id"`
-	ServiceCode string `form:"serviceCode" json:"service_code"`
-	PhoneNumber string `form:"phoneNumber" json:"phone_number"`
-	Text        string `form:"text" json:"text"`
 }
 
 /***
@@ -221,7 +214,7 @@ func (m *UssdRequest) IsChampCreditScore() bool {
 }
 
 func (m *UssdRequest) IsChampCreditGoal() bool {
-	return m.GetSlug() == "champ-creditgoal"
+	return m.GetSlug() == "champ-credit-goal"
 }
 
 func (m *UssdRequest) IsChampSMSAlerte() bool {
@@ -240,18 +233,6 @@ func (m *UssdRequest) IsSMSAlerte() bool {
 	return m.GetSlug() == "sms-alerte"
 }
 
-func (m *UssdRequest) IsSMSKitFoot() bool {
-	return m.GetSlug() == "sms-kit-foot"
-}
-
-func (m *UssdRequest) IsSMSFootEurope() bool {
-	return m.GetSlug() == "sms-foot-europe"
-}
-
-func (m *UssdRequest) IsSMSFootAfrique() bool {
-	return m.GetSlug() == "sms-foot-afrique"
-}
-
 func (m *UssdRequest) IsSMSAlerteEquipe() bool {
 	return m.GetSlug() == "sms-alerte-equipe"
 }
@@ -267,35 +248,3 @@ func (m *UssdRequest) IsKitFoot() bool {
 func (m *UssdRequest) IsKitFootChamp() bool {
 	return m.GetSlug() == "kit-foot-champ"
 }
-
-func (m *UssdRequest) IsKitFootPremierLeague() bool {
-	return m.GetSlug() == "kit-foot-premier-league"
-}
-
-func (m *UssdRequest) IsPremierLeagues() bool {
-	return m.GetSlug() == "foot-europe-premier-league"
-}
-
-func (m *UssdRequest) IsLaLigas() bool {
-	return m.GetSlug() == "foot-europe-la-liga"
-}
-
-func (m *UssdRequest) IsLigue1s() bool {
-	return m.GetSlug() == "foot-europe-ligue-1"
-}
-
-func (m *UssdRequest) IsSerieA() bool {
-	return m.GetSlug() == "foot-europe-serie-a"
-}
-
-// if req.GetSlug() == "foot-europe-serie-a" {
-// data = h.SerieA(req.GetPage() + 1)
-// }
-
-// if req.GetSlug() == "foot-europe-bundesligua" {
-// data = h.Bundesliguas(req.GetPage() + 1)
-// }
-
-// if req.GetSlug() == "foot-europe-champ-portugal" {
-// data = h.PrimeiraLigas(req.GetPage() + 1)
-// }
