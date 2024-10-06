@@ -35,7 +35,7 @@ func (r *ContentRepository) Count(name string) (int64, error) {
 
 func (r *ContentRepository) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {
 	var contents []*entity.Content
-	err := r.db.Scopes(Paginate(contents, pagination, r.db)).Preload("Service").Find(&contents).Error
+	err := r.db.Scopes(Paginate(contents, pagination, r.db)).Find(&contents).Error
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +45,7 @@ func (r *ContentRepository) GetAllPaginate(pagination *entity.Pagination) (*enti
 
 func (r *ContentRepository) Get(name string) (*entity.Content, error) {
 	var content entity.Content
-	err := r.db.Where("name = ?", name).Preload("Service").Take(&content).Error
+	err := r.db.Where("name = ?", name).Take(&content).Error
 	if err != nil {
 		return nil, err
 	}

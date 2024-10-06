@@ -1,9 +1,10 @@
 package entity
 
 type Verify struct {
-	Msisdn string `json:"msisdn"`
-	Pin    string `json:"pin"`
-	Status string `json:"status"`
+	Msisdn   string `json:"msisdn"`
+	Pin      string `json:"pin"`
+	Status   string `json:"status"`
+	Category string `json:"category"`
 }
 
 func (e *Verify) GetMsisdn() string {
@@ -16,6 +17,10 @@ func (e *Verify) GetPin() string {
 
 func (e *Verify) GetStatus() string {
 	return e.Status
+}
+
+func (e *Verify) GetCategory() string {
+	return e.Category
 }
 
 func (e *Verify) SetStatus(data string) {

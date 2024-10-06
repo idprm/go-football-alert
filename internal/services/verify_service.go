@@ -12,8 +12,10 @@ type VerifyService struct {
 }
 
 type IVerifyService interface {
-	Set(*entity.Verify) error
-	Get(string) (*entity.Verify, error)
+	SetPIN(*entity.Verify) error
+	SetCategory(*entity.Verify) error
+	GetPIN(string) (*entity.Verify, error)
+	GetCategory(string) (*entity.Verify, error)
 }
 
 func NewVerifyService(verifyRepo repository.IVerifyRepository) *VerifyService {
@@ -22,10 +24,18 @@ func NewVerifyService(verifyRepo repository.IVerifyRepository) *VerifyService {
 	}
 }
 
-func (s *VerifyService) Set(t *entity.Verify) error {
-	return s.verifyRepo.Set(t)
+func (s *VerifyService) SetPIN(t *entity.Verify) error {
+	return s.verifyRepo.SetPIN(t)
 }
 
-func (s *VerifyService) Get(msisdn string) (*entity.Verify, error) {
-	return s.verifyRepo.Get(strings.ToLower(msisdn))
+func (s *VerifyService) SetCategory(t *entity.Verify) error {
+	return s.verifyRepo.SetCategory(t)
+}
+
+func (s *VerifyService) GetPIN(v string) (*entity.Verify, error) {
+	return s.verifyRepo.GetPIN(strings.ToLower(v))
+}
+
+func (s *VerifyService) GetCategory(v string) (*entity.Verify, error) {
+	return s.verifyRepo.GetCategory(strings.ToLower(v))
 }

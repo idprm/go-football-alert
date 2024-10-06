@@ -103,6 +103,8 @@ func (p *Processor) SMS(wg *sync.WaitGroup, message []byte) {
 	subscriptionFollowCompetitionService := services.NewSubscriptionFollowCompetitionService(subscriptionFollowCompetitionRepo)
 	subscriptionFollowTeamRepo := repository.NewSubscriptionFollowTeamRepository(p.db)
 	subscriptionFollowTeamService := services.NewSubscriptionFollowTeamService(subscriptionFollowTeamRepo)
+	verifyRepo := repository.NewVerifyRepository(p.rds)
+	verifyService := services.NewVerifyService(verifyRepo)
 
 	var req *model.MORequest
 	json.Unmarshal([]byte(message), &req)
@@ -123,6 +125,7 @@ func (p *Processor) SMS(wg *sync.WaitGroup, message []byte) {
 		subscriptionPredictService,
 		subscriptionFollowCompetitionService,
 		subscriptionFollowTeamService,
+		verifyService,
 		req,
 	)
 

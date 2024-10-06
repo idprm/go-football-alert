@@ -45,16 +45,15 @@ var (
 	RMQ_USSD_QUEUE      string = "Q_USSD"
 	RMQ_SMS_EXCHANGE    string = "E_SMS"
 	RMQ_SMS_QUEUE       string = "Q_SMS"
-	RMQ_MO_EXCHANGE     string = "E_MO"
-	RMQ_MO_QUEUE        string = "Q_MO"
 	RMQ_MT_EXCHANGE     string = "E_MT"
 	RMQ_MT_QUEUE        string = "Q_MT"
 	RMQ_NEWS_EXCHANGE   string = "E_NEWS"
 	RMQ_NEWS_QUEUE      string = "Q_NEWS"
+	MT_SMS_ALERTE       string = "SMS_ALERTE"
+	MT_CREDIT_GOAL      string = "CREDIT_GOAL"
+	MT_PREDICTION       string = "PREDICTION"
 	MT_FIRSTPUSH        string = "FIRSTPUSH"
 	MT_RENEWAL          string = "RENEWAL"
-	MT_PREDICTION       string = "PREDICTION"
-	MT_CREDIT_GOAL      string = "CREDIT_GOAL"
 	MT_NEWS             string = "NEWS"
 	MT_UNSUB            string = "UNSUB"
 	STATUS_SUCCESS      string = "SUCCESS"
@@ -172,6 +171,11 @@ func (h *IncomingHandler) MessageOriginated(c *fiber.Ctx) error {
 	err := c.QueryParser(req)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).SendString(err.Error())
+	}
+
+	errors := ValidateStruct(*req)
+	if errors != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(errors)
 	}
 
 	jsonData, err := json.Marshal(req)

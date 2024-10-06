@@ -278,6 +278,14 @@ func seederDB(db *gorm.DB) {
 		{
 			Category: ACT_CONFIRMATION,
 			Channel:  ACT_SMS,
+			Name:     SMS_CONFIRMATION,
+			Value: `1.S'abonner au jour (50/jour)\n
+			2.S'anonner a la semaine (200/semaine)\n
+			3.S'abonnet au mois (500/mois)`,
+		},
+		{
+			Category: ACT_CONFIRMATION,
+			Channel:  ACT_SMS,
 			Name:     SMS_CREDIT_GOAL_SUB,
 			Value:    "Credit Goal: Votre participation a ete enregistree. Si {team} marque des buts lors du prochain match, vous recevrez {reward_per_goal}{currency} de credit par but. {price}{curency}/souscription",
 		},
@@ -404,12 +412,6 @@ func seederDB(db *gorm.DB) {
 		{
 			Category: ACT_CONFIRMATION,
 			Channel:  ACT_SMS,
-			Name:     SMS_CONFIRMATION,
-			Value:    "Info Services FFC: [#157#] USSD /[981] SMS Alerte Equipe /[9009] - SMS Alerte Competition /[###] SMS Alerte a la demande /[944] Credit Goal /[985] Pronostic",
-		},
-		{
-			Category: ACT_CONFIRMATION,
-			Channel:  ACT_SMS,
 			Name:     SMS_INFO,
 			Value:    "Info Services FFC: [#157#] USSD /[981] SMS Alerte Equipe /[9009] - SMS Alerte Competition /[###] SMS Alerte a la demande /[944] Credit Goal /[985] Pronostic",
 		},
@@ -458,18 +460,6 @@ func seederDB(db *gorm.DB) {
 			IsUnlocked: false,
 		},
 	}
-
-	/**
-	1.  #101#36#1 : Live match (Confirm Message)
-	2.  #101#36#2 : Flash News (Confirm Message)
-	3.  #101#36#3 : Crédit Goal (Confirm Message)
-	4.  #101#36#4 : Champ. Mali (Confirm Message)
-	5.  #101#36#5 : Prédiction (Confirm Message)
-	6.  #101#36#6 : SMS Alerte (Confirm Message)
-	7.  #101#36#7 : Kit Foot (Confirm Message)
-	8.  #101#36#8 : Foot Europe (Free Access)
-	9.  #101#36#9 : Suiv
-	**/
 
 	if db.Find(&country).RowsAffected == 0 {
 		for i, _ := range countries {

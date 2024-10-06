@@ -34,6 +34,7 @@ type SMSHandler struct {
 	subscriptionPredictService           services.ISubscriptionPredictService
 	subscriptionFollowCompetitionService services.ISubscriptionFollowCompetitionService
 	subscriptionFollowTeamService        services.ISubscriptionFollowTeamService
+	verifyService                        services.IVerifyService
 	req                                  *model.MORequest
 }
 
@@ -53,6 +54,7 @@ func NewSMSHandler(
 	subscriptionPredictService services.ISubscriptionPredictService,
 	subscriptionFollowCompetitionService services.ISubscriptionFollowCompetitionService,
 	subscriptionFollowTeamService services.ISubscriptionFollowTeamService,
+	verifyService services.IVerifyService,
 	req *model.MORequest,
 ) *SMSHandler {
 	return &SMSHandler{
@@ -71,17 +73,20 @@ func NewSMSHandler(
 		subscriptionPredictService:           subscriptionPredictService,
 		subscriptionFollowCompetitionService: subscriptionFollowCompetitionService,
 		subscriptionFollowTeamService:        subscriptionFollowTeamService,
+		verifyService:                        verifyService,
 		req:                                  req,
 	}
 }
 
 const (
-	CATEGORY_LIVEMATCH   string = "LIVEMATCH"
-	CATEGORY_FLASHNEWS   string = "FLASHNEWS"
-	CATEGORY_SMSALERTE   string = "SMSALERTE"
-	CATEGORY_CREDIT_GOAL string = "CREDITGOAL"
-	CATEGORY_PREDICT     string = "PREDICTION"
-	CATEGORY_PRONOSTIC   string = "PRONOSTIC"
+	CATEGORY_LIVEMATCH             string = "LIVEMATCH"
+	CATEGORY_FLASHNEWS             string = "FLASHNEWS"
+	CATEGORY_SMSALERTE             string = "SMSALERTE"
+	CATEGORY_CREDIT_GOAL           string = "CREDITGOAL"
+	CATEGORY_PREDICT               string = "PREDICTION"
+	CATEGORY_PRONOSTIC             string = "PRONOSTIC"
+	SUBCATEGORY_FOLLOW_COMPETITION string = "FOLLOW_COMPETITION"
+	SUBCATEGORY_FOLLOW_TEAM        string = "FOLLOW_TEAM"
 )
 
 const (
@@ -137,113 +142,64 @@ func (h *SMSHandler) Registration() {
 }
 
 func (h *SMSHandler) SMSAlerte() {
-	if h.leagueService.IsLeagueByName(h.req.GetSMS()) {
-		if !h.IsActiveSubByCategory(CATEGORY_SMSALERTE) {
-			h.Confirmation()
-		} else {
-			// SMS-Alerte Competition
-			h.AlerteCompetition()
-			// SMS-Alerte Matchs
-		}
-	} else if h.teamService.IsTeamByName(h.req.GetSMS()) {
-		if !h.IsActiveSubByCategory(CATEGORY_SMSALERTE) {
-			h.Confirmation()
-		} else {
-			// SMS-Alerte Equipe
-			h.AlerteEquipe()
-			// SMS-Alerte Matchs
-		}
-	} else if h.req.IsInfo() {
-		h.Info()
-	} else if h.req.IsStop() {
-		if h.IsActiveSubByCategory(CATEGORY_SMSALERTE) {
-			h.Stop()
-		}
+
+	// user choose 1, 2, 3 package
+	if h.req.IsChooseService() {
+		h.Subscription(CATEGORY_SMSALERTE)
 	} else {
-		// user choose 1, 2, 3 package
-		if h.req.IsChooseService() {
-			h.Subscription(CATEGORY_SMSALERTE)
+		if h.leagueService.IsLeagueByName(h.req.GetSMS()) {
+			if !h.IsActiveSubByCategory(CATEGORY_SMSALERTE) {
+				h.Confirmation(SUBCATEGORY_FOLLOW_COMPETITION)
+			} else {
+				// SMS-Alerte Competition
+				h.AlerteCompetition()
+				// SMS-Alerte Matchs
+			}
+		} else if h.teamService.IsTeamByName(h.req.GetSMS()) {
+			if !h.IsActiveSubByCategory(CATEGORY_SMSALERTE) {
+				h.Confirmation(SUBCATEGORY_FOLLOW_TEAM)
+			} else {
+				// SMS-Alerte Equipe
+				h.AlerteEquipe()
+				// SMS-Alerte Matchs
+			}
+		} else if h.req.IsInfo() {
+			h.Info()
+		} else if h.req.IsStop() {
+			if h.IsActiveSubByCategory(CATEGORY_SMSALERTE) {
+				h.Stop()
+			}
 		} else {
-			h.Unvalid()
+			h.Unvalid(SMS_FOLLOW_COMPETITION_INVALID_SUB)
 		}
+
 	}
+
 }
 
-func (h *SMSHandler) CreditGoal() {
-
-	if h.leagueService.IsLeagueByName(h.req.GetSMS()) {
-		if !h.IsActiveSubByCategory(CATEGORY_CREDIT_GOAL) {
-			h.Confirmation()
-		} else {
-			// SMS-Alerte Competition
-			h.AlerteCompetition()
-		}
-		// SMS-Alerte Matchs
-	} else if h.teamService.IsTeamByName(h.req.GetSMS()) {
-		if !h.IsActiveSubByCategory(CATEGORY_CREDIT_GOAL) {
-			h.Confirmation()
-		} else {
-			// SMS-Alerte Equipe
-			h.AlerteEquipe()
-		}
-		// SMS-Alerte Matchs
-	} else if h.req.IsInfo() {
-		h.Info()
-	} else if h.req.IsStop() {
-		if h.IsActiveSubByCategory(CATEGORY_CREDIT_GOAL) {
-			h.Stop()
-		}
-	} else {
-		// user choose 1, 2, 3 package
-		if h.req.IsChooseService() {
-			h.Subscription(CATEGORY_CREDIT_GOAL)
-		} else {
-			h.Unvalid()
-		}
-	}
-}
-
-func (h *SMSHandler) Prediction() {
-	if h.leagueService.IsLeagueByName(h.req.GetSMS()) {
-		if !h.IsActiveSubByCategory(CATEGORY_PREDICT) {
-			h.Confirmation()
-		} else {
-			// SMS-Alerte Competition
-			h.AlerteCompetition()
-			// SMS-Alerte Matchs
-		}
-	} else if h.teamService.IsTeamByName(h.req.GetSMS()) {
-		if !h.IsActiveSubByCategory(CATEGORY_PREDICT) {
-			h.Confirmation()
-		} else {
-			// SMS-Alerte Equipe
-			h.AlerteEquipe()
-			// SMS-Alerte Matchs
-		}
-	} else if h.req.IsInfo() {
-		h.Info()
-	} else if h.req.IsStop() {
-		if h.IsActiveSubByCategory(CATEGORY_PREDICT) {
-			h.Stop()
-		}
-	} else {
-		// user choose 1, 2, 3 package
-		if h.req.IsChooseService() {
-			h.Subscription(CATEGORY_PREDICT)
-		} else {
-			h.Unvalid()
-		}
-	}
-}
-
-func (h *SMSHandler) Confirmation() {
+func (h *SMSHandler) Confirmation(v string) {
 	content, err := h.getContent(SMS_CONFIRMATION)
 	if err != nil {
 		log.Println(err.Error())
 	}
-	k := kannel.NewKannel(h.logger, &entity.Service{}, content, &entity.Subscription{Msisdn: h.req.GetMsisdn()})
+
+	service, err := h.serviceService.GetById(7)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	k := kannel.NewKannel(h.logger, service, content, &entity.Subscription{Msisdn: h.req.GetMsisdn()})
+
 	// sent
-	k.SMS(h.req.GetTo())
+	k.Confirm(h.req.GetTo())
+
+	// set on catch
+	h.verifyService.SetCategory(
+		&entity.Verify{
+			Msisdn:   h.req.GetMsisdn(),
+			Category: v,
+		},
+	)
 }
 
 func (h *SMSHandler) Subscription(category string) {
@@ -342,6 +298,8 @@ func (h *SMSHandler) AlerteCompetition() {
 		log.Println(err.Error())
 	}
 
+	h.Firstpush()
+
 	h.rmq.IntegratePublish(
 		RMQ_MT_EXCHANGE,
 		RMQ_MT_QUEUE,
@@ -398,6 +356,73 @@ func (h *SMSHandler) AlerteMatchs() {
 	)
 }
 
+func (h *SMSHandler) CreditGoal() {
+
+	if h.leagueService.IsLeagueByName(h.req.GetSMS()) {
+		if !h.IsActiveSubByCategory(CATEGORY_CREDIT_GOAL) {
+			h.Confirmation(CATEGORY_CREDIT_GOAL)
+		} else {
+			// SMS-Alerte Competition
+			h.AlerteCompetition()
+		}
+		// SMS-Alerte Matchs
+	} else if h.teamService.IsTeamByName(h.req.GetSMS()) {
+		if !h.IsActiveSubByCategory(CATEGORY_CREDIT_GOAL) {
+			h.Confirmation(CATEGORY_CREDIT_GOAL)
+		} else {
+			// SMS-Alerte Equipe
+			h.AlerteEquipe()
+		}
+		// SMS-Alerte Matchs
+	} else if h.req.IsInfo() {
+		h.Info()
+	} else if h.req.IsStop() {
+		if h.IsActiveSubByCategory(CATEGORY_CREDIT_GOAL) {
+			h.Stop()
+		}
+	} else {
+		// user choose 1, 2, 3 package
+		if h.req.IsChooseService() {
+			h.Subscription(CATEGORY_CREDIT_GOAL)
+		} else {
+			h.Unvalid(SMS_CREDIT_GOAL_UNVALID_SUB)
+		}
+	}
+}
+
+func (h *SMSHandler) Prediction() {
+	if h.leagueService.IsLeagueByName(h.req.GetSMS()) {
+		if !h.IsActiveSubByCategory(CATEGORY_PREDICT) {
+			h.Confirmation(CATEGORY_PREDICT)
+		} else {
+			// SMS-Alerte Competition
+			h.AlerteCompetition()
+			// SMS-Alerte Matchs
+		}
+	} else if h.teamService.IsTeamByName(h.req.GetSMS()) {
+		if !h.IsActiveSubByCategory(CATEGORY_PREDICT) {
+			h.Confirmation(CATEGORY_PREDICT)
+		} else {
+			// SMS-Alerte Equipe
+			h.AlerteEquipe()
+			// SMS-Alerte Matchs
+		}
+	} else if h.req.IsInfo() {
+		h.Info()
+	} else if h.req.IsStop() {
+		if h.IsActiveSubByCategory(CATEGORY_PREDICT) {
+			h.Stop()
+		}
+	} else {
+		// user choose 1, 2, 3 package
+		if h.req.IsChooseService() {
+			h.Subscription(CATEGORY_PREDICT)
+		} else {
+			h.Unvalid(SMS_PREDICT_UNVALID_SUB)
+		}
+	}
+}
+
 func (h *SMSHandler) Info() {
 	content, err := h.getContent(SMS_INFO)
 	if err != nil {
@@ -405,7 +430,7 @@ func (h *SMSHandler) Info() {
 	}
 	mt := &model.MTRequest{
 		Smsc:         h.req.GetTo(),
-		Subscription: &entity.Subscription{},
+		Subscription: &entity.Subscription{Msisdn: h.req.GetMsisdn()},
 		Content:      content,
 	}
 
@@ -429,7 +454,7 @@ func (h *SMSHandler) Stop() {
 
 	mt := &model.MTRequest{
 		Smsc:         h.req.GetTo(),
-		Subscription: &entity.Subscription{},
+		Subscription: &entity.Subscription{Msisdn: h.req.GetMsisdn()},
 		Content:      content,
 	}
 
@@ -445,15 +470,15 @@ func (h *SMSHandler) Stop() {
 	)
 }
 
-func (h *SMSHandler) Unvalid() {
-	content, err := h.getContent(SMS_CREDIT_GOAL_UNVALID_SUB)
+func (h *SMSHandler) Unvalid(v string) {
+	content, err := h.getContent(v)
 	if err != nil {
 		log.Println(err.Error())
 	}
 
 	mt := &model.MTRequest{
 		Smsc:         h.req.GetTo(),
-		Subscription: &entity.Subscription{},
+		Subscription: &entity.Subscription{Msisdn: h.req.GetMsisdn()},
 		Content:      content,
 	}
 
@@ -517,12 +542,12 @@ func (h *SMSHandler) Firstpush() {
 	}
 
 	t := telco.NewTelco(h.logger, service, subscription)
-	deductFee, err := t.DeductFee()
+	profileBall, err := t.QueryProfileAndBal()
 	if err != nil {
 		log.Println(err.Error())
 	}
 
-	profileBall, err := t.QueryProfileAndBal()
+	deductFee, err := t.DeductFee()
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -634,28 +659,6 @@ func (h *SMSHandler) Firstpush() {
 	summary.SetTotalSub(1)
 	// summary save
 	h.summaryService.Save(summary)
-
-	// msg := &entity.Transaction{
-	// 	TrxId:          trxId,
-	// 	CountryID:      service.GetCountryId(),
-	// 	SubscriptionID: sub.GetId(),
-	// 	ServiceID:      subscription.GetServiceId(),
-	// 	Msisdn:         subscription.GetMsisdn(),
-	// 	Amount:         0,
-	// 	StatusCode:     "",
-	// 	StatusDetail:   "",
-	// 	Subject:        SUBJECT_FP_SMS,
-	// 	IpAddress:      h.req.GetIpAddress(),
-	// 	Payload:        string(sms),
-	// 	CreatedAt:      time.Now(),
-	// }
-	// if utils.IsSMSSuccess(respKannel.Message) {
-	// 	msg.SetStatus(STATUS_SUCCESS)
-	// 	h.transactionService.Save(msg)
-	// } else {
-	// 	msg.SetStatus(STATUS_FAILED)MOHandler
-	// 	h.transactionService.Save(msg)
-	// }
 
 	// count total sub
 	h.subscriptionService.Update(

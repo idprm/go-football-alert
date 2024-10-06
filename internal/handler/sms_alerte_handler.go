@@ -108,7 +108,9 @@ func (h *SMSAlerteHandler) getContent(name string) (*entity.Content, error) {
 	// if data not exist in table contents
 	if !h.contentService.IsContent(name) {
 		return &entity.Content{
-			Value: "SAMPLE_TEXT",
+			Category: "CATEGORY",
+			Channel:  "SMS",
+			Value:    "SAMPLE_TEXT",
 		}, nil
 	}
 	return h.contentService.Get(name)

@@ -45,6 +45,10 @@ type (
 	}
 )
 
+func (m *QueryProfileAndBalResponse) IsEnoughBalance() bool {
+	return m.Body.QueryProfileAndBal.ServiceClass == ""
+}
+
 type (
 	DeductRequest struct {
 		XMLName xml.Name `xml:"soapenv:Envelope"`

@@ -151,11 +151,11 @@ func (m *MORequest) IsChooseService() bool {
 func (m *MORequest) GetServiceByNumber() string {
 	switch m.GetSMS() {
 	case "1":
-		return "daily"
+		return "jour"
 	case "2":
-		return "weekly"
+		return "semaine"
 	case "3":
-		return "monthly"
+		return "mois"
 	default:
 		return ""
 	}
