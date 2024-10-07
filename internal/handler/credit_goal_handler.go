@@ -1,16 +1,9 @@
 package handler
 
 import (
-	"encoding/json"
-	"log"
-	"time"
-
 	"github.com/idprm/go-football-alert/internal/domain/entity"
-	"github.com/idprm/go-football-alert/internal/domain/model"
 	"github.com/idprm/go-football-alert/internal/logger"
-	"github.com/idprm/go-football-alert/internal/providers/kannel"
 	"github.com/idprm/go-football-alert/internal/services"
-	"github.com/idprm/go-football-alert/internal/utils"
 	"github.com/wiliehidayat87/rmqp"
 )
 
@@ -52,62 +45,53 @@ func NewCreditGoalHandler(
 
 func (h *CreditGoalHandler) CreditGoal() {
 	if h.subscriptionService.IsActiveSubscription(h.sub.GetServiceId(), h.sub.GetMsisdn()) {
-		service, err := h.serviceService.GetById(h.sub.GetServiceId())
-		if err != nil {
-			log.Println(err.Error())
-		}
+		// service, err := h.serviceService.GetById(h.sub.GetServiceId())
+		// if err != nil {
+		// 	log.Println(err.Error())
+		// }
 
-		content, err := h.getContent(MT_CREDIT_GOAL)
-		if err != nil {
-			log.Println(err.Error())
-		}
+		// content, err := h.getContent(MT_CREDIT_GOAL)
+		// if err != nil {
+		// 	log.Println(err.Error())
+		// }
 
-		trxId := utils.GenerateTrxId()
+		// trxId := utils.GenerateTrxId()
 
-		summary := &entity.Summary{
-			ServiceID: service.GetId(),
-			CreatedAt: time.Now(),
-		}
+		// summary := &entity.Summary{
+		// 	ServiceID: service.GetId(),
+		// 	CreatedAt: time.Now(),
+		// }
 
-		k := kannel.NewKannel(h.logger, service, content, h.sub)
-		sms, err := k.SMS(service.ScSubMT)
-		if err != nil {
-			log.Println(err.Error())
-		}
+		// h.subscriptionService.Update(
+		// 	&entity.Subscription{
+		// 		ServiceID:     service.GetId(),
+		// 		Msisdn:        h.sub.GetMsisdn(),
+		// 		LatestTrxId:   trxId,
+		// 		LatestSubject: SUBJECT_CREDIT_GOAL,
+		// 		LatestStatus:  STATUS_SUCCESS,
+		// 	},
+		// )
 
-		var respKannel *model.KannelResponse
-		json.Unmarshal(sms, &respKannel)
+		// h.transactionService.Save(
+		// 	&entity.Transaction{
+		// 		TrxId:        trxId,
+		// 		ServiceID:    service.GetId(),
+		// 		Msisdn:       h.sub.GetMsisdn(),
+		// 		Keyword:      h.sub.GetLatestKeyword(),
+		// 		Status:       STATUS_SUCCESS,
+		// 		StatusCode:   "",
+		// 		StatusDetail: "",
+		// 		Subject:      SUBJECT_CREDIT_GOAL,
+		// 		Payload:      "-",
+		// 		CreatedAt:    time.Now(),
+		// 	},
+		// )
 
-		h.subscriptionService.Update(
-			&entity.Subscription{
-				ServiceID:     service.GetId(),
-				Msisdn:        h.sub.GetMsisdn(),
-				LatestTrxId:   trxId,
-				LatestSubject: SUBJECT_CREDIT_GOAL,
-				LatestStatus:  STATUS_SUCCESS,
-			},
-		)
+		// // setter summary
+		// summary.SetTotalCreditGoal(1)
 
-		h.transactionService.Save(
-			&entity.Transaction{
-				TrxId:          trxId,
-				ServiceID:      service.GetId(),
-				Msisdn:         h.sub.GetMsisdn(),
-				Keyword:        h.sub.GetLatestKeyword(),
-				Status:         STATUS_SUCCESS,
-				StatusCode:     "",
-				StatusDetail:   "",
-				Subject:        SUBJECT_CREDIT_GOAL,
-				Payload:        "-",
-				CreatedAt:      time.Now(),
-			},
-		)
-
-		// setter summary
-		summary.SetTotalCreditGoal(1)
-
-		// summary save
-		h.summaryService.Save(summary)
+		// // summary save
+		// h.summaryService.Save(summary)
 	}
 }
 
