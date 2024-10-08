@@ -22,6 +22,7 @@ type ISubscriptionRepository interface {
 	CountActive(int, string) (int64, error)
 	CountActiveByCategory(string, string) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
+	GetByCategory(string, string) (*entity.Subscription, error)
 	Get(int, string) (*entity.Subscription, error)
 	Save(*entity.Subscription) (*entity.Subscription, error)
 	Update(*entity.Subscription) (*entity.Subscription, error)
@@ -75,6 +76,15 @@ func (r *SubscriptionRepository) GetAllPaginate(pagination *entity.Pagination) (
 	}
 	pagination.Rows = subscriptions
 	return pagination, nil
+}
+
+func (r *SubscriptionRepository) GetByCategory(category, msisdn string) (*entity.Subscription, error) {
+	var c entity.Subscription
+	err := r.db.Where("category = ?", category).Where("msisdn = ?", msisdn).Take(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return &c, nil
 }
 
 func (r *SubscriptionRepository) Get(serviceId int, msisdn string) (*entity.Subscription, error) {

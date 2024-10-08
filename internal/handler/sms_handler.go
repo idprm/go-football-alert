@@ -125,15 +125,11 @@ func (h *SMSHandler) Registration() {
 	h.SMSAlerte()
 }
 
-func (h *SMSHandler) Confirmation(v string) {
-
-}
-
 func (h *SMSHandler) SMSAlerte() {
 	// user choose 1, 2, 3 package
 	if h.leagueService.IsLeagueByName(h.req.GetSMS()) {
 		if !h.IsActiveSubByCategory(CATEGORY_SMSALERTE) {
-			h.Confirmation(SUBCATEGORY_FOLLOW_COMPETITION)
+			h.Subscription(SUBCATEGORY_FOLLOW_COMPETITION)
 		} else {
 			// SMS-Alerte Competition
 			h.AlerteCompetition()
@@ -141,7 +137,7 @@ func (h *SMSHandler) SMSAlerte() {
 		}
 	} else if h.teamService.IsTeamByName(h.req.GetSMS()) {
 		if !h.IsActiveSubByCategory(CATEGORY_SMSALERTE) {
-			h.Confirmation(SUBCATEGORY_FOLLOW_TEAM)
+			h.Subscription(SUBCATEGORY_FOLLOW_TEAM)
 		} else {
 			// SMS-Alerte Equipe
 			h.AlerteEquipe()
@@ -454,6 +450,16 @@ func (h *SMSHandler) Info() {
 func (h *SMSHandler) Stop() {
 	trxId := utils.GenerateTrxId()
 
+	sub, err := h.subscriptionService.GetByCategory(CATEGORY_SMSALERTE, h.req.GetMsisdn())
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	service, err := h.serviceService.GetById(sub.GetServiceId())
+	if err != nil {
+		log.Println(err.Error())
+	}
+
 	content, err := h.getContent(SMS_STOP)
 	if err != nil {
 		log.Println(err.Error())
@@ -461,8 +467,8 @@ func (h *SMSHandler) Stop() {
 
 	mt := &model.MTRequest{
 		Smsc:         h.req.GetTo(),
-		Service:      &entity.Service{},
-		Subscription: &entity.Subscription{Msisdn: h.req.GetMsisdn()},
+		Service:      service,
+		Subscription: sub,
 		Content:      content,
 	}
 	mt.SetTrxId(trxId)

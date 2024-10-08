@@ -24,6 +24,7 @@ type ISubscriptionService interface {
 	IsActiveSubscription(int, string) bool
 	IsActiveSubscriptionByCategory(string, string) bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
+	GetByCategory(string, string) (*entity.Subscription, error)
 	Get(int, string) (*entity.Subscription, error)
 	Save(*entity.Subscription) (*entity.Subscription, error)
 	Update(*entity.Subscription) (*entity.Subscription, error)
@@ -58,6 +59,10 @@ func (s *SubscriptionService) IsActiveSubscriptionByCategory(category string, ms
 
 func (s *SubscriptionService) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {
 	return s.subscriptionRepo.GetAllPaginate(pagination)
+}
+
+func (s *SubscriptionService) GetByCategory(category, msisdn string) (*entity.Subscription, error) {
+	return s.subscriptionRepo.GetByCategory(category, msisdn)
 }
 
 func (s *SubscriptionService) Get(serviceId int, msisdn string) (*entity.Subscription, error) {
