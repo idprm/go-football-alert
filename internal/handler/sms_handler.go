@@ -332,6 +332,7 @@ func (h *SMSHandler) Subscription(category string) {
 
 	mt := &model.MTRequest{
 		Smsc:         h.req.GetTo(),
+		Keyword:      h.req.GetSMS(),
 		Service:      service,
 		Subscription: sub,
 		Content:      content,
@@ -359,7 +360,8 @@ func (h *SMSHandler) AlerteCompetition() {
 	}
 
 	mt := &model.MTRequest{
-		Smsc: h.req.GetTo(),
+		Smsc:    h.req.GetTo(),
+		Keyword: h.req.GetSMS(),
 		Service: &entity.Service{
 			UrlMT:  URL_MT,
 			UserMT: USER_MT,
@@ -393,7 +395,8 @@ func (h *SMSHandler) AlerteEquipe() {
 	}
 
 	mt := &model.MTRequest{
-		Smsc: h.req.GetTo(),
+		Smsc:    h.req.GetTo(),
+		Keyword: h.req.GetSMS(),
 		Service: &entity.Service{
 			UrlMT:  URL_MT,
 			UserMT: USER_MT,
@@ -424,7 +427,8 @@ func (h *SMSHandler) Info() {
 		log.Println(err.Error())
 	}
 	mt := &model.MTRequest{
-		Smsc: h.req.GetTo(),
+		Smsc:    h.req.GetTo(),
+		Keyword: h.req.GetSMS(),
 		Service: &entity.Service{
 			UrlMT:  URL_MT,
 			UserMT: USER_MT,
@@ -467,6 +471,7 @@ func (h *SMSHandler) Stop() {
 
 	mt := &model.MTRequest{
 		Smsc:         h.req.GetTo(),
+		Keyword:      h.req.GetSMS(),
 		Service:      service,
 		Subscription: sub,
 		Content:      content,
@@ -494,8 +499,13 @@ func (h *SMSHandler) Unvalid(v string) {
 	}
 
 	mt := &model.MTRequest{
-		Smsc:         h.req.GetTo(),
-		Service:      &entity.Service{},
+		Smsc:    h.req.GetTo(),
+		Keyword: h.req.GetSMS(),
+		Service: &entity.Service{
+			UrlMT:  URL_MT,
+			UserMT: USER_MT,
+			PassMT: PASS_MT,
+		},
 		Subscription: &entity.Subscription{Msisdn: h.req.GetMsisdn()},
 		Content:      content,
 	}
@@ -690,6 +700,7 @@ func (h *SMSHandler) Firstpush() {
 
 	mt := &model.MTRequest{
 		Smsc:         h.req.GetTo(),
+		Keyword:      h.req.GetSMS(),
 		Service:      service,
 		Subscription: &entity.Subscription{},
 		Content:      content,
@@ -799,6 +810,7 @@ func (h *SMSHandler) Unsub() {
 
 	mt := &model.MTRequest{
 		Smsc:         h.req.GetTo(),
+		Keyword:      h.req.GetSMS(),
 		Service:      service,
 		Subscription: sub,
 		Content:      content,

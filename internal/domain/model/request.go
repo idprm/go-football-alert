@@ -165,6 +165,7 @@ func (m *MORequest) GetServiceByNumber() string {
 type MTRequest struct {
 	TrxId        string               `json:"trx_id,omitempty"`
 	Smsc         string               `json:"smsc,omitempty"`
+	Keyword      string               `json:"keyword,omitempty"`
 	Service      *entity.Service      `json:"service,omitempty"`
 	Content      *entity.Content      `json:"content,omitempty"`
 	Subscription *entity.Subscription `json:"subscription,omitempty"`
@@ -176,6 +177,10 @@ func (m *MTRequest) GetTrxId() string {
 
 func (m *MTRequest) SetTrxId(v string) {
 	m.TrxId = v
+}
+
+func (m *MTRequest) SetKeyword(v string) {
+	m.Keyword = v
 }
 
 type ErrorResponse struct {

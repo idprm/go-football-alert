@@ -49,6 +49,7 @@ func (h *MTHandler) MessageTerminated() {
 		&entity.MT{
 			TrxId:      h.req.TrxId,
 			Msisdn:     h.req.Subscription.GetMsisdn(),
+			Keyword:    h.req.Keyword,
 			Content:    h.req.Content.GetValue(),
 			StatusCode: statusCode,
 			StatusText: http.StatusText(statusCode),
