@@ -88,6 +88,7 @@ func (h *PredictionHandler) Prediction() {
 
 		mt := &model.MTRequest{
 			Smsc:         "",
+			Service:      service,
 			Subscription: h.sub,
 			Content:      content,
 		}

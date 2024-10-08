@@ -1,3 +1,34 @@
+
+FOLLOW_TEAM_SUB (Confirmation) can be multiple team
+SMS Alerte: Vous avez souscrit avec succes pour suivre votre equipe favorite! Jusqu au [25]/[04] vous recevrez toutes les infos en direct. [200][F]/souscription
+
+FOLLOW_TEAM_UNVALID_SUB
+SMS Alerte: Desole, votre choix n est pas valide. Envoyez de nouveau au [981] le nom de votre equipe pour obtenir toutes les infos. [200][F]/souscription
+
+FOLLOW_TEAM_EXPIRE_SUB
+SMS Alerte: Desole mais votre abonnement pour suivre votre equipe vient de se terminer. Pour le renouveler, envoyer au [981] le nom de l equipe a suivre. [200][F]
+
+=======================================================
+
+FOLLOW_COMPETITION_SUB
+SMS Alerte: Vous avez souscrit avec succes pour suivre [la Liga]! Jusqu au [day]/[month] vous recevrez toutes les infos en direct. [200][F]/souscription
+
+FOLLOW_COMPETITION_UNVALID_SUB
+SMS Alerte: Desole, mais votre choix n est pas valide. Renvoyez au [9009] la competition que vous voulez suivre en direct. [250F]/SMS
+
+FOLLOW_COMPETITION_EXPIRE_SUB
+SMS Alerte: Desole mais votre abonnement pour suivre votre competition vient de se terminer. Pour le renouveler, envoyer au [9009] le nom de l equipe a suivre. [250][F]/SMS
+
+=======================================================
+
+INFO
+Info Services FFC: [#157#] USSD /[981] SMS Alerte Equipe /[9009] - SMS Alerte Competition /[###] SMS Alerte a la demande /[944] Credit Goal /[985] Pronostic
+
+STOP
+Services FFC: Vous venez d envoyer STOP. Orange vous remercie d avoir utiliser nos services! Visitez www.orange.cm pour en savoir plus sur Football Fan Club
+
+=======================================================
+
 CREDIT_GOAL_SUB (Confirmation)
 Credit Goal: Votre participation a ete enregistree. Si Lille marque des buts lors du prochain match, vous recevrez [100][F] de credit par but. [100][F]/souscription
 
@@ -65,31 +96,3 @@ PREDICT_MATCH_END_LOSER_NOTIF
 Prono: Desole! Votre pronostic n a pas ete le bon pour le match Lille- Marseille. Retentez votre chance pour les prochains matchs .Bonne chance!
 
 =======================================================
-
-FOLLOW_TEAM_SUB (Confirmation) can be multiple team
-SMS Alerte: Vous avez souscrit avec succes pour suivre votre equipe favorite! Jusqu au [25]/[04] vous recevrez toutes les infos en direct. [200][F]/souscription
-
-FOLLOW_TEAM_UNVALID_SUB
-SMS Alerte: Desole, votre choix n est pas valide. Envoyez de nouveau au [981] le nom de votre equipe pour obtenir toutes les infos. [200][F]/souscription
-
-FOLLOW_TEAM_EXPIRE_SUB
-SMS Alerte: Desole mais votre abonnement pour suivre votre equipe vient de se terminer. Pour le renouveler, envoyer au [981] le nom de l equipe a suivre. [200][F]
-
-=======================================================
-
-FOLLOW_COMPETITION_SUB
-SMS Alerte: Vous avez souscrit avec succes pour suivre [la Liga]! Jusqu au [day]/[month] vous recevrez toutes les infos en direct. [200][F]/souscription
-
-FOLLOW_COMPETITION_INVALID_SUB
-SMS Alerte: Desole, mais votre choix n est pas valide. Renvoyez au [9009] la competition que vous voulez suivre en direct. [250F]/SMS
-
-FOLLOW_COMPETITION_EXPIRE_SUB
-SMS Alerte: Desole mais votre abonnement pour suivre votre competition vient de se terminer. Pour le renouveler, envoyer au [9009] le nom de l equipe a suivre. [250][F]/SMS
-
-=======================================================
-
-INFO
-Info Services FFC: [#157#] USSD /[981] SMS Alerte Equipe /[9009] - SMS Alerte Competition /[###] SMS Alerte a la demande /[944] Credit Goal /[985] Pronostic
-
-STOP
-Services FFC: Vous venez d envoyer STOP. Orange vous remercie d avoir utiliser nos services! Visitez www.orange.cm pour en savoir plus sur Football Fan Club

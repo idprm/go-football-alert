@@ -31,9 +31,9 @@ type ISubscriptionService interface {
 	IsNotActive(*entity.Subscription) (*entity.Subscription, error)
 	IsNotRetry(*entity.Subscription) (*entity.Subscription, error)
 	IsNotFollowTeam(*entity.Subscription) (*entity.Subscription, error)
-	IsNotFollowCompetition(*entity.Subscription) (*entity.Subscription, error)
+	IsNotFollowLeague(*entity.Subscription) (*entity.Subscription, error)
 	IsNotPrediction(*entity.Subscription) (*entity.Subscription, error)
-	FollowCompetition() *[]entity.Subscription
+	FollowLeague() *[]entity.Subscription
 	FollowTeam() *[]entity.Subscription
 	Prediction() *[]entity.Subscription
 	CreditGoal() *[]entity.Subscription
@@ -88,8 +88,8 @@ func (s *SubscriptionService) IsNotFollowTeam(a *entity.Subscription) (*entity.S
 	return s.subscriptionRepo.IsNotFollowTeam(a)
 }
 
-func (s *SubscriptionService) IsNotFollowCompetition(a *entity.Subscription) (*entity.Subscription, error) {
-	return s.subscriptionRepo.IsNotFollowCompetition(a)
+func (s *SubscriptionService) IsNotFollowLeague(a *entity.Subscription) (*entity.Subscription, error) {
+	return s.subscriptionRepo.IsNotFollowLeague(a)
 }
 
 func (s *SubscriptionService) IsNotPrediction(a *entity.Subscription) (*entity.Subscription, error) {
@@ -120,8 +120,8 @@ func (s *SubscriptionService) FollowTeam() *[]entity.Subscription {
 	return subs
 }
 
-func (s *SubscriptionService) FollowCompetition() *[]entity.Subscription {
-	subs, err := s.subscriptionRepo.FollowCompetition()
+func (s *SubscriptionService) FollowLeague() *[]entity.Subscription {
+	subs, err := s.subscriptionRepo.FollowLeague()
 	if err != nil {
 		log.Println(err)
 	}

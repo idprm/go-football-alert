@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"strings"
+
 	"github.com/idprm/go-football-alert/internal/domain/entity"
 	"gorm.io/gorm"
 )
@@ -47,9 +49,9 @@ func (r *ServiceRepository) CountById(id int) (int64, error) {
 	return count, nil
 }
 
-func (r *ServiceRepository) CountByPackage(category, pkg string) (int64, error) {
+func (r *ServiceRepository) CountByPackage(cat, pkg string) (int64, error) {
 	var count int64
-	err := r.db.Model(&entity.Service{}).Where("category = ?", category).Where("package = ?", pkg).Count(&count).Error
+	err := r.db.Model(&entity.Service{}).Where("category = ?", strings.ToUpper(cat)).Where("package = ?", strings.ToLower(pkg)).Count(&count).Error
 	if err != nil {
 		return count, err
 	}
@@ -66,9 +68,9 @@ func (r *ServiceRepository) GetAllPaginate(pagination *entity.Pagination) (*enti
 	return pagination, nil
 }
 
-func (r *ServiceRepository) GetAllByCategory(code string) ([]*entity.Service, error) {
+func (r *ServiceRepository) GetAllByCategory(cat string) ([]*entity.Service, error) {
 	var services []*entity.Service
-	err := r.db.Where("category = ?", code).Find(&services).Error
+	err := r.db.Where("category = ?", strings.ToUpper(cat)).Find(&services).Error
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +79,7 @@ func (r *ServiceRepository) GetAllByCategory(code string) ([]*entity.Service, er
 
 func (r *ServiceRepository) Get(code string) (*entity.Service, error) {
 	var c entity.Service
-	err := r.db.Where("code = ?", code).Take(&c).Error
+	err := r.db.Where("code = ?", strings.ToUpper(code)).Take(&c).Error
 	if err != nil {
 		return nil, err
 	}
@@ -93,9 +95,9 @@ func (r *ServiceRepository) GetById(id int) (*entity.Service, error) {
 	return &c, nil
 }
 
-func (r *ServiceRepository) GetByPackage(category, pkg string) (*entity.Service, error) {
+func (r *ServiceRepository) GetByPackage(cat, pkg string) (*entity.Service, error) {
 	var c entity.Service
-	err := r.db.Where("category = ?", category).Where("package = ?", pkg).Take(&c).Error
+	err := r.db.Where("category = ?", strings.ToUpper(cat)).Where("package = ?", strings.ToLower(pkg)).Take(&c).Error
 	if err != nil {
 		return nil, err
 	}

@@ -2,7 +2,7 @@ package entity
 
 import "gorm.io/gorm"
 
-type SubscriptionFollowCompetition struct {
+type SubscriptionFollowLeague struct {
 	ID             int64         `gorm:"primaryKey" json:"id"`
 	SubscriptionID int64         `json:"subscription_id"`
 	Subscription   *Subscription `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"subscription,omitempty"`

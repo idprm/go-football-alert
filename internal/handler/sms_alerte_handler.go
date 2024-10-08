@@ -87,9 +87,11 @@ func (h *SMSAlerteHandler) SMSAlerte() {
 
 		mt := &model.MTRequest{
 			Smsc:         "",
+			Service:      service,
 			Subscription: h.sub,
 			Content:      content,
 		}
+		mt.SetTrxId(trxId)
 
 		jsonData, err := json.Marshal(mt)
 		if err != nil {
@@ -104,6 +106,9 @@ func (h *SMSAlerteHandler) SMSAlerte() {
 	}
 }
 
+/**
+* Get Info
+**/
 func (h *SMSAlerteHandler) getContent(name string) (*entity.Content, error) {
 	// if data not exist in table contents
 	if !h.contentService.IsContent(name) {

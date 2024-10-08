@@ -9,7 +9,6 @@ import (
 	"github.com/idprm/go-football-alert/internal/domain/entity"
 	"github.com/idprm/go-football-alert/internal/domain/model"
 	"github.com/idprm/go-football-alert/internal/logger"
-	"github.com/idprm/go-football-alert/internal/providers/kannel"
 	"github.com/idprm/go-football-alert/internal/providers/telco"
 	"github.com/idprm/go-football-alert/internal/services"
 	"github.com/idprm/go-football-alert/internal/utils"
@@ -19,23 +18,23 @@ import (
 )
 
 type SMSHandler struct {
-	rmq                                  rmqp.AMQP
-	rds                                  *redis.Client
-	logger                               *logger.Logger
-	serviceService                       services.IServiceService
-	contentService                       services.IContentService
-	subscriptionService                  services.ISubscriptionService
-	transactionService                   services.ITransactionService
-	historyService                       services.IHistoryService
-	summaryService                       services.ISummaryService
-	leagueService                        services.ILeagueService
-	teamService                          services.ITeamService
-	subscriptionCreditGoalService        services.ISubscriptionCreditGoalService
-	subscriptionPredictService           services.ISubscriptionPredictService
-	subscriptionFollowCompetitionService services.ISubscriptionFollowCompetitionService
-	subscriptionFollowTeamService        services.ISubscriptionFollowTeamService
-	verifyService                        services.IVerifyService
-	req                                  *model.MORequest
+	rmq                             rmqp.AMQP
+	rds                             *redis.Client
+	logger                          *logger.Logger
+	serviceService                  services.IServiceService
+	contentService                  services.IContentService
+	subscriptionService             services.ISubscriptionService
+	transactionService              services.ITransactionService
+	historyService                  services.IHistoryService
+	summaryService                  services.ISummaryService
+	leagueService                   services.ILeagueService
+	teamService                     services.ITeamService
+	subscriptionCreditGoalService   services.ISubscriptionCreditGoalService
+	subscriptionPredictService      services.ISubscriptionPredictService
+	SubscriptionFollowLeagueService services.ISubscriptionFollowLeagueService
+	subscriptionFollowTeamService   services.ISubscriptionFollowTeamService
+	verifyService                   services.IVerifyService
+	req                             *model.MORequest
 }
 
 func NewSMSHandler(
@@ -52,29 +51,29 @@ func NewSMSHandler(
 	teamService services.ITeamService,
 	subscriptionCreditGoalService services.ISubscriptionCreditGoalService,
 	subscriptionPredictService services.ISubscriptionPredictService,
-	subscriptionFollowCompetitionService services.ISubscriptionFollowCompetitionService,
+	SubscriptionFollowLeagueService services.ISubscriptionFollowLeagueService,
 	subscriptionFollowTeamService services.ISubscriptionFollowTeamService,
 	verifyService services.IVerifyService,
 	req *model.MORequest,
 ) *SMSHandler {
 	return &SMSHandler{
-		rmq:                                  rmq,
-		rds:                                  rds,
-		logger:                               logger,
-		serviceService:                       serviceService,
-		contentService:                       contentService,
-		subscriptionService:                  subscriptionService,
-		transactionService:                   transactionService,
-		historyService:                       historyService,
-		summaryService:                       summaryService,
-		leagueService:                        leagueService,
-		teamService:                          teamService,
-		subscriptionCreditGoalService:        subscriptionCreditGoalService,
-		subscriptionPredictService:           subscriptionPredictService,
-		subscriptionFollowCompetitionService: subscriptionFollowCompetitionService,
-		subscriptionFollowTeamService:        subscriptionFollowTeamService,
-		verifyService:                        verifyService,
-		req:                                  req,
+		rmq:                             rmq,
+		rds:                             rds,
+		logger:                          logger,
+		serviceService:                  serviceService,
+		contentService:                  contentService,
+		subscriptionService:             subscriptionService,
+		transactionService:              transactionService,
+		historyService:                  historyService,
+		summaryService:                  summaryService,
+		leagueService:                   leagueService,
+		teamService:                     teamService,
+		subscriptionCreditGoalService:   subscriptionCreditGoalService,
+		subscriptionPredictService:      subscriptionPredictService,
+		SubscriptionFollowLeagueService: SubscriptionFollowLeagueService,
+		subscriptionFollowTeamService:   subscriptionFollowTeamService,
+		verifyService:                   verifyService,
+		req:                             req,
 	}
 }
 
@@ -109,7 +108,7 @@ const (
 	SMS_FOLLOW_TEAM_UNVALID_SUB          string = "FOLLOW_TEAM_UNVALID_SUB"
 	SMS_FOLLOW_TEAM_EXPIRE_SUB           string = "FOLLOW_TEAM_EXPIRE_SUB"
 	SMS_FOLLOW_COMPETITION_SUB           string = "FOLLOW_COMPETITION_SUB"
-	SMS_FOLLOW_COMPETITION_INVALID_SUB   string = "FOLLOW_COMPETITION_INVALID_SUB"
+	SMS_FOLLOW_COMPETITION_UNVALID_SUB   string = "FOLLOW_COMPETITION_UNVALID_SUB"
 	SMS_FOLLOW_COMPETITION_EXPIRE_SUB    string = "FOLLOW_COMPETITION_EXPIRE_SUB"
 	SMS_CONFIRMATION                     string = "CONFIRMATION"
 	SMS_INFO                             string = "INFO"
@@ -127,66 +126,37 @@ func (h *SMSHandler) Registration() {
 }
 
 func (h *SMSHandler) Confirmation(v string) {
-	content, err := h.getContent(SMS_CONFIRMATION)
-	if err != nil {
-		log.Println(err.Error())
-	}
 
-	service, err := h.serviceService.GetById(7)
-	if err != nil {
-		log.Println(err.Error())
-	}
-
-	k := kannel.NewKannel(
-		h.logger,
-		service,
-		content,
-		&entity.Subscription{Msisdn: h.req.GetMsisdn()},
-	)
-
-	// sent
-	k.SMS(h.req.GetTo())
-
-	// set on catch
-	h.verifyService.SetCategory(
-		&entity.Verify{
-			Msisdn:   h.req.GetMsisdn(),
-			Category: v,
-		},
-	)
 }
 
 func (h *SMSHandler) SMSAlerte() {
 	// user choose 1, 2, 3 package
-	if h.req.IsChooseService() {
-		h.Subscription(CATEGORY_SMSALERTE)
-	} else {
-		if h.leagueService.IsLeagueByName(h.req.GetSMS()) {
-			if !h.IsActiveSubByCategory(CATEGORY_SMSALERTE) {
-				h.Confirmation(SUBCATEGORY_FOLLOW_COMPETITION)
-			} else {
-				// SMS-Alerte Competition
-				h.AlerteCompetition()
-				// SMS-Alerte Matchs
-			}
-		} else if h.teamService.IsTeamByName(h.req.GetSMS()) {
-			if !h.IsActiveSubByCategory(CATEGORY_SMSALERTE) {
-				h.Confirmation(SUBCATEGORY_FOLLOW_TEAM)
-			} else {
-				// SMS-Alerte Equipe
-				h.AlerteEquipe()
-				// SMS-Alerte Matchs
-			}
-		} else if h.req.IsInfo() {
-			h.Info()
-		} else if h.req.IsStop() {
-			if h.IsActiveSubByCategory(CATEGORY_SMSALERTE) {
-				h.Stop()
-			}
+	if h.leagueService.IsLeagueByName(h.req.GetSMS()) {
+		if !h.IsActiveSubByCategory(CATEGORY_SMSALERTE) {
+			h.Confirmation(SUBCATEGORY_FOLLOW_COMPETITION)
 		} else {
-			h.Unvalid(SMS_FOLLOW_COMPETITION_INVALID_SUB)
+			// SMS-Alerte Competition
+			h.AlerteCompetition()
+			// SMS-Alerte Matchs
 		}
+	} else if h.teamService.IsTeamByName(h.req.GetSMS()) {
+		if !h.IsActiveSubByCategory(CATEGORY_SMSALERTE) {
+			h.Confirmation(SUBCATEGORY_FOLLOW_TEAM)
+		} else {
+			// SMS-Alerte Equipe
+			h.AlerteEquipe()
+			// SMS-Alerte Matchs
+		}
+	} else if h.req.IsInfo() {
+		h.Info()
+	} else if h.req.IsStop() {
+		if h.IsActiveSubByCategory(CATEGORY_SMSALERTE) {
+			h.Stop()
+		}
+	} else {
+		h.Unvalid(SMS_FOLLOW_COMPETITION_UNVALID_SUB)
 	}
+
 }
 
 func (h *SMSHandler) Subscription(category string) {
@@ -365,11 +335,12 @@ func (h *SMSHandler) Subscription(category string) {
 	)
 
 	mt := &model.MTRequest{
-		Smsc:         h.req.GetSMS(),
+		Smsc:         h.req.GetTo(),
 		Service:      service,
 		Subscription: sub,
 		Content:      content,
 	}
+	mt.SetTrxId(trxId)
 
 	jsonData, err := json.Marshal(mt)
 	if err != nil {
@@ -384,16 +355,24 @@ func (h *SMSHandler) Subscription(category string) {
 }
 
 func (h *SMSHandler) AlerteCompetition() {
+	trxId := utils.GenerateTrxId()
+
 	content, err := h.getContent(SMS_FOLLOW_COMPETITION_SUB)
 	if err != nil {
 		log.Println(err.Error())
 	}
 
 	mt := &model.MTRequest{
-		Smsc:         h.req.GetTo(),
+		Smsc: h.req.GetTo(),
+		Service: &entity.Service{
+			UrlMT:  URL_MT,
+			UserMT: USER_MT,
+			PassMT: PASS_MT,
+		},
 		Subscription: &entity.Subscription{Msisdn: h.req.GetMsisdn()},
 		Content:      content,
 	}
+	mt.SetTrxId(trxId)
 
 	jsonData, err := json.Marshal(mt)
 	if err != nil {
@@ -410,16 +389,24 @@ func (h *SMSHandler) AlerteCompetition() {
 }
 
 func (h *SMSHandler) AlerteEquipe() {
+	trxId := utils.GenerateTrxId()
+
 	content, err := h.getContent(SMS_CREDIT_GOAL_SUB)
 	if err != nil {
 		log.Println(err.Error())
 	}
 
 	mt := &model.MTRequest{
-		Smsc:         h.req.GetTo(),
-		Subscription: &entity.Subscription{},
+		Smsc: h.req.GetTo(),
+		Service: &entity.Service{
+			UrlMT:  URL_MT,
+			UserMT: USER_MT,
+			PassMT: PASS_MT,
+		},
+		Subscription: &entity.Subscription{Msisdn: h.req.GetMsisdn()},
 		Content:      content,
 	}
+	mt.SetTrxId(trxId)
 
 	jsonData, err := json.Marshal(mt)
 	if err != nil {
@@ -434,15 +421,23 @@ func (h *SMSHandler) AlerteEquipe() {
 }
 
 func (h *SMSHandler) Info() {
+	trxId := utils.GenerateTrxId()
+
 	content, err := h.getContent(SMS_INFO)
 	if err != nil {
 		log.Println(err.Error())
 	}
 	mt := &model.MTRequest{
-		Smsc:         h.req.GetTo(),
+		Smsc: h.req.GetTo(),
+		Service: &entity.Service{
+			UrlMT:  URL_MT,
+			UserMT: USER_MT,
+			PassMT: PASS_MT,
+		},
 		Subscription: &entity.Subscription{Msisdn: h.req.GetMsisdn()},
 		Content:      content,
 	}
+	mt.SetTrxId(trxId)
 
 	jsonData, err := json.Marshal(mt)
 	if err != nil {
@@ -457,6 +452,8 @@ func (h *SMSHandler) Info() {
 }
 
 func (h *SMSHandler) Stop() {
+	trxId := utils.GenerateTrxId()
+
 	content, err := h.getContent(SMS_STOP)
 	if err != nil {
 		log.Println(err.Error())
@@ -464,9 +461,11 @@ func (h *SMSHandler) Stop() {
 
 	mt := &model.MTRequest{
 		Smsc:         h.req.GetTo(),
+		Service:      &entity.Service{},
 		Subscription: &entity.Subscription{Msisdn: h.req.GetMsisdn()},
 		Content:      content,
 	}
+	mt.SetTrxId(trxId)
 
 	jsonData, err := json.Marshal(mt)
 	if err != nil {
@@ -481,6 +480,8 @@ func (h *SMSHandler) Stop() {
 }
 
 func (h *SMSHandler) Unvalid(v string) {
+	trxId := utils.GenerateTrxId()
+
 	content, err := h.getContent(v)
 	if err != nil {
 		log.Println(err.Error())
@@ -488,9 +489,11 @@ func (h *SMSHandler) Unvalid(v string) {
 
 	mt := &model.MTRequest{
 		Smsc:         h.req.GetTo(),
+		Service:      &entity.Service{},
 		Subscription: &entity.Subscription{Msisdn: h.req.GetMsisdn()},
 		Content:      content,
 	}
+	mt.SetTrxId(trxId)
 
 	jsonData, err := json.Marshal(mt)
 	if err != nil {
@@ -680,10 +683,12 @@ func (h *SMSHandler) Firstpush() {
 	)
 
 	mt := &model.MTRequest{
-		Smsc:         "",
+		Smsc:         h.req.GetTo(),
+		Service:      service,
 		Subscription: &entity.Subscription{},
 		Content:      content,
 	}
+	mt.SetTrxId(trxId)
 
 	jsonData, err := json.Marshal(mt)
 	if err != nil {
@@ -787,10 +792,12 @@ func (h *SMSHandler) Unsub() {
 	h.summaryService.Save(summary)
 
 	mt := &model.MTRequest{
-		Smsc:         "",
+		Smsc:         h.req.GetTo(),
+		Service:      service,
 		Subscription: sub,
 		Content:      content,
 	}
+	mt.SetTrxId(trxId)
 
 	jsonData, err := json.Marshal(mt)
 	if err != nil {
@@ -865,15 +872,7 @@ func (h *SMSHandler) CreditGoal() {
 		if h.IsActiveSubByCategory(CATEGORY_CREDIT_GOAL) {
 			h.Stop()
 		}
-	} else {
-		// user choose 1, 2, 3 package
-		if h.req.IsChooseService() {
-			h.Subscription(CATEGORY_CREDIT_GOAL)
-		} else {
-			h.Unvalid(SMS_CREDIT_GOAL_UNVALID_SUB)
-		}
 	}
-}
 
 func (h *SMSHandler) Prediction() {
 	if h.leagueService.IsLeagueByName(h.req.GetSMS()) {
@@ -897,13 +896,6 @@ func (h *SMSHandler) Prediction() {
 	} else if h.req.IsStop() {
 		if h.IsActiveSubByCategory(CATEGORY_PREDICT) {
 			h.Stop()
-		}
-	} else {
-		// user choose 1, 2, 3 package
-		if h.req.IsChooseService() {
-			h.Subscription(CATEGORY_PREDICT)
-		} else {
-			h.Unvalid(SMS_PREDICT_UNVALID_SUB)
 		}
 	}
 }

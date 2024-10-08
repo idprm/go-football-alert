@@ -121,9 +121,11 @@ func (h *RetryHandler) Firstpush() {
 
 		mt := &model.MTRequest{
 			Smsc:         "",
+			Service:      service,
 			Subscription: h.sub,
 			Content:      content,
 		}
+		mt.SetTrxId(trxId)
 
 		jsonData, err := json.Marshal(mt)
 		if err != nil {
@@ -212,9 +214,11 @@ func (h *RetryHandler) Dailypush() {
 
 		mt := &model.MTRequest{
 			Smsc:         "",
+			Service:      service,
 			Subscription: h.sub,
 			Content:      content,
 		}
+		mt.SetTrxId(trxId)
 
 		jsonData, err := json.Marshal(mt)
 		if err != nil {

@@ -10,29 +10,29 @@ import (
 )
 
 type NewsHandler struct {
-	leagueService            services.ILeagueService
-	teamService              services.ITeamService
-	newsService              services.INewsService
-	followCompetitionService services.IFollowCompetitionService
-	followTeamService        services.IFollowTeamService
-	news                     *entity.News
+	leagueService       services.ILeagueService
+	teamService         services.ITeamService
+	newsService         services.INewsService
+	FollowLeagueService services.IFollowLeagueService
+	followTeamService   services.IFollowTeamService
+	news                *entity.News
 }
 
 func NewNewsHandler(
 	leagueService services.ILeagueService,
 	teamService services.ITeamService,
 	newsService services.INewsService,
-	followCompetitionService services.IFollowCompetitionService,
+	FollowLeagueService services.IFollowLeagueService,
 	followTeamService services.IFollowTeamService,
 	news *entity.News,
 ) *NewsHandler {
 	return &NewsHandler{
-		leagueService:            leagueService,
-		teamService:              teamService,
-		newsService:              newsService,
-		followCompetitionService: followCompetitionService,
-		followTeamService:        followTeamService,
-		news:                     news,
+		leagueService:       leagueService,
+		teamService:         teamService,
+		newsService:         newsService,
+		FollowLeagueService: FollowLeagueService,
+		followTeamService:   followTeamService,
+		news:                news,
 	}
 }
 

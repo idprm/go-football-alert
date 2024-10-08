@@ -18,9 +18,7 @@ var menus = []entity.Menu{
     Orange Football Club, votre choix:<br/>
     <a href="{{.url}}/{{.version}}/ussd/q?slug=lm&title=Live+Match">Live Match</a>
     <a href="{{.url}}/{{.version}}/ussd/q?slug=flash-news&title=Flash+News">Flash News</a>
-    <a href="{{.url}}/{{.version}}/ussd/q?slug=credit-goal&title=Crédit+Goal">Crédit Goal</a>
     <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali">Champ. Mali</a>
-    <a href="{{.url}}/{{.version}}/ussd/q?slug=prediction&title=Prédiction">Prédiction</a>
     <a href="{{.url}}/{{.version}}/ussd/q?slug=sms-alerte&title=SMS+Alerte">SMS Alerte</a>
     <a href="{{.url}}/{{.version}}/ussd/q?slug=kit-foot&title=Kit+Foot">Kit Foot</a>
     <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe">Foot Europe</a>
@@ -73,7 +71,7 @@ var menus = []entity.Menu{
 	{
 		Category:  "none",
 		Name:      "Confirm Follow Competition",
-		Slug:      "confirm-follow-competition",
+		Slug:      "confirm-SMSALERTE",
 		IsConfirm: false,
 		IsActive:  true,
 		TemplateXML: `
@@ -83,7 +81,7 @@ var menus = []entity.Menu{
 	<page nav="stop">
 		{{.title}} <br/>
         SMS Alerte Competition Obtenez en direct toutes les informations sur votre mobile sur la {{.title}}. Confirmez-vous votre inscription aux alertes?<br/>
-		Prix : {{.price}} / 1 {{.time}}.
+		Prix : {{.price}} / 1 {{.package}}.
         <a href="{{.url}}/{{.version}}/ussd/buy?slug={{.slug}}&code={{.code}}&league_id={{.league_id}}" key="1">Oui</a>
         <br/>
 		<a href="{{.url}}/{{.version}}/ussd/q?slug=kit-foot" key="0">Ecran Précédent</a>
@@ -95,7 +93,7 @@ var menus = []entity.Menu{
 	{
 		Category:  "none",
 		Name:      "Confirm Follow Team",
-		Slug:      "confirm-follow-team",
+		Slug:      "confirm-SMSALERTE",
 		IsConfirm: false,
 		IsActive:  true,
 		TemplateXML: `
@@ -205,7 +203,7 @@ var menus = []entity.Menu{
 		`,
 	},
 	{
-		Category:  "follow-competition",
+		Category:  "LIVEMATCH",
 		Name:      "Live match",
 		Slug:      "lm",
 		IsConfirm: true,
@@ -227,7 +225,7 @@ var menus = []entity.Menu{
 		`,
 	},
 	{
-		Category:  "follow-competition",
+		Category:  "LIVEMATCH",
 		Name:      "Live match",
 		Slug:      "lm-live-match",
 		IsConfirm: true,
@@ -248,7 +246,7 @@ var menus = []entity.Menu{
 		`,
 	},
 	{
-		Category:  "follow-competition",
+		Category:  "LIVEMATCH",
 		Name:      "Schedule",
 		Slug:      "lm-schedule",
 		IsConfirm: true,
@@ -269,7 +267,7 @@ var menus = []entity.Menu{
 		`,
 	},
 	{
-		Category:  "follow-competition",
+		Category:  "LIVEMATCH",
 		Name:      "Line Up",
 		Slug:      "lm-line-up",
 		IsConfirm: true,
@@ -290,7 +288,7 @@ var menus = []entity.Menu{
 		`,
 	},
 	{
-		Category:  "follow-competition",
+		Category:  "LIVEMATCH",
 		Name:      "match Stats",
 		Slug:      "lm-match-stats",
 		IsConfirm: true,
@@ -311,7 +309,7 @@ var menus = []entity.Menu{
 		`,
 	},
 	{
-		Category:  "follow-competition",
+		Category:  "LIVEMATCH",
 		Name:      "Display Live match",
 		Slug:      "lm-display-livematch",
 		IsConfirm: true,
@@ -331,7 +329,7 @@ var menus = []entity.Menu{
 		`,
 	},
 	{
-		Category:  "follow-competition",
+		Category:  "FLASHNEWS",
 		Name:      "Flash News",
 		Slug:      "flash-news",
 		IsConfirm: true,
@@ -351,7 +349,7 @@ var menus = []entity.Menu{
 		`,
 	},
 	{
-		Category:  "creditgoal",
+		Category:  "CREDITGOAL",
 		Name:      "Crédit Goal",
 		Slug:      "credit-goal",
 		IsConfirm: true,
@@ -371,7 +369,7 @@ var menus = []entity.Menu{
 		`,
 	},
 	{
-		Category:  "follow-team",
+		Category:  "SMSALERTE",
 		Name:      "Champ. Mali",
 		Slug:      "champ-mali",
 		IsConfirm: true,
@@ -398,7 +396,7 @@ var menus = []entity.Menu{
 		`,
 	},
 	{
-		Category:  "follow-team",
+		Category:  "SMSALERTE",
 		Name:      "Champ. Mali Results",
 		Slug:      "champ-mali-results",
 		IsConfirm: true,
@@ -419,7 +417,7 @@ var menus = []entity.Menu{
 		`,
 	},
 	{
-		Category:  "follow-team",
+		Category:  "SMSALERTE",
 		Name:      "Champ. Mali Standings",
 		Slug:      "champ-mali-standings",
 		IsConfirm: true,
@@ -440,7 +438,7 @@ var menus = []entity.Menu{
 		`,
 	},
 	{
-		Category:  "follow-team",
+		Category:  "SMSALERTE",
 		Name:      "Champ. Mali Schedule",
 		Slug:      "champ-mali-schedule",
 		IsConfirm: true,
@@ -461,7 +459,7 @@ var menus = []entity.Menu{
 		`,
 	},
 	{
-		Category:  "follow-team",
+		Category:  "SMSALERTE",
 		Name:      "Champ. Mali Team",
 		Slug:      "champ-mali-team",
 		IsConfirm: true,
@@ -482,7 +480,7 @@ var menus = []entity.Menu{
 		`,
 	},
 	{
-		Category:  "follow-team",
+		Category:  "SMSALERTE",
 		Name:      "Champ. Mali Crédit Score",
 		Slug:      "champ-mali-credit-score",
 		IsConfirm: true,
@@ -503,7 +501,7 @@ var menus = []entity.Menu{
 		`,
 	},
 	{
-		Category:  "follow-team",
+		Category:  "SMSALERTE",
 		Name:      "Champ. Mali Crédit Goal",
 		Slug:      "champ-mali-credit-goal",
 		IsConfirm: true,
@@ -523,7 +521,7 @@ var menus = []entity.Menu{
 		`,
 	},
 	{
-		Category:  "follow-team",
+		Category:  "SMSALERTE",
 		Name:      "Champ. Mali SMS Alerte",
 		Slug:      "champ-mali-sms-alerte",
 		IsConfirm: true,
@@ -543,7 +541,7 @@ var menus = []entity.Menu{
 		`,
 	},
 	{
-		Category:  "follow-team",
+		Category:  "SMSALERTE",
 		Name:      "Champ. Mali SMS Alerte Equipe",
 		Slug:      "champ-mali-sms-alerte-equipe",
 		IsConfirm: true,
@@ -563,7 +561,7 @@ var menus = []entity.Menu{
 		`,
 	},
 	{
-		Category:  "prediction",
+		Category:  "PREDICTION",
 		Name:      "Prédiction",
 		Slug:      "prediction",
 		IsConfirm: true,
@@ -582,7 +580,7 @@ var menus = []entity.Menu{
 		`,
 	},
 	{
-		Category:  "prediction",
+		Category:  "PREDICTION",
 		Name:      "Safe of the Day",
 		Slug:      "prediction-safe-of-the-day",
 		IsConfirm: true,
@@ -602,7 +600,7 @@ var menus = []entity.Menu{
 		`,
 	},
 	{
-		Category:  "prediction",
+		Category:  "PREDICTION",
 		Name:      "Daily combined bets",
 		Slug:      "prediction-daily-combined-bets",
 		IsConfirm: true,
@@ -622,7 +620,7 @@ var menus = []entity.Menu{
 		`,
 	},
 	{
-		Category:  "prediction",
+		Category:  "PREDICTION",
 		Name:      "VIP Prono",
 		Slug:      "prediction-vip-prono",
 		IsConfirm: true,
@@ -642,7 +640,7 @@ var menus = []entity.Menu{
 		`,
 	},
 	{
-		Category:  "follow-competition",
+		Category:  "SMSALERTE",
 		Name:      "SMS Alerte",
 		Slug:      "sms-alerte",
 		IsConfirm: true,
@@ -664,7 +662,7 @@ var menus = []entity.Menu{
 		`,
 	},
 	{
-		Category:  "follow-competition",
+		Category:  "SMSALERTE",
 		Name:      "Kit Foot",
 		Slug:      "kit-foot",
 		IsConfirm: true,
@@ -684,7 +682,7 @@ var menus = []entity.Menu{
 		`,
 	},
 	{
-		Category:  "follow-competition",
+		Category:  "SMSALERTE",
 		Name:      "Kit Foot By League",
 		Slug:      "kit-foot-by-league",
 		IsConfirm: true,
@@ -705,7 +703,7 @@ var menus = []entity.Menu{
 		`,
 	},
 	{
-		Category:  "follow-competition",
+		Category:  "SMSALERTE",
 		Name:      "Kit Foot By Team",
 		Slug:      "kit-foot-by-team",
 		IsConfirm: true,
@@ -726,7 +724,7 @@ var menus = []entity.Menu{
 		`,
 	},
 	{
-		Category:  "follow-competition",
+		Category:  "SMSALERTE",
 		Name:      "Foot Europe",
 		Slug:      "foot-europe",
 		IsConfirm: true,
@@ -746,7 +744,7 @@ var menus = []entity.Menu{
 		`,
 	},
 	{
-		Category:  "follow-competition",
+		Category:  "SMSALERTE",
 		Name:      "Foot Afrique",
 		Slug:      "foot-afrique",
 		IsConfirm: true,
@@ -766,7 +764,7 @@ var menus = []entity.Menu{
 		`,
 	},
 	{
-		Category:  "follow-competition",
+		Category:  "SMSALERTE",
 		Name:      "Foot International",
 		Slug:      "foot-international",
 		IsConfirm: true,
@@ -785,7 +783,7 @@ var menus = []entity.Menu{
 		`,
 	},
 	{
-		Category:  "follow-competition",
+		Category:  "SMSALERTE",
 		Name:      "SMS Alerte Equipe",
 		Slug:      "sms-alerte-equipe",
 		IsConfirm: true,

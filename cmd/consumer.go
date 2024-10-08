@@ -482,8 +482,8 @@ var consumerNewsCmd = &cobra.Command{
 }
 
 var consumerSMSAlerteCmd = &cobra.Command{
-	Use:   "follow_competition",
-	Short: "Consumer Follow Competition Service CLI",
+	Use:   "sms_alerte",
+	Short: "Consumer SMS Alerte Service CLI",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		/**

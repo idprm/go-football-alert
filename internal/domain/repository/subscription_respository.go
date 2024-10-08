@@ -29,13 +29,13 @@ type ISubscriptionRepository interface {
 	IsNotActive(*entity.Subscription) (*entity.Subscription, error)
 	IsNotRetry(*entity.Subscription) (*entity.Subscription, error)
 	IsNotFollowTeam(*entity.Subscription) (*entity.Subscription, error)
-	IsNotFollowCompetition(*entity.Subscription) (*entity.Subscription, error)
+	IsNotFollowLeague(*entity.Subscription) (*entity.Subscription, error)
 	IsNotPrediction(*entity.Subscription) (*entity.Subscription, error)
 	IsNotCreditGoal(*entity.Subscription) (*entity.Subscription, error)
 	CreditGoal() (*[]entity.Subscription, error)
 	Prediction() (*[]entity.Subscription, error)
 	FollowTeam() (*[]entity.Subscription, error)
-	FollowCompetition() (*[]entity.Subscription, error)
+	FollowLeague() (*[]entity.Subscription, error)
 	Renewal() (*[]entity.Subscription, error)
 	Retry() (*[]entity.Subscription, error)
 }
@@ -134,7 +134,7 @@ func (r *SubscriptionRepository) IsNotFollowTeam(c *entity.Subscription) (*entit
 	return c, nil
 }
 
-func (r *SubscriptionRepository) IsNotFollowCompetition(c *entity.Subscription) (*entity.Subscription, error) {
+func (r *SubscriptionRepository) IsNotFollowLeague(c *entity.Subscription) (*entity.Subscription, error) {
 	err := r.db.Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Updates(map[string]interface{}{"updated_at": time.Now(), "is_follow_competition": false}).Error
 	if err != nil {
 		return nil, err
@@ -158,9 +158,9 @@ func (r *SubscriptionRepository) IsNotCreditGoal(c *entity.Subscription) (*entit
 	return c, nil
 }
 
-func (r *SubscriptionRepository) FollowCompetition() (*[]entity.Subscription, error) {
+func (r *SubscriptionRepository) FollowLeague() (*[]entity.Subscription, error) {
 	var sub []entity.Subscription
-	err := r.db.Where(&entity.Subscription{IsFollowCompetition: true, IsActive: true}).Find(&sub).Error
+	err := r.db.Where(&entity.Subscription{IsFollowLeague: true, IsActive: true}).Find(&sub).Error
 	if err != nil {
 		return nil, err
 	}

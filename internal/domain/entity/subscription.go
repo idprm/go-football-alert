@@ -42,7 +42,7 @@ type Subscription struct {
 	ExpireAt             time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"expire_at,omitempty"`
 	IpAddress            string    `gorm:"size:25" json:"ip_address,omitempty"`
 	IsFollowTeam         bool      `gorm:"type:boolean;column:is_follow_team" json:"is_follow_team,omitempty"`
-	IsFollowCompetition         bool      `gorm:"type:boolean;column:is_follow_competition" json:"is_follow_competition,omitempty"`
+	IsFollowLeague       bool      `gorm:"type:boolean;column:is_follow_competition" json:"is_follow_competition,omitempty"`
 	IsPrediction         bool      `gorm:"type:boolean;column:is_prediction" json:"is_prediction,omitempty"`
 	IsCreditGoal         bool      `gorm:"type:boolean;column:is_credit_goal" json:"is_credit_goal,omitempty"`
 	IsRetry              bool      `gorm:"type:boolean;column:is_retry" json:"is_retry,omitempty"`
@@ -100,11 +100,11 @@ func (s *Subscription) SetIsPrediction(v bool) {
 }
 
 func (s *Subscription) SetIsFollowTeam(v bool) {
-	s.IsFollowCompetition = v
+	s.IsFollowLeague = v
 }
 
-func (s *Subscription) SetIsFollowCompetition(v bool) {
-	s.IsFollowCompetition = v
+func (s *Subscription) SetIsFollowLeague(v bool) {
+	s.IsFollowLeague = v
 }
 
 func (s *Subscription) SetIsRetry(v bool) {

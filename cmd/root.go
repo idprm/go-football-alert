@@ -33,6 +33,9 @@ var (
 	API_FOOTBALL_URL  string = getEnv("API_FOOTBALL_URL")
 	API_FOOTBALL_KEY  string = getEnv("API_FOOTBALL_KEY")
 	API_FOOTBALL_HOST string = getEnv("API_FOOTBALL_HOST")
+	URL_MT            string = getEnv("URL_MT")
+	USER_MT           string = getEnv("USER_MT")
+	PASS_MT           string = getEnv("PASS_MT")
 )
 
 const (
@@ -42,8 +45,10 @@ const (
 	RMQ_USSD_QUEUE          string = "Q_USSD"
 	RMQ_SMS_EXCHANGE        string = "E_SMS"
 	RMQ_SMS_QUEUE           string = "Q_SMS"
-	RMQ_MT_EXCHANGE         string = "E_MT"
-	RMQ_MT_QUEUE            string = "Q_MT"
+	RMQ_NEWS_EXCHANGE       string = "E_NEWS"
+	RMQ_NEWS_QUEUE          string = "Q_NEWS"
+	RMQ_SMS_ALERTE_EXCHANGE string = "E_SMS_ALERTE"
+	RMQ_SMS_ALERTE_QUEUE    string = "Q_SMS_ALERTE"
 	RMQ_RENEWAL_EXCHANGE    string = "E_RENEWAL"
 	RMQ_RENEWAL_QUEUE       string = "Q_RENEWAL"
 	RMQ_RETRY_EXCHANGE      string = "E_RETRY"
@@ -58,10 +63,8 @@ const (
 	RMQ_PREDICTION_QUEUE    string = "Q_PREDICTION"
 	RMQ_CREDIT_EXCHANGE     string = "E_CREDIT_GOAL"
 	RMQ_CREDIT_QUEUE        string = "Q_CREDIT_GOAL"
-	RMQ_NEWS_EXCHANGE       string = "E_NEWS"
-	RMQ_NEWS_QUEUE          string = "Q_NEWS"
-	RMQ_SMS_ALERTE_EXCHANGE string = "E_SMS_ALERTE"
-	RMQ_SMS_ALERTE_QUEUE    string = "Q_SMS_ALERTE"
+	RMQ_MT_EXCHANGE         string = "E_MT"
+	RMQ_MT_QUEUE            string = "Q_MT"
 	ACT_USSD                string = "USSD"
 	ACT_SMS                 string = "SMS"
 	ACT_CONFIRMATION        string = "CONFIRMATION"
@@ -101,7 +104,6 @@ const (
 	SMS_FOLLOW_COMPETITION_SUB           string = "FOLLOW_COMPETITION_SUB"
 	SMS_FOLLOW_COMPETITION_UNVALID_SUB   string = "FOLLOW_COMPETITION_UNVALID_SUB"
 	SMS_FOLLOW_COMPETITION_EXPIRE_SUB    string = "FOLLOW_COMPETITION_EXPIRE_SUB"
-	SMS_CONFIRMATION                     string = "CONFIRMATION"
 	SMS_INFO                             string = "INFO"
 	SMS_STOP                             string = "STOP"
 )

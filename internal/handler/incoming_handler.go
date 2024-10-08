@@ -37,6 +37,9 @@ var (
 	API_FOOTBALL_URL  string = utils.GetEnv("API_FOOTBALL_URL")
 	API_FOOTBALL_KEY  string = utils.GetEnv("API_FOOTBALL_KEY")
 	API_FOOTBALL_HOST string = utils.GetEnv("API_FOOTBALL_HOST")
+	URL_MT            string = utils.GetEnv("URL_MT")
+	USER_MT           string = utils.GetEnv("USER_MT")
+	PASS_MT           string = utils.GetEnv("PASS_MT")
 )
 
 var (
@@ -232,10 +235,6 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 
 	// if is_confirm = true
 	if menu.IsConfirm {
-		// if sub not active
-		if !h.subscriptionService.IsActiveSubscriptionByCategory(menu.GetCategory(), req.GetMsisdn()) {
-			return c.Status(fiber.StatusOK).SendString(h.IsActiveSubscription(c.BaseURL(), req.GetSlug(), menu.GetCategory()))
-		}
 
 		var data string
 
@@ -654,7 +653,7 @@ func (h *IncomingHandler) FlashNews(baseUrl string, page int) string {
 		for _, s := range news {
 			row := `<a href="` +
 				baseUrl + `/` +
-				API_VERSION + `/ussd/q/detail?slug=flash-news&amp;category=follow-competition&amp;title=` +
+				API_VERSION + `/ussd/q/detail?slug=flash-news&amp;category=SMSALERTE&amp;title=` +
 				s.GetTitleQueryEscape() + `">` +
 				s.GetTitleLimited(20) +
 				`</a>`
@@ -667,7 +666,7 @@ func (h *IncomingHandler) FlashNews(baseUrl string, page int) string {
 	return newsString
 }
 
-func (h *IncomingHandler) CreditGoal(baseUrl string, page int) string {
+func (h *IncomingHandler) SMSAlerte(baseUrl string, page int) string {
 	return ""
 }
 
@@ -726,11 +725,11 @@ func (h *IncomingHandler) ChampSMSAlerteEquipe(baseUrl string, page int) string 
 	return ""
 }
 
-func (h *IncomingHandler) Prediction(baseUrl string, page int) string {
+func (h *IncomingHandler) CreditGoal(baseUrl string, page int) string {
 	return ""
 }
 
-func (h *IncomingHandler) SMSAlerte(baseUrl string, page int) string {
+func (h *IncomingHandler) Prediction(baseUrl string, page int) string {
 	return ""
 }
 

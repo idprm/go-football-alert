@@ -278,10 +278,38 @@ func seederDB(db *gorm.DB) {
 		{
 			Category: ACT_CONFIRMATION,
 			Channel:  ACT_SMS,
-			Name:     SMS_CONFIRMATION,
-			Value: `1.S'abonner au jour (50/jour)\n
-			2.S'anonner a la semaine (200/semaine)\n
-			3.S'abonnet au mois (500/mois)`,
+			Name:     SMS_FOLLOW_TEAM_SUB,
+			Value:    "SMS Alerte: Vous avez souscrit avec succes pour suivre votre equipe favorite! Jusqu au {date}/{month} vous recevrez toutes les infos en direct. {price}{currency}/souscription",
+		},
+		{
+			Category: ACT_CONFIRMATION,
+			Channel:  ACT_SMS,
+			Name:     SMS_FOLLOW_TEAM_UNVALID_SUB,
+			Value:    "SMS Alerte: Desole, votre choix n est pas valide. Envoyez de nouveau au {sc} le nom de votre equipe pour obtenir toutes les infos. {price}{currency}/souscription",
+		},
+		{
+			Category: ACT_NOTIFICATION,
+			Channel:  ACT_SMS,
+			Name:     SMS_FOLLOW_TEAM_EXPIRE_SUB,
+			Value:    "SMS Alerte: Desole mais votre abonnement pour suivre votre equipe vient de se terminer. Pour le renouveler, envoyer au {sc} le nom de l equipe a suivre. {price}{currency}",
+		},
+		{
+			Category: ACT_CONFIRMATION,
+			Channel:  ACT_SMS,
+			Name:     SMS_FOLLOW_COMPETITION_SUB,
+			Value:    "SMS Alerte: Vous avez souscrit avec succes pour suivre {league}! Jusqu au {day}/{month} vous recevrez toutes les infos en direct. {price}{currency}/souscription",
+		},
+		{
+			Category: ACT_CONFIRMATION,
+			Channel:  ACT_SMS,
+			Name:     SMS_FOLLOW_COMPETITION_UNVALID_SUB,
+			Value:    "SMS Alerte: Desole, mais votre choix n est pas valide. Renvoyez au {sc} la competition que vous voulez suivre en direct. {price}{currency}/SMS",
+		},
+		{
+			Category: ACT_NOTIFICATION,
+			Channel:  ACT_SMS,
+			Name:     SMS_FOLLOW_COMPETITION_EXPIRE_SUB,
+			Value:    "SMS Alerte: Desole mais votre abonnement pour suivre votre competition vient de se terminer. Pour le renouveler, envoyer au {sc} le nom de l equipe a suivre. {price}{currency}/SMS",
 		},
 		{
 			Category: ACT_CONFIRMATION,
@@ -376,44 +404,8 @@ func seederDB(db *gorm.DB) {
 		{
 			Category: ACT_CONFIRMATION,
 			Channel:  ACT_SMS,
-			Name:     SMS_FOLLOW_TEAM_SUB,
-			Value:    "SMS Alerte: Vous avez souscrit avec succes pour suivre votre equipe favorite! Jusqu au {date}/{month} vous recevrez toutes les infos en direct. {price}{currency}/souscription",
-		},
-		{
-			Category: ACT_CONFIRMATION,
-			Channel:  ACT_SMS,
-			Name:     SMS_FOLLOW_TEAM_UNVALID_SUB,
-			Value:    "SMS Alerte: Desole, votre choix n est pas valide. Envoyez de nouveau au {sc} le nom de votre equipe pour obtenir toutes les infos. {price}{currency}/souscription",
-		},
-		{
-			Category: ACT_NOTIFICATION,
-			Channel:  ACT_SMS,
-			Name:     SMS_FOLLOW_TEAM_EXPIRE_SUB,
-			Value:    "SMS Alerte: Desole mais votre abonnement pour suivre votre equipe vient de se terminer. Pour le renouveler, envoyer au {sc} le nom de l equipe a suivre. {price}{currency}",
-		},
-		{
-			Category: ACT_CONFIRMATION,
-			Channel:  ACT_SMS,
-			Name:     SMS_FOLLOW_COMPETITION_SUB,
-			Value:    "SMS Alerte: Vous avez souscrit avec succes pour suivre {league}! Jusqu au {day}/{month} vous recevrez toutes les infos en direct. {price}{currency}/souscription",
-		},
-		{
-			Category: ACT_CONFIRMATION,
-			Channel:  ACT_SMS,
-			Name:     SMS_FOLLOW_COMPETITION_UNVALID_SUB,
-			Value:    "SMS Alerte: Desole, mais votre choix n est pas valide. Renvoyez au {sc} la competition que vous voulez suivre en direct. {price}{currency}/SMS",
-		},
-		{
-			Category: ACT_NOTIFICATION,
-			Channel:  ACT_SMS,
-			Name:     SMS_FOLLOW_COMPETITION_EXPIRE_SUB,
-			Value:    "SMS Alerte: Desole mais votre abonnement pour suivre votre competition vient de se terminer. Pour le renouveler, envoyer au {sc} le nom de l equipe a suivre. {price}{currency}/SMS",
-		},
-		{
-			Category: ACT_CONFIRMATION,
-			Channel:  ACT_SMS,
 			Name:     SMS_INFO,
-			Value:    "Info Services FFC: [#157#] USSD /[981] SMS Alerte Equipe /[9009] - SMS Alerte Competition /[###] SMS Alerte a la demande /[944] Credit Goal /[985] Pronostic",
+			Value:    "Info Services FFC: [#157#] USSD /[981] SMS Alerte Equipe /[9009] - SMS Alerte Competition /[###] SMS Alerte a la demande /[944]",
 		},
 		{
 			Category: ACT_CONFIRMATION,
@@ -433,6 +425,13 @@ func seederDB(db *gorm.DB) {
 		},
 		{
 			CountryID:  1,
+			Name:       ACT_SMS_ALERTE,
+			PublishAt:  time.Now(),
+			UnlockedAt: time.Now(),
+			IsUnlocked: false,
+		},
+		{
+			CountryID:  1,
 			Name:       ACT_PREDICTION,
 			PublishAt:  time.Now(),
 			UnlockedAt: time.Now(),
@@ -441,20 +440,6 @@ func seederDB(db *gorm.DB) {
 		{
 			CountryID:  1,
 			Name:       ACT_CREDIT_GOAL,
-			PublishAt:  time.Now(),
-			UnlockedAt: time.Now(),
-			IsUnlocked: false,
-		},
-		{
-			CountryID:  1,
-			Name:       ACT_SMS_ALERTE,
-			PublishAt:  time.Now(),
-			UnlockedAt: time.Now(),
-			IsUnlocked: false,
-		},
-		{
-			CountryID:  1,
-			Name:       ACT_SMS_ALERTE,
 			PublishAt:  time.Now(),
 			UnlockedAt: time.Now(),
 			IsUnlocked: false,

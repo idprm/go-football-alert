@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
-<pages>
+<pages descr="Orange Football Club">
   <page>
     Orange Football Club, votre choix:<br/>
     <a href="{{.url}}/{{.version}}/ussd/q?slug=lm&title=Live+Match">Live Match</a>
@@ -12,5 +12,6 @@
     <a href="{{.url}}/{{.version}}/ussd/q?slug=kit-foot&title=Kit+Foot">Kit Foot</a>
     <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe">Foot Europe</a>
     <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-afrique&title=Foot+Afrique">Foot Afrique</a>
+	<a href="{{.url}}/{{.version}}/ussd/q?slug=foot-international&title=Foot+International">Foot International</a>
   </page>
 </pages>

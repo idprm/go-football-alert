@@ -99,8 +99,8 @@ func (p *Processor) SMS(wg *sync.WaitGroup, message []byte) {
 	subscriptionCreditGoalService := services.NewSubscriptionCreditGoalService(subscriptionCreditGoalRepo)
 	subscriptionPredictRepo := repository.NewSubscriptionPredictRepository(p.db)
 	subscriptionPredictService := services.NewSubscriptionPredictService(subscriptionPredictRepo)
-	subscriptionFollowCompetitionRepo := repository.NewSubscriptionFollowCompetitionRepository(p.db)
-	subscriptionFollowCompetitionService := services.NewSubscriptionFollowCompetitionService(subscriptionFollowCompetitionRepo)
+	SubscriptionFollowLeagueRepo := repository.NewSubscriptionFollowLeagueRepository(p.db)
+	SubscriptionFollowLeagueService := services.NewSubscriptionFollowLeagueService(SubscriptionFollowLeagueRepo)
 	subscriptionFollowTeamRepo := repository.NewSubscriptionFollowTeamRepository(p.db)
 	subscriptionFollowTeamService := services.NewSubscriptionFollowTeamService(subscriptionFollowTeamRepo)
 	verifyRepo := repository.NewVerifyRepository(p.rds)
@@ -123,7 +123,7 @@ func (p *Processor) SMS(wg *sync.WaitGroup, message []byte) {
 		teamService,
 		subscriptionCreditGoalService,
 		subscriptionPredictService,
-		subscriptionFollowCompetitionService,
+		SubscriptionFollowLeagueService,
 		subscriptionFollowTeamService,
 		verifyService,
 		req,
@@ -136,10 +136,8 @@ func (p *Processor) SMS(wg *sync.WaitGroup, message []byte) {
 
 func (p *Processor) MT(wg *sync.WaitGroup, message []byte) {
 
-	subscriptionRepo := repository.NewSubscriptionRepository(p.db)
-	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
-	transactionRepo := repository.NewTransactionRepository(p.db)
-	transactionService := services.NewTransactionService(transactionRepo)
+	mtRepo := repository.NewMTRepository(p.db)
+	mtService := services.NewMTService(mtRepo)
 
 	var req *model.MTRequest
 	json.Unmarshal([]byte(message), &req)
@@ -147,8 +145,7 @@ func (p *Processor) MT(wg *sync.WaitGroup, message []byte) {
 	h := handler.NewMTHandler(
 		p.rmq,
 		p.logger,
-		subscriptionService,
-		transactionService,
+		mtService,
 		req,
 	)
 
@@ -167,8 +164,8 @@ func (p *Processor) News(wg *sync.WaitGroup, message []byte) {
 	teamService := services.NewTeamService(teamRepo)
 	newsRepo := repository.NewNewsRepository(p.db)
 	newsService := services.NewNewsService(newsRepo)
-	followCompetitionRepo := repository.NewFollowCompetitionRepository(p.db)
-	followCompetitionService := services.NewFollowCompetitionService(followCompetitionRepo)
+	FollowLeagueRepo := repository.NewFollowLeagueRepository(p.db)
+	FollowLeagueService := services.NewFollowLeagueService(FollowLeagueRepo)
 	followTeamRepo := repository.NewFollowTeamRepository(p.db)
 	followTeamService := services.NewFollowTeamService(followTeamRepo)
 
@@ -180,7 +177,7 @@ func (p *Processor) News(wg *sync.WaitGroup, message []byte) {
 		leagueService,
 		teamService,
 		newsService,
-		followCompetitionService,
+		FollowLeagueService,
 		followTeamService,
 		news,
 	)

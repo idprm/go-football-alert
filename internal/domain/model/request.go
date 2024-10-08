@@ -140,7 +140,7 @@ func (m *MORequest) IsFollowTeam(s *entity.Service) bool {
 	return m.GetTo() == s.ScSubMT
 }
 
-func (m *MORequest) IsFollowCompetition(s *entity.Service) bool {
+func (m *MORequest) IsFollowLeague(s *entity.Service) bool {
 	return m.GetTo() == s.ScSubMT
 }
 
@@ -162,10 +162,19 @@ func (m *MORequest) GetServiceByNumber() string {
 }
 
 type MTRequest struct {
+	TrxId        string               `json:"trx_id,omitempty"`
 	Smsc         string               `json:"smsc,omitempty"`
 	Service      *entity.Service      `json:"service,omitempty"`
 	Content      *entity.Content      `json:"content,omitempty"`
 	Subscription *entity.Subscription `json:"subscription,omitempty"`
+}
+
+func (m *MTRequest) GetTrxId() string {
+	return m.TrxId
+}
+
+func (m *MTRequest) SetTrxId(v string) {
+	m.TrxId = v
 }
 
 type ErrorResponse struct {
