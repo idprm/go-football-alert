@@ -18,17 +18,20 @@ type Telco struct {
 	logger       *logger.Logger
 	service      *entity.Service
 	subscription *entity.Subscription
+	trxId        string
 }
 
 func NewTelco(
 	logger *logger.Logger,
 	service *entity.Service,
 	subscription *entity.Subscription,
+	trxId string,
 ) *Telco {
 	return &Telco{
 		logger:       logger,
 		service:      service,
 		subscription: subscription,
+		trxId:        trxId,
 	}
 }
 
@@ -73,7 +76,11 @@ func (p *Telco) QueryProfileAndBal() ([]byte, error) {
 
 	p.logger.Writer(req)
 
-	l.WithFields(logrus.Fields{"request": req}).Info("PROFILE_AND_BAL")
+	l.WithFields(logrus.Fields{
+		"trx_id":       p.trxId,
+		"request_url":  p.service.GetUrlTelco(),
+		"request_body": req.Body,
+	}).Info("PROFILE_AND_BAL")
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -91,6 +98,7 @@ func (p *Telco) QueryProfileAndBal() ([]byte, error) {
 
 	l.WithFields(
 		logrus.Fields{
+			"trx_id":      p.trxId,
 			"msisdn":      p.subscription.GetMsisdn(),
 			"response":    string(body),
 			"status_code": resp.StatusCode,
@@ -144,7 +152,11 @@ func (p *Telco) DeductFee() ([]byte, error) {
 
 	p.logger.Writer(req)
 
-	l.WithFields(logrus.Fields{"request": req}).Info("DEDUCT_FEE")
+	l.WithFields(logrus.Fields{
+		"trx_id":       p.trxId,
+		"request_url":  p.service.GetUrlTelco(),
+		"request_body": req.Body,
+	}).Info("DEDUCT_FEE")
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -162,6 +174,7 @@ func (p *Telco) DeductFee() ([]byte, error) {
 
 	l.WithFields(
 		logrus.Fields{
+			"trx_id":      p.trxId,
 			"msisdn":      p.subscription.GetMsisdn(),
 			"response":    string(body),
 			"status_code": resp.StatusCode,

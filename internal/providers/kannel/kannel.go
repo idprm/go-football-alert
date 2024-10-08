@@ -15,6 +15,7 @@ type Kannel struct {
 	service      *entity.Service
 	content      *entity.Content
 	subscription *entity.Subscription
+	trxId        string
 }
 
 func NewKannel(
@@ -22,12 +23,14 @@ func NewKannel(
 	service *entity.Service,
 	content *entity.Content,
 	subscription *entity.Subscription,
+	trxId string,
 ) *Kannel {
 	return &Kannel{
 		logger:       logger,
 		service:      service,
 		content:      content,
 		subscription: subscription,
+		trxId:        trxId,
 	}
 }
 
@@ -65,7 +68,11 @@ func (p *Kannel) SMS(sc string) (int, []byte, error) {
 	}
 
 	p.logger.Writer(req)
-	l.WithFields(logrus.Fields{"request": req}).Info("SMS")
+	l.WithFields(logrus.Fields{
+		"trx_id":  p.trxId,
+		"msisdn":  p.subscription.GetMsisdn(),
+		"request": p.service.GetUrlMT(),
+	}).Info("SMS")
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -83,6 +90,7 @@ func (p *Kannel) SMS(sc string) (int, []byte, error) {
 	duration := time.Since(start).Milliseconds()
 	p.logger.Writer(string(body))
 	l.WithFields(logrus.Fields{
+		"trx_id":      p.trxId,
 		"msisdn":      p.subscription.GetMsisdn(),
 		"response":    string(body),
 		"status_code": resp.StatusCode,

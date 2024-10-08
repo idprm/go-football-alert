@@ -209,7 +209,7 @@ func (h *SMSHandler) Subscription(category string) {
 		log.Println(err.Error())
 	}
 
-	t := telco.NewTelco(h.logger, service, subscription)
+	t := telco.NewTelco(h.logger, service, subscription, trxId)
 
 	deductFee, err := t.DeductFee()
 	if err != nil {
@@ -560,7 +560,7 @@ func (h *SMSHandler) Firstpush() {
 		log.Println(err.Error())
 	}
 
-	t := telco.NewTelco(h.logger, service, subscription)
+	t := telco.NewTelco(h.logger, service, subscription, trxId)
 	profileBall, err := t.QueryProfileAndBal()
 	if err != nil {
 		log.Println(err.Error())

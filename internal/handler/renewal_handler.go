@@ -50,6 +50,9 @@ func NewRenewalHandler(
 
 func (h *RenewalHandler) Dailypush() {
 	if h.subscriptionService.IsActiveSubscription(h.sub.GetServiceId(), h.sub.GetMsisdn()) {
+
+		trxId := utils.GenerateTrxId()
+
 		service, err := h.serviceService.GetById(h.sub.GetServiceId())
 		if err != nil {
 			log.Println(err.Error())
@@ -60,14 +63,12 @@ func (h *RenewalHandler) Dailypush() {
 			log.Println(err.Error())
 		}
 
-		trxId := utils.GenerateTrxId()
-
 		summary := &entity.Summary{
 			ServiceID: service.GetId(),
 			CreatedAt: time.Now(),
 		}
 
-		t := telco.NewTelco(h.logger, service, h.sub)
+		t := telco.NewTelco(h.logger, service, h.sub, trxId)
 		resp, err := t.DeductFee()
 		if err != nil {
 			log.Println(err.Error())

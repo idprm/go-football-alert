@@ -34,7 +34,13 @@ func NewMTHandler(
 }
 
 func (h *MTHandler) MessageTerminated() {
-	k := kannel.NewKannel(h.logger, h.req.Service, h.req.Content, h.req.Subscription)
+	k := kannel.NewKannel(
+		h.logger,
+		h.req.Service,
+		h.req.Content,
+		h.req.Subscription,
+		h.req.TrxId,
+	)
 	statusCode, sms, err := k.SMS(h.req.Smsc)
 	if err != nil {
 		log.Println(err.Error())
