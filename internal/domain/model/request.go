@@ -113,7 +113,8 @@ func (s *MORequest) GetTo() string {
 }
 
 func (s *MORequest) GetMsisdn() string {
-	return s.Msisdn
+	replacer := strings.NewReplacer("+", "")
+	return replacer.Replace(s.Msisdn)
 }
 
 func (s *MORequest) GetIpAddress() string {
