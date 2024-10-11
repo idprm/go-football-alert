@@ -294,36 +294,13 @@ var publisherScrapingFixturesCmd = &cobra.Command{
 		/**
 		 * Looping schedule
 		 */
-		timeDuration := time.Duration(1)
+		timeDuration := time.Duration(60)
 
 		for {
-			timeNow := time.Now().Format("15:04")
 
-			scheduleRepo := repository.NewScheduleRepository(db)
-			scheduleService := services.NewScheduleService(scheduleRepo)
-
-			if scheduleService.IsUnlocked(ACT_SCRAPING, timeNow) {
-
-				scheduleService.UpdateLocked(
-					&entity.Schedule{
-						Name: ACT_SCRAPING,
-					},
-				)
-
-				go func() {
-					scrapingFixtures(db)
-				}()
-			}
-
-			if scheduleService.IsUnlocked(ACT_SCRAPING, timeNow) {
-				scheduleService.Update(
-					&entity.Schedule{
-						Name:       ACT_SCRAPING,
-						IsUnlocked: true,
-					},
-				)
-
-			}
+			go func() {
+				scrapingFixtures(db)
+			}()
 
 			time.Sleep(timeDuration * time.Minute)
 		}

@@ -157,23 +157,6 @@ func (m *MORequest) IsFollowLeague(s *entity.Service) bool {
 	return m.GetTo() == s.ScSubMT
 }
 
-func (m *MORequest) IsChooseService() bool {
-	return m.GetSMS() == "1" || m.GetSMS() == "2" || m.GetSMS() == "3"
-}
-
-func (m *MORequest) GetServiceByNumber() string {
-	switch m.GetSMS() {
-	case "1":
-		return "jour"
-	case "2":
-		return "semaine"
-	case "3":
-		return "mois"
-	default:
-		return ""
-	}
-}
-
 type MTRequest struct {
 	TrxId        string               `json:"trx_id,omitempty"`
 	Smsc         string               `json:"smsc,omitempty"`
