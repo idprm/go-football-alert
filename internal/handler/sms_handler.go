@@ -817,7 +817,12 @@ func (h *SMSHandler) Stop(category string) {
 func (h *SMSHandler) Unvalid(v string) {
 	trxId := utils.GenerateTrxId()
 
-	content, err := h.getContent(v)
+	service, err := h.getServiceSMSAlerteDaily()
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	content, err := h.getContentSMSAlerteUnvalid(v, service)
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -1011,6 +1016,17 @@ func (h *SMSHandler) getContentFollowTeam(v string, service *entity.Service, tea
 		}, nil
 	}
 	return h.contentService.GetFollowTeam(v, service, team)
+}
+
+func (h *SMSHandler) getContentSMSAlerteUnvalid(v string, service *entity.Service) (*entity.Content, error) {
+	if !h.contentService.IsContent(v) {
+		return &entity.Content{
+			Category: "CATEGORY",
+			Channel:  "SMS",
+			Value:    "SAMPLE_TEXT",
+		}, nil
+	}
+	return h.contentService.GetSMSAlerteUnvalid(v, service)
 }
 
 /**

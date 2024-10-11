@@ -53,6 +53,14 @@ func (e *Content) SetValueSubFollowTeam(team, date, month, price, currency strin
 	e.Value = replacer.Replace(e.Value)
 }
 
+func (e *Content) SetValueSMSAlerteUnvalid(sc, price, currency string) {
+	replacer := strings.NewReplacer(
+		"{sc}", sc,
+		"{price}", price,
+		"{currency}", url.QueryEscape(currency))
+	e.Value = replacer.Replace(e.Value)
+}
+
 func (e *Content) SetValuePrediction(home, away, credit, price, currency string) {
 	replacer := strings.NewReplacer(
 		"{home}", url.QueryEscape(home),

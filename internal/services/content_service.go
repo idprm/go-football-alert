@@ -24,6 +24,7 @@ type IContentService interface {
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetFollowCompetition(string, *entity.Service, *entity.League) (*entity.Content, error)
 	GetFollowTeam(string, *entity.Service, *entity.Team) (*entity.Content, error)
+	GetSMSAlerteUnvalid(string, *entity.Service) (*entity.Content, error)
 	Get(string) (*entity.Content, error)
 	Save(*entity.Content) (*entity.Content, error)
 	Update(*entity.Content) (*entity.Content, error)
@@ -54,6 +55,15 @@ func (s *ContentService) GetFollowTeam(name string, service *entity.Service, tea
 		return nil, err
 	}
 	c.SetValueSubFollowTeam(team.GetName(), strconv.Itoa(time.Now().Day()), utils.FormatFROnlyMonth(time.Now()), service.GetPriceToString(), service.GetCurrency())
+	return c, nil
+}
+
+func (s *ContentService) GetSMSAlerteUnvalid(name string, service *entity.Service) (*entity.Content, error) {
+	c, err := s.contentRepo.Get(name)
+	if err != nil {
+		return nil, err
+	}
+	c.SetValueSMSAlerteUnvalid(service.ScSubMT, service.GetPriceToString(), service.GetCurrency())
 	return c, nil
 }
 

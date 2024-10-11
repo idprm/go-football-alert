@@ -408,7 +408,7 @@ func seederDB(db *gorm.DB) {
 			Category: ACT_CONFIRMATION,
 			Channel:  ACT_SMS,
 			Name:     SMS_FOLLOW_UNVALID_SUB,
-			Value:    "Alerte SMS : Désolé, votre sélection n'est pas valide. Soumettez votre compétition ou le nom de votre équipe à {sc} pour obtenir toutes les informations. {price}{currency}/souscription",
+			Value:    "SMS Alerte: Désolé, votre sélection n'est pas valide. Soumettez votre compétition ou le nom de votre équipe à {sc} pour obtenir toutes les informations. {price}{currency}/souscription",
 		},
 		{
 			Category: ACT_CONFIRMATION,
