@@ -72,7 +72,6 @@ var listenerCmd = &cobra.Command{
 			&entity.NewsTeams{},
 			&entity.FollowLeague{},
 			&entity.FollowTeam{},
-			&entity.Country{},
 			&entity.Schedule{},
 			&entity.Service{},
 			&entity.Content{},

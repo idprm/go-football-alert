@@ -4,8 +4,6 @@ import "time"
 
 type History struct {
 	ID             int64         `gorm:"primaryKey" json:"id"`
-	CountryID      int           `json:"country_id"`
-	Country        *Country      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"country,omitempty"`
 	SubscriptionID int64         `json:"subscription_id"`
 	Subscription   *Subscription `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"subscription,omitempty"`
 	ServiceID      int           `json:"service_id"`
@@ -20,10 +18,6 @@ type History struct {
 
 func (e *History) GetId() int64 {
 	return e.ID
-}
-
-func (e *History) GetCountryId() int {
-	return e.CountryID
 }
 
 func (e *History) GetSubscriptionId() int64 {

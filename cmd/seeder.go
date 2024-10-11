@@ -9,28 +9,10 @@ import (
 )
 
 func seederDB(db *gorm.DB) {
-	var country []entity.Country
 	var service []entity.Service
 	var content []entity.Content
 	var schedule []entity.Schedule
 	var menu []entity.Menu
-
-	var countries = []entity.Country{
-		{
-			ID:       1,
-			Name:     "MALI",
-			Code:     "223",
-			TimeZone: "GMT",
-			Currency: "CFA",
-		},
-		{
-			ID:       2,
-			Name:     "GUINEE",
-			Code:     "224",
-			TimeZone: "GMT",
-			Currency: "GNF",
-		},
-	}
 
 	// 1 : Live match ( Display USSD only )
 	// 2 : Flash News ( Display USSD Only )
@@ -67,13 +49,13 @@ func seederDB(db *gorm.DB) {
 	var services = []entity.Service{
 		{
 			ID:         1,
-			CountryID:  1,
 			Category:   "LIVEMATCH",
 			Channel:    ACT_USSD,
 			Name:       "LiveMatch1",
 			Code:       "LM1",
 			Package:    "jour",
 			Price:      25,
+			Currency:   "CFA",
 			RewardGoal: 0,
 			RenewalDay: 1,
 			FreeDay:    1,
@@ -91,7 +73,6 @@ func seederDB(db *gorm.DB) {
 		},
 		{
 			ID:         2,
-			CountryID:  1,
 			Category:   "LIVEMATCH",
 			Channel:    ACT_USSD,
 			Name:       "LiveMatch7",
@@ -100,6 +81,7 @@ func seederDB(db *gorm.DB) {
 			Price:      100,
 			RewardGoal: 0,
 			RenewalDay: 7,
+			Currency:   "CFA",
 			FreeDay:    1,
 			UrlTelco:   "http://172.17.111.40:8080/services/OrangeService.OrangeServiceHttpSoap11Endpoint/",
 			UserTelco:  "ESERV",
@@ -115,13 +97,13 @@ func seederDB(db *gorm.DB) {
 		},
 		{
 			ID:         3,
-			CountryID:  1,
 			Category:   "LIVEMATCH",
 			Channel:    ACT_USSD,
 			Name:       "LiveMatch30",
 			Code:       "LM30",
 			Package:    "mois",
 			Price:      250,
+			Currency:   "CFA",
 			RewardGoal: 0,
 			RenewalDay: 30,
 			FreeDay:    1,
@@ -139,13 +121,13 @@ func seederDB(db *gorm.DB) {
 		},
 		{
 			ID:         4,
-			CountryID:  1,
 			Category:   "FLASHNEWS",
 			Channel:    ACT_USSD,
 			Name:       "FlashNews1",
 			Code:       "FN1",
 			Package:    "jour",
 			Price:      25,
+			Currency:   "CFA",
 			RewardGoal: 0,
 			RenewalDay: 1,
 			FreeDay:    1,
@@ -163,13 +145,13 @@ func seederDB(db *gorm.DB) {
 		},
 		{
 			ID:         5,
-			CountryID:  1,
 			Category:   "FLASHNEWS",
 			Channel:    ACT_USSD,
 			Name:       "FlashNews1",
 			Code:       "FN7",
 			Package:    "semaine",
 			Price:      100,
+			Currency:   "CFA",
 			RewardGoal: 0,
 			RenewalDay: 7,
 			FreeDay:    1,
@@ -187,13 +169,13 @@ func seederDB(db *gorm.DB) {
 		},
 		{
 			ID:         6,
-			CountryID:  1,
 			Category:   "FLASHNEWS",
 			Channel:    ACT_USSD,
 			Name:       "FlashNews30",
 			Code:       "FN30",
 			Package:    "mois",
 			Price:      250,
+			Currency:   "CFA",
 			RewardGoal: 0,
 			RenewalDay: 30,
 			FreeDay:    1,
@@ -211,13 +193,13 @@ func seederDB(db *gorm.DB) {
 		},
 		{
 			ID:         7,
-			CountryID:  1,
 			Category:   "SMSALERTE",
 			Channel:    "SMS",
 			Name:       "SMSAlerte1",
 			Code:       "SA1",
 			Package:    "jour",
 			Price:      50,
+			Currency:   "CFA",
 			RewardGoal: 0,
 			RenewalDay: 1,
 			FreeDay:    1,
@@ -235,13 +217,13 @@ func seederDB(db *gorm.DB) {
 		},
 		{
 			ID:         8,
-			CountryID:  1,
 			Category:   "SMSALERTE",
 			Channel:    "SMS",
 			Name:       "SMSAlerte7",
 			Code:       "SA7",
 			Package:    "semaine",
 			Price:      200,
+			Currency:   "CFA",
 			RewardGoal: 0,
 			RenewalDay: 7,
 			FreeDay:    1,
@@ -259,13 +241,13 @@ func seederDB(db *gorm.DB) {
 		},
 		{
 			ID:         9,
-			CountryID:  1,
 			Category:   "SMSALERTE",
 			Channel:    "SMS",
 			Name:       "SMSAlerte30",
 			Code:       "SA30",
 			Package:    "mois",
 			Price:      500,
+			Currency:   "CFA",
 			RewardGoal: 0,
 			RenewalDay: 30,
 			FreeDay:    1,
@@ -293,6 +275,12 @@ func seederDB(db *gorm.DB) {
 		{
 			Category: ACT_CONFIRMATION,
 			Channel:  ACT_SMS,
+			Name:     SMS_FOLLOW_TEAM_ALREADY_SUB,
+			Value:    "SMS Alerte: Aucune information n'est disponible ici.",
+		},
+		{
+			Category: ACT_CONFIRMATION,
+			Channel:  ACT_SMS,
 			Name:     SMS_FOLLOW_TEAM_UNVALID_SUB,
 			Value:    "SMS Alerte: Desole, votre choix n est pas valide. Envoyez de nouveau au {sc} le nom de votre equipe pour obtenir toutes les infos. {price}{currency}/souscription",
 		},
@@ -307,6 +295,12 @@ func seederDB(db *gorm.DB) {
 			Channel:  ACT_SMS,
 			Name:     SMS_FOLLOW_COMPETITION_SUB,
 			Value:    "SMS Alerte: Vous avez souscrit avec succes pour suivre {league}! Jusqu au {day}/{month} vous recevrez toutes les infos en direct. {price}{currency}/souscription",
+		},
+		{
+			Category: ACT_CONFIRMATION,
+			Channel:  ACT_SMS,
+			Name:     SMS_FOLLOW_COMPETITION_ALREADY_SUB,
+			Value:    "SMS Alerte: Aucune information n'est disponible ici.",
 		},
 		{
 			Category: ACT_CONFIRMATION,
@@ -426,40 +420,29 @@ func seederDB(db *gorm.DB) {
 
 	var schedules = []entity.Schedule{
 		{
-			CountryID:  1,
 			Name:       ACT_RENEWAL,
 			PublishAt:  time.Now(),
 			UnlockedAt: time.Now(),
 			IsUnlocked: false,
 		},
 		{
-			CountryID:  1,
 			Name:       ACT_SMS_ALERTE,
 			PublishAt:  time.Now(),
 			UnlockedAt: time.Now(),
 			IsUnlocked: false,
 		},
 		{
-			CountryID:  1,
 			Name:       ACT_PREDICTION,
 			PublishAt:  time.Now(),
 			UnlockedAt: time.Now(),
 			IsUnlocked: false,
 		},
 		{
-			CountryID:  1,
 			Name:       ACT_CREDIT_GOAL,
 			PublishAt:  time.Now(),
 			UnlockedAt: time.Now(),
 			IsUnlocked: false,
 		},
-	}
-
-	if db.Find(&country).RowsAffected == 0 {
-		for i, _ := range countries {
-			db.Model(&entity.Country{}).Create(&countries[i])
-		}
-		log.Println("countries migrated")
 	}
 
 	if db.Find(&service).RowsAffected == 0 {

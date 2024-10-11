@@ -16,15 +16,15 @@ func NewSubscriptionFollowTeamRepository(db *gorm.DB) *SubscriptionFollowTeamRep
 }
 
 type ISubscriptionFollowTeamRepository interface {
-	Count(int, int) (int64, error)
+	Count(int64, int64) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
-	Get(int, int) (*entity.SubscriptionFollowTeam, error)
+	Get(int64, int64) (*entity.SubscriptionFollowTeam, error)
 	Save(*entity.SubscriptionFollowTeam) (*entity.SubscriptionFollowTeam, error)
 	Update(*entity.SubscriptionFollowTeam) (*entity.SubscriptionFollowTeam, error)
 	Delete(*entity.SubscriptionFollowTeam) error
 }
 
-func (r *SubscriptionFollowTeamRepository) Count(subId, teamId int) (int64, error) {
+func (r *SubscriptionFollowTeamRepository) Count(subId, teamId int64) (int64, error) {
 	var count int64
 	err := r.db.Model(&entity.SubscriptionFollowTeam{}).Where(&entity.SubscriptionFollowTeam{SubscriptionID: int64(subId), TeamID: int64(teamId)}).Count(&count).Error
 	if err != nil {
@@ -43,9 +43,9 @@ func (r *SubscriptionFollowTeamRepository) GetAllPaginate(pagination *entity.Pag
 	return pagination, nil
 }
 
-func (r *SubscriptionFollowTeamRepository) Get(subId, teamId int) (*entity.SubscriptionFollowTeam, error) {
+func (r *SubscriptionFollowTeamRepository) Get(subId, teamId int64) (*entity.SubscriptionFollowTeam, error) {
 	var c entity.SubscriptionFollowTeam
-	err := r.db.Where(&entity.SubscriptionFollowTeam{SubscriptionID: int64(subId), TeamID: int64(teamId)}).Take(&c).Error
+	err := r.db.Where(&entity.SubscriptionFollowTeam{SubscriptionID: subId, TeamID: teamId}).Take(&c).Error
 	if err != nil {
 		return nil, err
 	}

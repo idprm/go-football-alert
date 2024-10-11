@@ -1,8 +1,12 @@
 package services
 
 import (
+	"strconv"
+	"time"
+
 	"github.com/idprm/go-football-alert/internal/domain/entity"
 	"github.com/idprm/go-football-alert/internal/domain/repository"
+	"github.com/idprm/go-football-alert/internal/utils"
 )
 
 type ContentService struct {
@@ -18,6 +22,8 @@ func NewContentService(contentRepo repository.IContentRepository) *ContentServic
 type IContentService interface {
 	IsContent(string) bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
+	GetFollowCompetition(string, *entity.Service, *entity.League) (*entity.Content, error)
+	GetFollowTeam(string, *entity.Service, *entity.Team) (*entity.Content, error)
 	Get(string) (*entity.Content, error)
 	Save(*entity.Content) (*entity.Content, error)
 	Update(*entity.Content) (*entity.Content, error)
@@ -31,6 +37,24 @@ func (s *ContentService) IsContent(name string) bool {
 
 func (s *ContentService) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {
 	return s.contentRepo.GetAllPaginate(pagination)
+}
+
+func (s *ContentService) GetFollowCompetition(name string, service *entity.Service, league *entity.League) (*entity.Content, error) {
+	c, err := s.contentRepo.Get(name)
+	if err != nil {
+		return nil, err
+	}
+	c.SetValueSubFollowCompetition(league.GetName(), strconv.Itoa(time.Now().Day()), utils.FormatFROnlyMonth(time.Now()), service.GetPriceToString(), service.GetCurrency())
+	return c, nil
+}
+
+func (s *ContentService) GetFollowTeam(name string, service *entity.Service, team *entity.Team) (*entity.Content, error) {
+	c, err := s.contentRepo.Get(name)
+	if err != nil {
+		return nil, err
+	}
+	c.SetValueSubFollowTeam(team.GetName(), strconv.Itoa(time.Now().Day()), utils.FormatFROnlyMonth(time.Now()), service.GetPriceToString(), service.GetCurrency())
+	return c, nil
 }
 
 func (s *ContentService) Get(name string) (*entity.Content, error) {

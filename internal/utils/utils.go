@@ -40,6 +40,10 @@ func FormatFR(t time.Time) string {
 	)
 }
 
+func FormatFROnlyMonth(t time.Time) string {
+	return months[t.Month()-1]
+}
+
 var days = [...]string{
 	"Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"}
 

@@ -18,15 +18,15 @@ func NewSubscriptionFollowTeamService(
 }
 
 type ISubscriptionFollowTeamService interface {
-	IsSubFollowTeam(int, int) bool
+	IsSubFollowTeam(int64, int64) bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
-	Get(int, int) (*entity.SubscriptionFollowTeam, error)
+	Get(int64, int64) (*entity.SubscriptionFollowTeam, error)
 	Save(*entity.SubscriptionFollowTeam) (*entity.SubscriptionFollowTeam, error)
 	Update(*entity.SubscriptionFollowTeam) (*entity.SubscriptionFollowTeam, error)
 	Delete(*entity.SubscriptionFollowTeam) error
 }
 
-func (s *SubscriptionFollowTeamService) IsSubFollowTeam(subId, teamId int) bool {
+func (s *SubscriptionFollowTeamService) IsSubFollowTeam(subId, teamId int64) bool {
 	count, _ := s.subFollowTeamRepo.Count(subId, teamId)
 	return count > 0
 }
@@ -35,7 +35,7 @@ func (s *SubscriptionFollowTeamService) GetAllPaginate(pagination *entity.Pagina
 	return s.subFollowTeamRepo.GetAllPaginate(pagination)
 }
 
-func (s *SubscriptionFollowTeamService) Get(subId, teamId int) (*entity.SubscriptionFollowTeam, error) {
+func (s *SubscriptionFollowTeamService) Get(subId, teamId int64) (*entity.SubscriptionFollowTeam, error) {
 	return s.subFollowTeamRepo.Get(subId, teamId)
 }
 

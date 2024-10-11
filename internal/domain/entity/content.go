@@ -33,9 +33,21 @@ func (e *Content) GetValue() string {
 	return e.Value
 }
 
-func (e *Content) SetValueSMSAlert(date, price, currency string) {
+func (e *Content) SetValueSubFollowCompetition(league, date, month, price, currency string) {
 	replacer := strings.NewReplacer(
+		"{league}", league,
 		"{date}", date,
+		"{month}", month,
+		"{price}", price,
+		"{currency}", url.QueryEscape(currency))
+	e.Value = replacer.Replace(e.Value)
+}
+
+func (e *Content) SetValueSubFollowTeam(team, date, month, price, currency string) {
+	replacer := strings.NewReplacer(
+		"{team}", team,
+		"{date}", date,
+		"{month}", month,
 		"{price}", price,
 		"{currency}", url.QueryEscape(currency))
 	e.Value = replacer.Replace(e.Value)
