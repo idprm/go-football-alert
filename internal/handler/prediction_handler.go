@@ -92,6 +92,7 @@ func (h *PredictionHandler) Prediction() {
 			Subscription: h.sub,
 			Content:      content,
 		}
+		mt.SetTrxId(trxId)
 
 		jsonData, err := json.Marshal(mt)
 		if err != nil {
