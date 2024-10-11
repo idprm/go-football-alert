@@ -151,7 +151,6 @@ func (p *Telco) DeductFee() ([]byte, error) {
 	}
 
 	p.logger.Writer(req)
-
 	l.WithFields(logrus.Fields{
 		"trx_id":       p.trxId,
 		"request_url":  p.service.GetUrlTelco(),

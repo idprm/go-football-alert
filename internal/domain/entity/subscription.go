@@ -23,7 +23,7 @@ type Subscription struct {
 	UnsubAt              time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"unsub_at,omitempty"`
 	ChargeAt             time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"charge_at,omitempty"`
 	RetryAt              time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"retry_at,omitempty"`
-	TrialAt              time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"trial_at,omitempty"`
+	FreeAt               time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"free_at,omitempty"`
 	FollowAt             time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"follow_at,omitempty"`
 	PredictionAt         time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"prediction_at,omitempty"`
 	CreditGoalAt         time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"credit_goal_at,omitempty"`
@@ -46,7 +46,7 @@ type Subscription struct {
 	IsPrediction         bool      `gorm:"type:boolean;column:is_prediction" json:"is_prediction,omitempty"`
 	IsCreditGoal         bool      `gorm:"type:boolean;column:is_credit_goal" json:"is_credit_goal,omitempty"`
 	IsRetry              bool      `gorm:"type:boolean;column:is_retry" json:"is_retry,omitempty"`
-	IsTrial              bool      `gorm:"type:boolean;column:is_trial" json:"is_trial,omitempty"`
+	IsFree               bool      `gorm:"type:boolean;column:is_free" json:"is_free,omitempty"`
 	IsActive             bool      `gorm:"type:boolean;column:is_active" json:"is_active,omitempty"`
 	gorm.Model           `json:"-"`
 }
@@ -131,6 +131,34 @@ func (s *Subscription) SetUnsubAt(v time.Time) {
 	s.UnsubAt = v
 }
 
+func (e *Subscription) SetTotalSuccess(v int) {
+	e.TotalSuccess = v
+}
+
+func (e *Subscription) SetTotalFailed(v int) {
+	e.TotalFailed = v
+}
+
+func (e *Subscription) SetTotalAmount(v float64) {
+	e.TotalAmount = v
+}
+
+func (e *Subscription) SetTotalSub(v int) {
+	e.TotalSub = v
+}
+
+func (e *Subscription) SetTotalUnsub(v int) {
+	e.TotalUnsub = v
+}
+
+func (e *Subscription) SetTotalAmountFirstpush(v float64) {
+	e.TotalAmountFirstpush = v
+}
+
+func (e *Subscription) SetTotalAmountRenewal(v float64) {
+	e.TotalAmountRenewal = v
+}
+
 func (s *Subscription) IsCreatedAtToday() bool {
 	return s.CreatedAt.Format("2006-01-02") == time.Now().Format("2006-01-02")
 }
@@ -145,4 +173,8 @@ func (s *Subscription) IsFirstpush() bool {
 
 func (s *Subscription) IsRenewal() bool {
 	return s.GetLatestSubject() == "RENEWAL"
+}
+
+func (e *Subscription) IsFirstFreeDay() bool {
+	return !e.IsFree
 }

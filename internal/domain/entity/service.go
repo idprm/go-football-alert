@@ -18,6 +18,7 @@ type Service struct {
 	Price      float64  `gorm:"size:15" json:"price"`
 	RewardGoal float64  `gorm:"size:15" json:"reward_goal"`
 	RenewalDay int      `gorm:"size:2;default:0" json:"renewal_day"`
+	FreeDay    int      `gorm:"size:2;default:0" json:"free_day"`
 	UrlTelco   string   `gorm:"size:350;not null" json:"url_telco"`
 	UserTelco  string   `gorm:"size:100;not null" json:"user_telco"`
 	PassTelco  string   `gorm:"size:100;not null" json:"pass_telco"`
@@ -69,6 +70,10 @@ func (s *Service) GetPriceToString() string {
 
 func (s *Service) GetRenewalDay() int {
 	return s.RenewalDay
+}
+
+func (s *Service) GetFreeDay() int {
+	return s.FreeDay
 }
 
 func (e *Service) GetUrlTelco() string {

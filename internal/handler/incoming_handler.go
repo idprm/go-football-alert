@@ -63,6 +63,7 @@ var (
 	STATUS_FAILED       string = "FAILED"
 	SUBJECT_FIRSTPUSH   string = "FIRSTPUSH"
 	SUBJECT_DAILYPUSH   string = "DAILYPUSH"
+	SUBJECT_FREEPUSH    string = "FREE"
 	SUBJECT_FP_SMS      string = "FP_SMS"
 	SUBJECT_DP_SMS      string = "DP_SMS"
 	SUBJECT_RENEWAL     string = "RENEWAL"
