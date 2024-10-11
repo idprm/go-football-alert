@@ -99,8 +99,8 @@ func (p *Processor) SMS(wg *sync.WaitGroup, message []byte) {
 	subscriptionCreditGoalService := services.NewSubscriptionCreditGoalService(subscriptionCreditGoalRepo)
 	subscriptionPredictRepo := repository.NewSubscriptionPredictRepository(p.db)
 	subscriptionPredictService := services.NewSubscriptionPredictService(subscriptionPredictRepo)
-	SubscriptionFollowLeagueRepo := repository.NewSubscriptionFollowLeagueRepository(p.db)
-	SubscriptionFollowLeagueService := services.NewSubscriptionFollowLeagueService(SubscriptionFollowLeagueRepo)
+	subscriptionFollowLeagueRepo := repository.NewSubscriptionFollowLeagueRepository(p.db)
+	subscriptionFollowLeagueService := services.NewSubscriptionFollowLeagueService(subscriptionFollowLeagueRepo)
 	subscriptionFollowTeamRepo := repository.NewSubscriptionFollowTeamRepository(p.db)
 	subscriptionFollowTeamService := services.NewSubscriptionFollowTeamService(subscriptionFollowTeamRepo)
 	verifyRepo := repository.NewVerifyRepository(p.rds)
@@ -123,7 +123,7 @@ func (p *Processor) SMS(wg *sync.WaitGroup, message []byte) {
 		teamService,
 		subscriptionCreditGoalService,
 		subscriptionPredictService,
-		SubscriptionFollowLeagueService,
+		subscriptionFollowLeagueService,
 		subscriptionFollowTeamService,
 		verifyService,
 		req,

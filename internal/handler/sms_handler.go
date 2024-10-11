@@ -31,7 +31,7 @@ type SMSHandler struct {
 	teamService                     services.ITeamService
 	subscriptionCreditGoalService   services.ISubscriptionCreditGoalService
 	subscriptionPredictService      services.ISubscriptionPredictService
-	SubscriptionFollowLeagueService services.ISubscriptionFollowLeagueService
+	subscriptionFollowLeagueService services.ISubscriptionFollowLeagueService
 	subscriptionFollowTeamService   services.ISubscriptionFollowTeamService
 	verifyService                   services.IVerifyService
 	req                             *model.MORequest
@@ -51,7 +51,7 @@ func NewSMSHandler(
 	teamService services.ITeamService,
 	subscriptionCreditGoalService services.ISubscriptionCreditGoalService,
 	subscriptionPredictService services.ISubscriptionPredictService,
-	SubscriptionFollowLeagueService services.ISubscriptionFollowLeagueService,
+	subscriptionFollowLeagueService services.ISubscriptionFollowLeagueService,
 	subscriptionFollowTeamService services.ISubscriptionFollowTeamService,
 	verifyService services.IVerifyService,
 	req *model.MORequest,
@@ -70,7 +70,7 @@ func NewSMSHandler(
 		teamService:                     teamService,
 		subscriptionCreditGoalService:   subscriptionCreditGoalService,
 		subscriptionPredictService:      subscriptionPredictService,
-		SubscriptionFollowLeagueService: SubscriptionFollowLeagueService,
+		subscriptionFollowLeagueService: subscriptionFollowLeagueService,
 		subscriptionFollowTeamService:   subscriptionFollowTeamService,
 		verifyService:                   verifyService,
 		req:                             req,
@@ -127,19 +127,23 @@ func (h *SMSHandler) Registration() {
 
 func (h *SMSHandler) SMSAlerte() {
 	if h.leagueService.IsLeagueByName(h.req.GetSMS()) {
+		league, err := h.leagueService.GetByName(h.req.GetSMS())
+		if err != nil {
+			log.Println(err.Error())
+		}
 		if !h.IsActiveSubByCategory(CATEGORY_SMSALERTE) {
-			h.SubAlerteCompetition(SUBCATEGORY_FOLLOW_COMPETITION)
+			h.SubAlerteCompetition(SUBCATEGORY_FOLLOW_COMPETITION, league)
 		} else {
 			// SMS-Alerte Competition
-			// h.AlerteCompetition()
+			h.AlreadySubAlerteCompetition(SUBCATEGORY_FOLLOW_COMPETITION)
 			// SMS-Alerte Matchs
 		}
 	} else if h.teamService.IsTeamByName(h.req.GetSMS()) {
 		if !h.IsActiveSubByCategory(CATEGORY_SMSALERTE) {
-			// h.Subscription(SUBCATEGORY_FOLLOW_TEAM)
+			h.SubAlerteEquipe(SUBCATEGORY_FOLLOW_TEAM)
 		} else {
 			// SMS-Alerte Equipe
-			// h.AlerteEquipe()
+			h.AlreadySubAlerteEquipe(SUBCATEGORY_FOLLOW_TEAM)
 			// SMS-Alerte Matchs
 		}
 	} else if h.req.IsInfo() {
@@ -154,7 +158,7 @@ func (h *SMSHandler) SMSAlerte() {
 
 }
 
-func (h *SMSHandler) SubAlerteCompetition(category string) {
+func (h *SMSHandler) SubAlerteCompetition(category string, league *entity.League) {
 	trxId := utils.GenerateTrxId()
 
 	service, err := h.getServiceSMSAlerteDaily()
@@ -192,6 +196,16 @@ func (h *SMSHandler) SubAlerteCompetition(category string) {
 	sub, err := h.subscriptionService.Get(service.GetId(), h.req.GetMsisdn())
 	if err != nil {
 		log.Println(err.Error())
+	}
+
+	// insert in follow
+	if h.subscriptionFollowLeagueService.IsSubFollowLeague(sub.GetId(), league.GetId()) {
+		h.subscriptionFollowLeagueService.Save(
+			&entity.SubscriptionFollowLeague{
+				SubscriptionID: sub.GetId(),
+				LeagueID:       league.GetId(),
+			},
+		)
 	}
 
 	if sub.IsFirstFreeDay() {
@@ -384,6 +398,14 @@ func (h *SMSHandler) SubAlerteCompetition(category string) {
 }
 
 func (h *SMSHandler) SubAlerteEquipe(category string) {
+
+}
+
+func (h *SMSHandler) AlreadySubAlerteCompetition(category string) {
+
+}
+
+func (h *SMSHandler) AlreadySubAlerteEquipe(category string) {
 
 }
 
