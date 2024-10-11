@@ -18,7 +18,7 @@ type Transaction struct {
 	Subject      string   `gorm:"size:25" json:"subject,omitempty"`
 	IpAddress    string   `gorm:"size:30" json:"ip_address,omitempty"`
 	Payload      string   `gorm:"type:text" json:"payload,omitempty"`
-	gorm.Model   `json:"-`
+	gorm.Model   `json:"-"`
 }
 
 func (e *Transaction) GetId() int64 {
