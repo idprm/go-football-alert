@@ -306,7 +306,7 @@ func seederDB(db *gorm.DB) {
 			Category: ACT_CONFIRMATION,
 			Channel:  ACT_SMS,
 			Name:     SMS_FOLLOW_COMPETITION_UNVALID_SUB,
-			Value:    "SMS Alerte: Desole, mais votre choix n est pas valide. Renvoyez au {sc} la competition que vous voulez suivre en direct. {price}{currency}/SMS",
+			Value:    "SMS Alerte: Desole, mais votre choix n est pas valide. Renvoyez au 37405 la competition que vous voulez suivre en direct. {price}{currency}/SMS",
 		},
 		{
 			Category: ACT_NOTIFICATION,
@@ -407,14 +407,20 @@ func seederDB(db *gorm.DB) {
 		{
 			Category: ACT_CONFIRMATION,
 			Channel:  ACT_SMS,
+			Name:     SMS_FOLLOW_UNVALID_SUB,
+			Value:    "Alerte SMS : Désolé, votre sélection n'est pas valide. Soumettez votre compétition ou le nom de votre équipe à {sc} pour obtenir toutes les informations. {price}{currency}/souscription",
+		},
+		{
+			Category: ACT_CONFIRMATION,
+			Channel:  ACT_SMS,
 			Name:     SMS_INFO,
-			Value:    "Info Services FFC: [#157#] USSD /[981] SMS Alerte Equipe /[9009] - SMS Alerte Competition /[###] SMS Alerte a la demande /[944]",
+			Value:    "Info Services FFC: [#101#36#] USSD /SMS Alerte Equipe /SMS Alerte Competition",
 		},
 		{
 			Category: ACT_CONFIRMATION,
 			Channel:  ACT_SMS,
 			Name:     SMS_STOP,
-			Value:    "Services FFC: Vous venez d envoyer STOP. Orange vous remercie d avoir utiliser nos services! Visitez www.orange.cm pour en savoir plus sur Football Fan Club",
+			Value:    "Services FFC: Vous venez d envoyer STOP. Orange vous remercie d avoir utiliser nos services! Visitez www.orangemali.com pour en savoir plus sur Football Fan Club",
 		},
 	}
 

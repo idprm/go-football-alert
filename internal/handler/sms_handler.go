@@ -112,6 +112,7 @@ const (
 	SMS_FOLLOW_COMPETITION_ALREADY_SUB   string = "FOLLOW_COMPETITION_ALREADY_SUB"
 	SMS_FOLLOW_COMPETITION_UNVALID_SUB   string = "FOLLOW_COMPETITION_UNVALID_SUB"
 	SMS_FOLLOW_COMPETITION_EXPIRE_SUB    string = "FOLLOW_COMPETITION_EXPIRE_SUB"
+	SMS_FOLLOW_UNVALID_SUB               string = "FOLLOW_UNVALID_SUB"
 	SMS_CONFIRMATION                     string = "CONFIRMATION"
 	SMS_INFO                             string = "INFO"
 	SMS_STOP                             string = "STOP"
@@ -153,11 +154,26 @@ func (h *SMSHandler) SMSAlerte() {
 	} else if h.req.IsInfo() {
 		h.Info()
 	} else if h.req.IsStop() {
-		if h.IsActiveSubByCategory(CATEGORY_SMSALERTE) {
-			h.Stop()
+		if h.req.IsStopAlerte() {
+			if h.IsActiveSubByCategory(CATEGORY_SMSALERTE) {
+				h.Stop(CATEGORY_SMSALERTE)
+			}
 		}
+
+		if h.req.IsStopAlive() {
+			if h.IsActiveSubByCategory(CATEGORY_LIVEMATCH) {
+				h.Stop(CATEGORY_LIVEMATCH)
+			}
+		}
+
+		if h.req.IsStopFlashNews() {
+			if h.IsActiveSubByCategory(CATEGORY_FLASHNEWS) {
+				h.Stop(CATEGORY_FLASHNEWS)
+			}
+		}
+
 	} else {
-		h.Unvalid(SMS_FOLLOW_COMPETITION_UNVALID_SUB)
+		h.Unvalid(SMS_FOLLOW_UNVALID_SUB)
 	}
 
 }
@@ -170,7 +186,7 @@ func (h *SMSHandler) SubAlerteCompetition(category string, league *entity.League
 		log.Println(err.Error())
 	}
 
-	content, err := h.getContent(SMS_FOLLOW_COMPETITION_SUB)
+	content, err := h.getContentFollowCompetition(SMS_FOLLOW_COMPETITION_SUB, service, league)
 	if err != nil {
 		log.Println(err)
 	}
@@ -239,7 +255,6 @@ func (h *SMSHandler) SubAlerteCompetition(category string, league *entity.League
 				StatusDetail: "",
 				Subject:      SUBJECT_FREEPUSH,
 				Payload:      "-",
-				CreatedAt:    time.Now(),
 			},
 		)
 
@@ -343,7 +358,6 @@ func (h *SMSHandler) SubAlerteCompetition(category string, league *entity.League
 					StatusDetail: "",
 					Subject:      SUBJECT_FIRSTPUSH,
 					Payload:      string(deductFee),
-					CreatedAt:    time.Now(),
 				},
 			)
 
@@ -470,7 +484,6 @@ func (h *SMSHandler) SubAlerteEquipe(category string, team *entity.Team) {
 				StatusDetail: "",
 				Subject:      SUBJECT_FREEPUSH,
 				Payload:      "-",
-				CreatedAt:    time.Now(),
 			},
 		)
 
@@ -574,7 +587,6 @@ func (h *SMSHandler) SubAlerteEquipe(category string, team *entity.Team) {
 					StatusDetail: "",
 					Subject:      SUBJECT_FIRSTPUSH,
 					Payload:      string(deductFee),
-					CreatedAt:    time.Now(),
 				},
 			)
 
@@ -740,10 +752,10 @@ func (h *SMSHandler) Info() {
 	)
 }
 
-func (h *SMSHandler) Stop() {
+func (h *SMSHandler) Stop(category string) {
 	trxId := utils.GenerateTrxId()
 
-	sub, err := h.subscriptionService.GetByCategory(CATEGORY_SMSALERTE, h.req.GetMsisdn())
+	sub, err := h.subscriptionService.GetByCategory(category, h.req.GetMsisdn())
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -757,6 +769,29 @@ func (h *SMSHandler) Stop() {
 	if err != nil {
 		log.Println(err.Error())
 	}
+
+	h.subscriptionService.Update(
+		&entity.Subscription{
+			ServiceID:     sub.ServiceID,
+			Msisdn:        sub.Msisdn,
+			Channel:       CHANNEL_SMS,
+			LatestTrxId:   trxId,
+			LatestKeyword: h.req.GetSMS(),
+			LatestSubject: SUBJECT_UNSUB,
+			UnsubAt:       time.Now(),
+			TotalUnsub:    sub.TotalUnsub + 1,
+		},
+	)
+
+	h.transactionService.Save(
+		&entity.Transaction{
+			ServiceID: sub.ServiceID,
+			Msisdn:    sub.Msisdn,
+			Keyword:   h.req.GetSMS(),
+			Amount:    0,
+			Subject:   SUBJECT_UNSUB,
+		},
+	)
 
 	mt := &model.MTRequest{
 		Smsc:         h.req.GetTo(),
@@ -882,7 +917,6 @@ func (h *SMSHandler) Unsub() {
 			Subject:      SUBJECT_UNSUB,
 			IpAddress:    h.req.GetIpAddress(),
 			Payload:      "",
-			CreatedAt:    time.Now(),
 		},
 	)
 

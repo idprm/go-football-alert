@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"log"
-	"time"
 
 	"github.com/idprm/go-football-alert/internal/domain/entity"
 	"github.com/idprm/go-football-alert/internal/domain/model"
@@ -81,7 +80,6 @@ func (h *SMSAlerteHandler) SMSAlerte() {
 				StatusDetail: "",
 				Subject:      SUBJECT_NEWS,
 				Payload:      "-",
-				CreatedAt:    time.Now(),
 			},
 		)
 

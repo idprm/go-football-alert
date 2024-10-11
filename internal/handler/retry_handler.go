@@ -109,7 +109,6 @@ func (h *RetryHandler) Firstpush() {
 					StatusDetail: "",
 					Subject:      SUBJECT_FIRSTPUSH,
 					Payload:      string(resp),
-					CreatedAt:    time.Now(),
 				},
 			)
 
@@ -202,7 +201,6 @@ func (h *RetryHandler) Dailypush() {
 					StatusDetail: "",
 					Subject:      SUBJECT_RENEWAL,
 					Payload:      string(resp),
-					CreatedAt:    time.Now(),
 				},
 			)
 

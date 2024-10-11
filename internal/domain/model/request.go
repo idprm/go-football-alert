@@ -126,7 +126,19 @@ func (m *MORequest) IsInfo() bool {
 }
 
 func (m *MORequest) IsStop() bool {
-	return m.GetSMS() == "STOP"
+	return strings.Contains(m.GetSMS(), "STOP")
+}
+
+func (m *MORequest) IsStopAlive() bool {
+	return strings.Contains(m.GetSMS(), "STOP ALIVE")
+}
+
+func (m *MORequest) IsStopFlashNews() bool {
+	return strings.Contains(m.GetSMS(), "STOP FLASH")
+}
+
+func (m *MORequest) IsStopAlerte() bool {
+	return strings.Contains(m.GetSMS(), "STOP ALERTE")
 }
 
 func (m *MORequest) IsCreditGoal(s *entity.Service) bool {

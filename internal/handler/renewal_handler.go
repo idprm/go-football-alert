@@ -104,7 +104,6 @@ func (h *RenewalHandler) Dailypush() {
 					StatusDetail: respDeduct.GetFaultString(),
 					Subject:      SUBJECT_RENEWAL,
 					Payload:      string(resp),
-					CreatedAt:    time.Now(),
 				},
 			)
 
@@ -140,7 +139,6 @@ func (h *RenewalHandler) Dailypush() {
 					StatusDetail: "",
 					Subject:      SUBJECT_RENEWAL,
 					Payload:      string(resp),
-					CreatedAt:    time.Now(),
 				},
 			)
 

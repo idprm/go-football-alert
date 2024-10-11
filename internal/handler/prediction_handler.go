@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"log"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/idprm/go-football-alert/internal/domain/entity"
@@ -82,7 +81,6 @@ func (h *PredictionHandler) Prediction() {
 				StatusDetail: "",
 				Subject:      SUBJECT_PREDICTION,
 				Payload:      "-",
-				CreatedAt:    time.Now(),
 			},
 		)
 
