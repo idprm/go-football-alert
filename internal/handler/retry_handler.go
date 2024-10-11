@@ -120,7 +120,7 @@ func (h *RetryHandler) Firstpush() {
 		h.summaryService.Save(summary)
 
 		mt := &model.MTRequest{
-			Smsc:         "",
+			Smsc:         service.ScSubMT,
 			Service:      service,
 			Subscription: h.sub,
 			Content:      content,
@@ -212,7 +212,7 @@ func (h *RetryHandler) Dailypush() {
 		h.summaryService.Save(summary)
 
 		mt := &model.MTRequest{
-			Smsc:         "",
+			Smsc:         service.ScSubMT,
 			Service:      service,
 			Subscription: h.sub,
 			Content:      content,

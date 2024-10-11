@@ -23,10 +23,6 @@ import (
 	CREDIT_GOAL at
 	PREDICTION at
 	FOLLOW_COMPETITION at
-	FOLLOW_COMPETITION at
-	FOLLOW_COMPETITION at
-	FOLLOW_TEAM at
-	FOLLOW_TEAM at
 	FOLLOW_TEAM at
 **/
 
@@ -65,29 +61,15 @@ var publisherRenewalCmd = &cobra.Command{
 		/**
 		 * Looping schedule
 		 */
-		timeDuration := time.Duration(1)
+		timeDuration := time.Duration(30)
 
 		for {
-			timeNow := time.Now().Format("15:04")
 
-			scheduleRepo := repository.NewScheduleRepository(db)
-			scheduleService := services.NewScheduleService(scheduleRepo)
-
-			if scheduleService.IsUnlocked(ACT_RENEWAL, timeNow) {
-
-				scheduleService.UpdateLocked(
-					&entity.Schedule{
-						Name: ACT_RENEWAL,
-					},
-				)
-
-				go func() {
-					populateRenewal(db, rmq)
-				}()
-			}
+			go func() {
+				populateRenewal(db, rmq)
+			}()
 
 			time.Sleep(timeDuration * time.Minute)
-
 		}
 	},
 }
@@ -127,29 +109,15 @@ var publisherRetryCmd = &cobra.Command{
 		/**
 		 * Looping schedule
 		 */
-		timeDuration := time.Duration(1)
+		timeDuration := time.Duration(30)
 
 		for {
-			timeNow := time.Now().Format("15:04")
 
-			scheduleRepo := repository.NewScheduleRepository(db)
-			scheduleService := services.NewScheduleService(scheduleRepo)
-
-			if scheduleService.IsUnlocked(ACT_RETRY, timeNow) {
-
-				scheduleService.UpdateLocked(
-					&entity.Schedule{
-						Name: ACT_RETRY,
-					},
-				)
-
-				go func() {
-					populateRetry(db, rmq)
-				}()
-			}
+			go func() {
+				populateRetry(db, rmq)
+			}()
 
 			time.Sleep(timeDuration * time.Minute)
-
 		}
 	},
 }
@@ -266,6 +234,49 @@ var publisherCreditCmd = &cobra.Command{
 	},
 }
 
+var publisherScrapingNewsCmd = &cobra.Command{
+	Use:   "pub_scraping_news",
+	Short: "Publisher Scraping News Service CLI",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		// connect db
+		db, err := connectDb()
+		if err != nil {
+			panic(err)
+		}
+
+		// DEBUG ON CONSOLE
+		db.Logger = loggerDb.Default.LogMode(loggerDb.Info)
+
+		/**
+		 * connect rabbitmq
+		 */
+		rmq, err := connectRabbitMq()
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * SETUP CHANNEL
+		 */
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_NEWS_EXCHANGE, true, RMQ_NEWS_QUEUE)
+
+		/**
+		 * Looping schedule
+		 */
+		timeDuration := time.Duration(90)
+
+		for {
+
+			go func() {
+				scrapingNews(db, rmq)
+			}()
+
+			time.Sleep(timeDuration * time.Minute)
+		}
+	},
+}
+
 var publisherScrapingFixturesCmd = &cobra.Command{
 	Use:   "pub_scraping_fixtures",
 	Short: "Publisher Scraping Fixture Service CLI",
@@ -366,49 +377,6 @@ var publisherScrapingPredictionCmd = &cobra.Command{
 				)
 
 			}
-
-			time.Sleep(timeDuration * time.Minute)
-		}
-	},
-}
-
-var publisherScrapingNewsCmd = &cobra.Command{
-	Use:   "pub_scraping_news",
-	Short: "Publisher Scraping News Service CLI",
-	Long:  ``,
-	Run: func(cmd *cobra.Command, args []string) {
-		// connect db
-		db, err := connectDb()
-		if err != nil {
-			panic(err)
-		}
-
-		// DEBUG ON CONSOLE
-		db.Logger = loggerDb.Default.LogMode(loggerDb.Info)
-
-		/**
-		 * connect rabbitmq
-		 */
-		rmq, err := connectRabbitMq()
-		if err != nil {
-			panic(err)
-		}
-
-		/**
-		 * SETUP CHANNEL
-		 */
-		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_NEWS_EXCHANGE, true, RMQ_NEWS_QUEUE)
-
-		/**
-		 * Looping schedule
-		 */
-		timeDuration := time.Duration(90)
-
-		for {
-
-			go func() {
-				scrapingNews(db, rmq)
-			}()
 
 			time.Sleep(timeDuration * time.Minute)
 		}

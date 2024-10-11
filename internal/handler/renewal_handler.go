@@ -152,7 +152,7 @@ func (h *RenewalHandler) Dailypush() {
 		h.summaryService.Save(summary)
 
 		mt := &model.MTRequest{
-			Smsc:         "",
+			Smsc:         service.ScSubMT,
 			Service:      service,
 			Subscription: h.sub,
 			Content:      content,
