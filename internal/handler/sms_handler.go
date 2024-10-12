@@ -459,6 +459,12 @@ func (h *SMSHandler) SubAlerteEquipe(team *entity.Team) {
 		IpAddress:     h.req.GetIpAddress(),
 	}
 
+	if h.IsSub() {
+		h.subscriptionService.Update(subscription)
+	} else {
+		h.subscriptionService.Save(subscription)
+	}
+
 	sub, err := h.subscriptionService.Get(service.GetId(), h.req.GetMsisdn())
 	if err != nil {
 		log.Println(err.Error())
