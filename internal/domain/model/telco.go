@@ -1,6 +1,9 @@
 package model
 
-import "encoding/xml"
+import (
+	"encoding/xml"
+	"strconv"
+)
 
 type (
 	QueryProfileAndBalRequest struct {
@@ -181,8 +184,18 @@ func (m *DeductResponse) GetBeforeBalance() string {
 	return m.Body.DeductFee.BeforeBalance
 }
 
+func (m *DeductResponse) GetBeforeBalanceToFloat() float64 {
+	f, _ := strconv.ParseFloat(m.GetBeforeBalance(), 64)
+	return f
+}
+
 func (m *DeductResponse) GetAfterBalance() string {
 	return m.Body.DeductFee.AfterBalance
+}
+
+func (m *DeductResponse) GetAfterBalanceToFloat() float64 {
+	f, _ := strconv.ParseFloat(m.GetAfterBalance(), 64)
+	return f
 }
 
 func (m *DeductResponse) GetExpDate() string {
@@ -195,6 +208,10 @@ func (m *DeductResponse) GetFaultCode() string {
 
 func (m *DeductResponse) GetFaultString() string {
 	return m.Body.Fault.FaultString
+}
+
+func (m *DeductResponse) IsSuccess() bool {
+	return m.Body.DeductFee.AcctResCode == "1"
 }
 
 func (m *DeductResponse) IsFailed() bool {

@@ -77,7 +77,7 @@ func (h *RetryHandler) Firstpush() {
 		var respDeduct *model.DeductResponse
 		xml.Unmarshal(utils.EscapeChar(resp), &respDeduct)
 
-		if !respDeduct.IsFailed() {
+		if respDeduct.IsSuccess() {
 			h.subscriptionService.Update(
 				&entity.Subscription{
 					ServiceID:            service.GetId(),
@@ -92,6 +92,8 @@ func (h *RetryHandler) Firstpush() {
 					IsRetry:              false,
 					TotalFirstpush:       sub.TotalFirstpush + 1,
 					TotalAmountFirstpush: sub.TotalAmountFirstpush + service.GetPrice(),
+					BeforeBalance:        respDeduct.GetBeforeBalanceToFloat(),
+					AfterBalance:         respDeduct.GetAfterBalanceToFloat(),
 					LatestPayload:        string(resp),
 				},
 			)
@@ -150,7 +152,7 @@ func (h *RetryHandler) Dailypush() {
 		var respDeduct *model.DeductResponse
 		xml.Unmarshal(utils.EscapeChar(resp), &respDeduct)
 
-		if !respDeduct.IsFailed() {
+		if respDeduct.IsSuccess() {
 			h.subscriptionService.Update(
 				&entity.Subscription{
 					ServiceID:          service.GetId(),
@@ -165,6 +167,8 @@ func (h *RetryHandler) Dailypush() {
 					IsRetry:            false,
 					TotalRenewal:       sub.TotalRenewal + 1,
 					TotalAmountRenewal: sub.TotalAmountRenewal + service.GetPrice(),
+					BeforeBalance:      respDeduct.GetBeforeBalanceToFloat(),
+					AfterBalance:       respDeduct.GetAfterBalanceToFloat(),
 					LatestPayload:      string(resp),
 				},
 			)
