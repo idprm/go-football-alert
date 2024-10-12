@@ -692,6 +692,16 @@ func (h *SMSHandler) AlreadySubAlerteCompetition(league *entity.League) {
 		log.Println(err.Error())
 	}
 
+	// update keyword in sub
+	h.subscriptionService.Update(
+		&entity.Subscription{
+			ServiceID:     service.GetId(),
+			Msisdn:        h.req.GetMsisdn(),
+			LatestTrxId:   trxId,
+			LatestKeyword: h.req.GetSMS(),
+		},
+	)
+
 	// update in follow league
 	if h.subscriptionFollowLeagueService.IsSub(sub.GetId()) {
 		h.subscriptionFollowLeagueService.Update(
@@ -750,6 +760,16 @@ func (h *SMSHandler) AlreadySubAlerteEquipe(team *entity.Team) {
 	if err != nil {
 		log.Println(err.Error())
 	}
+
+	// update keyword in sub
+	h.subscriptionService.Update(
+		&entity.Subscription{
+			ServiceID:     service.GetId(),
+			Msisdn:        h.req.GetMsisdn(),
+			LatestTrxId:   trxId,
+			LatestKeyword: h.req.GetSMS(),
+		},
+	)
 
 	// update in follow team
 	if h.subscriptionFollowTeamService.IsSub(sub.GetId()) {
