@@ -9,6 +9,6 @@ type SubscriptionFollowTeam struct {
 	TeamID         int64         `json:"team_id"`
 	Team           *Team         `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"team,omitempty"`
 	LimitPerDay    int           `json:"limit_by_day"`
-	IsActive       bool          `gorm:"type:boolean;column:is_active" json:"is_active,omitempty"`
+	IsActive       bool          `gorm:"type:boolean;default:false;column:is_active" json:"is_active,omitempty"`
 	gorm.Model     `json:"-"`
 }

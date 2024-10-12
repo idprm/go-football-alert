@@ -22,12 +22,13 @@ type ISubscriptionFollowTeamRepository interface {
 	GetBySub(int64) (*entity.SubscriptionFollowTeam, error)
 	Save(*entity.SubscriptionFollowTeam) (*entity.SubscriptionFollowTeam, error)
 	Update(*entity.SubscriptionFollowTeam) (*entity.SubscriptionFollowTeam, error)
+	Disable(*entity.SubscriptionFollowTeam) error
 	Delete(*entity.SubscriptionFollowTeam) error
 }
 
 func (r *SubscriptionFollowTeamRepository) CountBySub(subId int64) (int64, error) {
 	var count int64
-	err := r.db.Model(&entity.SubscriptionFollowTeam{}).Where(&entity.SubscriptionFollowTeam{SubscriptionID: subId}).Count(&count).Error
+	err := r.db.Model(&entity.SubscriptionFollowTeam{}).Where(&entity.SubscriptionFollowTeam{SubscriptionID: subId, IsActive: true}).Count(&count).Error
 	if err != nil {
 		return count, err
 	}
@@ -55,7 +56,7 @@ func (r *SubscriptionFollowTeamRepository) GetAllPaginate(pagination *entity.Pag
 
 func (r *SubscriptionFollowTeamRepository) GetBySub(subId int64) (*entity.SubscriptionFollowTeam, error) {
 	var c entity.SubscriptionFollowTeam
-	err := r.db.Where(&entity.SubscriptionFollowTeam{SubscriptionID: subId}).Take(&c).Error
+	err := r.db.Where(&entity.SubscriptionFollowTeam{SubscriptionID: subId, IsActive: true}).Take(&c).Error
 	if err != nil {
 		return nil, err
 	}
@@ -76,6 +77,14 @@ func (r *SubscriptionFollowTeamRepository) Update(c *entity.SubscriptionFollowTe
 		return nil, err
 	}
 	return c, nil
+}
+
+func (r *SubscriptionFollowTeamRepository) Disable(c *entity.SubscriptionFollowTeam) error {
+	err := r.db.Where("subscription_id = ?", c.SubscriptionID).Updates(map[string]interface{}{"is_active": false}).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (r *SubscriptionFollowTeamRepository) Delete(c *entity.SubscriptionFollowTeam) error {

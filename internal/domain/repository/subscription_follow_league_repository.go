@@ -22,12 +22,13 @@ type ISubscriptionFollowLeagueRepository interface {
 	GetBySub(int64) (*entity.SubscriptionFollowLeague, error)
 	Save(*entity.SubscriptionFollowLeague) (*entity.SubscriptionFollowLeague, error)
 	Update(*entity.SubscriptionFollowLeague) (*entity.SubscriptionFollowLeague, error)
+	Disable(*entity.SubscriptionFollowLeague) error
 	Delete(*entity.SubscriptionFollowLeague) error
 }
 
 func (r *SubscriptionFollowLeagueRepository) CountBySub(subId int64) (int64, error) {
 	var count int64
-	err := r.db.Model(&entity.SubscriptionFollowLeague{}).Where(&entity.SubscriptionFollowLeague{SubscriptionID: subId}).Count(&count).Error
+	err := r.db.Model(&entity.SubscriptionFollowLeague{}).Where(&entity.SubscriptionFollowLeague{SubscriptionID: subId, IsActive: true}).Count(&count).Error
 	if err != nil {
 		return count, err
 	}
@@ -55,7 +56,7 @@ func (r *SubscriptionFollowLeagueRepository) GetAllPaginate(pagination *entity.P
 
 func (r *SubscriptionFollowLeagueRepository) GetBySub(subId int64) (*entity.SubscriptionFollowLeague, error) {
 	var c entity.SubscriptionFollowLeague
-	err := r.db.Where(&entity.SubscriptionFollowLeague{SubscriptionID: subId}).Take(&c).Error
+	err := r.db.Where(&entity.SubscriptionFollowLeague{SubscriptionID: subId, IsActive: true}).Take(&c).Error
 	if err != nil {
 		return nil, err
 	}
@@ -71,11 +72,19 @@ func (r *SubscriptionFollowLeagueRepository) Save(c *entity.SubscriptionFollowLe
 }
 
 func (r *SubscriptionFollowLeagueRepository) Update(c *entity.SubscriptionFollowLeague) (*entity.SubscriptionFollowLeague, error) {
-	err := r.db.Where("id = ?", c.ID).Updates(&c).Error
+	err := r.db.Where("subscription_id = ?", c.SubscriptionID).Updates(&c).Error
 	if err != nil {
 		return nil, err
 	}
 	return c, nil
+}
+
+func (r *SubscriptionFollowLeagueRepository) Disable(c *entity.SubscriptionFollowLeague) error {
+	err := r.db.Where("subscription_id = ?", c.SubscriptionID).Updates(map[string]interface{}{"is_active": false}).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (r *SubscriptionFollowLeagueRepository) Delete(c *entity.SubscriptionFollowLeague) error {

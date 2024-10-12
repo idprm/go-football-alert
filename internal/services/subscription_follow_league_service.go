@@ -24,6 +24,7 @@ type ISubscriptionFollowLeagueService interface {
 	GetBySub(int64) (*entity.SubscriptionFollowLeague, error)
 	Save(*entity.SubscriptionFollowLeague) (*entity.SubscriptionFollowLeague, error)
 	Update(*entity.SubscriptionFollowLeague) (*entity.SubscriptionFollowLeague, error)
+	Disable(*entity.SubscriptionFollowLeague) error
 	Delete(*entity.SubscriptionFollowLeague) error
 }
 
@@ -51,6 +52,10 @@ func (s *SubscriptionFollowLeagueService) Save(a *entity.SubscriptionFollowLeagu
 
 func (s *SubscriptionFollowLeagueService) Update(a *entity.SubscriptionFollowLeague) (*entity.SubscriptionFollowLeague, error) {
 	return s.subFollowLeagueRepo.Update(a)
+}
+
+func (s *SubscriptionFollowLeagueService) Disable(a *entity.SubscriptionFollowLeague) error {
+	return s.subFollowLeagueRepo.Disable(a)
 }
 
 func (s *SubscriptionFollowLeagueService) Delete(a *entity.SubscriptionFollowLeague) error {

@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"encoding/json"
-	"log"
 	"time"
 
 	"github.com/idprm/go-football-alert/internal/domain/entity"
@@ -395,13 +394,10 @@ var publisherSMSAlerteCmd = &cobra.Command{
 		for {
 			timeNow := time.Now().Format("15:04")
 
-			log.Println(timeNow)
 			scheduleRepo := repository.NewScheduleRepository(db)
 			scheduleService := services.NewScheduleService(scheduleRepo)
 
 			if scheduleService.IsUnlocked(ACT_SMS_ALERTE, timeNow) {
-
-				log.Println(timeNow)
 
 				scheduleService.UpdateLocked(
 					&entity.Schedule{

@@ -24,6 +24,7 @@ type ISubscriptionFollowTeamService interface {
 	GetBySub(int64) (*entity.SubscriptionFollowTeam, error)
 	Save(*entity.SubscriptionFollowTeam) (*entity.SubscriptionFollowTeam, error)
 	Update(*entity.SubscriptionFollowTeam) (*entity.SubscriptionFollowTeam, error)
+	Disable(*entity.SubscriptionFollowTeam) error
 	Delete(*entity.SubscriptionFollowTeam) error
 }
 
@@ -51,6 +52,10 @@ func (s *SubscriptionFollowTeamService) Save(a *entity.SubscriptionFollowTeam) (
 
 func (s *SubscriptionFollowTeamService) Update(a *entity.SubscriptionFollowTeam) (*entity.SubscriptionFollowTeam, error) {
 	return s.subFollowTeamRepo.Update(a)
+}
+
+func (s *SubscriptionFollowTeamService) Disable(a *entity.SubscriptionFollowTeam) error {
+	return s.subFollowTeamRepo.Disable(a)
 }
 
 func (s *SubscriptionFollowTeamService) Delete(a *entity.SubscriptionFollowTeam) error {

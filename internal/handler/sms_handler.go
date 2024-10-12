@@ -219,12 +219,31 @@ func (h *SMSHandler) SubAlerteCompetition(league *entity.League) {
 		log.Println(err.Error())
 	}
 
-	// insert in follow
 	if !h.subscriptionFollowLeagueService.IsSub(sub.GetId()) {
+		// insert follow league
 		h.subscriptionFollowLeagueService.Save(
 			&entity.SubscriptionFollowLeague{
 				SubscriptionID: sub.GetId(),
 				LeagueID:       league.GetId(),
+				IsActive:       true,
+			},
+		)
+	} else {
+		// update follow league
+		h.subscriptionFollowLeagueService.Update(
+			&entity.SubscriptionFollowLeague{
+				SubscriptionID: sub.GetId(),
+				LeagueID:       league.GetId(),
+				IsActive:       true,
+			},
+		)
+	}
+
+	// disable if follow team
+	if h.subscriptionFollowTeamService.IsSub(sub.GetId()) {
+		h.subscriptionFollowTeamService.Disable(
+			&entity.SubscriptionFollowTeam{
+				SubscriptionID: sub.GetId(),
 			},
 		)
 	}
@@ -445,12 +464,31 @@ func (h *SMSHandler) SubAlerteEquipe(team *entity.Team) {
 		log.Println(err.Error())
 	}
 
-	// insert in follow
 	if !h.subscriptionFollowTeamService.IsSub(sub.GetId()) {
+		// insert follow team
 		h.subscriptionFollowTeamService.Save(
 			&entity.SubscriptionFollowTeam{
 				SubscriptionID: sub.GetId(),
 				TeamID:         team.GetId(),
+				IsActive:       true,
+			},
+		)
+	} else {
+		// update follow team
+		h.subscriptionFollowTeamService.Update(
+			&entity.SubscriptionFollowTeam{
+				SubscriptionID: sub.GetId(),
+				TeamID:         team.GetId(),
+				IsActive:       true,
+			},
+		)
+	}
+
+	// disable if follow league
+	if h.subscriptionFollowLeagueService.IsSub(sub.GetId()) {
+		h.subscriptionFollowLeagueService.Disable(
+			&entity.SubscriptionFollowLeague{
+				SubscriptionID: sub.GetId(),
 			},
 		)
 	}
@@ -660,6 +698,16 @@ func (h *SMSHandler) AlreadySubAlerteCompetition(league *entity.League) {
 			&entity.SubscriptionFollowLeague{
 				SubscriptionID: sub.GetId(),
 				LeagueID:       league.GetId(),
+				IsActive:       true,
+			},
+		)
+	}
+
+	// disable if follow team
+	if h.subscriptionFollowTeamService.IsSub(sub.GetId()) {
+		h.subscriptionFollowTeamService.Disable(
+			&entity.SubscriptionFollowTeam{
+				SubscriptionID: sub.GetId(),
 			},
 		)
 	}
@@ -709,6 +757,16 @@ func (h *SMSHandler) AlreadySubAlerteEquipe(team *entity.Team) {
 			&entity.SubscriptionFollowTeam{
 				SubscriptionID: sub.GetId(),
 				TeamID:         team.GetId(),
+				IsActive:       true,
+			},
+		)
+	}
+
+	// disable if follow league
+	if h.subscriptionFollowLeagueService.IsSub(sub.GetId()) {
+		h.subscriptionFollowLeagueService.Disable(
+			&entity.SubscriptionFollowLeague{
+				SubscriptionID: sub.GetId(),
 			},
 		)
 	}
@@ -807,6 +865,26 @@ func (h *SMSHandler) Stop(category string) {
 		},
 	)
 
+	// If SMS Alerte
+	if category == CATEGORY_SMSALERTE {
+		// unfollow league
+		if h.subscriptionFollowLeagueService.IsSub(sub.GetId()) {
+			h.subscriptionFollowLeagueService.Disable(
+				&entity.SubscriptionFollowLeague{
+					SubscriptionID: sub.GetId(),
+				},
+			)
+		}
+
+		// unfollow team
+		if h.subscriptionFollowTeamService.IsSub(sub.GetId()) {
+			h.subscriptionFollowTeamService.Disable(
+				&entity.SubscriptionFollowTeam{
+					SubscriptionID: sub.GetId(),
+				},
+			)
+		}
+	}
 	mt := &model.MTRequest{
 		Smsc:         h.req.GetTo(),
 		Keyword:      h.req.GetSMS(),
