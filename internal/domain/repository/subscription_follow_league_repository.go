@@ -16,17 +16,27 @@ func NewSubscriptionFollowLeagueRepository(db *gorm.DB) *SubscriptionFollowLeagu
 }
 
 type ISubscriptionFollowLeagueRepository interface {
-	Count(int64, int64) (int64, error)
+	CountBySub(int64) (int64, error)
+	CountByLeague(int64) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
-	Get(int64, int64) (*entity.SubscriptionFollowLeague, error)
+	GetBySub(int64) (*entity.SubscriptionFollowLeague, error)
 	Save(*entity.SubscriptionFollowLeague) (*entity.SubscriptionFollowLeague, error)
 	Update(*entity.SubscriptionFollowLeague) (*entity.SubscriptionFollowLeague, error)
 	Delete(*entity.SubscriptionFollowLeague) error
 }
 
-func (r *SubscriptionFollowLeagueRepository) Count(subId, leagueId int64) (int64, error) {
+func (r *SubscriptionFollowLeagueRepository) CountBySub(subId int64) (int64, error) {
 	var count int64
-	err := r.db.Model(&entity.SubscriptionFollowLeague{}).Where(&entity.SubscriptionFollowLeague{SubscriptionID: int64(subId), LeagueID: int64(leagueId)}).Count(&count).Error
+	err := r.db.Model(&entity.SubscriptionFollowLeague{}).Where(&entity.SubscriptionFollowLeague{SubscriptionID: subId}).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *SubscriptionFollowLeagueRepository) CountByLeague(leagueId int64) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.SubscriptionFollowLeague{}).Where(&entity.SubscriptionFollowLeague{LeagueID: leagueId}).Count(&count).Error
 	if err != nil {
 		return count, err
 	}
@@ -43,9 +53,9 @@ func (r *SubscriptionFollowLeagueRepository) GetAllPaginate(pagination *entity.P
 	return pagination, nil
 }
 
-func (r *SubscriptionFollowLeagueRepository) Get(subId, leagueId int64) (*entity.SubscriptionFollowLeague, error) {
+func (r *SubscriptionFollowLeagueRepository) GetBySub(subId int64) (*entity.SubscriptionFollowLeague, error) {
 	var c entity.SubscriptionFollowLeague
-	err := r.db.Where(&entity.SubscriptionFollowLeague{SubscriptionID: subId, LeagueID: leagueId}).Take(&c).Error
+	err := r.db.Where(&entity.SubscriptionFollowLeague{SubscriptionID: subId}).Take(&c).Error
 	if err != nil {
 		return nil, err
 	}

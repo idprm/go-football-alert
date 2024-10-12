@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"encoding/json"
+	"log"
 	"time"
 
 	"github.com/idprm/go-football-alert/internal/domain/entity"
@@ -59,9 +60,9 @@ var publisherRenewalCmd = &cobra.Command{
 		)
 
 		/**
-		 * Looping schedule
+		 * Looping schedule per 10 minutes
 		 */
-		timeDuration := time.Duration(30)
+		timeDuration := time.Duration(10)
 
 		for {
 
@@ -107,7 +108,7 @@ var publisherRetryCmd = &cobra.Command{
 		)
 
 		/**
-		 * Looping schedule
+		 * Looping schedule per 30 minutes
 		 */
 		timeDuration := time.Duration(30)
 
@@ -394,10 +395,13 @@ var publisherSMSAlerteCmd = &cobra.Command{
 		for {
 			timeNow := time.Now().Format("15:04")
 
+			log.Println(timeNow)
 			scheduleRepo := repository.NewScheduleRepository(db)
 			scheduleService := services.NewScheduleService(scheduleRepo)
 
 			if scheduleService.IsUnlocked(ACT_SMS_ALERTE, timeNow) {
+
+				log.Println(timeNow)
 
 				scheduleService.UpdateLocked(
 					&entity.Schedule{
@@ -468,6 +472,32 @@ func populateRetry(db *gorm.DB, rmq rmqp.AMQP) {
 	}
 }
 
+func populateSMSAlerte(db *gorm.DB, rmq rmqp.AMQP) {
+	subscriptionRepo := repository.NewSubscriptionRepository(db)
+	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+
+	followsLeague := subscriptionService.Follow()
+
+	for _, s := range *followsLeague {
+		var sub entity.Subscription
+
+		sub.ID = s.ID
+		sub.ServiceID = s.ServiceID
+		sub.Msisdn = s.Msisdn
+		sub.Channel = s.Channel
+		sub.LatestKeyword = s.LatestKeyword
+		sub.LatestSubject = s.LatestSubject
+		sub.IpAddress = s.IpAddress
+		sub.CreatedAt = s.CreatedAt
+
+		json, _ := json.Marshal(sub)
+
+		rmq.IntegratePublish(RMQ_SMS_ALERTE_EXCHANGE, RMQ_SMS_ALERTE_QUEUE, RMQ_DATA_TYPE, "", string(json))
+
+		time.Sleep(100 * time.Microsecond)
+	}
+}
+
 func populatePrediction(db *gorm.DB, rmq rmqp.AMQP) {
 	subscriptionRepo := repository.NewSubscriptionRepository(db)
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
@@ -515,32 +545,6 @@ func populateGoalCredit(db *gorm.DB, rmq rmqp.AMQP) {
 		json, _ := json.Marshal(sub)
 
 		rmq.IntegratePublish(RMQ_CREDIT_EXCHANGE, RMQ_CREDIT_QUEUE, RMQ_DATA_TYPE, "", string(json))
-
-		time.Sleep(100 * time.Microsecond)
-	}
-}
-
-func populateSMSAlerte(db *gorm.DB, rmq rmqp.AMQP) {
-	subscriptionRepo := repository.NewSubscriptionRepository(db)
-	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
-
-	subs := subscriptionService.FollowLeague()
-
-	for _, s := range *subs {
-		var sub entity.Subscription
-
-		sub.ID = s.ID
-		sub.ServiceID = s.ServiceID
-		sub.Msisdn = s.Msisdn
-		sub.Channel = s.Channel
-		sub.LatestKeyword = s.LatestKeyword
-		sub.LatestSubject = s.LatestSubject
-		sub.IpAddress = s.IpAddress
-		sub.CreatedAt = s.CreatedAt
-
-		json, _ := json.Marshal(sub)
-
-		rmq.IntegratePublish(RMQ_SMS_ALERTE_EXCHANGE, RMQ_SMS_ALERTE_QUEUE, RMQ_DATA_TYPE, "", string(json))
 
 		time.Sleep(100 * time.Microsecond)
 	}

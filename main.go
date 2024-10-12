@@ -1,7 +1,14 @@
 package main
 
-import "github.com/idprm/go-football-alert/cmd"
+import (
+	"log"
+	"time"
+
+	"github.com/idprm/go-football-alert/cmd"
+)
 
 func main() {
+
 	cmd.Execute()
+	log.Println(time.Now())
 }

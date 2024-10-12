@@ -20,6 +20,7 @@ type ITeamRepository interface {
 	CountByPrimaryId(int) (int64, error)
 	CountByName(string) (int64, error)
 	CountByLeagueTeam(*entity.LeagueTeam) (int64, error)
+	CountLeagueByTeam(int) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetAllTeamUSSD(int, int) ([]*entity.LeagueTeam, error)
 	Get(string) (*entity.Team, error)
@@ -29,6 +30,7 @@ type ITeamRepository interface {
 	Update(*entity.Team) (*entity.Team, error)
 	UpdateByPrimaryId(*entity.Team) (*entity.Team, error)
 	Delete(*entity.Team) error
+	GetLeagueByTeam(int) (*entity.LeagueTeam, error)
 	SaveLeagueTeam(*entity.LeagueTeam) (*entity.LeagueTeam, error)
 }
 
@@ -62,6 +64,15 @@ func (r *TeamRepository) CountByName(name string) (int64, error) {
 func (r *TeamRepository) CountByLeagueTeam(v *entity.LeagueTeam) (int64, error) {
 	var count int64
 	err := r.db.Model(&entity.LeagueTeam{}).Where(&entity.LeagueTeam{LeagueID: v.LeagueID, TeamID: v.TeamID}).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *TeamRepository) CountLeagueByTeam(teamId int) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.LeagueTeam{}).Where(&entity.LeagueTeam{TeamID: int64(teamId)}).Count(&count).Error
 	if err != nil {
 		return count, err
 	}
@@ -144,6 +155,15 @@ func (r *TeamRepository) Delete(c *entity.Team) error {
 		return err
 	}
 	return nil
+}
+
+func (r *TeamRepository) GetLeagueByTeam(teamId int) (*entity.LeagueTeam, error) {
+	var c entity.LeagueTeam
+	err := r.db.Where("team_id = ?", teamId).Preload("Team").Preload("League").Take(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return &c, nil
 }
 
 func (r *TeamRepository) SaveLeagueTeam(c *entity.LeagueTeam) (*entity.LeagueTeam, error) {

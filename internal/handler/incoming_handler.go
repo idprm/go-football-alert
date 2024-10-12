@@ -198,7 +198,7 @@ func (h *IncomingHandler) MessageOriginated(c *fiber.Ctx) error {
 }
 
 func (h *IncomingHandler) Main(c *fiber.Ctx) error {
-	c.Set("Content-type", "text/xml; charset=iso-8859-1")
+	c.Set("Content-type", "application/xml")
 	menu, err := h.menuService.GetBySlug("home")
 	if err != nil {
 		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
@@ -213,7 +213,7 @@ func (h *IncomingHandler) Main(c *fiber.Ctx) error {
 }
 
 func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
-	c.Set("Content-type", "text/xml; charset=iso-8859-1")
+	c.Set("Content-type", "application/xml")
 	req := new(model.UssdRequest)
 
 	err := c.QueryParser(req)
@@ -226,7 +226,7 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 
 	// if menu or page not found
 	if !h.menuService.IsSlug(req.GetSlug()) {
-		return c.Status(fiber.StatusOK).SendString(h.MsisdnNotFound(c.BaseURL()))
+		return c.Status(fiber.StatusOK).SendString(h.PageNotFound(c.BaseURL()))
 	}
 
 	menu, err := h.menuService.GetBySlug(req.GetSlug())
@@ -373,16 +373,17 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 }
 
 func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
-	c.Set("Content-type", "text/xml; charset=iso-8859-1")
+	c.Set("Content-type", "application/xml")
 	req := new(model.UssdRequest)
 
 	err := c.QueryParser(req)
 	if err != nil {
 		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
 	}
-
 	// setter msisdn
 	req.SetMsisdn(c.Get("User-MSISDN"))
+
+	log.Println(req.GetMsisdn())
 
 	// check if msisdn not found
 	if !req.IsMsisdn() {
@@ -413,7 +414,7 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 }
 
 func (h *IncomingHandler) Confirm(c *fiber.Ctx) error {
-	c.Set("Content-type", "text/xml; charset=iso-8859-1")
+	c.Set("Content-type", "application/xml")
 	req := new(model.UssdRequest)
 
 	err := c.QueryParser(req)
@@ -466,8 +467,7 @@ func (h *IncomingHandler) Confirm(c *fiber.Ctx) error {
 }
 
 func (h *IncomingHandler) Buy(c *fiber.Ctx) error {
-	c.Set("Content-type", "text/xml; charset=iso-8859-1")
-
+	c.Set("Content-type", "application/xml")
 	l := h.logger.Init("mo", true)
 	req := new(model.UssdRequest)
 

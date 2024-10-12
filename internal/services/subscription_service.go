@@ -34,10 +34,9 @@ type ISubscriptionService interface {
 	IsNotFollowTeam(*entity.Subscription) (*entity.Subscription, error)
 	IsNotFollowLeague(*entity.Subscription) (*entity.Subscription, error)
 	IsNotPrediction(*entity.Subscription) (*entity.Subscription, error)
-	FollowLeague() *[]entity.Subscription
-	FollowTeam() *[]entity.Subscription
 	Prediction() *[]entity.Subscription
 	CreditGoal() *[]entity.Subscription
+	Follow() *[]entity.Subscription
 	Renewal() *[]entity.Subscription
 	Retry() *[]entity.Subscription
 }
@@ -117,16 +116,8 @@ func (s *SubscriptionService) Prediction() *[]entity.Subscription {
 	return subs
 }
 
-func (s *SubscriptionService) FollowTeam() *[]entity.Subscription {
-	subs, err := s.subscriptionRepo.FollowTeam()
-	if err != nil {
-		log.Println(err)
-	}
-	return subs
-}
-
-func (s *SubscriptionService) FollowLeague() *[]entity.Subscription {
-	subs, err := s.subscriptionRepo.FollowLeague()
+func (s *SubscriptionService) Follow() *[]entity.Subscription {
+	subs, err := s.subscriptionRepo.Follow()
 	if err != nil {
 		log.Println(err)
 	}

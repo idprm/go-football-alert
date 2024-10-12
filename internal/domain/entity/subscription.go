@@ -8,46 +8,49 @@ import (
 )
 
 type Subscription struct {
-	ID                   int64     `gorm:"primaryKey" json:"id"`
-	ServiceID            int       `json:"service_id"`
-	Service              *Service  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"service,omitempty"`
-	Category             string    `gorm:"size:20" json:"category"`
-	Msisdn               string    `gorm:"size:15;not null" json:"msisdn"`
-	Channel              string    `gorm:"size:15" json:"channel,omitempty"`
-	LatestTrxId          string    `gorm:"size:100" json:"trx_id,omitempty"`
-	LatestKeyword        string    `gorm:"size:50" json:"latest_keyword,omitempty"`
-	LatestSubject        string    `gorm:"size:25" json:"latest_subject,omitempty"`
-	LatestStatus         string    `gorm:"size:25" json:"latest_status,omitempty"`
-	LatestPayload        string    `gorm:"type:text" json:"latest_payload,omitempty"`
-	RenewalAt            time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"renewal_at,omitempty"`
-	UnsubAt              time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"unsub_at,omitempty"`
-	ChargeAt             time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"charge_at,omitempty"`
-	RetryAt              time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"retry_at,omitempty"`
-	FreeAt               time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"free_at,omitempty"`
-	FollowAt             time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"follow_at,omitempty"`
-	PredictionAt         time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"prediction_at,omitempty"`
-	CreditGoalAt         time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"credit_goal_at,omitempty"`
-	FirstSuccessAt       time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"first_success_at,omitempty"`
-	TotalSuccess         int       `gorm:"default:0" json:"total_success,omitempty"`
-	TotalFailed          int       `gorm:"default:0" json:"total_failed,omitempty"`
-	TotalAmount          float64   `gorm:"default:0" json:"total_amount,omitempty"`
-	TotalFirstpush       int       `gorm:"default:0" json:"total_firstpush,omitempty"`
-	TotalRenewal         int       `gorm:"default:0" json:"total_renewal,omitempty"`
-	TotalSub             int       `gorm:"default:0" json:"total_sub,omitempty"`
-	TotalUnsub           int       `gorm:"default:0" json:"total_unsub,omitempty"`
-	TotalAmountFirstpush float64   `gorm:"default:0" json:"total_amount_firstpush,omitempty"`
-	TotalAmountRenewal   float64   `gorm:"default:0" json:"total_amount_renewal,omitempty"`
-	BeforeBalance        float64   `gorm:"default:0" json:"before_balance,omitempty"`
-	AfterBalance         float64   `gorm:"default:0" json:"after_balance,omitempty"`
-	ExpireAt             time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"expire_at,omitempty"`
-	IpAddress            string    `gorm:"size:25" json:"ip_address,omitempty"`
-	IsFollowTeam         bool      `gorm:"type:boolean;column:is_follow_team" json:"is_follow_team,omitempty"`
-	IsFollowLeague       bool      `gorm:"type:boolean;column:is_follow_competition" json:"is_follow_competition,omitempty"`
-	IsPrediction         bool      `gorm:"type:boolean;column:is_prediction" json:"is_prediction,omitempty"`
-	IsCreditGoal         bool      `gorm:"type:boolean;column:is_credit_goal" json:"is_credit_goal,omitempty"`
-	IsRetry              bool      `gorm:"type:boolean;column:is_retry" json:"is_retry,omitempty"`
-	IsFree               bool      `gorm:"type:boolean;column:is_free" json:"is_free,omitempty"`
-	IsActive             bool      `gorm:"type:boolean;column:is_active" json:"is_active,omitempty"`
+	ID                   int64       `gorm:"primaryKey" json:"id"`
+	ServiceID            int         `json:"service_id"`
+	Service              *Service    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"service,omitempty"`
+	Category             string      `gorm:"size:20" json:"category"`
+	Msisdn               string      `gorm:"size:15;not null" json:"msisdn"`
+	Channel              string      `gorm:"size:15" json:"channel,omitempty"`
+	LatestTrxId          string      `gorm:"size:100" json:"trx_id,omitempty"`
+	LatestKeyword        string      `gorm:"size:50" json:"latest_keyword,omitempty"`
+	LatestSubject        string      `gorm:"size:25" json:"latest_subject,omitempty"`
+	LatestStatus         string      `gorm:"size:25" json:"latest_status,omitempty"`
+	LatestPayload        string      `gorm:"type:text" json:"latest_payload,omitempty"`
+	RenewalAt            time.Time   `gorm:"type:TIMESTAMP;null;default:null" json:"renewal_at,omitempty"`
+	UnsubAt              time.Time   `gorm:"type:TIMESTAMP;null;default:null" json:"unsub_at,omitempty"`
+	ChargeAt             time.Time   `gorm:"type:TIMESTAMP;null;default:null" json:"charge_at,omitempty"`
+	RetryAt              time.Time   `gorm:"type:TIMESTAMP;null;default:null" json:"retry_at,omitempty"`
+	FreeAt               time.Time   `gorm:"type:TIMESTAMP;null;default:null" json:"free_at,omitempty"`
+	FollowAt             time.Time   `gorm:"type:TIMESTAMP;null;default:null" json:"follow_at,omitempty"`
+	PredictionAt         time.Time   `gorm:"type:TIMESTAMP;null;default:null" json:"prediction_at,omitempty"`
+	CreditGoalAt         time.Time   `gorm:"type:TIMESTAMP;null;default:null" json:"credit_goal_at,omitempty"`
+	FirstSuccessAt       time.Time   `gorm:"type:TIMESTAMP;null;default:null" json:"first_success_at,omitempty"`
+	TotalSuccess         int         `gorm:"default:0" json:"total_success,omitempty"`
+	TotalFailed          int         `gorm:"default:0" json:"total_failed,omitempty"`
+	TotalAmount          float64     `gorm:"default:0" json:"total_amount,omitempty"`
+	TotalFirstpush       int         `gorm:"default:0" json:"total_firstpush,omitempty"`
+	TotalRenewal         int         `gorm:"default:0" json:"total_renewal,omitempty"`
+	TotalSub             int         `gorm:"default:0" json:"total_sub,omitempty"`
+	TotalUnsub           int         `gorm:"default:0" json:"total_unsub,omitempty"`
+	TotalAmountFirstpush float64     `gorm:"default:0" json:"total_amount_firstpush,omitempty"`
+	TotalAmountRenewal   float64     `gorm:"default:0" json:"total_amount_renewal,omitempty"`
+	BeforeBalance        float64     `gorm:"default:0" json:"before_balance,omitempty"`
+	AfterBalance         float64     `gorm:"default:0" json:"after_balance,omitempty"`
+	ExpireAt             time.Time   `gorm:"type:TIMESTAMP;null;default:null" json:"expire_at,omitempty"`
+	IpAddress            string      `gorm:"size:25" json:"ip_address,omitempty"`
+	IsFollowTeam         bool        `gorm:"type:boolean;column:is_follow_team" json:"is_follow_team,omitempty"`
+	IsFollowLeague       bool        `gorm:"type:boolean;column:is_follow_competition" json:"is_follow_competition,omitempty"`
+	IsPrediction         bool        `gorm:"type:boolean;column:is_prediction" json:"is_prediction,omitempty"`
+	IsCreditGoal         bool        `gorm:"type:boolean;column:is_credit_goal" json:"is_credit_goal,omitempty"`
+	IsRetry              bool        `gorm:"type:boolean;column:is_retry" json:"is_retry,omitempty"`
+	IsFree               bool        `gorm:"type:boolean;column:is_free" json:"is_free,omitempty"`
+	IsActive             bool        `gorm:"type:boolean;column:is_active" json:"is_active,omitempty"`
+	League               *League     `gorm:"many2many:subscription_follow_leagues" json:"league"`
+	Team                 *Team       `gorm:"many2many:subscription_follow_teams" json:"team"`
+	Prediction           *Prediction `gorm:"many2many:subscription_predict" json:"prediction"`
 	gorm.Model           `json:"-"`
 }
 

@@ -220,7 +220,7 @@ func (h *SMSHandler) SubAlerteCompetition(category string, league *entity.League
 	}
 
 	// insert in follow
-	if h.subscriptionFollowLeagueService.IsSubFollowLeague(sub.GetId(), league.GetId()) {
+	if !h.subscriptionFollowLeagueService.IsSub(sub.GetId()) {
 		h.subscriptionFollowLeagueService.Save(
 			&entity.SubscriptionFollowLeague{
 				SubscriptionID: sub.GetId(),
@@ -449,7 +449,7 @@ func (h *SMSHandler) SubAlerteEquipe(category string, team *entity.Team) {
 	}
 
 	// insert in follow
-	if h.subscriptionFollowTeamService.IsSubFollowTeam(sub.GetId(), team.GetId()) {
+	if !h.subscriptionFollowTeamService.IsSub(sub.GetId()) {
 		h.subscriptionFollowTeamService.Save(
 			&entity.SubscriptionFollowTeam{
 				SubscriptionID: sub.GetId(),

@@ -33,20 +33,20 @@ func (e *Content) GetValue() string {
 	return e.Value
 }
 
-func (e *Content) SetValueSubFollowCompetition(league, date, month, price, currency string) {
+func (e *Content) SetValueSubFollowCompetition(league, day, month, price, currency string) {
 	replacer := strings.NewReplacer(
 		"{league}", league,
-		"{date}", date,
+		"{day}", day,
 		"{month}", month,
 		"{price}", price,
 		"{currency}", url.QueryEscape(currency))
 	e.Value = replacer.Replace(e.Value)
 }
 
-func (e *Content) SetValueSubFollowTeam(team, date, month, price, currency string) {
+func (e *Content) SetValueSubFollowTeam(team, day, month, price, currency string) {
 	replacer := strings.NewReplacer(
 		"{team}", team,
-		"{date}", date,
+		"{day}", day,
 		"{month}", month,
 		"{price}", price,
 		"{currency}", url.QueryEscape(currency))

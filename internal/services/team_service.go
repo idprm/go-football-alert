@@ -20,6 +20,7 @@ type ITeamService interface {
 	IsTeamByPrimaryId(int) bool
 	IsTeamByName(string) bool
 	IsLeagueTeam(*entity.LeagueTeam) bool
+	IsLeagueByTeam(int) bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetAllTeamUSSD(int, int) ([]*entity.LeagueTeam, error)
 	Get(string) (*entity.Team, error)
@@ -29,6 +30,7 @@ type ITeamService interface {
 	Update(*entity.Team) (*entity.Team, error)
 	UpdateByPrimaryId(*entity.Team) (*entity.Team, error)
 	Delete(*entity.Team) error
+	GetLeagueByTeam(int) (*entity.LeagueTeam, error)
 	SaveLeagueTeam(*entity.LeagueTeam) (*entity.LeagueTeam, error)
 }
 
@@ -49,6 +51,11 @@ func (s *TeamService) IsTeamByName(name string) bool {
 
 func (s *TeamService) IsLeagueTeam(v *entity.LeagueTeam) bool {
 	count, _ := s.teamRepo.CountByLeagueTeam(v)
+	return count > 0
+}
+
+func (s *TeamService) IsLeagueByTeam(teamId int) bool {
+	count, _ := s.teamRepo.CountLeagueByTeam(teamId)
 	return count > 0
 }
 
@@ -86,6 +93,10 @@ func (s *TeamService) UpdateByPrimaryId(a *entity.Team) (*entity.Team, error) {
 
 func (s *TeamService) Delete(a *entity.Team) error {
 	return s.teamRepo.Delete(a)
+}
+
+func (s *TeamService) GetLeagueByTeam(teamId int) (*entity.LeagueTeam, error) {
+	return s.teamRepo.GetLeagueByTeam(teamId)
 }
 
 func (s *TeamService) SaveLeagueTeam(a *entity.LeagueTeam) (*entity.LeagueTeam, error) {

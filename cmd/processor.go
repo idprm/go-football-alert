@@ -164,10 +164,6 @@ func (p *Processor) News(wg *sync.WaitGroup, message []byte) {
 	teamService := services.NewTeamService(teamRepo)
 	newsRepo := repository.NewNewsRepository(p.db)
 	newsService := services.NewNewsService(newsRepo)
-	FollowLeagueRepo := repository.NewFollowLeagueRepository(p.db)
-	FollowLeagueService := services.NewFollowLeagueService(FollowLeagueRepo)
-	followTeamRepo := repository.NewFollowTeamRepository(p.db)
-	followTeamService := services.NewFollowTeamService(followTeamRepo)
 
 	// parsing json to string
 	var news *entity.News
@@ -177,8 +173,6 @@ func (p *Processor) News(wg *sync.WaitGroup, message []byte) {
 		leagueService,
 		teamService,
 		newsService,
-		FollowLeagueService,
-		followTeamService,
 		news,
 	)
 
@@ -193,14 +187,16 @@ func (p *Processor) SMSAlerte(wg *sync.WaitGroup, message []byte) {
 	 */
 	serviceRepo := repository.NewServiceRepository(p.db)
 	serviceService := services.NewServiceService(serviceRepo)
-	contentRepo := repository.NewContentRepository(p.db)
-	contentService := services.NewContentService(contentRepo)
 	subscriptionRepo := repository.NewSubscriptionRepository(p.db)
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
-	transactionRepo := repository.NewTransactionRepository(p.db)
-	transactionService := services.NewTransactionService(transactionRepo)
 	newsRepo := repository.NewNewsRepository(p.db)
 	newsService := services.NewNewsService(newsRepo)
+	subscriptionFollowLeagueRepo := repository.NewSubscriptionFollowLeagueRepository(p.db)
+	subscriptionFollowLeagueService := services.NewSubscriptionFollowLeagueService(subscriptionFollowLeagueRepo)
+	subscriptionFollowTeamRepo := repository.NewSubscriptionFollowTeamRepository(p.db)
+	subscriptionFollowTeamService := services.NewSubscriptionFollowTeamService(subscriptionFollowTeamRepo)
+	smsAlerteRepo := repository.NewSMSAlerteRespository(p.db)
+	smsAlerteService := services.NewSMSAlerteService(smsAlerteRepo)
 
 	// parsing json to string
 	var sub *entity.Subscription
@@ -211,10 +207,11 @@ func (p *Processor) SMSAlerte(wg *sync.WaitGroup, message []byte) {
 		p.logger,
 		sub,
 		serviceService,
-		contentService,
 		subscriptionService,
-		transactionService,
 		newsService,
+		subscriptionFollowLeagueService,
+		subscriptionFollowTeamService,
+		smsAlerteService,
 	)
 
 	// Send SMS Alerte

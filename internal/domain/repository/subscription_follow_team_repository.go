@@ -16,17 +16,27 @@ func NewSubscriptionFollowTeamRepository(db *gorm.DB) *SubscriptionFollowTeamRep
 }
 
 type ISubscriptionFollowTeamRepository interface {
-	Count(int64, int64) (int64, error)
+	CountBySub(int64) (int64, error)
+	CountByTeam(int64) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
-	Get(int64, int64) (*entity.SubscriptionFollowTeam, error)
+	GetBySub(int64) (*entity.SubscriptionFollowTeam, error)
 	Save(*entity.SubscriptionFollowTeam) (*entity.SubscriptionFollowTeam, error)
 	Update(*entity.SubscriptionFollowTeam) (*entity.SubscriptionFollowTeam, error)
 	Delete(*entity.SubscriptionFollowTeam) error
 }
 
-func (r *SubscriptionFollowTeamRepository) Count(subId, teamId int64) (int64, error) {
+func (r *SubscriptionFollowTeamRepository) CountBySub(subId int64) (int64, error) {
 	var count int64
-	err := r.db.Model(&entity.SubscriptionFollowTeam{}).Where(&entity.SubscriptionFollowTeam{SubscriptionID: int64(subId), TeamID: int64(teamId)}).Count(&count).Error
+	err := r.db.Model(&entity.SubscriptionFollowTeam{}).Where(&entity.SubscriptionFollowTeam{SubscriptionID: subId}).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *SubscriptionFollowTeamRepository) CountByTeam(teamId int64) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.SubscriptionFollowTeam{}).Where(&entity.SubscriptionFollowTeam{TeamID: teamId}).Count(&count).Error
 	if err != nil {
 		return count, err
 	}
@@ -43,9 +53,9 @@ func (r *SubscriptionFollowTeamRepository) GetAllPaginate(pagination *entity.Pag
 	return pagination, nil
 }
 
-func (r *SubscriptionFollowTeamRepository) Get(subId, teamId int64) (*entity.SubscriptionFollowTeam, error) {
+func (r *SubscriptionFollowTeamRepository) GetBySub(subId int64) (*entity.SubscriptionFollowTeam, error) {
 	var c entity.SubscriptionFollowTeam
-	err := r.db.Where(&entity.SubscriptionFollowTeam{SubscriptionID: subId, TeamID: teamId}).Take(&c).Error
+	err := r.db.Where(&entity.SubscriptionFollowTeam{SubscriptionID: subId}).Take(&c).Error
 	if err != nil {
 		return nil, err
 	}
