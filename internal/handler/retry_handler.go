@@ -91,7 +91,7 @@ func (h *RetryHandler) Firstpush() {
 					TotalSuccess:         sub.TotalSuccess + 1,
 					IsRetry:              false,
 					TotalFirstpush:       sub.TotalFirstpush + 1,
-					TotalAmountFirstpush: service.GetPrice(),
+					TotalAmountFirstpush: sub.TotalAmountFirstpush + service.GetPrice(),
 					LatestPayload:        string(resp),
 				},
 			)
@@ -164,7 +164,7 @@ func (h *RetryHandler) Dailypush() {
 					TotalSuccess:       sub.TotalSuccess + 1,
 					IsRetry:            false,
 					TotalRenewal:       sub.TotalRenewal + 1,
-					TotalAmountRenewal: service.GetPrice(),
+					TotalAmountRenewal: sub.TotalAmountRenewal + service.GetPrice(),
 					LatestPayload:      string(resp),
 				},
 			)
