@@ -2,10 +2,12 @@ package cmd
 
 import (
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	loggerFiber "github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/template/html/v2"
 	"github.com/idprm/go-football-alert/internal/domain/entity"
@@ -112,18 +114,35 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 
 	engine := html.New(path+"/views", ".html")
 
-	app := fiber.New(
+	r := fiber.New(
 		fiber.Config{
 			Views: engine,
 		},
 	)
+
+	/**
+	 * Initialize default config
+	 */
+	r.Use(cors.New())
+
+	/**
+	 * Access log on browser
+	 */
+	r.Use(PATH_LOG, filesystem.New(
+		filesystem.Config{
+			Root:         http.Dir(PATH_LOG),
+			Browse:       true,
+			Index:        "index.html",
+			NotFoundFile: "404.html",
+		},
+	))
 
 	f, err := logAccess()
 	if err != nil {
 		log.Println(err)
 	}
 
-	app.Use(loggerFiber.New(
+	r.Use(loggerFiber.New(
 		loggerFiber.Config{
 			Format:     "${time} | ${status} | ${latency} | ${ip} | ${method} | ${url} | ${referer} | ${error}\n",
 			TimeFormat: "02-Jan-2006 15:04:05",
@@ -132,9 +151,9 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 		},
 	))
 
-	app.Static(PATH_STATIC, path+"/public")
+	r.Static(PATH_STATIC, path+"/public")
 
-	app.Use(cors.New())
+	r.Use(cors.New())
 
 	menuRepo := repository.NewMenuRepository(db, rds)
 	menuService := services.NewMenuService(menuRepo)
@@ -219,12 +238,12 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 		&entity.News{},
 	)
 
-	app.Get("/mo", h.MessageOriginated)
+	r.Get("/mo", h.MessageOriginated)
 
-	lp := app.Group("p")
+	lp := r.Group("p")
 	lp.Get("/:service", h.LandingPage)
 
-	v1 := app.Group(API_VERSION)
+	v1 := r.Group(API_VERSION)
 	leagues := v1.Group("leagues")
 	leagues.Get("/", leagueHandler.GetAllPaginate)
 	leagues.Get("/:slug", leagueHandler.GetBySlug)
@@ -255,7 +274,7 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 
 	news := v1.Group("news")
 	news.Get("/", newsHandler.GetAllPaginate)
-	news.Get("/:slug", newsHandler.GetBySlug)
+	news.Get("/:id", newsHandler.GetById)
 	news.Post("/", newsHandler.Save)
 	news.Put("/:id", newsHandler.Delete)
 
@@ -273,7 +292,7 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	p.Get("sub", h.Sub)
 	p.Get("unsub", h.UnSub)
 
-	return app
+	return r
 }
 
 func logAccess() (*os.File, error) {

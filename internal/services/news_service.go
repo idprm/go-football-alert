@@ -25,6 +25,7 @@ type INewsService interface {
 	GetByTeamUSSD(int) (*entity.News, error)
 	Get(string, string) (*entity.News, error)
 	GetById(int64) (*entity.News, error)
+	GetBySlug(string) (*entity.News, error)
 	Save(*entity.News) (*entity.News, error)
 	Update(*entity.News) (*entity.News, error)
 	Delete(*entity.News) error
@@ -74,6 +75,10 @@ func (s *NewsService) Get(slug, pubAt string) (*entity.News, error) {
 
 func (s *NewsService) GetById(id int64) (*entity.News, error) {
 	return s.newsRepo.GetById(id)
+}
+
+func (s *NewsService) GetBySlug(slug string) (*entity.News, error) {
+	return s.newsRepo.GetBySlug(slug)
 }
 
 func (s *NewsService) Save(a *entity.News) (*entity.News, error) {

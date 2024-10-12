@@ -135,10 +135,10 @@ func (h *SMSHandler) SMSAlerte() {
 			log.Println(err.Error())
 		}
 		if !h.IsActiveSubByCategory(CATEGORY_SMSALERTE) {
-			h.SubAlerteCompetition(SUBCATEGORY_FOLLOW_COMPETITION, league)
+			h.SubAlerteCompetition(league)
 		} else {
 			// SMS-Alerte Competition
-			h.AlreadySubAlerteCompetition(SUBCATEGORY_FOLLOW_COMPETITION)
+			h.AlreadySubAlerteCompetition(league)
 		}
 	} else if h.teamService.IsTeamByName(h.req.GetSMS()) {
 		team, err := h.teamService.GetByName(h.req.GetSMS())
@@ -146,10 +146,10 @@ func (h *SMSHandler) SMSAlerte() {
 			log.Println(err.Error())
 		}
 		if !h.IsActiveSubByCategory(CATEGORY_SMSALERTE) {
-			h.SubAlerteEquipe(SUBCATEGORY_FOLLOW_TEAM, team)
+			h.SubAlerteEquipe(team)
 		} else {
 			// SMS-Alerte Equipe
-			h.AlreadySubAlerteEquipe(SUBCATEGORY_FOLLOW_TEAM)
+			h.AlreadySubAlerteEquipe(team)
 		}
 	} else if h.req.IsInfo() {
 		h.Info()
@@ -178,7 +178,7 @@ func (h *SMSHandler) SMSAlerte() {
 
 }
 
-func (h *SMSHandler) SubAlerteCompetition(category string, league *entity.League) {
+func (h *SMSHandler) SubAlerteCompetition(league *entity.League) {
 	trxId := utils.GenerateTrxId()
 
 	service, err := h.getServiceSMSAlerteDaily()
@@ -266,7 +266,6 @@ func (h *SMSHandler) SubAlerteCompetition(category string, league *entity.League
 				Keyword:        h.req.GetSMS(),
 				Subject:        SUBJECT_FREEPUSH,
 				Status:         STATUS_SUCCESS,
-				CreatedAt:      time.Now(),
 			},
 		)
 
@@ -321,7 +320,6 @@ func (h *SMSHandler) SubAlerteCompetition(category string, league *entity.League
 					Keyword:        h.req.GetSMS(),
 					Subject:        SUBJECT_FIRSTPUSH,
 					Status:         STATUS_FAILED,
-					CreatedAt:      time.Now(),
 				},
 			)
 
@@ -369,7 +367,6 @@ func (h *SMSHandler) SubAlerteCompetition(category string, league *entity.League
 					Keyword:        h.req.GetSMS(),
 					Subject:        SUBJECT_FIRSTPUSH,
 					Status:         STATUS_SUCCESS,
-					CreatedAt:      time.Now(),
 				},
 			)
 
@@ -413,7 +410,7 @@ func (h *SMSHandler) SubAlerteCompetition(category string, league *entity.League
 	)
 }
 
-func (h *SMSHandler) SubAlerteEquipe(category string, team *entity.Team) {
+func (h *SMSHandler) SubAlerteEquipe(team *entity.Team) {
 	trxId := utils.GenerateTrxId()
 
 	service, err := h.getServiceSMSAlerteDaily()
@@ -495,7 +492,6 @@ func (h *SMSHandler) SubAlerteEquipe(category string, team *entity.Team) {
 				Keyword:        h.req.GetSMS(),
 				Subject:        SUBJECT_FREEPUSH,
 				Status:         STATUS_SUCCESS,
-				CreatedAt:      time.Now(),
 			},
 		)
 
@@ -550,7 +546,6 @@ func (h *SMSHandler) SubAlerteEquipe(category string, team *entity.Team) {
 					Keyword:        h.req.GetSMS(),
 					Subject:        SUBJECT_FIRSTPUSH,
 					Status:         STATUS_FAILED,
-					CreatedAt:      time.Now(),
 				},
 			)
 
@@ -598,7 +593,6 @@ func (h *SMSHandler) SubAlerteEquipe(category string, team *entity.Team) {
 					Keyword:        h.req.GetSMS(),
 					Subject:        SUBJECT_FIRSTPUSH,
 					Status:         STATUS_SUCCESS,
-					CreatedAt:      time.Now(),
 				},
 			)
 
@@ -642,7 +636,7 @@ func (h *SMSHandler) SubAlerteEquipe(category string, team *entity.Team) {
 	)
 }
 
-func (h *SMSHandler) AlreadySubAlerteCompetition(category string) {
+func (h *SMSHandler) AlreadySubAlerteCompetition(league *entity.League) {
 	trxId := utils.GenerateTrxId()
 
 	service, err := h.getServiceSMSAlerteDaily()
@@ -650,7 +644,7 @@ func (h *SMSHandler) AlreadySubAlerteCompetition(category string) {
 		log.Println(err.Error())
 	}
 
-	content, err := h.getContent(SMS_FOLLOW_COMPETITION_ALREADY_SUB)
+	content, err := h.getContentFollowCompetition(SMS_FOLLOW_COMPETITION_SUB, service, league)
 	if err != nil {
 		log.Println(err)
 	}
@@ -658,6 +652,16 @@ func (h *SMSHandler) AlreadySubAlerteCompetition(category string) {
 	sub, err := h.subscriptionService.Get(service.GetId(), h.req.GetMsisdn())
 	if err != nil {
 		log.Println(err.Error())
+	}
+
+	// update in follow league
+	if h.subscriptionFollowLeagueService.IsSub(sub.GetId()) {
+		h.subscriptionFollowLeagueService.Update(
+			&entity.SubscriptionFollowLeague{
+				SubscriptionID: sub.GetId(),
+				LeagueID:       league.GetId(),
+			},
+		)
 	}
 
 	mt := &model.MTRequest{
@@ -681,7 +685,7 @@ func (h *SMSHandler) AlreadySubAlerteCompetition(category string) {
 	)
 }
 
-func (h *SMSHandler) AlreadySubAlerteEquipe(category string) {
+func (h *SMSHandler) AlreadySubAlerteEquipe(team *entity.Team) {
 	trxId := utils.GenerateTrxId()
 
 	service, err := h.getServiceSMSAlerteDaily()
@@ -689,7 +693,7 @@ func (h *SMSHandler) AlreadySubAlerteEquipe(category string) {
 		log.Println(err.Error())
 	}
 
-	content, err := h.getContent(SMS_FOLLOW_TEAM_ALREADY_SUB)
+	content, err := h.getContentFollowTeam(SMS_FOLLOW_TEAM_SUB, service, team)
 	if err != nil {
 		log.Println(err)
 	}
@@ -697,6 +701,16 @@ func (h *SMSHandler) AlreadySubAlerteEquipe(category string) {
 	sub, err := h.subscriptionService.Get(service.GetId(), h.req.GetMsisdn())
 	if err != nil {
 		log.Println(err.Error())
+	}
+
+	// update in follow team
+	if h.subscriptionFollowTeamService.IsSub(sub.GetId()) {
+		h.subscriptionFollowTeamService.Update(
+			&entity.SubscriptionFollowTeam{
+				SubscriptionID: sub.GetId(),
+				TeamID:         team.GetId(),
+			},
+		)
 	}
 
 	mt := &model.MTRequest{
@@ -934,7 +948,6 @@ func (h *SMSHandler) Unsub() {
 			Subject:        SUBJECT_UNSUB,
 			Status:         STATUS_SUCCESS,
 			IpAddress:      h.req.GetIpAddress(),
-			CreatedAt:      time.Now(),
 		},
 	)
 

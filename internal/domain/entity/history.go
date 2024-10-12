@@ -1,6 +1,6 @@
 package entity
 
-import "time"
+import "gorm.io/gorm"
 
 type History struct {
 	ID             int64         `gorm:"primaryKey" json:"id"`
@@ -13,7 +13,7 @@ type History struct {
 	Subject        string        `json:"subject"`
 	Status         string        `json:"status"`
 	IpAddress      string        `json:"ip_address"`
-	CreatedAt      time.Time     `json:"created_at"`
+	gorm.Model     `json:"-"`
 }
 
 func (e *History) GetId() int64 {

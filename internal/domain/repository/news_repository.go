@@ -24,6 +24,7 @@ type INewsRepository interface {
 	GetAllUSSD(int) ([]*entity.News, error)
 	GetByTeamUSSD(int) (*entity.News, error)
 	GetById(int64) (*entity.News, error)
+	GetBySlug(string) (*entity.News, error)
 	Get(string, string) (*entity.News, error)
 	Save(*entity.News) (*entity.News, error)
 	Update(*entity.News) (*entity.News, error)
@@ -103,6 +104,15 @@ func (r *NewsRepository) GetByTeamUSSD(teamId int) (*entity.News, error) {
 func (r *NewsRepository) GetById(id int64) (*entity.News, error) {
 	var c entity.News
 	err := r.db.Where("id = ?", id).Take(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return &c, nil
+}
+
+func (r *NewsRepository) GetBySlug(slug string) (*entity.News, error) {
+	var c entity.News
+	err := r.db.Where("slug = ?", slug).Take(&c).Error
 	if err != nil {
 		return nil, err
 	}

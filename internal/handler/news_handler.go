@@ -265,8 +265,18 @@ func (h *NewsHandler) GetAllPaginate(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(news)
 }
 
-func (h *NewsHandler) GetBySlug(c *fiber.Ctx) error {
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
+func (h *NewsHandler) GetById(c *fiber.Ctx) error {
+	news, err := h.newsService.GetById(1)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusInternalServerError,
+				Message:    err.Error(),
+			},
+		)
+	}
+	return c.Status(fiber.StatusOK).JSON(news)
 }
 
 func (h *NewsHandler) Save(c *fiber.Ctx) error {

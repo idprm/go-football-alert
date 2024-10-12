@@ -71,7 +71,7 @@ func (r *SubscriptionFollowTeamRepository) Save(c *entity.SubscriptionFollowTeam
 }
 
 func (r *SubscriptionFollowTeamRepository) Update(c *entity.SubscriptionFollowTeam) (*entity.SubscriptionFollowTeam, error) {
-	err := r.db.Where("id = ?", c.ID).Updates(&c).Error
+	err := r.db.Where("subscription_id = ?", c.SubscriptionID).Updates(&c).Error
 	if err != nil {
 		return nil, err
 	}

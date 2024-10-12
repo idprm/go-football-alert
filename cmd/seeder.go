@@ -426,7 +426,13 @@ func seederDB(db *gorm.DB) {
 
 	var schedules = []entity.Schedule{
 		{
-			Name:       ACT_RENEWAL,
+			Name:       ACT_SMS_ALERTE,
+			PublishAt:  time.Now(),
+			UnlockedAt: time.Now(),
+			IsUnlocked: false,
+		},
+		{
+			Name:       ACT_SMS_ALERTE,
 			PublishAt:  time.Now(),
 			UnlockedAt: time.Now(),
 			IsUnlocked: false,
