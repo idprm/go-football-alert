@@ -200,7 +200,7 @@ func (r *SubscriptionRepository) Prediction() (*[]entity.Subscription, error) {
 // SELECT (UNIX_TIMESTAMP("2017-06-10 18:30:10")-UNIX_TIMESTAMP("2017-06-10 18:40:10"))/3600 hour_diff
 func (r *SubscriptionRepository) Renewal() (*[]entity.Subscription, error) {
 	var sub []entity.Subscription
-	err := r.db.Where(&entity.Subscription{IsActive: true}).Where("UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(renewal_at) / 3600 > 0").Order("DATE(created_at) DESC").Find(&sub).Error
+	err := r.db.Where(&entity.Subscription{IsActive: true}).Where("(UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(renewal_at)) / 3600 > 0").Order("DATE(created_at) DESC").Find(&sub).Error
 	if err != nil {
 		return nil, err
 	}
@@ -210,7 +210,7 @@ func (r *SubscriptionRepository) Renewal() (*[]entity.Subscription, error) {
 // SELECT (UNIX_TIMESTAMP("2017-06-10 18:30:10" + INTERVAL 1 DAY)-UNIX_TIMESTAMP("2017-06-10 18:40:10"))/3600 hour_diff (tommorow)
 func (r *SubscriptionRepository) Retry() (*[]entity.Subscription, error) {
 	var sub []entity.Subscription
-	err := r.db.Where(&entity.Subscription{IsRetry: true, IsActive: true}).Where("UNIX_TIMESTAMP(NOW() + INTERVAL 1 DAY) - UNIX_TIMESTAMP(renewal_at) / 3600 > 0").Order("DATE(created_at) DESC").Find(&sub).Error
+	err := r.db.Where(&entity.Subscription{IsRetry: true, IsActive: true}).Where("(UNIX_TIMESTAMP(NOW() + INTERVAL 1 DAY) - UNIX_TIMESTAMP(renewal_at)) / 3600 > 0").Order("DATE(created_at) DESC").Find(&sub).Error
 	if err != nil {
 		return nil, err
 	}
