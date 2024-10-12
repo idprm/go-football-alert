@@ -53,6 +53,11 @@ func (h *RetryHandler) Firstpush() {
 
 		trxId := utils.GenerateTrxId()
 
+		sub, err := h.subscriptionService.Get(h.sub.GetServiceId(), h.sub.GetMsisdn())
+		if err != nil {
+			log.Println(err.Error())
+		}
+
 		service, err := h.serviceService.GetById(h.sub.GetServiceId())
 		if err != nil {
 			log.Println(err.Error())
@@ -83,9 +88,9 @@ func (h *RetryHandler) Firstpush() {
 					TotalAmount:          service.GetPrice(),
 					RenewalAt:            time.Now().AddDate(0, 0, service.GetRenewalDay()),
 					ChargeAt:             time.Now(),
-					TotalSuccess:         h.sub.TotalSuccess + 1,
+					TotalSuccess:         sub.TotalSuccess + 1,
 					IsRetry:              false,
-					TotalFirstpush:       h.sub.TotalFirstpush + 1,
+					TotalFirstpush:       sub.TotalFirstpush + 1,
 					TotalAmountFirstpush: service.GetPrice(),
 					LatestPayload:        string(resp),
 				},
@@ -96,7 +101,7 @@ func (h *RetryHandler) Firstpush() {
 					TrxId:        trxId,
 					ServiceID:    service.GetId(),
 					Msisdn:       h.sub.GetMsisdn(),
-					Keyword:      h.sub.GetLatestKeyword(),
+					Keyword:      sub.GetLatestKeyword(),
 					Amount:       service.GetPrice(),
 					Status:       STATUS_SUCCESS,
 					StatusCode:   "",
@@ -120,6 +125,11 @@ func (h *RetryHandler) Dailypush() {
 	if h.subscriptionService.IsActiveSubscription(h.sub.GetServiceId(), h.sub.GetMsisdn()) {
 
 		trxId := utils.GenerateTrxId()
+
+		sub, err := h.subscriptionService.Get(h.sub.GetServiceId(), h.sub.GetMsisdn())
+		if err != nil {
+			log.Println(err.Error())
+		}
 
 		service, err := h.serviceService.GetById(h.sub.GetServiceId())
 		if err != nil {
@@ -151,9 +161,9 @@ func (h *RetryHandler) Dailypush() {
 					TotalAmount:        service.GetPrice(),
 					RenewalAt:          time.Now().AddDate(0, 0, service.GetRenewalDay()),
 					ChargeAt:           time.Now(),
-					TotalSuccess:       h.sub.TotalSuccess + 1,
+					TotalSuccess:       sub.TotalSuccess + 1,
 					IsRetry:            false,
-					TotalRenewal:       h.sub.TotalRenewal + 1,
+					TotalRenewal:       sub.TotalRenewal + 1,
 					TotalAmountRenewal: service.GetPrice(),
 					LatestPayload:      string(resp),
 				},
@@ -164,7 +174,7 @@ func (h *RetryHandler) Dailypush() {
 					TrxId:        trxId,
 					ServiceID:    service.GetId(),
 					Msisdn:       h.sub.GetMsisdn(),
-					Keyword:      h.sub.GetLatestKeyword(),
+					Keyword:      sub.GetLatestKeyword(),
 					Amount:       service.GetPrice(),
 					Status:       STATUS_SUCCESS,
 					StatusCode:   "",
