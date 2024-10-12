@@ -79,7 +79,7 @@ func (r *ScheduleRepository) Update(c *entity.Schedule) error {
 }
 
 func (r *ScheduleRepository) UpdateLocked(c *entity.Schedule) error {
-	err := r.db.Where("name = ?", c.Name).Updates(map[string]interface{}{"is_unlocked": false}).Error
+	err := r.db.Where("name = ?", c.Name).Update("is_unlocked", false).Error
 	if err != nil {
 		return err
 	}

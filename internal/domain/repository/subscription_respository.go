@@ -1,8 +1,6 @@
 package repository
 
 import (
-	"time"
-
 	"github.com/idprm/go-football-alert/internal/domain/entity"
 	"gorm.io/gorm"
 )
@@ -120,7 +118,7 @@ func (r *SubscriptionRepository) Delete(c *entity.Subscription) error {
 }
 
 func (r *SubscriptionRepository) UpdateNotActive(c *entity.Subscription) (*entity.Subscription, error) {
-	err := r.db.Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Updates(map[string]interface{}{"updated_at": time.Now(), "is_active": false}).Error
+	err := r.db.Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Update("is_active", false).Error
 	if err != nil {
 		return nil, err
 	}
@@ -128,7 +126,7 @@ func (r *SubscriptionRepository) UpdateNotActive(c *entity.Subscription) (*entit
 }
 
 func (r *SubscriptionRepository) UpdateNotRetry(c *entity.Subscription) (*entity.Subscription, error) {
-	err := r.db.Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Updates(map[string]interface{}{"updated_at": time.Now(), "is_retry": false}).Error
+	err := r.db.Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Update("is_retry", false).Error
 	if err != nil {
 		return nil, err
 	}
@@ -136,7 +134,7 @@ func (r *SubscriptionRepository) UpdateNotRetry(c *entity.Subscription) (*entity
 }
 
 func (r *SubscriptionRepository) UpdateNotFollowTeam(c *entity.Subscription) (*entity.Subscription, error) {
-	err := r.db.Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Updates(map[string]interface{}{"updated_at": time.Now(), "is_follow_team": false}).Error
+	err := r.db.Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Update("is_follow_team", false).Error
 	if err != nil {
 		return nil, err
 	}
@@ -144,7 +142,7 @@ func (r *SubscriptionRepository) UpdateNotFollowTeam(c *entity.Subscription) (*e
 }
 
 func (r *SubscriptionRepository) UpdateNotFollowLeague(c *entity.Subscription) (*entity.Subscription, error) {
-	err := r.db.Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Updates(map[string]interface{}{"updated_at": time.Now(), "is_follow_competition": false}).Error
+	err := r.db.Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Update("is_follow_competition", false).Error
 	if err != nil {
 		return nil, err
 	}
@@ -152,7 +150,7 @@ func (r *SubscriptionRepository) UpdateNotFollowLeague(c *entity.Subscription) (
 }
 
 func (r *SubscriptionRepository) UpdateNotPrediction(c *entity.Subscription) (*entity.Subscription, error) {
-	err := r.db.Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Updates(map[string]interface{}{"updated_at": time.Now(), "is_prediction": false}).Error
+	err := r.db.Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Update("is_prediction", false).Error
 	if err != nil {
 		return nil, err
 	}
@@ -160,7 +158,7 @@ func (r *SubscriptionRepository) UpdateNotPrediction(c *entity.Subscription) (*e
 }
 
 func (r *SubscriptionRepository) UpdateNotCreditGoal(c *entity.Subscription) (*entity.Subscription, error) {
-	err := r.db.Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Updates(map[string]interface{}{"updated_at": time.Now(), "is_credit_goal": false}).Error
+	err := r.db.Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Update("is_credit_goal", false).Error
 	if err != nil {
 		return nil, err
 	}

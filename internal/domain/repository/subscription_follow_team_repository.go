@@ -80,7 +80,7 @@ func (r *SubscriptionFollowTeamRepository) Update(c *entity.SubscriptionFollowTe
 }
 
 func (r *SubscriptionFollowTeamRepository) Disable(c *entity.SubscriptionFollowTeam) error {
-	err := r.db.Where("subscription_id = ?", c.SubscriptionID).Updates(map[string]interface{}{"is_active": false}).Error
+	err := r.db.Where("subscription_id = ?", c.SubscriptionID).Update("is_active", false).Error
 	if err != nil {
 		return err
 	}
