@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"encoding/json"
 	"encoding/xml"
 	"log"
 	"time"
@@ -54,11 +53,6 @@ func (h *RenewalHandler) Dailypush() {
 		trxId := utils.GenerateTrxId()
 
 		service, err := h.serviceService.GetById(h.sub.GetServiceId())
-		if err != nil {
-			log.Println(err.Error())
-		}
-
-		content, err := h.getContent(MT_RENEWAL)
 		if err != nil {
 			log.Println(err.Error())
 		}
@@ -151,33 +145,5 @@ func (h *RenewalHandler) Dailypush() {
 		// summary save
 		h.summaryService.Save(summary)
 
-		mt := &model.MTRequest{
-			Smsc:         service.ScSubMT,
-			Service:      service,
-			Subscription: h.sub,
-			Content:      content,
-		}
-		mt.SetTrxId(trxId)
-
-		jsonData, err := json.Marshal(mt)
-		if err != nil {
-			log.Println(err.Error())
-		}
-
-		h.rmq.IntegratePublish(
-			RMQ_MT_EXCHANGE,
-			RMQ_MT_QUEUE,
-			RMQ_DATA_TYPE, "", string(jsonData),
-		)
 	}
-}
-
-func (h *RenewalHandler) getContent(name string) (*entity.Content, error) {
-	// if data not exist in table contents
-	if !h.contentService.IsContent(name) {
-		return &entity.Content{
-			Value: "SAMPLE_TEXT",
-		}, nil
-	}
-	return h.contentService.Get(name)
 }
