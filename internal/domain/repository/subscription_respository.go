@@ -27,12 +27,12 @@ type ISubscriptionRepository interface {
 	Save(*entity.Subscription) (*entity.Subscription, error)
 	Update(*entity.Subscription) (*entity.Subscription, error)
 	Delete(*entity.Subscription) error
-	IsNotActive(*entity.Subscription) (*entity.Subscription, error)
-	IsNotRetry(*entity.Subscription) (*entity.Subscription, error)
-	IsNotFollowTeam(*entity.Subscription) (*entity.Subscription, error)
-	IsNotFollowLeague(*entity.Subscription) (*entity.Subscription, error)
-	IsNotPrediction(*entity.Subscription) (*entity.Subscription, error)
-	IsNotCreditGoal(*entity.Subscription) (*entity.Subscription, error)
+	UpdateNotActive(*entity.Subscription) (*entity.Subscription, error)
+	UpdateNotRetry(*entity.Subscription) (*entity.Subscription, error)
+	UpdateNotFollowTeam(*entity.Subscription) (*entity.Subscription, error)
+	UpdateNotFollowLeague(*entity.Subscription) (*entity.Subscription, error)
+	UpdateNotPrediction(*entity.Subscription) (*entity.Subscription, error)
+	UpdateNotCreditGoal(*entity.Subscription) (*entity.Subscription, error)
 	CreditGoal() (*[]entity.Subscription, error)
 	Prediction() (*[]entity.Subscription, error)
 	Follow() (*[]entity.Subscription, error)
@@ -119,7 +119,7 @@ func (r *SubscriptionRepository) Delete(c *entity.Subscription) error {
 	return nil
 }
 
-func (r *SubscriptionRepository) IsNotActive(c *entity.Subscription) (*entity.Subscription, error) {
+func (r *SubscriptionRepository) UpdateNotActive(c *entity.Subscription) (*entity.Subscription, error) {
 	err := r.db.Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Updates(map[string]interface{}{"updated_at": time.Now(), "is_active": false}).Error
 	if err != nil {
 		return nil, err
@@ -127,7 +127,7 @@ func (r *SubscriptionRepository) IsNotActive(c *entity.Subscription) (*entity.Su
 	return c, nil
 }
 
-func (r *SubscriptionRepository) IsNotRetry(c *entity.Subscription) (*entity.Subscription, error) {
+func (r *SubscriptionRepository) UpdateNotRetry(c *entity.Subscription) (*entity.Subscription, error) {
 	err := r.db.Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Updates(map[string]interface{}{"updated_at": time.Now(), "is_retry": false}).Error
 	if err != nil {
 		return nil, err
@@ -135,7 +135,7 @@ func (r *SubscriptionRepository) IsNotRetry(c *entity.Subscription) (*entity.Sub
 	return c, nil
 }
 
-func (r *SubscriptionRepository) IsNotFollowTeam(c *entity.Subscription) (*entity.Subscription, error) {
+func (r *SubscriptionRepository) UpdateNotFollowTeam(c *entity.Subscription) (*entity.Subscription, error) {
 	err := r.db.Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Updates(map[string]interface{}{"updated_at": time.Now(), "is_follow_team": false}).Error
 	if err != nil {
 		return nil, err
@@ -143,7 +143,7 @@ func (r *SubscriptionRepository) IsNotFollowTeam(c *entity.Subscription) (*entit
 	return c, nil
 }
 
-func (r *SubscriptionRepository) IsNotFollowLeague(c *entity.Subscription) (*entity.Subscription, error) {
+func (r *SubscriptionRepository) UpdateNotFollowLeague(c *entity.Subscription) (*entity.Subscription, error) {
 	err := r.db.Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Updates(map[string]interface{}{"updated_at": time.Now(), "is_follow_competition": false}).Error
 	if err != nil {
 		return nil, err
@@ -151,7 +151,7 @@ func (r *SubscriptionRepository) IsNotFollowLeague(c *entity.Subscription) (*ent
 	return c, nil
 }
 
-func (r *SubscriptionRepository) IsNotPrediction(c *entity.Subscription) (*entity.Subscription, error) {
+func (r *SubscriptionRepository) UpdateNotPrediction(c *entity.Subscription) (*entity.Subscription, error) {
 	err := r.db.Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Updates(map[string]interface{}{"updated_at": time.Now(), "is_prediction": false}).Error
 	if err != nil {
 		return nil, err
@@ -159,7 +159,7 @@ func (r *SubscriptionRepository) IsNotPrediction(c *entity.Subscription) (*entit
 	return c, nil
 }
 
-func (r *SubscriptionRepository) IsNotCreditGoal(c *entity.Subscription) (*entity.Subscription, error) {
+func (r *SubscriptionRepository) UpdateNotCreditGoal(c *entity.Subscription) (*entity.Subscription, error) {
 	err := r.db.Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Updates(map[string]interface{}{"updated_at": time.Now(), "is_credit_goal": false}).Error
 	if err != nil {
 		return nil, err

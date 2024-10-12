@@ -29,11 +29,11 @@ type ISubscriptionService interface {
 	Save(*entity.Subscription) (*entity.Subscription, error)
 	Update(*entity.Subscription) (*entity.Subscription, error)
 	Delete(*entity.Subscription) error
-	IsNotActive(*entity.Subscription) (*entity.Subscription, error)
-	IsNotRetry(*entity.Subscription) (*entity.Subscription, error)
-	IsNotFollowTeam(*entity.Subscription) (*entity.Subscription, error)
-	IsNotFollowLeague(*entity.Subscription) (*entity.Subscription, error)
-	IsNotPrediction(*entity.Subscription) (*entity.Subscription, error)
+	UpdateNotActive(*entity.Subscription) (*entity.Subscription, error)
+	UpdateNotRetry(*entity.Subscription) (*entity.Subscription, error)
+	UpdateNotFollowTeam(*entity.Subscription) (*entity.Subscription, error)
+	UpdateNotFollowLeague(*entity.Subscription) (*entity.Subscription, error)
+	UpdateNotPrediction(*entity.Subscription) (*entity.Subscription, error)
 	Prediction() *[]entity.Subscription
 	CreditGoal() *[]entity.Subscription
 	Follow() *[]entity.Subscription
@@ -80,24 +80,24 @@ func (s *SubscriptionService) Delete(a *entity.Subscription) error {
 	return s.subscriptionRepo.Delete(a)
 }
 
-func (s *SubscriptionService) IsNotActive(a *entity.Subscription) (*entity.Subscription, error) {
-	return s.subscriptionRepo.IsNotActive(a)
+func (s *SubscriptionService) UpdateNotActive(a *entity.Subscription) (*entity.Subscription, error) {
+	return s.subscriptionRepo.UpdateNotActive(a)
 }
 
-func (s *SubscriptionService) IsNotRetry(a *entity.Subscription) (*entity.Subscription, error) {
-	return s.subscriptionRepo.IsNotRetry(a)
+func (s *SubscriptionService) UpdateNotRetry(a *entity.Subscription) (*entity.Subscription, error) {
+	return s.subscriptionRepo.UpdateNotRetry(a)
 }
 
-func (s *SubscriptionService) IsNotFollowTeam(a *entity.Subscription) (*entity.Subscription, error) {
-	return s.subscriptionRepo.IsNotFollowTeam(a)
+func (s *SubscriptionService) UpdateNotFollowTeam(a *entity.Subscription) (*entity.Subscription, error) {
+	return s.subscriptionRepo.UpdateNotFollowTeam(a)
 }
 
-func (s *SubscriptionService) IsNotFollowLeague(a *entity.Subscription) (*entity.Subscription, error) {
-	return s.subscriptionRepo.IsNotFollowLeague(a)
+func (s *SubscriptionService) UpdateNotFollowLeague(a *entity.Subscription) (*entity.Subscription, error) {
+	return s.subscriptionRepo.UpdateNotFollowLeague(a)
 }
 
-func (s *SubscriptionService) IsNotPrediction(a *entity.Subscription) (*entity.Subscription, error) {
-	return s.subscriptionRepo.IsNotPrediction(a)
+func (s *SubscriptionService) UpdateNotPrediction(a *entity.Subscription) (*entity.Subscription, error) {
+	return s.subscriptionRepo.UpdateNotPrediction(a)
 }
 
 func (s *SubscriptionService) CreditGoal() *[]entity.Subscription {

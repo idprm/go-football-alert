@@ -86,6 +86,10 @@ func (s *Subscription) GetIpAddress() string {
 	return s.IpAddress
 }
 
+func (s *Subscription) SetLatestTrxId(v string) {
+	s.LatestTrxId = v
+}
+
 func (s *Subscription) SetLatestSubject(v string) {
 	s.LatestSubject = v
 }

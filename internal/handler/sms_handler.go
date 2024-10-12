@@ -842,28 +842,9 @@ func (h *SMSHandler) Stop(category string) {
 		log.Println(err.Error())
 	}
 
-	h.subscriptionService.Update(
-		&entity.Subscription{
-			ServiceID:     sub.ServiceID,
-			Msisdn:        sub.Msisdn,
-			Channel:       CHANNEL_SMS,
-			LatestTrxId:   trxId,
-			LatestKeyword: h.req.GetSMS(),
-			LatestSubject: SUBJECT_UNSUB,
-			UnsubAt:       time.Now(),
-			TotalUnsub:    sub.TotalUnsub + 1,
-		},
-	)
-
-	h.transactionService.Save(
-		&entity.Transaction{
-			ServiceID: sub.ServiceID,
-			Msisdn:    sub.Msisdn,
-			Keyword:   h.req.GetSMS(),
-			Amount:    0,
-			Subject:   SUBJECT_UNSUB,
-		},
-	)
+	sub.SetLatestTrxId(trxId)
+	// unsub
+	h.Unsub(sub)
 
 	// If SMS Alerte
 	if category == CATEGORY_SMSALERTE {
@@ -948,29 +929,17 @@ func (h *SMSHandler) IsActiveSubByCategory(v string) bool {
 	return h.subscriptionService.IsActiveSubscriptionByCategory(v, h.req.GetMsisdn())
 }
 
-func (h *SMSHandler) Unsub() {
-	service, err := h.getServiceSMSAlerteDaily()
-	if err != nil {
-		log.Println(err)
-	}
-
-	content, err := h.getContent(MT_UNSUB)
-	if err != nil {
-		log.Println(err)
-	}
-
-	trxId := utils.GenerateTrxId()
-
+func (h *SMSHandler) Unsub(sub *entity.Subscription) {
 	summary := &entity.Summary{
-		ServiceID: service.GetId(),
+		ServiceID: sub.GetServiceId(),
 		CreatedAt: time.Now(),
 	}
 
 	h.subscriptionService.Update(
 		&entity.Subscription{
-			ServiceID:     service.GetId(),
-			Msisdn:        h.req.GetMsisdn(),
-			LatestTrxId:   trxId,
+			ServiceID:     sub.GetServiceId(),
+			Msisdn:        sub.GetMsisdn(),
+			LatestTrxId:   sub.GetLatestTrxId(),
 			LatestSubject: SUBJECT_UNSUB,
 			LatestStatus:  STATUS_SUCCESS,
 			LatestKeyword: h.req.GetSMS(),
@@ -979,33 +948,18 @@ func (h *SMSHandler) Unsub() {
 		},
 	)
 
-	s := &entity.Subscription{
-		ServiceID: service.GetId(),
-		Msisdn:    h.req.GetMsisdn(),
-	}
-
-	// set false is_active
-	h.subscriptionService.IsNotActive(s)
-	// set false is_retry
-	h.subscriptionService.IsNotRetry(s)
-
-	sub, err := h.subscriptionService.Get(service.GetId(), h.req.GetMsisdn())
-	if err != nil {
-		log.Println(err)
-	}
-
 	h.subscriptionService.Update(
 		&entity.Subscription{
-			ServiceID:  service.GetId(),
-			Msisdn:     h.req.GetMsisdn(),
+			ServiceID:  sub.GetServiceId(),
+			Msisdn:     sub.GetMsisdn(),
 			TotalUnsub: sub.TotalUnsub + 1,
 		},
 	)
 
 	h.transactionService.Save(
 		&entity.Transaction{
-			TrxId:        trxId,
-			ServiceID:    service.GetId(),
+			TrxId:        sub.GetLatestTrxId(),
+			ServiceID:    sub.GetServiceId(),
 			Msisdn:       h.req.GetMsisdn(),
 			Keyword:      h.req.GetSMS(),
 			Status:       STATUS_SUCCESS,
@@ -1020,8 +974,8 @@ func (h *SMSHandler) Unsub() {
 	h.historyService.Save(
 		&entity.History{
 			SubscriptionID: sub.GetId(),
-			ServiceID:      service.GetId(),
-			Msisdn:         h.req.GetMsisdn(),
+			ServiceID:      sub.GetServiceId(),
+			Msisdn:         sub.GetMsisdn(),
 			Keyword:        h.req.GetSMS(),
 			Subject:        SUBJECT_UNSUB,
 			Status:         STATUS_SUCCESS,
@@ -1034,25 +988,15 @@ func (h *SMSHandler) Unsub() {
 	// save summary
 	h.summaryService.Save(summary)
 
-	mt := &model.MTRequest{
-		Smsc:         h.req.GetTo(),
-		Keyword:      h.req.GetSMS(),
-		Service:      service,
-		Subscription: sub,
-		Content:      content,
-	}
-	mt.SetTrxId(trxId)
-
-	jsonData, err := json.Marshal(mt)
-	if err != nil {
-		log.Println(err.Error())
+	s := &entity.Subscription{
+		ServiceID: sub.GetServiceId(),
+		Msisdn:    sub.GetMsisdn(),
 	}
 
-	h.rmq.IntegratePublish(
-		RMQ_MT_EXCHANGE,
-		RMQ_MT_QUEUE,
-		RMQ_DATA_TYPE, "", string(jsonData),
-	)
+	// set false is_active
+	h.subscriptionService.UpdateNotActive(s)
+	// set false is_retry
+	h.subscriptionService.UpdateNotRetry(s)
 }
 
 func (h *SMSHandler) IsActiveSub() bool {
