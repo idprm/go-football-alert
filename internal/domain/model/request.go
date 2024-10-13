@@ -3,8 +3,12 @@ package model
 import (
 	"net/url"
 	"strings"
+	"unicode"
 
 	"github.com/idprm/go-football-alert/internal/domain/entity"
+	"golang.org/x/text/runes"
+	"golang.org/x/text/transform"
+	"golang.org/x/text/unicode/norm"
 )
 
 type UssdRequest struct {
@@ -26,6 +30,12 @@ func (m *UssdRequest) GetSlug() string {
 
 func (m *UssdRequest) GetTitle() string {
 	return m.Title
+}
+
+func (e *UssdRequest) GetTitleWithoutAccents() string {
+	t := transform.Chain(norm.NFD, runes.Remove(runes.In(unicode.Mn)), norm.NFC)
+	result, _, _ := transform.String(t, e.GetTitle())
+	return result
 }
 
 func (m *UssdRequest) GetTitleQueryEscape() string {

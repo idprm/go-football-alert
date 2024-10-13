@@ -4,7 +4,11 @@ import (
 	"net/url"
 	"strings"
 	"time"
+	"unicode"
 
+	"golang.org/x/text/runes"
+	"golang.org/x/text/transform"
+	"golang.org/x/text/unicode/norm"
 	"gorm.io/gorm"
 )
 
@@ -31,13 +35,19 @@ func (e *News) GetTitle() string {
 
 func (e *News) GetTitleLimited(maxLength int) string {
 	if len(e.Title) >= maxLength {
-		return e.GetTitle()[:maxLength]
+		return e.GetTitleWithoutAccents()[:maxLength]
 	}
-	return e.GetTitle()
+	return e.GetTitleWithoutAccents()
+}
+
+func (e *News) GetTitleWithoutAccents() string {
+	t := transform.Chain(norm.NFD, runes.Remove(runes.In(unicode.Mn)), norm.NFC)
+	result, _, _ := transform.String(t, e.GetTitle())
+	return result
 }
 
 func (e *News) GetTitleQueryEscape() string {
-	return url.QueryEscape(e.GetTitle())
+	return url.QueryEscape(e.GetTitleWithoutAccents())
 }
 
 func (e *News) GetSlug() string {

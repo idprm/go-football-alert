@@ -3,6 +3,11 @@ package entity
 import (
 	"net/url"
 	"strconv"
+	"unicode"
+
+	"golang.org/x/text/runes"
+	"golang.org/x/text/transform"
+	"golang.org/x/text/unicode/norm"
 )
 
 type League struct {
@@ -29,7 +34,13 @@ func (e *League) GetName() string {
 }
 
 func (e *League) GetNameQueryEscape() string {
-	return url.QueryEscape(e.GetName())
+	return url.QueryEscape(e.GetNameWithoutAccents())
+}
+
+func (e *League) GetNameWithoutAccents() string {
+	t := transform.Chain(norm.NFD, runes.Remove(runes.In(unicode.Mn)), norm.NFC)
+	result, _, _ := transform.String(t, e.GetName())
+	return result
 }
 
 func (e *League) GetSlug() string {

@@ -406,7 +406,7 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 		"{{.version}}", API_VERSION,
 		"{{.date}}", utils.FormatFR(time.Now()),
 		"{{.slug}}", req.GetSlug(),
-		"{{.title}}", req.GetTitle(),
+		"{{.title}}", req.GetTitleWithoutAccents(),
 		"&", "&amp;",
 	)
 	replace := replacer.Replace(string(menu.GetTemplateXML()))
@@ -750,7 +750,7 @@ func (h *IncomingHandler) KitFoot(baseUrl string, page int) string {
 				`/ussd/buy?slug=confirm-sms-alerte&amp;code=FC30&amp;league_id=` +
 				s.GetIdToString() +
 				`&amp;title=` + s.GetNameQueryEscape() +
-				`">Alerte ` + s.GetName() +
+				`">Alerte ` + s.GetNameWithoutAccents() +
 				`</a>`
 			leaguesData = append(leaguesData, row)
 		}
@@ -807,7 +807,7 @@ func (h *IncomingHandler) FootEurope(baseUrl string, page int) string {
 				API_VERSION +
 				`/ussd/q?slug=kit-foot-by-league&amp;league_id=` + s.GetIdToString() +
 				`&amp;title=` + s.GetNameQueryEscape() +
-				`">Alerte ` + s.GetName() +
+				`">Alerte ` + s.GetNameWithoutAccents() +
 				`</a>`
 			leaguesData = append(leaguesData, row)
 		}
@@ -833,7 +833,7 @@ func (h *IncomingHandler) FootAfrique(baseUrl string, page int) string {
 				API_VERSION +
 				`/ussd/q?slug=kit-foot-by-league&amp;league_id=` + s.GetIdToString() +
 				`&amp;title=` + s.GetNameQueryEscape() +
-				`">Alerte ` + s.GetName() +
+				`">Alerte ` + s.GetNameWithoutAccents() +
 				`</a>`
 			leaguesData = append(leaguesData, row)
 		}
@@ -859,7 +859,7 @@ func (h *IncomingHandler) FootInternational(baseUrl string, page int) string {
 				API_VERSION +
 				`/ussd/q?slug=kit-foot-by-league&amp;league_id=` + s.GetIdToString() +
 				`&amp;title=` + s.GetNameQueryEscape() +
-				`">Alerte ` + s.GetName() +
+				`">Alerte ` + s.GetNameWithoutAccents() +
 				`</a>`
 			leaguesData = append(leaguesData, row)
 		}

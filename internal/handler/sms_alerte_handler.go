@@ -78,7 +78,7 @@ func (h *SMSAlerteHandler) SMSAlerte() {
 						Smsc:         service.ScSubMT,
 						Service:      service,
 						Subscription: h.sub,
-						Content:      &entity.Content{Value: n.News.GetTitle()},
+						Content:      &entity.Content{Value: n.News.GetTitleWithoutAccents()},
 					}
 					mt.SetTrxId(trxId)
 
@@ -118,7 +118,7 @@ func (h *SMSAlerteHandler) SMSAlerte() {
 						Smsc:         service.ScSubMT,
 						Service:      service,
 						Subscription: h.sub,
-						Content:      &entity.Content{Value: n.News.GetTitle()},
+						Content:      &entity.Content{Value: n.News.GetTitleWithoutAccents()},
 					}
 					mt.SetTrxId(trxId)
 

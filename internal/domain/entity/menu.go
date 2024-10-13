@@ -1,6 +1,13 @@
 package entity
 
-import "strings"
+import (
+	"strings"
+	"unicode"
+
+	"golang.org/x/text/runes"
+	"golang.org/x/text/transform"
+	"golang.org/x/text/unicode/norm"
+)
 
 type Menu struct {
 	ID          int    `gorm:"primaryKey" json:"id"`
@@ -29,5 +36,11 @@ func (e *Menu) GetSlug() string {
 }
 
 func (e *Menu) GetTemplateXML() string {
-	return strings.TrimSpace(e.TemplateXML)
+	return strings.TrimSpace(e.GetTemplateWithoutAccents())
+}
+
+func (e *Menu) GetTemplateWithoutAccents() string {
+	t := transform.Chain(norm.NFD, runes.Remove(runes.In(unicode.Mn)), norm.NFC)
+	result, _, _ := transform.String(t, e.TemplateXML)
+	return result
 }
