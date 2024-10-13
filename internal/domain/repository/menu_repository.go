@@ -24,6 +24,7 @@ func NewMenuRepository(
 type IMenuRepository interface {
 	CountBySlug(string) (int64, error)
 	CountByKeyPress(string) (int64, error)
+	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetAll() ([]*entity.Menu, error)
 	GetBySlug(string) (*entity.Menu, error)
 	GetByKeyPress(string) (*entity.Menu, error)
@@ -48,6 +49,16 @@ func (r *MenuRepository) CountByKeyPress(keyPress string) (int64, error) {
 		return count, err
 	}
 	return count, nil
+}
+
+func (r *MenuRepository) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {
+	var menus []*entity.Menu
+	err := r.db.Scopes(Paginate(menus, pagination, r.db)).Find(&menus).Error
+	if err != nil {
+		return nil, err
+	}
+	pagination.Rows = menus
+	return pagination, nil
 }
 
 func (r *MenuRepository) GetAll() ([]*entity.Menu, error) {

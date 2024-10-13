@@ -191,11 +191,20 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	transactionRepo := repository.NewTransactionRepository(db)
 	transactionService := services.NewTransactionService(transactionRepo)
 
+	historyRepo := repository.NewHistoryRepository(db)
+	historyService := services.NewHistoryService(historyRepo)
+
 	rewardRepo := repository.NewRewardRepository(db)
 	rewardService := services.NewRewardService(rewardRepo)
 
 	ussdRepo := repository.NewUssdRepository(db, rds)
 	ussdService := services.NewUssdService(ussdRepo)
+
+	mtRepo := repository.NewMTRepository(db)
+	mtService := services.NewMTService(mtRepo)
+
+	smsAlerteRepo := repository.NewSMSAlerteRespository(db)
+	smsAlerteService := services.NewSMSAlerteService(smsAlerteRepo)
 
 	h := handler.NewIncomingHandler(
 		rmq,
@@ -238,12 +247,31 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 		&entity.News{},
 	)
 
+	dcbHandler := handler.NewDCBHandler(
+		menuService,
+		ussdService,
+		scheduleService,
+		serviceService,
+		contentService,
+		subscriptionService,
+		transactionService,
+		historyService,
+		mtService,
+		smsAlerteService,
+	)
+
 	r.Get("/mo", h.MessageOriginated)
 
 	lp := r.Group("p")
 	lp.Get("/:service", h.LandingPage)
 
+	// v1
 	v1 := r.Group(API_VERSION)
+	// fiture
+	fiture := r.Group("fiture")
+	// direct carrier billing
+	dcb := r.Group("dcb")
+
 	leagues := v1.Group("leagues")
 	leagues.Get("/", leagueHandler.GetAllPaginate)
 	leagues.Get("/:slug", leagueHandler.GetBySlug)
@@ -291,6 +319,42 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	p := v1.Group("p")
 	p.Get("sub", h.Sub)
 	p.Get("unsub", h.UnSub)
+
+	// menus
+	menus := dcb.Group("menus")
+	menus.Get("/", dcbHandler.GetAllMenuPaginate)
+
+	// schedules
+	schedules := dcb.Group("schedules")
+	schedules.Get("/", dcbHandler.GetAllSchedulePaginate)
+
+	// services
+	services := dcb.Group("services")
+	services.Get("/", dcbHandler.GetAllServicePaginate)
+
+	// contents
+	contents := dcb.Group("contents")
+	contents.Get("/", dcbHandler.GetAllContentPaginate)
+
+	// subscriptions
+	subscriptions := dcb.Group("subscriptions")
+	subscriptions.Get("/", dcbHandler.GetAllSubscriptionPaginate)
+
+	// transactions
+	transactions := dcb.Group("transactions")
+	transactions.Get("/", dcbHandler.GetAllSubscriptionPaginate)
+
+	// histories
+	histories := dcb.Group("histories")
+	histories.Get("/", dcbHandler.GetAllHistoryPaginate)
+
+	// message terminated
+	mt := dcb.Group("mt")
+	mt.Get("/", dcbHandler.GetAllMTPaginate)
+
+	// sms alertes
+	smsalerte := fiture.Group("smsalertes")
+	smsalerte.Get("/", dcbHandler.GetAllSMSAlertePaginate)
 
 	return r
 }

@@ -12,6 +12,7 @@ type MenuService struct {
 type IMenuService interface {
 	IsSlug(string) bool
 	IsKeyPress(string) bool
+	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetAll() ([]*entity.Menu, error)
 	GetBySlug(string) (*entity.Menu, error)
 	GetByKeyPress(string) (*entity.Menu, error)
@@ -36,6 +37,10 @@ func (s *MenuService) IsSlug(keyPress string) bool {
 func (s *MenuService) IsKeyPress(keyPress string) bool {
 	count, _ := s.menuRepo.CountByKeyPress(keyPress)
 	return count > 0
+}
+
+func (s *MenuService) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {
+	return s.menuRepo.GetAllPaginate(pagination)
 }
 
 func (s *MenuService) GetAll() ([]*entity.Menu, error) {

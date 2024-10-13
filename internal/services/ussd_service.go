@@ -10,6 +10,7 @@ type UssdService struct {
 }
 
 type IUssdService interface {
+	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetAll() ([]*entity.Ussd, error)
 	Save(*entity.Ussd) (*entity.Ussd, error)
 	Update(*entity.Ussd) (*entity.Ussd, error)
@@ -24,6 +25,10 @@ func NewUssdService(
 	return &UssdService{
 		ussdRepo: ussdRepo,
 	}
+}
+
+func (s *UssdService) GetAllPaginate(p *entity.Pagination) (*entity.Pagination, error) {
+	return s.ussdRepo.GetAllPaginate(p)
 }
 
 func (s *UssdService) GetAll() ([]*entity.Ussd, error) {

@@ -16,7 +16,12 @@ func NewMTService(mtRepo repository.IMTRepository) *MTService {
 }
 
 type IMTService interface {
+	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	Save(*entity.MT) (*entity.MT, error)
+}
+
+func (s *MTService) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {
+	return s.mtRepo.GetAllPaginate(pagination)
 }
 
 func (s *MTService) Save(a *entity.MT) (*entity.MT, error) {

@@ -26,12 +26,23 @@ func NewUssdRepository(
 }
 
 type IUssdRepository interface {
+	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetAll() ([]*entity.Ussd, error)
 	Save(*entity.Ussd) (*entity.Ussd, error)
 	Update(*entity.Ussd) (*entity.Ussd, error)
 	Delete(*entity.Ussd) error
 	Set(*entity.Ussd) error
 	Get(string) (*entity.Ussd, error)
+}
+
+func (r *UssdRepository) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {
+	var ussds []*entity.Ussd
+	err := r.db.Scopes(Paginate(ussds, pagination, r.db)).Find(&ussds).Error
+	if err != nil {
+		return nil, err
+	}
+	pagination.Rows = ussds
+	return pagination, nil
 }
 
 func (r *UssdRepository) GetAll() ([]*entity.Ussd, error) {

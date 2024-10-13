@@ -410,6 +410,15 @@ var publisherSMSAlerteCmd = &cobra.Command{
 				}()
 			}
 
+			if scheduleService.IsLocked(ACT_SMS_ALERTE, timeNow) {
+				scheduleService.Update(
+					&entity.Schedule{
+						Name:       ACT_SMS_ALERTE,
+						IsUnlocked: true,
+					},
+				)
+			}
+
 			time.Sleep(timeDuration * time.Minute)
 
 		}
