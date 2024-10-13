@@ -39,7 +39,7 @@ func (e *UssdRequest) GetTitleWithoutAccents() string {
 }
 
 func (m *UssdRequest) GetTitleQueryEscape() string {
-	return url.QueryEscape(m.GetTitle())
+	return url.QueryEscape(m.GetTitleWithoutAccents())
 }
 
 func (m *UssdRequest) GetCategory() string {

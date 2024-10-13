@@ -337,7 +337,7 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 			"{{.version}}", API_VERSION,
 			"{{.date}}", utils.FormatFR(time.Now()),
 			"{{.data}}", data,
-			"{{.title}}", req.GetTitle(),
+			"{{.title}}", req.GetTitleWithoutAccents(),
 			"{{.paginate}}", paginate,
 			"&", "&amp;",
 		)
@@ -364,7 +364,7 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 		"{{.version}}", API_VERSION,
 		"{{.date}}", utils.FormatFR(time.Now()),
 		"{{.data}}", data,
-		"{{.title}}", req.GetTitle(),
+		"{{.title}}", req.GetTitleWithoutAccents(),
 		"{{.paginate}}", paginate,
 		"&", "&amp;",
 	)
