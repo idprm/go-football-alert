@@ -162,6 +162,7 @@ func init() {
 	rootCmd.AddCommand(consumerTestStandingCmd)
 	rootCmd.AddCommand(consumerTestLineupCmd)
 	rootCmd.AddCommand(consumerTestNewsCmd)
+	rootCmd.AddCommand(consumerTestChargeCmd)
 }
 
 func Execute() error {

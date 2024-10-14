@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='utf-8'?>
+<soapenv:Envelope
+	xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+	<soapenv:Body>
+		<ns:DeductFeeResponse
+			xmlns:ns="http://com.ztesoft.zsmart/xsd">
+			<TransactionSN>1728746572262396</TransactionSN>
+			<AcctResCode>1</AcctResCode>
+			<AcctResName>Principal</AcctResName>
+			<BeforeBalance>-493</BeforeBalance>
+			<AfterBalance>-488</AfterBalance>
+			<ExpDate>2024-11-02</ExpDate>
+		</ns:DeductFeeResponse>
+	</soapenv:Body>
+</soapenv:Envelope>

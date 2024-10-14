@@ -299,7 +299,7 @@ func (h *SMSHandler) SubAlerteCompetition(league *entity.League) {
 		}
 
 		var respDeduct *model.DeductResponse
-		xml.Unmarshal(utils.EscapeChar(deductFee), &respDeduct)
+		xml.Unmarshal(deductFee, &respDeduct)
 
 		if respDeduct.IsFailed() {
 			h.subscriptionService.Update(
@@ -550,7 +550,7 @@ func (h *SMSHandler) SubAlerteEquipe(team *entity.Team) {
 		}
 
 		var respDeduct *model.DeductResponse
-		xml.Unmarshal(utils.EscapeChar(deductFee), &respDeduct)
+		xml.Unmarshal(deductFee, &respDeduct)
 
 		if respDeduct.IsFailed() {
 			h.subscriptionService.Update(

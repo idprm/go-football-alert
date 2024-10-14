@@ -271,6 +271,8 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	fiture := r.Group("fiture")
 	// direct carrier billing
 	dcb := r.Group("dcb")
+	// test
+	test := r.Group("test")
 
 	leagues := v1.Group("leagues")
 	leagues.Get("/", leagueHandler.GetAllPaginate)
@@ -355,6 +357,8 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	// sms alertes
 	smsalerte := fiture.Group("smsalertes")
 	smsalerte.Get("/", dcbHandler.GetAllSMSAlertePaginate)
+
+	test.Post("/charge", h.TestCharge)
 
 	return r
 }

@@ -444,6 +444,12 @@ func seederDB(db *gorm.DB) {
 			IsUnlocked: false,
 		},
 		{
+			Name:       ACT_SMS_ALERTE,
+			PublishAt:  time.Now(),
+			UnlockedAt: time.Now(),
+			IsUnlocked: false,
+		},
+		{
 			Name:       ACT_PREDICTION,
 			PublishAt:  time.Now(),
 			UnlockedAt: time.Now(),

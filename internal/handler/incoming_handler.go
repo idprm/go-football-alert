@@ -2,7 +2,10 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
+	"io"
 	"log"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -198,7 +201,7 @@ func (h *IncomingHandler) MessageOriginated(c *fiber.Ctx) error {
 }
 
 func (h *IncomingHandler) Main(c *fiber.Ctx) error {
-	c.Set("Content-type", "application/xml")
+	c.Set("Content-type", "text/xml; charset=utf-8")
 	menu, err := h.menuService.GetBySlug("home")
 	if err != nil {
 		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
@@ -213,7 +216,7 @@ func (h *IncomingHandler) Main(c *fiber.Ctx) error {
 }
 
 func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
-	c.Set("Content-type", "application/xml")
+	c.Set("Content-type", "text/xml; charset=utf-8")
 	req := new(model.UssdRequest)
 
 	err := c.QueryParser(req)
@@ -373,7 +376,7 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 }
 
 func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
-	c.Set("Content-type", "application/xml")
+	c.Set("Content-type", "text/xml; charset=utf-8")
 	req := new(model.UssdRequest)
 
 	err := c.QueryParser(req)
@@ -414,7 +417,7 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 }
 
 func (h *IncomingHandler) Confirm(c *fiber.Ctx) error {
-	c.Set("Content-type", "application/xml")
+	c.Set("Content-type", "text/xml; charset=utf-8")
 	req := new(model.UssdRequest)
 
 	err := c.QueryParser(req)
@@ -467,7 +470,7 @@ func (h *IncomingHandler) Confirm(c *fiber.Ctx) error {
 }
 
 func (h *IncomingHandler) Buy(c *fiber.Ctx) error {
-	c.Set("Content-type", "application/xml")
+	c.Set("Content-type", "text/xml; charset=utf-8")
 	l := h.logger.Init("mo", true)
 	req := new(model.UssdRequest)
 
@@ -899,4 +902,15 @@ func (h *IncomingHandler) ChampionLeagues(baseUrl string, leagueId, page int) st
 	}
 
 	return fixturesString
+}
+
+func (h *IncomingHandler) TestCharge(c *fiber.Ctx) error {
+	c.Set("Content-type", "text/xml; charset=utf-8")
+	xmlFile, err := os.Open("./views/xml/deduct_resp.xml")
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer xmlFile.Close()
+	byteValue, _ := io.ReadAll(xmlFile)
+	return c.Status(fiber.StatusOK).SendString(string(byteValue))
 }

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/idprm/go-football-alert/internal/handler"
 	"github.com/idprm/go-football-alert/internal/logger"
 	"github.com/spf13/cobra"
 	loggerDb "gorm.io/gorm/logger"
@@ -715,5 +716,18 @@ var consumerPredictionCmd = &cobra.Command{
 		fmt.Println("[*] Waiting for data...")
 
 		<-forever
+	},
+}
+
+var consumerTestChargeCmd = &cobra.Command{
+	Use:   "test_charge",
+	Short: "Consumer Test Charge Service CLI",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+
+		h := handler.NewTestHandler(&logger.Logger{})
+
+		h.TestCharge()
+
 	},
 }

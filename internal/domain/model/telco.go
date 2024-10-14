@@ -76,23 +76,51 @@ type (
 		} `xml:"soapenv:Body"`
 	}
 
+	// DeductResponse struct {
+	// 	XMLName xml.Name
+	// 	Soapenv string `xml:"xmlns:soapenv,attr"`
+	// 	Ns      string `xml:"xmlns:ns,attr"`
+	// 	Body    struct {
+	// 		DeductFee struct {
+	// 			XMLName       xml.Name
+	// 			TransactionSN string `xml:"TransactionSN"`
+	// 			AcctResCode   string `xml:"AcctResCode"`
+	// 			AcctResName   string `xml:"AcctResName"`
+	// 			BeforeBalance string `xml:"BeforeBalance"`
+	// 			AfterBalance  string `xml:"AfterBalance"`
+	// 			ExpDate       string `xml:"ExpDate"`
+	// 		} `xml:"ns:DeductFeeResponse"`
+	// 		Fault struct {
+	// 			FaultCode   string `xml:"faultcode"`
+	// 			FaultString string `xml:"faultstring"`
+	// 		} `xml:"soapenv:Fault"`
+	// 	} `xml:"soapenv:Body"`
+	// }
+
 	DeductResponse struct {
-		XMLName xml.Name `xml:"Envelope"`
-		SoapEnv string   `xml:"xmlns:soapenv,attr"`
-		Body    struct {
-			DeductFee struct {
-				TransactionSN string `xml:"TransactionSN,omitempty"`
-				AcctResCode   string `xml:"AcctResCode,omitempty"`
-				AcctResName   string `xml:"AcctResName,omitempty"`
-				BeforeBalance string `xml:"BeforeBalance,omitempty"`
-				AfterBalance  string `xml:"AfterBalance,omitempty"`
-				ExpDate       string `xml:"ExpDate,omitempty"`
-			} `xml:"DeductFeeResponse"`
-			Fault struct {
-				FaultCode   string `xml:"faultcode,omitempty"`
-				FaultString string `xml:"faultstring,omitempty"`
-			} `xml:"soapenv:Fault"`
-		} `xml:"soapenv:Body"`
+		XMLName xml.Name
+		Body    BodyDeductFeeResponse `xml:"Body"`
+	}
+
+	BodyDeductFeeResponse struct {
+		XMLName xml.Name
+		Item    ItemDeductFeeResponse  `xml:"DeductFeeResponse"`
+		Fault   FaultDeductFeeResponse `xml:"Fault"`
+	}
+
+	ItemDeductFeeResponse struct {
+		XMLName       xml.Name
+		TransactionSN string `xml:"TransactionSN"`
+		AcctResCode   string `xml:"AcctResCode"`
+		AcctResName   string `xml:"AcctResName"`
+		BeforeBalance string `xml:"BeforeBalance"`
+		AfterBalance  string `xml:"AfterBalance"`
+		ExpDate       string `xml:"ExpDate"`
+	}
+
+	FaultDeductFeeResponse struct {
+		FaultCode   string `xml:"faultcode"`
+		FaultString string `xml:"faultstring"`
 	}
 )
 
@@ -169,19 +197,19 @@ func (m *DeductRequest) SetDeductBalance(v string) {
 }
 
 func (m *DeductResponse) GetTransactionSN() string {
-	return m.Body.DeductFee.TransactionSN
+	return m.Body.Item.TransactionSN
 }
 
 func (m *DeductResponse) GetAcctResCode() string {
-	return m.Body.DeductFee.AcctResCode
+	return m.Body.Item.AcctResCode
 }
 
 func (m *DeductResponse) GetAcctResName() string {
-	return m.Body.DeductFee.AcctResName
+	return m.Body.Item.AcctResName
 }
 
 func (m *DeductResponse) GetBeforeBalance() string {
-	return m.Body.DeductFee.BeforeBalance
+	return m.Body.Item.BeforeBalance
 }
 
 func (m *DeductResponse) GetBeforeBalanceToFloat() float64 {
@@ -190,7 +218,7 @@ func (m *DeductResponse) GetBeforeBalanceToFloat() float64 {
 }
 
 func (m *DeductResponse) GetAfterBalance() string {
-	return m.Body.DeductFee.AfterBalance
+	return m.Body.Item.AfterBalance
 }
 
 func (m *DeductResponse) GetAfterBalanceToFloat() float64 {
@@ -199,7 +227,7 @@ func (m *DeductResponse) GetAfterBalanceToFloat() float64 {
 }
 
 func (m *DeductResponse) GetExpDate() string {
-	return m.Body.DeductFee.ExpDate
+	return m.Body.Item.ExpDate
 }
 
 func (m *DeductResponse) GetFaultCode() string {
@@ -211,7 +239,7 @@ func (m *DeductResponse) GetFaultString() string {
 }
 
 func (m *DeductResponse) IsSuccess() bool {
-	return m.Body.DeductFee.AcctResCode == "1"
+	return m.Body.Item.AcctResCode == "1"
 }
 
 func (m *DeductResponse) IsFailed() bool {

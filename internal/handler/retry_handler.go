@@ -75,7 +75,7 @@ func (h *RetryHandler) Firstpush() {
 		}
 
 		var respDeduct *model.DeductResponse
-		xml.Unmarshal(utils.EscapeChar(resp), &respDeduct)
+		xml.Unmarshal(resp, &respDeduct)
 
 		if respDeduct.IsSuccess() {
 			h.subscriptionService.Update(
@@ -150,7 +150,7 @@ func (h *RetryHandler) Dailypush() {
 		}
 
 		var respDeduct *model.DeductResponse
-		xml.Unmarshal(utils.EscapeChar(resp), &respDeduct)
+		xml.Unmarshal(resp, &respDeduct)
 
 		if respDeduct.IsSuccess() {
 			h.subscriptionService.Update(
