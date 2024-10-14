@@ -8,6 +8,7 @@ import (
 )
 
 type DCBHandler struct {
+	summaryService      services.ISummaryService
 	menuService         services.IMenuService
 	ussdService         services.IUssdService
 	scheduleService     services.IScheduleService
@@ -21,6 +22,7 @@ type DCBHandler struct {
 }
 
 func NewDCBHandler(
+	summaryService services.ISummaryService,
 	menuService services.IMenuService,
 	ussdService services.IUssdService,
 	scheduleService services.IScheduleService,
@@ -33,6 +35,7 @@ func NewDCBHandler(
 	smsAlerteService services.ISMSAlerteService,
 ) *DCBHandler {
 	return &DCBHandler{
+		summaryService:      summaryService,
 		menuService:         menuService,
 		ussdService:         ussdService,
 		scheduleService:     scheduleService,
@@ -44,6 +47,33 @@ func NewDCBHandler(
 		mtService:           mtService,
 		smsAlerteService:    smsAlerteService,
 	}
+}
+
+func (h *DCBHandler) GetAllSummaryPaginate(c *fiber.Ctx) error {
+	req := new(entity.Pagination)
+
+	err := c.QueryParser(req)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusBadRequest,
+				Message:    err.Error(),
+			},
+		)
+	}
+
+	summaries, err := h.summaryService.GetAllPaginate(req)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusInternalServerError,
+				Message:    err.Error(),
+			},
+		)
+	}
+	return c.Status(fiber.StatusOK).JSON(summaries)
 }
 
 func (h *DCBHandler) GetAllMenuPaginate(c *fiber.Ctx) error {

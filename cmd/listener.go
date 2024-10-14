@@ -155,6 +155,9 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 
 	r.Use(cors.New())
 
+	summaryRepo := repository.NewSummaryRepository(db)
+	summaryService := services.NewSummaryService(summaryRepo)
+
 	menuRepo := repository.NewMenuRepository(db, rds)
 	menuService := services.NewMenuService(menuRepo)
 
@@ -248,6 +251,7 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	)
 
 	dcbHandler := handler.NewDCBHandler(
+		summaryService,
 		menuService,
 		ussdService,
 		scheduleService,
@@ -321,6 +325,10 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	p := v1.Group("p")
 	p.Get("sub", h.Sub)
 	p.Get("unsub", h.UnSub)
+
+	// summaries
+	summaries := dcb.Group("summaries")
+	summaries.Get("/", dcbHandler.GetAllSummaryPaginate)
 
 	// menus
 	menus := dcb.Group("menus")
