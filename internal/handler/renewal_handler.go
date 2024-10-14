@@ -96,6 +96,8 @@ func (h *RenewalHandler) Dailypush() {
 					LatestPayload:      string(resp),
 				},
 			)
+			// is_retry set to false
+			h.subscriptionService.UpdateNotRetry(sub)
 
 			h.transactionService.Save(
 				&entity.Transaction{
