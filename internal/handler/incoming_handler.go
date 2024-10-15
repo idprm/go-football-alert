@@ -246,7 +246,7 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 			data = h.LiveMatchs(c.BaseURL(), req.GetPage()+1)
 		}
 
-		if req.IsLmLiveMatch() {
+		if req.IsLmSchedule() {
 			data = h.Schedules(c.BaseURL(), req.GetPage()+1)
 		}
 
@@ -393,15 +393,13 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).SendString(h.MsisdnNotFound(c.BaseURL()))
 	}
 
-	// get menu
-	menu, err := h.menuService.GetBySlug(req.GetSlug())
-	if err != nil {
-		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
+	if !h.menuService.IsSlug(req.GetSlug()) {
+		return c.Status(fiber.StatusOK).SendString(h.PageNotFound(c.BaseURL()))
 	}
 
-	// check sub is active
-	if !h.subscriptionService.IsActiveSubscriptionByCategory(menu.GetCategory(), req.GetMsisdn()) {
-		return c.Status(fiber.StatusOK).SendString(h.IsActiveSubscription(c.BaseURL(), req.GetSlug(), menu.GetCategory()))
+	menu, err := h.menuService.GetBySlug("detail")
+	if err != nil {
+		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
 	}
 
 	replacer := strings.NewReplacer(
@@ -448,7 +446,7 @@ func (h *IncomingHandler) Confirm(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
 	}
 
-	menu, err := h.menuService.GetBySlug("confirm-sms-alerte")
+	menu, err := h.menuService.GetBySlug("confirm")
 	if err != nil {
 		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
 	}
@@ -488,7 +486,7 @@ func (h *IncomingHandler) Buy(c *fiber.Ctx) error {
 	}
 
 	// if menu or page not found
-	if !h.menuService.IsSlug("success") {
+	if !h.menuService.IsSlug(req.GetSlug()) {
 		return c.Status(fiber.StatusOK).SendString(h.PageNotFound(c.BaseURL()))
 	}
 
@@ -523,6 +521,8 @@ func (h *IncomingHandler) Buy(c *fiber.Ctx) error {
 		"{{.url}}", c.BaseURL(),
 		"{{.version}}", API_VERSION,
 		"{{.service}}", service.GetName(),
+		"{{.slug}}", req.GetSlug(),
+		"{{.title}}", menu.GetName(),
 		"&", "&amp;",
 	)
 	replace := replacer.Replace(menu.GetTemplateXML())
@@ -750,7 +750,7 @@ func (h *IncomingHandler) KitFoot(baseUrl string, page int) string {
 			row := `<a href="` +
 				baseUrl + `/` +
 				API_VERSION +
-				`/ussd/buy?slug=confirm-sms-alerte&amp;code=FC30&amp;league_id=` +
+				`/ussd/buy?slug=confirm&amp;code=FC30&amp;league_id=` +
 				s.GetIdToString() +
 				`&amp;title=` + s.GetNameQueryEscape() +
 				`">Alerte ` + s.GetNameWithoutAccents() +

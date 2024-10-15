@@ -82,6 +82,18 @@ func (m *UssdRequest) IsMsisdn() bool {
 	return m.GetMsisdn() != ""
 }
 
+func (m *UssdRequest) IsCatLiveMatch() bool {
+	return m.GetCategory() == "LIVEMATCH"
+}
+
+func (m *UssdRequest) IsCatFlashNews() bool {
+	return m.GetCategory() == "FLASHNEWS"
+}
+
+func (m *UssdRequest) IsCatSMSAlerte() bool {
+	return m.GetCategory() == "SMSALERTE"
+}
+
 type SMSRequest struct {
 	Smsc     string `query:"smsc,omitempty"`
 	Username string `query:"username,omitempty"`

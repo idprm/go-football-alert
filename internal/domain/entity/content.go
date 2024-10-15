@@ -3,6 +3,11 @@ package entity
 import (
 	"net/url"
 	"strings"
+	"unicode"
+
+	"golang.org/x/text/runes"
+	"golang.org/x/text/transform"
+	"golang.org/x/text/unicode/norm"
 )
 
 type Content struct {
@@ -30,7 +35,9 @@ func (e *Content) GetName() string {
 }
 
 func (e *Content) GetValue() string {
-	return e.Value
+	t := transform.Chain(norm.NFD, runes.Remove(runes.In(unicode.Mn)), norm.NFC)
+	result, _, _ := transform.String(t, e.Value)
+	return result
 }
 
 func (e *Content) SetValueSubFollowCompetition(league, day, month, price, currency string) {

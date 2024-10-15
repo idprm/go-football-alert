@@ -49,64 +49,20 @@ var menus = []entity.Menu{
 	{
 		Category:  "none",
 		Name:      "Confirm",
-		Slug:      "confirm-flashnews",
+		Slug:      "confirm",
 		IsConfirm: false,
 		IsActive:  true,
 		TemplateXML: `
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
-<pages descr="{{.title}} SMS Alerte">
+<pages descr="{{.title}}">
 	<page nav="stop">
 		{{.title}} <br/>
-        SMS Alerte Competition Obtenez en direct toutes les informations sur votre mobile sur la {{.title}}. Confirmez-vous votre inscription aux alertes?<br/>
-		Prix : {{.price}} / 1 {{.time}}.
-        <a href="{{.url}}/{{.version}}/ussd/buy?slug={{.slug}}&code={{.code}}" key="1">Oui</a>
+        {{.title}} Obtenez en direct toutes les informations sur votre mobile sur la {{.title}}. Confirmez-vous votre inscription aux alertes?<br/>
+		Prix : {{.price}} / 1 {{.package}}.
+		<a href="{{.url}}/{{.version}}/ussd/buy?slug={{.slug}}&code={{.code}}&title={{.title}}" key="1">Oui</a>
         <br/>
 		<a href="{{.url}}/{{.version}}/ussd/q?slug=flash-news" key="0">Ecran Précédent</a>
-        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
-    </page>
-</pages>
-		`,
-	},
-	{
-		Category:  "none",
-		Name:      "Confirm Follow Competition",
-		Slug:      "confirm-SMSALERTE",
-		IsConfirm: false,
-		IsActive:  true,
-		TemplateXML: `
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
-<pages descr="{{.title}} SMS Alerte">
-	<page nav="stop">
-		{{.title}} <br/>
-        SMS Alerte Competition Obtenez en direct toutes les informations sur votre mobile sur la {{.title}}. Confirmez-vous votre inscription aux alertes?<br/>
-		Prix : {{.price}} / 1 {{.package}}.
-        <a href="{{.url}}/{{.version}}/ussd/buy?slug={{.slug}}&code={{.code}}&league_id={{.league_id}}" key="1">Oui</a>
-        <br/>
-		<a href="{{.url}}/{{.version}}/ussd/q?slug=kit-foot" key="0">Ecran Précédent</a>
-        <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
-    </page>
-</pages>
-		`,
-	},
-	{
-		Category:  "none",
-		Name:      "Confirm Follow Team",
-		Slug:      "confirm-SMSALERTE",
-		IsConfirm: false,
-		IsActive:  true,
-		TemplateXML: `
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
-<pages descr="{{.title}} SMS Alerte">
-	<page nav="stop">
-		{{.title}} <br/>
-        SMS Alerte Competition Obtenez en direct toutes les informations sur votre mobile sur la {{.title}}. Confirmez-vous votre inscription aux alertes?<br/>
-		Prix : {{.price}} / 1 {{.time}}.
-        <a href="{{.url}}/{{.version}}/ussd/buy?slug={{.slug}}&code={{.code}}&team_id={{.team_id}}" key="1">Oui</a>
-        <br/>
-		<a href="{{.url}}/{{.version}}/ussd/q?slug=kit-foot" key="0">Ecran Précédent</a>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
     </page>
 </pages>
@@ -121,9 +77,9 @@ var menus = []entity.Menu{
 		TemplateXML: `
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
-<pages descr="Success">
+<pages descr="Succes">
 	<page>
-		Success<br/>
+		Vous avez souscrit avec succes!<br/>
         <a href="{{.url}}/{{.version}}/ussd/q?slug={{.slug}}">{{.title}}</a>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
     </page>
@@ -206,7 +162,7 @@ var menus = []entity.Menu{
 		Category:  "LIVEMATCH",
 		Name:      "Live match",
 		Slug:      "lm",
-		IsConfirm: true,
+		IsConfirm: false,
 		IsActive:  true,
 		TemplateXML: `
 <?xml version="1.0" encoding="ISO-8859-1"?>
@@ -564,7 +520,7 @@ var menus = []entity.Menu{
 		Category:  "PREDICTION",
 		Name:      "Prédiction",
 		Slug:      "prediction",
-		IsConfirm: true,
+		IsConfirm: false,
 		IsActive:  true,
 		TemplateXML: `
 <?xml version="1.0" encoding="ISO-8859-1"?>
@@ -643,7 +599,7 @@ var menus = []entity.Menu{
 		Category:  "SMSALERTE",
 		Name:      "SMS Alerte",
 		Slug:      "sms-alerte",
-		IsConfirm: true,
+		IsConfirm: false,
 		IsActive:  true,
 		TemplateXML: `
 <?xml version="1.0" encoding="ISO-8859-1"?>
@@ -665,7 +621,7 @@ var menus = []entity.Menu{
 		Category:  "SMSALERTE",
 		Name:      "Kit Foot",
 		Slug:      "kit-foot",
-		IsConfirm: true,
+		IsConfirm: false,
 		IsActive:  true,
 		TemplateXML: `
 <?xml version="1.0" encoding="ISO-8859-1"?>
