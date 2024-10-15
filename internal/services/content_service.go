@@ -22,6 +22,8 @@ func NewContentService(contentRepo repository.IContentRepository) *ContentServic
 type IContentService interface {
 	IsContent(string) bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
+	GetLiveMatch(string, *entity.Service) (*entity.Content, error)
+	GetFlashNews(string, *entity.Service) (*entity.Content, error)
 	GetFollowCompetition(string, *entity.Service, *entity.League) (*entity.Content, error)
 	GetFollowTeam(string, *entity.Service, *entity.Team) (*entity.Content, error)
 	GetSMSAlerteUnvalid(string, *entity.Service) (*entity.Content, error)
@@ -38,6 +40,24 @@ func (s *ContentService) IsContent(name string) bool {
 
 func (s *ContentService) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {
 	return s.contentRepo.GetAllPaginate(pagination)
+}
+
+func (s *ContentService) GetLiveMatch(name string, service *entity.Service) (*entity.Content, error) {
+	c, err := s.contentRepo.Get(name)
+	if err != nil {
+		return nil, err
+	}
+	c.SetValueLiveMatch(strconv.Itoa(time.Now().Day()), utils.FormatFROnlyMonth(time.Now()), service.GetPriceToString(), service.GetCurrency())
+	return c, nil
+}
+
+func (s *ContentService) GetFlashNews(name string, service *entity.Service) (*entity.Content, error) {
+	c, err := s.contentRepo.Get(name)
+	if err != nil {
+		return nil, err
+	}
+	c.SetValueFlashNews(strconv.Itoa(time.Now().Day()), utils.FormatFROnlyMonth(time.Now()), service.GetPriceToString(), service.GetCurrency())
+	return c, nil
 }
 
 func (s *ContentService) GetFollowCompetition(name string, service *entity.Service, league *entity.League) (*entity.Content, error) {

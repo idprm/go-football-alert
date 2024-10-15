@@ -40,6 +40,24 @@ func (e *Content) GetValue() string {
 	return result
 }
 
+func (e *Content) SetValueLiveMatch(day, month, price, currency string) {
+	replacer := strings.NewReplacer(
+		"{day}", day,
+		"{month}", month,
+		"{price}", price,
+		"{currency}", url.QueryEscape(currency))
+	e.Value = replacer.Replace(e.Value)
+}
+
+func (e *Content) SetValueFlashNews(day, month, price, currency string) {
+	replacer := strings.NewReplacer(
+		"{day}", day,
+		"{month}", month,
+		"{price}", price,
+		"{currency}", url.QueryEscape(currency))
+	e.Value = replacer.Replace(e.Value)
+}
+
 func (e *Content) SetValueSubFollowCompetition(league, day, month, price, currency string) {
 	replacer := strings.NewReplacer(
 		"{league}", league,

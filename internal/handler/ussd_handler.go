@@ -81,17 +81,19 @@ func (h *UssdHandler) Subscription() {
 		log.Println(err.Error())
 	}
 
-	var category = ""
+	var content *entity.Content
 	if h.req.IsCatLiveMatch() {
-		category = SMS_LIVE_MATCH_SUB
-	}
-	if h.req.IsCatFlashNews() {
-		category = SMS_FLASH_NEWS_SUB
+		content, err = h.getContentLiveMatch(service)
+		if err != nil {
+			log.Println(err)
+		}
 	}
 
-	content, err := h.getContent(category)
-	if err != nil {
-		log.Println(err)
+	if h.req.IsCatFlashNews() {
+		content, err = h.getContentFlashNews(service)
+		if err != nil {
+			log.Println(err)
+		}
 	}
 
 	summary := &entity.Summary{
@@ -296,14 +298,26 @@ func (h *UssdHandler) getServiceByCode(code string) (*entity.Service, error) {
 	return h.serviceService.Get(code)
 }
 
-func (h *UssdHandler) getContent(v string) (*entity.Content, error) {
+func (h *UssdHandler) getContentLiveMatch(service *entity.Service) (*entity.Content, error) {
 	// if data not exist in table contents
-	if !h.contentService.IsContent(v) {
+	if !h.contentService.IsContent(SMS_LIVE_MATCH_SUB) {
 		return &entity.Content{
 			Category: "CATEGORY",
 			Channel:  "SMS",
 			Value:    "SAMPLE_TEXT",
 		}, nil
 	}
-	return h.contentService.Get(v)
+	return h.contentService.GetLiveMatch(SMS_LIVE_MATCH_SUB, service)
+}
+
+func (h *UssdHandler) getContentFlashNews(service *entity.Service) (*entity.Content, error) {
+	// if data not exist in table contents
+	if !h.contentService.IsContent(SMS_FLASH_NEWS_SUB) {
+		return &entity.Content{
+			Category: "CATEGORY",
+			Channel:  "SMS",
+			Value:    "SAMPLE_TEXT",
+		}, nil
+	}
+	return h.contentService.GetFlashNews(SMS_FLASH_NEWS_SUB, service)
 }
