@@ -42,7 +42,6 @@ type Subscription struct {
 	IpAddress            string    `gorm:"size:25" json:"ip_address,omitempty"`
 	IsFollowTeam         bool      `gorm:"type:boolean;column:is_follow_team" json:"is_follow_team,omitempty"`
 	IsFollowLeague       bool      `gorm:"type:boolean;column:is_follow_competition" json:"is_follow_competition,omitempty"`
-	IsLiveMatch          bool      `gorm:"type:boolean;column:is_prediction" json:"is_prediction,omitempty"`
 	IsPrediction         bool      `gorm:"type:boolean;column:is_prediction" json:"is_prediction,omitempty"`
 	IsCreditGoal         bool      `gorm:"type:boolean;column:is_credit_goal" json:"is_credit_goal,omitempty"`
 	IsRetry              bool      `gorm:"type:boolean;column:is_retry" json:"is_retry,omitempty"`
