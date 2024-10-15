@@ -58,6 +58,11 @@ func NewUssdHandler(
 	}
 }
 
+const (
+	SMS_LIVE_MATCH_SUB string = "LIVE_MATCH_SUB"
+	SMS_FLASH_NEWS_SUB string = "FLASH_NEWS_SUB"
+)
+
 func (h *UssdHandler) Registration() {
 	l := h.logger.Init("ussd", true)
 	l.WithFields(logrus.Fields{"request": h.req}).Info("USSD")
@@ -82,9 +87,6 @@ func (h *UssdHandler) Subscription() {
 	}
 	if h.req.IsCatFlashNews() {
 		category = SMS_FLASH_NEWS_SUB
-	}
-	if h.req.IsCatSMSAlerte() {
-		category = SMS_FOLLOW_COMPETITION_SUB
 	}
 
 	content, err := h.getContent(category)

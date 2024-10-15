@@ -107,6 +107,8 @@ const (
 	SMS_FOLLOW_COMPETITION_UNVALID_SUB   string = "FOLLOW_COMPETITION_UNVALID_SUB"
 	SMS_FOLLOW_COMPETITION_EXPIRE_SUB    string = "FOLLOW_COMPETITION_EXPIRE_SUB"
 	SMS_FOLLOW_UNVALID_SUB               string = "FOLLOW_UNVALID_SUB"
+	SMS_LIVE_MATCH_SUB                   string = "LIVE_MATCH_SUB"
+	SMS_FLASH_NEWS_SUB                   string = "FLASH_NEWS_SUB"
 	SMS_INFO                             string = "INFO"
 	SMS_STOP                             string = "STOP"
 )

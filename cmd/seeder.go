@@ -269,6 +269,19 @@ func seederDB(db *gorm.DB) {
 		{
 			Category: ACT_CONFIRMATION,
 			Channel:  ACT_SMS,
+			Name:     SMS_LIVE_MATCH_SUB,
+			Value:    "Match en Direct: Vous avez souscrit avec succes! Jusqu au {day}/{month} vous recevrez toutes les infos en direct. {price}{currency}/souscription",
+		},
+		{
+			Category: ACT_CONFIRMATION,
+			Channel:  ACT_SMS,
+			Name:     SMS_FLASH_NEWS_SUB,
+			Value:    "Actu Flash: Vous avez souscrit avec succes! Jusqu au {day}/{month} vous recevrez toutes les infos en direct. {price}{currency}/souscription",
+		},
+
+		{
+			Category: ACT_CONFIRMATION,
+			Channel:  ACT_SMS,
 			Name:     SMS_FOLLOW_TEAM_SUB,
 			Value:    "SMS Alerte: Vous avez souscrit avec succes pour suivre votre equipe favorite! Jusqu au {day}/{month} vous recevrez toutes les infos en direct. {price}{currency}/souscription",
 		},
