@@ -268,11 +268,39 @@ func (h *ScraperHandler) Predictions() {
 					},
 				)
 			}
-		}
-		// rate limit is 10 requests per minute.
-		if !h.predictionService.IsPredictionByFixtureId(int(l.ID)) {
+		} else {
+			f, err := fb.GetPredictions(int(l.PrimaryID))
+			if err != nil {
+				log.Println(err.Error())
+			}
 
+			var resp model.PredictionResult
+			json.Unmarshal(f, &resp)
+			log.Println(string(f))
+
+			for _, el := range resp.Response {
+				team, err := h.teamService.GetByPrimaryId(el.Prediction.Winner.PrimaryID)
+				if err != nil {
+					log.Println(err.Error())
+				}
+
+				h.predictionService.UpdateByFixtureId(
+					&entity.Prediction{
+						FixtureID:     l.ID,
+						FixtureDate:   l.FixtureDate,
+						WinnerID:      team.ID,
+						WinnerName:    el.Prediction.Winner.Name,
+						WinnerComment: el.Prediction.Winner.Comment,
+						Advice:        el.Prediction.Advice,
+						PercentHome:   el.Prediction.Percent.Home,
+						PercentDraw:   el.Prediction.Percent.Draw,
+						PercentAway:   el.Prediction.Percent.Away,
+					},
+				)
+			}
 		}
+
+		time.Sleep(30 * time.Second)
 	}
 }
 
