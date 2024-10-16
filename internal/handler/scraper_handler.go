@@ -104,63 +104,67 @@ func (h *ScraperHandler) Teams() {
 		log.Println(err.Error())
 	}
 
-	for _, l := range leagues {
+	if len(leagues) > 0 {
 
-		f, err := fb.GetTeams(int(l.PrimaryID))
-		if err != nil {
-			log.Println(err.Error())
-		}
+		for _, l := range leagues {
 
-		var resp model.TeamResult
-		json.Unmarshal(f, &resp)
+			f, err := fb.GetTeams(int(l.PrimaryID))
+			if err != nil {
+				log.Println(err.Error())
+			}
 
-		for _, el := range resp.Response {
-			if !h.teamService.IsTeamByPrimaryId(el.Team.ID) {
-				h.teamService.Save(
-					&entity.Team{
-						PrimaryID: int64(el.Team.ID),
-						Name:      el.Team.Name,
-						Slug:      slug.Make(el.Team.Name),
-						Code:      el.Team.Code,
-						Logo:      el.Team.Logo,
-						Founded:   el.Team.Founded,
-						Country:   el.Team.Country,
-					},
-				)
+			var resp model.TeamResult
+			json.Unmarshal(f, &resp)
 
-				team, _ := h.teamService.GetByPrimaryId(el.Team.ID)
-				h.teamService.SaveLeagueTeam(
-					&entity.LeagueTeam{
-						LeagueID: l.ID,
-						TeamID:   team.GetId(),
-					},
-				)
-			} else {
-				h.teamService.UpdateByPrimaryId(
-					&entity.Team{
-						PrimaryID: int64(el.Team.ID),
-						Name:      el.Team.Name,
-						Slug:      slug.Make(el.Team.Name),
-						Code:      el.Team.Code,
-						Logo:      el.Team.Logo,
-						Founded:   el.Team.Founded,
-						Country:   el.Team.Country,
-					},
-				)
-				team, _ := h.teamService.GetByPrimaryId(el.Team.ID)
-				if !h.teamService.IsLeagueTeam(&entity.LeagueTeam{LeagueID: l.ID, TeamID: team.GetId()}) {
+			for _, el := range resp.Response {
+				if !h.teamService.IsTeamByPrimaryId(el.Team.ID) {
+					h.teamService.Save(
+						&entity.Team{
+							PrimaryID: int64(el.Team.ID),
+							Name:      el.Team.Name,
+							Slug:      slug.Make(el.Team.Name),
+							Code:      el.Team.Code,
+							Logo:      el.Team.Logo,
+							Founded:   el.Team.Founded,
+							Country:   el.Team.Country,
+						},
+					)
+
+					team, _ := h.teamService.GetByPrimaryId(el.Team.ID)
 					h.teamService.SaveLeagueTeam(
 						&entity.LeagueTeam{
 							LeagueID: l.ID,
 							TeamID:   team.GetId(),
 						},
 					)
+				} else {
+					h.teamService.UpdateByPrimaryId(
+						&entity.Team{
+							PrimaryID: int64(el.Team.ID),
+							Name:      el.Team.Name,
+							Slug:      slug.Make(el.Team.Name),
+							Code:      el.Team.Code,
+							Logo:      el.Team.Logo,
+							Founded:   el.Team.Founded,
+							Country:   el.Team.Country,
+						},
+					)
+					team, _ := h.teamService.GetByPrimaryId(el.Team.ID)
+					if !h.teamService.IsLeagueTeam(&entity.LeagueTeam{LeagueID: l.ID, TeamID: team.GetId()}) {
+						h.teamService.SaveLeagueTeam(
+							&entity.LeagueTeam{
+								LeagueID: l.ID,
+								TeamID:   team.GetId(),
+							},
+						)
+					}
 				}
+				log.Println(string(f))
 			}
-			log.Println(string(f))
-		}
 
+		}
 	}
+
 }
 
 func (h *ScraperHandler) Fixtures() {
@@ -171,64 +175,65 @@ func (h *ScraperHandler) Fixtures() {
 		log.Println(err.Error())
 	}
 
-	for _, l := range leagues {
-		f, err := fb.GetFixtures(int(l.PrimaryID))
-		if err != nil {
-			log.Println(err.Error())
-		}
-		log.Println(string(f))
-
-		var resp model.FixtureResult
-		json.Unmarshal(f, &resp)
-
-		for _, el := range resp.Response {
-
-			home, err := h.teamService.GetByPrimaryId(el.Teams.Home.ID)
+	if len(leagues) > 0 {
+		for _, l := range leagues {
+			f, err := fb.GetFixtures(int(l.PrimaryID))
 			if err != nil {
 				log.Println(err.Error())
 			}
+			log.Println(string(f))
 
-			away, err := h.teamService.GetByPrimaryId(el.Teams.Away.ID)
-			if err != nil {
-				log.Println(err.Error())
+			var resp model.FixtureResult
+			json.Unmarshal(f, &resp)
+
+			for _, el := range resp.Response {
+
+				home, err := h.teamService.GetByPrimaryId(el.Teams.Home.ID)
+				if err != nil {
+					log.Println(err.Error())
+				}
+
+				away, err := h.teamService.GetByPrimaryId(el.Teams.Away.ID)
+				if err != nil {
+					log.Println(err.Error())
+				}
+
+				fixtureDate, _ := time.Parse(time.RFC3339, el.Fixtures.Date)
+
+				if !h.fixtureService.IsFixtureByPrimaryId(el.Fixtures.ID) {
+					h.fixtureService.Save(
+						&entity.Fixture{
+							PrimaryID:   int64(el.Fixtures.ID),
+							Timezone:    el.Fixtures.TimeZone,
+							FixtureDate: fixtureDate,
+							TimeStamp:   el.Fixtures.Timestamp,
+							LeagueID:    l.ID,
+							HomeID:      home.ID,
+							AwayID:      away.ID,
+							Goal:        strconv.Itoa(el.Goals.Home) + "-" + strconv.Itoa(el.Goals.Away),
+						},
+					)
+				} else {
+					h.fixtureService.UpdateByPrimaryId(
+						&entity.Fixture{
+							PrimaryID:   int64(el.Fixtures.ID),
+							Timezone:    el.Fixtures.TimeZone,
+							FixtureDate: fixtureDate,
+							TimeStamp:   el.Fixtures.Timestamp,
+							LeagueID:    l.ID,
+							HomeID:      home.ID,
+							AwayID:      away.ID,
+							Goal:        strconv.Itoa(el.Goals.Home) + "-" + strconv.Itoa(el.Goals.Away),
+						},
+					)
+				}
 			}
 
-			fixtureDate, _ := time.Parse(time.RFC3339, el.Fixtures.Date)
-
-			if !h.fixtureService.IsFixtureByPrimaryId(el.Fixtures.ID) {
-				h.fixtureService.Save(
-					&entity.Fixture{
-						PrimaryID:   int64(el.Fixtures.ID),
-						Timezone:    el.Fixtures.TimeZone,
-						FixtureDate: fixtureDate,
-						TimeStamp:   el.Fixtures.Timestamp,
-						LeagueID:    l.ID,
-						HomeID:      home.ID,
-						AwayID:      away.ID,
-						Goal:        strconv.Itoa(el.Goals.Home) + "-" + strconv.Itoa(el.Goals.Away),
-					},
-				)
-			} else {
-				h.fixtureService.UpdateByPrimaryId(
-					&entity.Fixture{
-						PrimaryID:   int64(el.Fixtures.ID),
-						Timezone:    el.Fixtures.TimeZone,
-						FixtureDate: fixtureDate,
-						TimeStamp:   el.Fixtures.Timestamp,
-						LeagueID:    l.ID,
-						HomeID:      home.ID,
-						AwayID:      away.ID,
-						Goal:        strconv.Itoa(el.Goals.Home) + "-" + strconv.Itoa(el.Goals.Away),
-					},
-				)
-			}
 		}
-
 	}
 }
 
 func (h *ScraperHandler) Predictions() {
-
 	fb := apifb.NewApiFb()
 
 	fixtures, err := h.fixtureService.GetAllByFixtureDate(time.Now())
@@ -236,71 +241,73 @@ func (h *ScraperHandler) Predictions() {
 		log.Println(err.Error())
 	}
 
-	for _, l := range fixtures {
-		// rate limit is 10 requests per minute.
-		if !h.predictionService.IsPredictionByFixtureId(int(l.ID)) {
-			f, err := fb.GetPredictions(int(l.PrimaryID))
-			if err != nil {
-				log.Println(err.Error())
-			}
-
-			var resp model.PredictionResult
-			json.Unmarshal(f, &resp)
-			log.Println(string(f))
-
-			for _, el := range resp.Response {
-				team, err := h.teamService.GetByPrimaryId(el.Prediction.Winner.PrimaryID)
+	if len(fixtures) > 0 {
+		for _, l := range fixtures {
+			// rate limit is 10 requests per minute.
+			if !h.predictionService.IsPredictionByFixtureId(int(l.ID)) {
+				f, err := fb.GetPredictions(int(l.PrimaryID))
 				if err != nil {
 					log.Println(err.Error())
 				}
 
-				h.predictionService.Save(
-					&entity.Prediction{
-						FixtureID:     l.ID,
-						FixtureDate:   l.FixtureDate,
-						WinnerID:      team.ID,
-						WinnerName:    el.Prediction.Winner.Name,
-						WinnerComment: el.Prediction.Winner.Comment,
-						Advice:        el.Prediction.Advice,
-						PercentHome:   el.Prediction.Percent.Home,
-						PercentDraw:   el.Prediction.Percent.Draw,
-						PercentAway:   el.Prediction.Percent.Away,
-					},
-				)
-			}
-		} else {
-			f, err := fb.GetPredictions(int(l.PrimaryID))
-			if err != nil {
-				log.Println(err.Error())
-			}
+				var resp model.PredictionResult
+				json.Unmarshal(f, &resp)
+				log.Println(string(f))
 
-			var resp model.PredictionResult
-			json.Unmarshal(f, &resp)
-			log.Println(string(f))
+				for _, el := range resp.Response {
+					team, err := h.teamService.GetByPrimaryId(el.Prediction.Winner.PrimaryID)
+					if err != nil {
+						log.Println(err.Error())
+					}
 
-			for _, el := range resp.Response {
-				team, err := h.teamService.GetByPrimaryId(el.Prediction.Winner.PrimaryID)
+					h.predictionService.Save(
+						&entity.Prediction{
+							FixtureID:     l.ID,
+							FixtureDate:   l.FixtureDate,
+							WinnerID:      team.ID,
+							WinnerName:    el.Prediction.Winner.Name,
+							WinnerComment: el.Prediction.Winner.Comment,
+							Advice:        el.Prediction.Advice,
+							PercentHome:   el.Prediction.Percent.Home,
+							PercentDraw:   el.Prediction.Percent.Draw,
+							PercentAway:   el.Prediction.Percent.Away,
+						},
+					)
+				}
+			} else {
+				f, err := fb.GetPredictions(int(l.PrimaryID))
 				if err != nil {
 					log.Println(err.Error())
 				}
 
-				h.predictionService.UpdateByFixtureId(
-					&entity.Prediction{
-						FixtureID:     l.ID,
-						FixtureDate:   l.FixtureDate,
-						WinnerID:      team.ID,
-						WinnerName:    el.Prediction.Winner.Name,
-						WinnerComment: el.Prediction.Winner.Comment,
-						Advice:        el.Prediction.Advice,
-						PercentHome:   el.Prediction.Percent.Home,
-						PercentDraw:   el.Prediction.Percent.Draw,
-						PercentAway:   el.Prediction.Percent.Away,
-					},
-				)
+				var resp model.PredictionResult
+				json.Unmarshal(f, &resp)
+				log.Println(string(f))
+
+				for _, el := range resp.Response {
+					team, err := h.teamService.GetByPrimaryId(el.Prediction.Winner.PrimaryID)
+					if err != nil {
+						log.Println(err.Error())
+					}
+
+					h.predictionService.UpdateByFixtureId(
+						&entity.Prediction{
+							FixtureID:     l.ID,
+							FixtureDate:   l.FixtureDate,
+							WinnerID:      team.ID,
+							WinnerName:    el.Prediction.Winner.Name,
+							WinnerComment: el.Prediction.Winner.Comment,
+							Advice:        el.Prediction.Advice,
+							PercentHome:   el.Prediction.Percent.Home,
+							PercentDraw:   el.Prediction.Percent.Draw,
+							PercentAway:   el.Prediction.Percent.Away,
+						},
+					)
+				}
 			}
+
+			time.Sleep(30 * time.Second)
 		}
-
-		time.Sleep(30 * time.Second)
 	}
 }
 
@@ -312,78 +319,81 @@ func (h *ScraperHandler) Standings() {
 		log.Println(err.Error())
 	}
 
-	for _, l := range leagues {
+	if len(leagues) > 0 {
 
-		league, err := h.leagueService.GetByPrimaryId(int(l.PrimaryID))
-		if err != nil {
-			log.Println(err.Error())
-		}
-
-		f, err := fb.GetStandings(int(l.PrimaryID))
-		if err != nil {
-			log.Println(err.Error())
-		}
-		log.Println(string(f))
-		var resp model.StandingResult
-		json.Unmarshal(f, &resp)
-
-		for _, el := range resp.Response {
-			for _, l := range el.League.Standing {
-				for _, e := range l {
-					team, err := h.teamService.GetByPrimaryId(e.Team.PrimaryID)
-					if err != nil {
-						log.Println(err.Error())
-					}
-
-					if !h.standingService.IsRank(int(league.GetId()), e.Rank) {
-						updatedAt, _ := time.Parse(time.RFC3339, e.UpdateAt)
-						h.standingService.Save(
-							&entity.Standing{
-								LeagueID:    league.GetId(),
-								TeamID:      team.GetId(),
-								Ranking:     e.Rank,
-								TeamName:    e.Team.Name,
-								Points:      e.Points,
-								GoalsDiff:   e.GoalsDiff,
-								Group:       e.Group,
-								Form:        e.Form,
-								Status:      e.Status,
-								Description: e.Description,
-								Played:      e.All.Played,
-								Win:         e.All.Win,
-								Draw:        e.All.Draw,
-								Lose:        e.All.Lose,
-								UpdateAt:    updatedAt,
-							},
-						)
-					} else {
-						updatedAt, _ := time.Parse(time.RFC3339, e.UpdateAt)
-						h.standingService.UpdateByRank(
-							&entity.Standing{
-								LeagueID:    league.GetId(),
-								TeamID:      team.GetId(),
-								Ranking:     e.Rank,
-								TeamName:    e.Team.Name,
-								Points:      e.Points,
-								GoalsDiff:   e.GoalsDiff,
-								Group:       e.Group,
-								Form:        e.Form,
-								Status:      e.Status,
-								Description: e.Description,
-								Played:      e.All.Played,
-								Win:         e.All.Win,
-								Draw:        e.All.Draw,
-								Lose:        e.All.Lose,
-								UpdateAt:    updatedAt,
-							},
-						)
-					}
-
-				}
+		for _, l := range leagues {
+			league, err := h.leagueService.GetByPrimaryId(int(l.PrimaryID))
+			if err != nil {
+				log.Println(err.Error())
 			}
 
+			f, err := fb.GetStandings(int(l.PrimaryID))
+			if err != nil {
+				log.Println(err.Error())
+			}
+			log.Println(string(f))
+			var resp model.StandingResult
+			json.Unmarshal(f, &resp)
+
+			for _, el := range resp.Response {
+				for _, l := range el.League.Standing {
+					for _, e := range l {
+						team, err := h.teamService.GetByPrimaryId(e.Team.PrimaryID)
+						if err != nil {
+							log.Println(err.Error())
+						}
+
+						if !h.standingService.IsRank(int(league.GetId()), e.Rank) {
+							updatedAt, _ := time.Parse(time.RFC3339, e.UpdateAt)
+							h.standingService.Save(
+								&entity.Standing{
+									LeagueID:    league.GetId(),
+									TeamID:      team.GetId(),
+									Ranking:     e.Rank,
+									TeamName:    e.Team.Name,
+									Points:      e.Points,
+									GoalsDiff:   e.GoalsDiff,
+									Group:       e.Group,
+									Form:        e.Form,
+									Status:      e.Status,
+									Description: e.Description,
+									Played:      e.All.Played,
+									Win:         e.All.Win,
+									Draw:        e.All.Draw,
+									Lose:        e.All.Lose,
+									UpdateAt:    updatedAt,
+								},
+							)
+						} else {
+							updatedAt, _ := time.Parse(time.RFC3339, e.UpdateAt)
+							h.standingService.UpdateByRank(
+								&entity.Standing{
+									LeagueID:    league.GetId(),
+									TeamID:      team.GetId(),
+									Ranking:     e.Rank,
+									TeamName:    e.Team.Name,
+									Points:      e.Points,
+									GoalsDiff:   e.GoalsDiff,
+									Group:       e.Group,
+									Form:        e.Form,
+									Status:      e.Status,
+									Description: e.Description,
+									Played:      e.All.Played,
+									Win:         e.All.Win,
+									Draw:        e.All.Draw,
+									Lose:        e.All.Lose,
+									UpdateAt:    updatedAt,
+								},
+							)
+						}
+
+					}
+				}
+
+			}
 		}
 	}
+
 }
 
 func (h *ScraperHandler) Lineups() {
@@ -394,50 +404,55 @@ func (h *ScraperHandler) Lineups() {
 		log.Println(err.Error())
 	}
 
-	for _, l := range fixtures {
-		f, err := fb.GetFixturesLineups(int(l.PrimaryID))
-		if err != nil {
-			log.Println(err.Error())
-		}
+	if len(fixtures) > 0 {
 
-		var resp model.LineupResult
-		json.Unmarshal(f, &resp)
+		for _, l := range fixtures {
 
-		for _, el := range resp.Response {
-			log.Println(el)
-
-			team, err := h.teamService.GetByPrimaryId(el.Team.PrimaryID)
+			f, err := fb.GetFixturesLineups(int(l.PrimaryID))
 			if err != nil {
 				log.Println(err.Error())
 			}
 
-			// rate limit is 10 requests per minute.
-			if !h.lineupService.IsLineupByFixtureId(int(l.ID)) {
-				h.lineupService.Save(
-					&entity.Lineup{
-						LeagueID:    l.LeagueID,
-						FixtureID:   l.ID,
-						TeamID:      team.GetId(),
-						TeamName:    el.Team.Name,
-						FixtureDate: l.FixtureDate,
-						Formation:   el.Formation,
-					},
-				)
-			} else {
-				h.lineupService.UpdateByFixtureId(
-					&entity.Lineup{
-						LeagueID:    l.LeagueID,
-						FixtureID:   l.ID,
-						TeamID:      team.GetId(),
-						TeamName:    el.Team.Name,
-						FixtureDate: l.FixtureDate,
-						Formation:   el.Formation,
-					},
-				)
-			}
+			var resp model.LineupResult
+			json.Unmarshal(f, &resp)
 
+			for _, el := range resp.Response {
+				log.Println(el)
+
+				team, err := h.teamService.GetByPrimaryId(el.Team.PrimaryID)
+				if err != nil {
+					log.Println(err.Error())
+				}
+
+				// rate limit is 10 requests per minute.
+				if !h.lineupService.IsLineupByFixtureId(int(l.ID)) {
+					h.lineupService.Save(
+						&entity.Lineup{
+							LeagueID:    l.LeagueID,
+							FixtureID:   l.ID,
+							TeamID:      team.GetId(),
+							TeamName:    el.Team.Name,
+							FixtureDate: l.FixtureDate,
+							Formation:   el.Formation,
+						},
+					)
+				} else {
+					h.lineupService.UpdateByFixtureId(
+						&entity.Lineup{
+							LeagueID:    l.LeagueID,
+							FixtureID:   l.ID,
+							TeamID:      team.GetId(),
+							TeamName:    el.Team.Name,
+							FixtureDate: l.FixtureDate,
+							Formation:   el.Formation,
+						},
+					)
+				}
+
+			}
 		}
 	}
+
 }
 
 func (h *ScraperHandler) NewsMaxiFoot() {
