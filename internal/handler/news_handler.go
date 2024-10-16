@@ -34,8 +34,8 @@ func (h *NewsHandler) Filter() {
 	if h.news.IsHeadTitle() {
 		if h.news.IsMatch() {
 			// home
-			if h.teamService.IsTeamByName(h.news.GetHomeTeam()) {
-				team, err := h.teamService.GetByName(h.news.GetHomeTeam())
+			if h.teamService.IsTeamByName(h.news.GetWithoutAccent(h.news.GetHomeTeam())) {
+				team, err := h.teamService.GetByName(h.news.GetWithoutAccent(h.news.GetHomeTeam()))
 				if err != nil {
 					log.Println(err.Error())
 				}
@@ -65,8 +65,8 @@ func (h *NewsHandler) Filter() {
 				}
 			}
 			// away
-			if h.teamService.IsTeamByName(h.news.GetAwayTeam()) {
-				team, err := h.teamService.GetByName(h.news.GetAwayTeam())
+			if h.teamService.IsTeamByName(h.news.GetWithoutAccent(h.news.GetAwayTeam())) {
+				team, err := h.teamService.GetByName(h.news.GetWithoutAccent(h.news.GetAwayTeam()))
 				if err != nil {
 					log.Println(err.Error())
 				}
@@ -96,8 +96,8 @@ func (h *NewsHandler) Filter() {
 				}
 			}
 		} else {
-			if h.leagueService.IsLeagueByName(h.news.GetParseTitleLeft()) {
-				league, err := h.leagueService.GetByName(h.news.GetParseTitleLeft())
+			if h.leagueService.IsLeagueByName(h.news.GetWithoutAccent(h.news.GetParseTitleLeft())) {
+				league, err := h.leagueService.GetByName(h.news.GetWithoutAccent(h.news.GetParseTitleLeft()))
 				if err != nil {
 					log.Println(err.Error())
 				}
@@ -111,8 +111,8 @@ func (h *NewsHandler) Filter() {
 				log.Println(league)
 			}
 
-			if h.leagueService.IsLeagueByName(h.news.GetParseTitleRight()) {
-				league, err := h.leagueService.GetByName(h.news.GetParseTitleRight())
+			if h.leagueService.IsLeagueByName(h.news.GetWithoutAccent(h.news.GetParseTitleRight())) {
+				league, err := h.leagueService.GetByName(h.news.GetWithoutAccent(h.news.GetParseTitleRight()))
 				if err != nil {
 					log.Println(err.Error())
 				}
@@ -126,8 +126,8 @@ func (h *NewsHandler) Filter() {
 				log.Println(league)
 			}
 
-			if h.teamService.IsTeamByName(h.news.GetParseTitleLeft()) {
-				team, err := h.teamService.GetByName(h.news.GetParseTitleLeft())
+			if h.teamService.IsTeamByName(h.news.GetWithoutAccent(h.news.GetParseTitleLeft())) {
+				team, err := h.teamService.GetByName(h.news.GetWithoutAccent(h.news.GetParseTitleLeft()))
 				if err != nil {
 					log.Println(err.Error())
 				}
@@ -158,7 +158,7 @@ func (h *NewsHandler) Filter() {
 				}
 			}
 
-			if h.teamService.IsTeamByName(h.news.GetParseTitleRight()) {
+			if h.teamService.IsTeamByName(h.news.GetWithoutAccent(h.news.GetParseTitleRight())) {
 				team, err := h.teamService.GetByName(h.news.GetParseTitleRight())
 				if err != nil {
 					log.Println(err.Error())
@@ -193,9 +193,9 @@ func (h *NewsHandler) Filter() {
 
 		var title string
 		if h.news.IsFootMercato() {
-			title = h.news.GetDescription()
+			title = h.news.GetWithoutAccent(h.news.GetDescription())
 		} else {
-			title = h.news.GetTitle()
+			title = h.news.GetWithoutAccent(h.news.GetTitle())
 		}
 
 		if h.leagueService.IsLeagueByName(title) {

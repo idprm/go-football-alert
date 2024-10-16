@@ -46,6 +46,12 @@ func (e *News) GetTitleWithoutAccents() string {
 	return result
 }
 
+func (e *News) GetWithoutAccent(v string) string {
+	t := transform.Chain(norm.NFD, runes.Remove(runes.In(unicode.Mn)), norm.NFC)
+	result, _, _ := transform.String(t, v)
+	return result
+}
+
 func (e *News) GetTitleQueryEscape() string {
 	return url.QueryEscape(e.GetTitleWithoutAccents())
 }
