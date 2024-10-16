@@ -154,7 +154,7 @@ func (r *NewsRepository) Delete(c *entity.News) error {
 
 func (r *NewsRepository) GetAllNewsLeague(leagueId int64) ([]*entity.NewsLeagues, error) {
 	var c []*entity.NewsLeagues
-	err := r.db.Where("league_id = ?", leagueId).Where("DATE(created_at) BETWEEN DATE(NOW() - INTERVAL 1 DAY) AND DATE(NOW())").Preload("News").Find(&c).Error
+	err := r.db.Where("league_id = ?", leagueId).Where("DATE(created_at) = DATE(NOW())").Preload("News").Find(&c).Error
 	if err != nil {
 		return nil, err
 	}
@@ -163,7 +163,7 @@ func (r *NewsRepository) GetAllNewsLeague(leagueId int64) ([]*entity.NewsLeagues
 
 func (r *NewsRepository) GetAllNewsTeam(teamId int64) ([]*entity.NewsTeams, error) {
 	var c []*entity.NewsTeams
-	err := r.db.Where("team_id = ?", teamId).Where("DATE(created_at) BETWEEN DATE(NOW() - INTERVAL 1 DAY) AND DATE(NOW())").Preload("News").Find(&c).Error
+	err := r.db.Where("team_id = ?", teamId).Where("DATE(created_at) = DATE(NOW())").Preload("News").Find(&c).Error
 	if err != nil {
 		return nil, err
 	}
