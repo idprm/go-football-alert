@@ -4,6 +4,13 @@ export $(<.env)
 
 _Customer Interaction Management_
 
+1 : Live match ( Display USSD only )
+2 : Flash News ( Display USSD Only )
+3 : Credit Goal ( Not to live at lunch )
+4 : Predict and Win ( Not to live at lunch )
+5 : SMS Alerte ( Follow League and/or Team ) info sent via SMS
+6 : Pronostic : Data to be uploaded into CMS to be shared via SMS , there is two segment of sub in this service
+
 The basic features are listed below, so we will need these APIs to interface if available.
 
 - Check customer status to see if the customer is subscribed to the service or not

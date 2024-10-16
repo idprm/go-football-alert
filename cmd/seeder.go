@@ -463,13 +463,13 @@ func seederDB(db *gorm.DB) {
 			IsUnlocked: false,
 		},
 		{
-			Name:       ACT_PREDICTION,
+			Name:       ACT_CREDIT_GOAL,
 			PublishAt:  time.Now(),
 			UnlockedAt: time.Now(),
 			IsUnlocked: false,
 		},
 		{
-			Name:       ACT_CREDIT_GOAL,
+			Name:       ACT_PREDICT_WIN,
 			PublishAt:  time.Now(),
 			UnlockedAt: time.Now(),
 			IsUnlocked: false,

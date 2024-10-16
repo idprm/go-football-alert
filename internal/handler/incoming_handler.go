@@ -96,7 +96,7 @@ type IncomingHandler struct {
 	contentService      services.IContentService
 	subscriptionService services.ISubscriptionService
 	transactionService  services.ITransactionService
-	rewardService       services.IRewardService
+	bettingService      services.IBettingService
 }
 
 func NewIncomingHandler(
@@ -115,7 +115,7 @@ func NewIncomingHandler(
 	contentService services.IContentService,
 	subscriptionService services.ISubscriptionService,
 	transactionService services.ITransactionService,
-	rewardService services.IRewardService,
+	bettingService services.IBettingService,
 ) *IncomingHandler {
 	return &IncomingHandler{
 		rmq:                 rmq,
@@ -133,7 +133,7 @@ func NewIncomingHandler(
 		contentService:      contentService,
 		subscriptionService: subscriptionService,
 		transactionService:  transactionService,
-		rewardService:       rewardService,
+		bettingService:      bettingService,
 	}
 
 }

@@ -220,6 +220,42 @@ func (p *Processor) SMSAlerte(wg *sync.WaitGroup, message []byte) {
 	wg.Done()
 }
 
+func (p *Processor) Pronostic(wg *sync.WaitGroup, message []byte) {
+	/**
+	 * load repo
+	 */
+	serviceRepo := repository.NewServiceRepository(p.db)
+	serviceService := services.NewServiceService(serviceRepo)
+	contentRepo := repository.NewContentRepository(p.db)
+	contentService := services.NewContentService(contentRepo)
+	subscriptionRepo := repository.NewSubscriptionRepository(p.db)
+	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+	transactionRepo := repository.NewTransactionRepository(p.db)
+	transactionService := services.NewTransactionService(transactionRepo)
+	predictionRepo := repository.NewPredictionRepository(p.db)
+	predictionService := services.NewPredictionService(predictionRepo)
+
+	// parsing json to string
+	var sub *entity.Subscription
+	json.Unmarshal(message, &sub)
+
+	h := handler.NewPredictionHandler(
+		p.rmq,
+		p.logger,
+		sub,
+		serviceService,
+		contentService,
+		subscriptionService,
+		transactionService,
+		predictionService,
+	)
+
+	// Send the prediction
+	h.Prediction()
+
+	wg.Done()
+}
+
 func (p *Processor) CreditGoal(wg *sync.WaitGroup, message []byte) {
 	/**
 	 * load repo
@@ -232,8 +268,8 @@ func (p *Processor) CreditGoal(wg *sync.WaitGroup, message []byte) {
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
 	transactionRepo := repository.NewTransactionRepository(p.db)
 	transactionService := services.NewTransactionService(transactionRepo)
-	rewardRepo := repository.NewRewardRepository(p.db)
-	rewardService := services.NewRewardService(rewardRepo)
+	bettingRepo := repository.NewBettingRepository(p.db)
+	bettingService := services.NewBettingService(bettingRepo)
 	summaryRepo := repository.NewSummaryRepository(p.db)
 	summaryService := services.NewSummaryService(summaryRepo)
 
@@ -249,7 +285,7 @@ func (p *Processor) CreditGoal(wg *sync.WaitGroup, message []byte) {
 		contentService,
 		subscriptionService,
 		transactionService,
-		rewardService,
+		bettingService,
 		summaryService,
 	)
 
@@ -259,7 +295,7 @@ func (p *Processor) CreditGoal(wg *sync.WaitGroup, message []byte) {
 	wg.Done()
 }
 
-func (p *Processor) Prediction(wg *sync.WaitGroup, message []byte) {
+func (p *Processor) PredictWin(wg *sync.WaitGroup, message []byte) {
 	/**
 	 * load repo
 	 */

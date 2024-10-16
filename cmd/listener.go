@@ -68,7 +68,6 @@ var listenerCmd = &cobra.Command{
 			&entity.Prediction{},
 			&entity.Lineup{},
 			&entity.Standing{},
-			&entity.Betting{},
 			&entity.News{},
 			&entity.NewsLeagues{},
 			&entity.NewsTeams{},
@@ -83,7 +82,7 @@ var listenerCmd = &cobra.Command{
 			&entity.SMSAlerte{},
 			&entity.Transaction{},
 			&entity.History{},
-			&entity.Reward{},
+			&entity.Betting{},
 			&entity.Summary{},
 			&entity.MT{},
 		)
@@ -197,8 +196,8 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	historyRepo := repository.NewHistoryRepository(db)
 	historyService := services.NewHistoryService(historyRepo)
 
-	rewardRepo := repository.NewRewardRepository(db)
-	rewardService := services.NewRewardService(rewardRepo)
+	bettingRepo := repository.NewBettingRepository(db)
+	bettingService := services.NewBettingService(bettingRepo)
 
 	ussdRepo := repository.NewUssdRepository(db, rds)
 	ussdService := services.NewUssdService(ussdRepo)
@@ -225,7 +224,7 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 		contentService,
 		subscriptionService,
 		transactionService,
-		rewardService,
+		bettingService,
 	)
 
 	leagueHandler := handler.NewLeagueHandler(leagueService)

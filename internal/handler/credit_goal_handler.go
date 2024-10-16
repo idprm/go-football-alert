@@ -15,7 +15,7 @@ type CreditGoalHandler struct {
 	contentService      services.IContentService
 	subscriptionService services.ISubscriptionService
 	transactionService  services.ITransactionService
-	rewardService       services.IRewardService
+	bettingService      services.IBettingService
 	summaryService      services.ISummaryService
 }
 
@@ -27,7 +27,7 @@ func NewCreditGoalHandler(
 	contentService services.IContentService,
 	subscriptionService services.ISubscriptionService,
 	transactionService services.ITransactionService,
-	rewardService services.IRewardService,
+	bettingService services.IBettingService,
 	summaryService services.ISummaryService,
 ) *CreditGoalHandler {
 	return &CreditGoalHandler{
@@ -38,7 +38,7 @@ func NewCreditGoalHandler(
 		contentService:      contentService,
 		subscriptionService: subscriptionService,
 		transactionService:  transactionService,
-		rewardService:       rewardService,
+		bettingService:      bettingService,
 		summaryService:      summaryService,
 	}
 }

@@ -122,9 +122,9 @@ var publisherRetryCmd = &cobra.Command{
 	},
 }
 
-var publisherPredictionCmd = &cobra.Command{
-	Use:   "pub_prediction",
-	Short: "Publisher Prediction CLI",
+var publisherPredictionWinCmd = &cobra.Command{
+	Use:   "pub_predict_win",
+	Short: "Publisher Predict Win CLI",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		/**
@@ -146,7 +146,7 @@ var publisherPredictionCmd = &cobra.Command{
 		/**
 		 * SETUP CHANNEL
 		 */
-		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_PREDICTION_EXCHANGE, true, RMQ_PREDICTION_QUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_PREDICT_WIN_EXCHANGE, true, RMQ_PREDICT_WIN_QUEUE)
 
 		/**
 		 * Looping schedule
@@ -159,16 +159,72 @@ var publisherPredictionCmd = &cobra.Command{
 			scheduleRepo := repository.NewScheduleRepository(db)
 			scheduleService := services.NewScheduleService(scheduleRepo)
 
-			if scheduleService.IsUnlocked(ACT_PREDICTION, timeNow) {
+			if scheduleService.IsUnlocked(ACT_PREDICT_WIN, timeNow) {
 
 				scheduleService.UpdateLocked(
 					&entity.Schedule{
-						Name: ACT_PREDICTION,
+						Name: ACT_PREDICT_WIN,
 					},
 				)
 
 				go func() {
-					populatePrediction(db, rmq)
+					populatePredictWin(db, rmq)
+				}()
+			}
+
+			time.Sleep(timeDuration * time.Minute)
+
+		}
+	},
+}
+
+var publisherPronosticCmd = &cobra.Command{
+	Use:   "pub_pronostic",
+	Short: "Publisher Pronostic CLI",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		/**
+		 * connect mysql
+		 */
+		db, err := connectDb()
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * connect rabbitmq
+		 */
+		rmq, err := connectRabbitMq()
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * SETUP CHANNEL
+		 */
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_PRONOSTIC_EXCHANGE, true, RMQ_PRONOSTIC_QUEUE)
+
+		/**
+		 * Looping schedule
+		 */
+		timeDuration := time.Duration(1)
+
+		for {
+			timeNow := time.Now().Format("15:04")
+
+			scheduleRepo := repository.NewScheduleRepository(db)
+			scheduleService := services.NewScheduleService(scheduleRepo)
+
+			if scheduleService.IsUnlocked(ACT_PRONOSTIC, timeNow) {
+
+				scheduleService.UpdateLocked(
+					&entity.Schedule{
+						Name: ACT_PRONOSTIC,
+					},
+				)
+
+				go func() {
+					populatePredictWin(db, rmq)
 				}()
 			}
 
@@ -225,6 +281,62 @@ var publisherCreditCmd = &cobra.Command{
 
 				go func() {
 					populateGoalCredit(db, rmq)
+				}()
+			}
+
+			time.Sleep(timeDuration * time.Minute)
+
+		}
+	},
+}
+
+var publisherPredictWinCmd = &cobra.Command{
+	Use:   "pub_predict_win",
+	Short: "Publisher Predict Win CLI",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		/**
+		 * connect mysql
+		 */
+		db, err := connectDb()
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * connect rabbitmq
+		 */
+		rmq, err := connectRabbitMq()
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * SETUP CHANNEL
+		 */
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_PREDICT_WIN_EXCHANGE, true, RMQ_PREDICT_WIN_QUEUE)
+
+		/**
+		 * Looping schedule
+		 */
+		timeDuration := time.Duration(1)
+
+		for {
+			timeNow := time.Now().Format("15:04")
+
+			scheduleRepo := repository.NewScheduleRepository(db)
+			scheduleService := services.NewScheduleService(scheduleRepo)
+
+			if scheduleService.IsUnlocked(ACT_PREDICT_WIN, timeNow) {
+
+				scheduleService.UpdateLocked(
+					&entity.Schedule{
+						Name: ACT_PREDICT_WIN,
+					},
+				)
+
+				go func() {
+					populatePredictWin(db, rmq)
 				}()
 			}
 
@@ -503,7 +615,7 @@ func populateSMSAlerte(db *gorm.DB, rmq rmqp.AMQP) {
 	}
 }
 
-func populatePrediction(db *gorm.DB, rmq rmqp.AMQP) {
+func populatePredictWin(db *gorm.DB, rmq rmqp.AMQP) {
 	subscriptionRepo := repository.NewSubscriptionRepository(db)
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
 
@@ -523,7 +635,7 @@ func populatePrediction(db *gorm.DB, rmq rmqp.AMQP) {
 
 		json, _ := json.Marshal(sub)
 
-		rmq.IntegratePublish(RMQ_PREDICTION_EXCHANGE, RMQ_PREDICTION_QUEUE, RMQ_DATA_TYPE, "", string(json))
+		rmq.IntegratePublish(RMQ_PREDICT_WIN_EXCHANGE, RMQ_PREDICT_WIN_QUEUE, RMQ_DATA_TYPE, "", string(json))
 
 		time.Sleep(100 * time.Microsecond)
 	}
