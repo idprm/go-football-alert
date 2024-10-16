@@ -190,8 +190,16 @@ func (h *NewsHandler) Filter() {
 			}
 		}
 	} else {
-		if h.leagueService.IsLeagueByName(h.news.GetTitle()) {
-			league, err := h.leagueService.GetByName(h.news.GetTitle())
+
+		var title string
+		if h.news.IsFootMercato() {
+			title = h.news.GetDescription()
+		} else {
+			title = h.news.GetTitle()
+		}
+
+		if h.leagueService.IsLeagueByName(title) {
+			league, err := h.leagueService.GetByName(title)
 			if err != nil {
 				log.Println(err.Error())
 			}
@@ -205,8 +213,8 @@ func (h *NewsHandler) Filter() {
 			log.Println(league)
 		}
 
-		if h.teamService.IsTeamByName(h.news.GetTitle()) {
-			team, err := h.teamService.GetByName(h.news.GetTitle())
+		if h.teamService.IsTeamByName(title) {
+			team, err := h.teamService.GetByName(title)
 			if err != nil {
 				log.Println(err.Error())
 			}
@@ -236,6 +244,7 @@ func (h *NewsHandler) Filter() {
 			}
 		}
 	}
+
 }
 
 func (h *NewsHandler) GetAllPaginate(c *fiber.Ctx) error {
