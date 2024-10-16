@@ -121,7 +121,7 @@ func (r *NewsRepository) GetBySlug(slug string) (*entity.News, error) {
 
 func (r *NewsRepository) Get(slug, pubAt string) (*entity.News, error) {
 	var c entity.News
-	err := r.db.Where("slug = ?", slug).Where("DATE(publish_at) <= DATE(NOW())", pubAt).Take(&c).Error
+	err := r.db.Where("slug = ?", slug).Where("DATE(publish_at) = DATE(NOW())", pubAt).Take(&c).Error
 	if err != nil {
 		return nil, err
 	}
