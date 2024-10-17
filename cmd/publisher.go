@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"encoding/json"
+	"log"
 	"time"
 
 	"github.com/idprm/go-football-alert/internal/domain/entity"
@@ -61,10 +62,11 @@ var publisherRenewalCmd = &cobra.Command{
 		/**
 		 * Looping schedule per 10 minutes
 		 */
-		timeDuration := time.Duration(10)
+		timeDuration := time.Duration(1)
 
 		for {
 
+			log.Println("xxx")
 			go func() {
 				populateRenewal(db, rmq)
 			}()
@@ -118,62 +120,6 @@ var publisherRetryCmd = &cobra.Command{
 			}()
 
 			time.Sleep(timeDuration * time.Minute)
-		}
-	},
-}
-
-var publisherPredictionWinCmd = &cobra.Command{
-	Use:   "pub_predict_win",
-	Short: "Publisher Predict Win CLI",
-	Long:  ``,
-	Run: func(cmd *cobra.Command, args []string) {
-		/**
-		 * connect mysql
-		 */
-		db, err := connectDb()
-		if err != nil {
-			panic(err)
-		}
-
-		/**
-		 * connect rabbitmq
-		 */
-		rmq, err := connectRabbitMq()
-		if err != nil {
-			panic(err)
-		}
-
-		/**
-		 * SETUP CHANNEL
-		 */
-		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_PREDICT_WIN_EXCHANGE, true, RMQ_PREDICT_WIN_QUEUE)
-
-		/**
-		 * Looping schedule
-		 */
-		timeDuration := time.Duration(1)
-
-		for {
-			timeNow := time.Now().Format("15:04")
-
-			scheduleRepo := repository.NewScheduleRepository(db)
-			scheduleService := services.NewScheduleService(scheduleRepo)
-
-			if scheduleService.IsUnlocked(ACT_PREDICT_WIN, timeNow) {
-
-				scheduleService.UpdateLocked(
-					&entity.Schedule{
-						Name: ACT_PREDICT_WIN,
-					},
-				)
-
-				go func() {
-					populatePredictWin(db, rmq)
-				}()
-			}
-
-			time.Sleep(timeDuration * time.Minute)
-
 		}
 	},
 }
