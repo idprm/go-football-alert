@@ -110,8 +110,8 @@ func (p *Telco) QueryProfileAndBal() ([]byte, error) {
 }
 
 func (p *Telco) DeductFee() ([]byte, error) {
-	// l := p.logger.Init("mt", true)
-	// start := time.Now()
+	l := p.logger.Init("mt", true)
+	start := time.Now()
 
 	var reqXml model.DeductRequest
 
@@ -150,12 +150,12 @@ func (p *Telco) DeductFee() ([]byte, error) {
 		Transport: tr,
 	}
 
-	// p.logger.Writer(req)
-	// l.WithFields(logrus.Fields{
-	// 	"trx_id":       p.trxId,
-	// 	"request_url":  p.service.GetUrlTelco(),
-	// 	"request_body": req.Body,
-	// }).Info("DEDUCT_FEE")
+	p.logger.Writer(req)
+	l.WithFields(logrus.Fields{
+		"trx_id":       p.trxId,
+		"request_url":  p.service.GetUrlTelco(),
+		"request_body": req.Body,
+	}).Info("DEDUCT_FEE")
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -168,17 +168,17 @@ func (p *Telco) DeductFee() ([]byte, error) {
 		return nil, err
 	}
 
-	// p.logger.Writer(string(body))
-	// duration := time.Since(start).Milliseconds()
-	// l.WithFields(
-	// 	logrus.Fields{
-	// 		"trx_id":      p.trxId,
-	// 		"msisdn":      p.subscription.GetMsisdn(),
-	// 		"response":    string(body),
-	// 		"status_code": resp.StatusCode,
-	// 		"status_text": http.StatusText(resp.StatusCode),
-	// 		"duration":    duration,
-	// 	}).Info("DEDUCT_FEE")
+	p.logger.Writer(string(body))
+	duration := time.Since(start).Milliseconds()
+	l.WithFields(
+		logrus.Fields{
+			"trx_id":      p.trxId,
+			"msisdn":      p.subscription.GetMsisdn(),
+			"response":    string(body),
+			"status_code": resp.StatusCode,
+			"status_text": http.StatusText(resp.StatusCode),
+			"duration":    duration,
+		}).Info("DEDUCT_FEE")
 
 	return body, nil
 }
