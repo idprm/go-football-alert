@@ -294,64 +294,117 @@ func (h *SMSHandler) SubAlerteCompetition(league *entity.League) {
 		// charging if free day >= 1
 		t := telco.NewTelco(h.logger, service, subscription, trxId)
 
-		resp, err := t.DeductFee()
+		respBal, err := t.QueryProfileAndBal()
 		if err != nil {
 			log.Println(err.Error())
 		}
 
-		var respDeduct *model.DeductResponse
-		xml.Unmarshal(resp, &respDeduct)
+		var respBalance *model.QueryProfileAndBalResponse
+		xml.Unmarshal(respBal, &respBalance)
 
-		if respDeduct.IsSuccess() {
-			h.subscriptionService.Update(
-				&entity.Subscription{
-					ServiceID:            service.GetId(),
-					Msisdn:               h.req.GetMsisdn(),
-					LatestTrxId:          trxId,
-					LatestSubject:        SUBJECT_FIRSTPUSH,
-					LatestStatus:         STATUS_SUCCESS,
-					TotalAmount:          service.GetPrice(),
-					RenewalAt:            time.Now().AddDate(0, 0, service.GetRenewalDay()),
-					ChargeAt:             time.Now(),
-					TotalSuccess:         sub.TotalSuccess + 1,
-					IsRetry:              false,
-					TotalFirstpush:       sub.TotalFirstpush + 1,
-					TotalAmountFirstpush: service.GetPrice(),
-					LatestPayload:        string(resp),
-				},
-			)
+		if respBalance.IsEnoughBalance(service) {
+			resp, err := t.DeductFee()
+			if err != nil {
+				log.Println(err.Error())
+			}
 
-			h.transactionService.Save(
-				&entity.Transaction{
-					TrxId:        trxId,
-					ServiceID:    service.GetId(),
-					Msisdn:       h.req.GetMsisdn(),
-					Keyword:      h.req.GetSMS(),
-					Amount:       service.GetPrice(),
-					Status:       STATUS_SUCCESS,
-					StatusCode:   "",
-					StatusDetail: "",
-					Subject:      SUBJECT_FIRSTPUSH,
-					Payload:      string(resp),
-				},
-			)
+			var respDeduct *model.DeductResponse
+			xml.Unmarshal(resp, &respDeduct)
 
-			h.historyService.Save(
-				&entity.History{
-					SubscriptionID: sub.GetId(),
-					ServiceID:      service.GetId(),
-					Msisdn:         h.req.GetMsisdn(),
-					Keyword:        h.req.GetSMS(),
-					Subject:        SUBJECT_FIRSTPUSH,
-					Status:         STATUS_SUCCESS,
-				},
-			)
+			if respDeduct.IsSuccess() {
+				h.subscriptionService.Update(
+					&entity.Subscription{
+						ServiceID:            service.GetId(),
+						Msisdn:               h.req.GetMsisdn(),
+						LatestTrxId:          trxId,
+						LatestSubject:        SUBJECT_FIRSTPUSH,
+						LatestStatus:         STATUS_SUCCESS,
+						TotalAmount:          service.GetPrice(),
+						RenewalAt:            time.Now().AddDate(0, 0, service.GetRenewalDay()),
+						ChargeAt:             time.Now(),
+						TotalSuccess:         sub.TotalSuccess + 1,
+						IsRetry:              false,
+						TotalFirstpush:       sub.TotalFirstpush + 1,
+						TotalAmountFirstpush: service.GetPrice(),
+						LatestPayload:        string(resp),
+					},
+				)
 
-			summary.SetTotalChargeSuccess(1)
-			summary.SetTotalRevenue(service.GetPrice())
-		}
+				h.transactionService.Save(
+					&entity.Transaction{
+						TrxId:        trxId,
+						ServiceID:    service.GetId(),
+						Msisdn:       h.req.GetMsisdn(),
+						Keyword:      h.req.GetSMS(),
+						Amount:       service.GetPrice(),
+						Status:       STATUS_SUCCESS,
+						StatusCode:   "",
+						StatusDetail: "",
+						Subject:      SUBJECT_FIRSTPUSH,
+						Payload:      string(resp),
+					},
+				)
 
-		if respDeduct.IsFailed() {
+				h.historyService.Save(
+					&entity.History{
+						SubscriptionID: sub.GetId(),
+						ServiceID:      service.GetId(),
+						Msisdn:         h.req.GetMsisdn(),
+						Keyword:        h.req.GetSMS(),
+						Subject:        SUBJECT_FIRSTPUSH,
+						Status:         STATUS_SUCCESS,
+					},
+				)
+
+				summary.SetTotalChargeSuccess(1)
+				summary.SetTotalRevenue(service.GetPrice())
+			}
+
+			if respDeduct.IsFailed() {
+				h.subscriptionService.Update(
+					&entity.Subscription{
+						ServiceID:     service.GetId(),
+						Msisdn:        h.req.GetMsisdn(),
+						LatestTrxId:   trxId,
+						LatestSubject: SUBJECT_FIRSTPUSH,
+						LatestStatus:  STATUS_FAILED,
+						RenewalAt:     time.Now().AddDate(0, 0, 1),
+						RetryAt:       time.Now(),
+						TotalFailed:   sub.TotalFailed + 1,
+						IsRetry:       true,
+						LatestPayload: string(resp),
+					},
+				)
+
+				h.transactionService.Save(
+					&entity.Transaction{
+						TrxId:        trxId,
+						ServiceID:    service.GetId(),
+						Msisdn:       h.req.GetMsisdn(),
+						Keyword:      h.req.GetSMS(),
+						Status:       STATUS_FAILED,
+						StatusCode:   respDeduct.GetFaultCode(),
+						StatusDetail: respDeduct.GetFaultString(),
+						Subject:      SUBJECT_FIRSTPUSH,
+						Payload:      string(resp),
+					},
+				)
+
+				h.historyService.Save(
+					&entity.History{
+						SubscriptionID: sub.GetId(),
+						ServiceID:      service.GetId(),
+						Msisdn:         h.req.GetMsisdn(),
+						Keyword:        h.req.GetSMS(),
+						Subject:        SUBJECT_FIRSTPUSH,
+						Status:         STATUS_FAILED,
+					},
+				)
+
+				// setter summary
+				summary.SetTotalChargeFailed(1)
+			}
+		} else {
 			h.subscriptionService.Update(
 				&entity.Subscription{
 					ServiceID:     service.GetId(),
@@ -363,7 +416,7 @@ func (h *SMSHandler) SubAlerteCompetition(league *entity.League) {
 					RetryAt:       time.Now(),
 					TotalFailed:   sub.TotalFailed + 1,
 					IsRetry:       true,
-					LatestPayload: string(resp),
+					LatestPayload: string(respBal),
 				},
 			)
 
@@ -374,10 +427,10 @@ func (h *SMSHandler) SubAlerteCompetition(league *entity.League) {
 					Msisdn:       h.req.GetMsisdn(),
 					Keyword:      h.req.GetSMS(),
 					Status:       STATUS_FAILED,
-					StatusCode:   respDeduct.GetFaultCode(),
-					StatusDetail: respDeduct.GetFaultString(),
+					StatusCode:   "",
+					StatusDetail: "INSUFF BALANCE",
 					Subject:      SUBJECT_FIRSTPUSH,
-					Payload:      string(resp),
+					Payload:      string(respBal),
 				},
 			)
 
@@ -544,71 +597,120 @@ func (h *SMSHandler) SubAlerteEquipe(team *entity.Team) {
 		)
 
 	} else {
-
 		// charging if free day >= 1
 		t := telco.NewTelco(h.logger, service, subscription, trxId)
 
-		resp, err := t.DeductFee()
+		respBal, err := t.QueryProfileAndBal()
 		if err != nil {
 			log.Println(err.Error())
 		}
 
-		var respDeduct *model.DeductResponse
-		xml.Unmarshal(resp, &respDeduct)
+		var respBalance *model.QueryProfileAndBalResponse
+		xml.Unmarshal(respBal, &respBalance)
 
-		if respDeduct.IsSuccess() {
-			h.subscriptionService.Update(
-				&entity.Subscription{
-					ServiceID:            service.GetId(),
-					Msisdn:               h.req.GetMsisdn(),
-					LatestTrxId:          trxId,
-					LatestSubject:        SUBJECT_FIRSTPUSH,
-					LatestStatus:         STATUS_SUCCESS,
-					TotalAmount:          service.GetPrice(),
-					RenewalAt:            time.Now().AddDate(0, 0, service.GetRenewalDay()),
-					ChargeAt:             time.Now(),
-					TotalSuccess:         sub.TotalSuccess + 1,
-					IsRetry:              false,
-					TotalFirstpush:       sub.TotalFirstpush + 1,
-					TotalAmountFirstpush: service.GetPrice(),
-					LatestPayload:        string(resp),
-				},
-			)
+		if respBalance.IsEnoughBalance(service) {
+			resp, err := t.DeductFee()
+			if err != nil {
+				log.Println(err.Error())
+			}
 
-			// is_retry set to false
-			h.subscriptionService.UpdateNotRetry(sub)
+			var respDeduct *model.DeductResponse
+			xml.Unmarshal(resp, &respDeduct)
 
-			h.transactionService.Save(
-				&entity.Transaction{
-					TrxId:        trxId,
-					ServiceID:    service.GetId(),
-					Msisdn:       h.req.GetMsisdn(),
-					Keyword:      h.req.GetSMS(),
-					Amount:       service.GetPrice(),
-					Status:       STATUS_SUCCESS,
-					StatusCode:   "",
-					StatusDetail: "",
-					Subject:      SUBJECT_FIRSTPUSH,
-					Payload:      string(resp),
-				},
-			)
+			if respDeduct.IsSuccess() {
+				h.subscriptionService.Update(
+					&entity.Subscription{
+						ServiceID:            service.GetId(),
+						Msisdn:               h.req.GetMsisdn(),
+						LatestTrxId:          trxId,
+						LatestSubject:        SUBJECT_FIRSTPUSH,
+						LatestStatus:         STATUS_SUCCESS,
+						TotalAmount:          service.GetPrice(),
+						RenewalAt:            time.Now().AddDate(0, 0, service.GetRenewalDay()),
+						ChargeAt:             time.Now(),
+						TotalSuccess:         sub.TotalSuccess + 1,
+						IsRetry:              false,
+						TotalFirstpush:       sub.TotalFirstpush + 1,
+						TotalAmountFirstpush: service.GetPrice(),
+						LatestPayload:        string(resp),
+					},
+				)
 
-			h.historyService.Save(
-				&entity.History{
-					SubscriptionID: sub.GetId(),
-					ServiceID:      service.GetId(),
-					Msisdn:         h.req.GetMsisdn(),
-					Keyword:        h.req.GetSMS(),
-					Subject:        SUBJECT_FIRSTPUSH,
-					Status:         STATUS_SUCCESS,
-				},
-			)
+				h.transactionService.Save(
+					&entity.Transaction{
+						TrxId:        trxId,
+						ServiceID:    service.GetId(),
+						Msisdn:       h.req.GetMsisdn(),
+						Keyword:      h.req.GetSMS(),
+						Amount:       service.GetPrice(),
+						Status:       STATUS_SUCCESS,
+						StatusCode:   "",
+						StatusDetail: "",
+						Subject:      SUBJECT_FIRSTPUSH,
+						Payload:      string(resp),
+					},
+				)
 
-			summary.SetTotalChargeSuccess(1)
-			summary.SetTotalRevenue(service.GetPrice())
-		}
+				h.historyService.Save(
+					&entity.History{
+						SubscriptionID: sub.GetId(),
+						ServiceID:      service.GetId(),
+						Msisdn:         h.req.GetMsisdn(),
+						Keyword:        h.req.GetSMS(),
+						Subject:        SUBJECT_FIRSTPUSH,
+						Status:         STATUS_SUCCESS,
+					},
+				)
 
-		if respDeduct.IsFailed() {
+				summary.SetTotalChargeSuccess(1)
+				summary.SetTotalRevenue(service.GetPrice())
+			}
+
+			if respDeduct.IsFailed() {
+				h.subscriptionService.Update(
+					&entity.Subscription{
+						ServiceID:     service.GetId(),
+						Msisdn:        h.req.GetMsisdn(),
+						LatestTrxId:   trxId,
+						LatestSubject: SUBJECT_FIRSTPUSH,
+						LatestStatus:  STATUS_FAILED,
+						RenewalAt:     time.Now().AddDate(0, 0, 1),
+						RetryAt:       time.Now(),
+						TotalFailed:   sub.TotalFailed + 1,
+						IsRetry:       true,
+						LatestPayload: string(resp),
+					},
+				)
+
+				h.transactionService.Save(
+					&entity.Transaction{
+						TrxId:        trxId,
+						ServiceID:    service.GetId(),
+						Msisdn:       h.req.GetMsisdn(),
+						Keyword:      h.req.GetSMS(),
+						Status:       STATUS_FAILED,
+						StatusCode:   respDeduct.GetFaultCode(),
+						StatusDetail: respDeduct.GetFaultString(),
+						Subject:      SUBJECT_FIRSTPUSH,
+						Payload:      string(resp),
+					},
+				)
+
+				h.historyService.Save(
+					&entity.History{
+						SubscriptionID: sub.GetId(),
+						ServiceID:      service.GetId(),
+						Msisdn:         h.req.GetMsisdn(),
+						Keyword:        h.req.GetSMS(),
+						Subject:        SUBJECT_FIRSTPUSH,
+						Status:         STATUS_FAILED,
+					},
+				)
+
+				// setter summary
+				summary.SetTotalChargeFailed(1)
+			}
+		} else {
 			h.subscriptionService.Update(
 				&entity.Subscription{
 					ServiceID:     service.GetId(),
@@ -620,7 +722,7 @@ func (h *SMSHandler) SubAlerteEquipe(team *entity.Team) {
 					RetryAt:       time.Now(),
 					TotalFailed:   sub.TotalFailed + 1,
 					IsRetry:       true,
-					LatestPayload: string(resp),
+					LatestPayload: string(respBal),
 				},
 			)
 
@@ -631,10 +733,10 @@ func (h *SMSHandler) SubAlerteEquipe(team *entity.Team) {
 					Msisdn:       h.req.GetMsisdn(),
 					Keyword:      h.req.GetSMS(),
 					Status:       STATUS_FAILED,
-					StatusCode:   respDeduct.GetFaultCode(),
-					StatusDetail: respDeduct.GetFaultString(),
+					StatusCode:   "",
+					StatusDetail: "INSUFF BALANCE",
 					Subject:      SUBJECT_FIRSTPUSH,
-					Payload:      string(resp),
+					Payload:      string(respBal),
 				},
 			)
 

@@ -4,10 +4,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/idprm/go-football-alert/internal/domain/repository"
-	"github.com/idprm/go-football-alert/internal/handler"
 	"github.com/idprm/go-football-alert/internal/logger"
-	"github.com/idprm/go-football-alert/internal/services"
 	"github.com/spf13/cobra"
 	loggerDb "gorm.io/gorm/logger"
 )
@@ -797,52 +794,5 @@ var consumerPredictWinCmd = &cobra.Command{
 		fmt.Println("[*] Waiting for data...")
 
 		<-forever
-	},
-}
-
-var consumerTestChargeCmd = &cobra.Command{
-	Use:   "test_charge",
-	Short: "Consumer Test Charge Service CLI",
-	Long:  ``,
-	Run: func(cmd *cobra.Command, args []string) {
-
-		/**
-		 * connect mysql
-		 */
-		db, err := connectDb()
-		if err != nil {
-			panic(err)
-		}
-
-		subscriptionRepo := repository.NewSubscriptionRepository(db)
-		subscriptionService := services.NewSubscriptionService(subscriptionRepo)
-
-		h := handler.NewTestHandler(&logger.Logger{}, subscriptionService)
-
-		h.TestCharge()
-
-	},
-}
-
-var consumerTestUpdateFalseCmd = &cobra.Command{
-	Use:   "test_update_false",
-	Short: "Consumer Test Update False Service CLI",
-	Long:  ``,
-	Run: func(cmd *cobra.Command, args []string) {
-		/**
-		 * connect mysql
-		 */
-		db, err := connectDb()
-		if err != nil {
-			panic(err)
-		}
-
-		subscriptionRepo := repository.NewSubscriptionRepository(db)
-		subscriptionService := services.NewSubscriptionService(subscriptionRepo)
-
-		h := handler.NewTestHandler(&logger.Logger{}, subscriptionService)
-
-		h.TestUpdateToFalse()
-
 	},
 }

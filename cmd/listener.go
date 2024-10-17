@@ -365,7 +365,9 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	smsalerte := fiture.Group("smsalertes")
 	smsalerte.Get("/", dcbHandler.GetAllSMSAlertePaginate)
 
+	test.Post("/balance", h.TestBalance)
 	test.Post("/charge", h.TestCharge)
+	test.Post("/charge-failed", h.TestChargeFailed)
 
 	return r
 }

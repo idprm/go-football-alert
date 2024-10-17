@@ -3,6 +3,8 @@ package model
 import (
 	"encoding/xml"
 	"strconv"
+
+	"github.com/idprm/go-football-alert/internal/domain/entity"
 )
 
 type (
@@ -26,30 +28,51 @@ type (
 	}
 
 	QueryProfileAndBalResponse struct {
-		XMLName xml.Name `xml:"Envelope"`
-		SoapEnv string   `xml:"xmlns:soapenv,attr"`
-		Body    struct {
-			QueryProfileAndBal struct {
-				Msisdn          string `xml:"MSISDN,omitempty"`
-				DefLang         string `xml:"DefLang,omitempty"`
-				State           string `xml:"State,omitempty"`
-				StateSet        string `xml:"StateSet,omitempty"`
-				ActiveStopDate  string `xml:"ActiveStopDate,omitempty"`
-				SuspendStopDate string `xml:"SuspendStopDate,omitempty"`
-				DisableStopDate string `xml:"DisableStopDate,omitempty"`
-				ServiceStopDate string `xml:"ServiceStopDate,omitempty"`
-				BrandIndex      string `xml:"BrandIndex,omitempty"`
-				ServiceClass    string `xml:"ServiceClass,omitempty"`
-				TransactionSN   string `xml:"TransactionSN,omitempty"`
-				BalDtoList      struct {
-				} `xml:"BalDtoList"`
-			} `xml:"QueryProfileAndBalResponse"`
-		} `xml:"soapenv:Body"`
+		XMLName xml.Name
+		Body    BodyQueryProfileAndBalResponse `xml:"Body"`
+	}
+
+	BodyQueryProfileAndBalResponse struct {
+		XMLName xml.Name
+		Item    ItemQueryProfileAndBalResponse `xml:"QueryProfileAndBalResponse"`
+	}
+
+	ItemQueryProfileAndBalResponse struct {
+		XMLName         xml.Name
+		Msisdn          string `xml:"MSISDN,omitempty"`
+		DefLang         string `xml:"DefLang,omitempty"`
+		State           string `xml:"State,omitempty"`
+		StateSet        string `xml:"StateSet,omitempty"`
+		ActiveStopDate  string `xml:"ActiveStopDate,omitempty"`
+		SuspendStopDate string `xml:"SuspendStopDate,omitempty"`
+		DisableStopDate string `xml:"DisableStopDate,omitempty"`
+		ServiceStopDate string `xml:"ServiceStopDate,omitempty"`
+		BrandIndex      string `xml:"BrandIndex,omitempty"`
+		ServiceClass    string `xml:"ServiceClass,omitempty"`
+		TransactionSN   string `xml:"TransactionSN,omitempty"`
+		BalDtoList      struct {
+			BalDto []ItemBalDto `xml:"BalDto"`
+		} `xml:"BalDtoList"`
+	}
+
+	ItemBalDto struct {
+		BalID       string `xml:"BalID"`
+		AcctResCode string `xml:"AcctResCode"`
+		AcctResName string `xml:"AcctResName"`
+		Balance     string `xml:"Balance"`
+		EffDate     string `xml:"EffDate"`
+		ExpDate     string `xml:"ExpDate"`
+		UpdateDate  string `xml:"UpdateDate"`
 	}
 )
 
-func (m *QueryProfileAndBalResponse) IsEnoughBalance() bool {
-	return m.Body.QueryProfileAndBal.ServiceClass == ""
+func (m *QueryProfileAndBalResponse) IsEnoughBalance(s *entity.Service) bool {
+	b, _ := strconv.Atoi(m.Body.Item.BalDtoList.BalDto[0].Balance)
+	return (b * -1) >= int(s.GetPrice())
+}
+
+func (m *QueryProfileAndBalResponse) GetBalance() string {
+	return m.Body.Item.BalDtoList.BalDto[0].Balance
 }
 
 type (
@@ -76,27 +99,6 @@ type (
 		} `xml:"soapenv:Body"`
 	}
 
-	// DeductResponse struct {
-	// 	XMLName xml.Name
-	// 	Soapenv string `xml:"xmlns:soapenv,attr"`
-	// 	Ns      string `xml:"xmlns:ns,attr"`
-	// 	Body    struct {
-	// 		DeductFee struct {
-	// 			XMLName       xml.Name
-	// 			TransactionSN string `xml:"TransactionSN"`
-	// 			AcctResCode   string `xml:"AcctResCode"`
-	// 			AcctResName   string `xml:"AcctResName"`
-	// 			BeforeBalance string `xml:"BeforeBalance"`
-	// 			AfterBalance  string `xml:"AfterBalance"`
-	// 			ExpDate       string `xml:"ExpDate"`
-	// 		} `xml:"ns:DeductFeeResponse"`
-	// 		Fault struct {
-	// 			FaultCode   string `xml:"faultcode"`
-	// 			FaultString string `xml:"faultstring"`
-	// 		} `xml:"soapenv:Fault"`
-	// 	} `xml:"soapenv:Body"`
-	// }
-
 	DeductResponse struct {
 		XMLName xml.Name
 		Body    BodyDeductFeeResponse `xml:"Body"`
@@ -119,6 +121,7 @@ type (
 	}
 
 	FaultDeductFeeResponse struct {
+		XMLName     xml.Name
 		FaultCode   string `xml:"faultcode"`
 		FaultString string `xml:"faultstring"`
 	}
@@ -243,5 +246,5 @@ func (m *DeductResponse) IsSuccess() bool {
 }
 
 func (m *DeductResponse) IsFailed() bool {
-	return m.Body.Fault.FaultCode == "" || m.Body.Fault.FaultString == "" || m == nil
+	return m.Body.Fault.FaultCode != ""
 }

@@ -165,7 +165,9 @@ func init() {
 	rootCmd.AddCommand(consumerTestStandingCmd)
 	rootCmd.AddCommand(consumerTestLineupCmd)
 	rootCmd.AddCommand(consumerTestNewsCmd)
+	rootCmd.AddCommand(consumerTestBalanceCmd)
 	rootCmd.AddCommand(consumerTestChargeCmd)
+	rootCmd.AddCommand(consumerTestChargeFailedCmd)
 	rootCmd.AddCommand(consumerTestUpdateFalseCmd)
 }
 

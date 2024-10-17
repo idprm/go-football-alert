@@ -904,9 +904,31 @@ func (h *IncomingHandler) ChampionLeagues(baseUrl string, leagueId, page int) st
 	return fixturesString
 }
 
+func (h *IncomingHandler) TestBalance(c *fiber.Ctx) error {
+	c.Set("Content-type", "text/xml; charset=utf-8")
+	xmlFile, err := os.Open("./views/xml/ball_resp.xml")
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer xmlFile.Close()
+	byteValue, _ := io.ReadAll(xmlFile)
+	return c.Status(fiber.StatusOK).SendString(string(byteValue))
+}
+
 func (h *IncomingHandler) TestCharge(c *fiber.Ctx) error {
 	c.Set("Content-type", "text/xml; charset=utf-8")
 	xmlFile, err := os.Open("./views/xml/deduct_resp.xml")
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer xmlFile.Close()
+	byteValue, _ := io.ReadAll(xmlFile)
+	return c.Status(fiber.StatusOK).SendString(string(byteValue))
+}
+
+func (h *IncomingHandler) TestChargeFailed(c *fiber.Ctx) error {
+	c.Set("Content-type", "text/xml; charset=utf-8")
+	xmlFile, err := os.Open("./views/xml/deduct_failed_resp.xml")
 	if err != nil {
 		fmt.Println(err)
 	}

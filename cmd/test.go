@@ -1,6 +1,10 @@
 package cmd
 
 import (
+	"github.com/idprm/go-football-alert/internal/domain/repository"
+	"github.com/idprm/go-football-alert/internal/handler"
+	"github.com/idprm/go-football-alert/internal/logger"
+	"github.com/idprm/go-football-alert/internal/services"
 	"github.com/spf13/cobra"
 )
 
@@ -133,5 +137,100 @@ var consumerTestNewsCmd = &cobra.Command{
 		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_NEWS_EXCHANGE, true, RMQ_NEWS_QUEUE)
 
 		scrapingNews(db, rmq)
+	},
+}
+
+var consumerTestBalanceCmd = &cobra.Command{
+	Use:   "test_balance",
+	Short: "Consumer Test Balance Service CLI",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+
+		/**
+		 * connect mysql
+		 */
+		db, err := connectDb()
+		if err != nil {
+			panic(err)
+		}
+
+		subscriptionRepo := repository.NewSubscriptionRepository(db)
+		subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+
+		h := handler.NewTestHandler(&logger.Logger{}, subscriptionService)
+
+		h.TestBalance()
+
+	},
+}
+
+var consumerTestChargeCmd = &cobra.Command{
+	Use:   "test_charge",
+	Short: "Consumer Test Charge Service CLI",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+
+		/**
+		 * connect mysql
+		 */
+		db, err := connectDb()
+		if err != nil {
+			panic(err)
+		}
+
+		subscriptionRepo := repository.NewSubscriptionRepository(db)
+		subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+
+		h := handler.NewTestHandler(&logger.Logger{}, subscriptionService)
+
+		h.TestCharge()
+
+	},
+}
+
+var consumerTestChargeFailedCmd = &cobra.Command{
+	Use:   "test_charge_failed",
+	Short: "Consumer Test Charge Failed Service CLI",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+
+		/**
+		 * connect mysql
+		 */
+		db, err := connectDb()
+		if err != nil {
+			panic(err)
+		}
+
+		subscriptionRepo := repository.NewSubscriptionRepository(db)
+		subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+
+		h := handler.NewTestHandler(&logger.Logger{}, subscriptionService)
+
+		h.TestChargeFailed()
+
+	},
+}
+
+var consumerTestUpdateFalseCmd = &cobra.Command{
+	Use:   "test_update_false",
+	Short: "Consumer Test Update False Service CLI",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		/**
+		 * connect mysql
+		 */
+		db, err := connectDb()
+		if err != nil {
+			panic(err)
+		}
+
+		subscriptionRepo := repository.NewSubscriptionRepository(db)
+		subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+
+		h := handler.NewTestHandler(&logger.Logger{}, subscriptionService)
+
+		h.TestUpdateToFalse()
+
 	},
 }
