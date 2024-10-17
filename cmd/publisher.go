@@ -66,7 +66,6 @@ var publisherRenewalCmd = &cobra.Command{
 
 		for {
 
-			log.Println("xxx")
 			go func() {
 				populateRenewal(db, rmq)
 			}()
@@ -495,13 +494,13 @@ func populateRenewal(db *gorm.DB, rmq rmqp.AMQP) {
 		sub.ID = s.ID
 		sub.ServiceID = s.ServiceID
 		sub.Msisdn = s.Msisdn
-		sub.Channel = s.Channel
 		sub.LatestKeyword = s.LatestKeyword
 		sub.LatestSubject = s.LatestSubject
-		sub.IpAddress = s.IpAddress
 		sub.CreatedAt = s.CreatedAt
 
 		json, _ := json.Marshal(sub)
+
+		log.Println(json)
 
 		rmq.IntegratePublish(RMQ_RENEWAL_EXCHANGE, RMQ_RENEWAL_QUEUE, RMQ_DATA_TYPE, "", string(json))
 
@@ -521,10 +520,8 @@ func populateRetry(db *gorm.DB, rmq rmqp.AMQP) {
 		sub.ID = s.ID
 		sub.ServiceID = s.ServiceID
 		sub.Msisdn = s.Msisdn
-		sub.Channel = s.Channel
 		sub.LatestKeyword = s.LatestKeyword
 		sub.LatestSubject = s.LatestSubject
-		sub.IpAddress = s.IpAddress
 		sub.CreatedAt = s.CreatedAt
 
 		json, _ := json.Marshal(sub)
@@ -547,10 +544,8 @@ func populateSMSAlerte(db *gorm.DB, rmq rmqp.AMQP) {
 		sub.ID = s.ID
 		sub.ServiceID = s.ServiceID
 		sub.Msisdn = s.Msisdn
-		sub.Channel = s.Channel
 		sub.LatestKeyword = s.LatestKeyword
 		sub.LatestSubject = s.LatestSubject
-		sub.IpAddress = s.IpAddress
 		sub.CreatedAt = s.CreatedAt
 
 		json, _ := json.Marshal(sub)
@@ -573,10 +568,8 @@ func populatePredictWin(db *gorm.DB, rmq rmqp.AMQP) {
 		sub.ID = s.ID
 		sub.ServiceID = s.ServiceID
 		sub.Msisdn = s.Msisdn
-		sub.Channel = s.Channel
 		sub.LatestKeyword = s.LatestKeyword
 		sub.LatestSubject = s.LatestSubject
-		sub.IpAddress = s.IpAddress
 		sub.CreatedAt = s.CreatedAt
 
 		json, _ := json.Marshal(sub)
@@ -599,10 +592,8 @@ func populateGoalCredit(db *gorm.DB, rmq rmqp.AMQP) {
 		sub.ID = s.ID
 		sub.ServiceID = s.ServiceID
 		sub.Msisdn = s.Msisdn
-		sub.Channel = s.Channel
 		sub.LatestKeyword = s.LatestKeyword
 		sub.LatestSubject = s.LatestSubject
-		sub.IpAddress = s.IpAddress
 		sub.CreatedAt = s.CreatedAt
 
 		json, _ := json.Marshal(sub)
