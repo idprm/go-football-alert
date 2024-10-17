@@ -30,6 +30,7 @@ type ISubscriptionService interface {
 	Update(*entity.Subscription) (*entity.Subscription, error)
 	Delete(*entity.Subscription) error
 	UpdateNotActive(*entity.Subscription) (*entity.Subscription, error)
+	UpdateNotFree(*entity.Subscription) (*entity.Subscription, error)
 	UpdateNotRetry(*entity.Subscription) (*entity.Subscription, error)
 	UpdateNotFollowTeam(*entity.Subscription) (*entity.Subscription, error)
 	UpdateNotFollowLeague(*entity.Subscription) (*entity.Subscription, error)
@@ -82,6 +83,10 @@ func (s *SubscriptionService) Delete(a *entity.Subscription) error {
 
 func (s *SubscriptionService) UpdateNotActive(a *entity.Subscription) (*entity.Subscription, error) {
 	return s.subscriptionRepo.UpdateNotActive(a)
+}
+
+func (s *SubscriptionService) UpdateNotFree(a *entity.Subscription) (*entity.Subscription, error) {
+	return s.subscriptionRepo.UpdateNotFree(a)
 }
 
 func (s *SubscriptionService) UpdateNotRetry(a *entity.Subscription) (*entity.Subscription, error) {

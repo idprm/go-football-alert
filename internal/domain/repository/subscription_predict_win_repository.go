@@ -5,17 +5,17 @@ import (
 	"gorm.io/gorm"
 )
 
-type SubscriptionPredictRepository struct {
+type SubscriptionPredictWinRepository struct {
 	db *gorm.DB
 }
 
-func NewSubscriptionPredictRepository(db *gorm.DB) *SubscriptionPredictRepository {
-	return &SubscriptionPredictRepository{
+func NewSubscriptionPredictWinRepository(db *gorm.DB) *SubscriptionPredictWinRepository {
+	return &SubscriptionPredictWinRepository{
 		db: db,
 	}
 }
 
-type ISubscriptionPredictRepository interface {
+type ISubscriptionPredictWinRepository interface {
 	Count(int, int, int) (int64, error)
 	CountBySubId(int) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
@@ -25,7 +25,7 @@ type ISubscriptionPredictRepository interface {
 	Delete(*entity.SubscriptionPredict) error
 }
 
-func (r *SubscriptionPredictRepository) Count(subId, fixtureId, teamId int) (int64, error) {
+func (r *SubscriptionPredictWinRepository) Count(subId, fixtureId, teamId int) (int64, error) {
 	var count int64
 	err := r.db.Model(&entity.SubscriptionPredict{}).Where(&entity.SubscriptionPredict{SubscriptionID: int64(subId), FixtureID: int64(fixtureId), TeamID: int64(teamId)}).Count(&count).Error
 	if err != nil {
@@ -34,7 +34,7 @@ func (r *SubscriptionPredictRepository) Count(subId, fixtureId, teamId int) (int
 	return count, nil
 }
 
-func (r *SubscriptionPredictRepository) CountBySubId(subId int) (int64, error) {
+func (r *SubscriptionPredictWinRepository) CountBySubId(subId int) (int64, error) {
 	var count int64
 	err := r.db.Model(&entity.SubscriptionPredict{}).Where(&entity.SubscriptionPredict{SubscriptionID: int64(subId)}).Count(&count).Error
 	if err != nil {
@@ -43,7 +43,7 @@ func (r *SubscriptionPredictRepository) CountBySubId(subId int) (int64, error) {
 	return count, nil
 }
 
-func (r *SubscriptionPredictRepository) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {
+func (r *SubscriptionPredictWinRepository) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {
 	var creditgoals []*entity.SubscriptionPredict
 	err := r.db.Scopes(Paginate(creditgoals, pagination, r.db)).Find(&creditgoals).Error
 	if err != nil {
@@ -53,7 +53,7 @@ func (r *SubscriptionPredictRepository) GetAllPaginate(pagination *entity.Pagina
 	return pagination, nil
 }
 
-func (r *SubscriptionPredictRepository) Get(subId, fixtureId, teamId int) (*entity.SubscriptionPredict, error) {
+func (r *SubscriptionPredictWinRepository) Get(subId, fixtureId, teamId int) (*entity.SubscriptionPredict, error) {
 	var c entity.SubscriptionPredict
 	err := r.db.Where(&entity.SubscriptionPredict{SubscriptionID: int64(subId), FixtureID: int64(fixtureId), TeamID: int64(teamId)}).Take(&c).Error
 	if err != nil {
@@ -62,7 +62,7 @@ func (r *SubscriptionPredictRepository) Get(subId, fixtureId, teamId int) (*enti
 	return &c, nil
 }
 
-func (r *SubscriptionPredictRepository) Save(c *entity.SubscriptionPredict) (*entity.SubscriptionPredict, error) {
+func (r *SubscriptionPredictWinRepository) Save(c *entity.SubscriptionPredict) (*entity.SubscriptionPredict, error) {
 	err := r.db.Create(&c).Error
 	if err != nil {
 		return nil, err
@@ -70,7 +70,7 @@ func (r *SubscriptionPredictRepository) Save(c *entity.SubscriptionPredict) (*en
 	return c, nil
 }
 
-func (r *SubscriptionPredictRepository) Update(c *entity.SubscriptionPredict) (*entity.SubscriptionPredict, error) {
+func (r *SubscriptionPredictWinRepository) Update(c *entity.SubscriptionPredict) (*entity.SubscriptionPredict, error) {
 	err := r.db.Where("id = ?", c.ID).Updates(&c).Error
 	if err != nil {
 		return nil, err
@@ -78,7 +78,7 @@ func (r *SubscriptionPredictRepository) Update(c *entity.SubscriptionPredict) (*
 	return c, nil
 }
 
-func (r *SubscriptionPredictRepository) Delete(c *entity.SubscriptionPredict) error {
+func (r *SubscriptionPredictWinRepository) Delete(c *entity.SubscriptionPredict) error {
 	err := r.db.Delete(&c, c.ID).Error
 	if err != nil {
 		return err

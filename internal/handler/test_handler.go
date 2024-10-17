@@ -9,18 +9,22 @@ import (
 	"github.com/idprm/go-football-alert/internal/domain/model"
 	"github.com/idprm/go-football-alert/internal/logger"
 	"github.com/idprm/go-football-alert/internal/providers/telco"
+	"github.com/idprm/go-football-alert/internal/services"
 	"github.com/idprm/go-football-alert/internal/utils"
 )
 
 type TestHandler struct {
-	logger *logger.Logger
+	logger              *logger.Logger
+	subscriptionService services.ISubscriptionService
 }
 
 func NewTestHandler(
 	logger *logger.Logger,
+	subscriptionService services.ISubscriptionService,
 ) *TestHandler {
 	return &TestHandler{
-		logger: logger,
+		logger:              logger,
+		subscriptionService: subscriptionService,
 	}
 }
 
@@ -40,4 +44,15 @@ func (h *TestHandler) TestCharge() {
 	}
 
 	fmt.Println(respDeduct.Body.Item.TransactionSN)
+}
+
+func (h *TestHandler) TestUpdateToFalse() {
+	sub, err := h.subscriptionService.UpdateNotActive(&entity.Subscription{
+		ServiceID: 7,
+		Msisdn:    "22390869090",
+	})
+	if err != nil {
+		log.Println(err)
+	}
+	log.Println(sub)
 }

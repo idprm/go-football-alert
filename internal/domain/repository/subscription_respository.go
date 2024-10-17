@@ -26,6 +26,7 @@ type ISubscriptionRepository interface {
 	Update(*entity.Subscription) (*entity.Subscription, error)
 	Delete(*entity.Subscription) error
 	UpdateNotActive(*entity.Subscription) (*entity.Subscription, error)
+	UpdateNotFree(*entity.Subscription) (*entity.Subscription, error)
 	UpdateNotRetry(*entity.Subscription) (*entity.Subscription, error)
 	UpdateNotFollowTeam(*entity.Subscription) (*entity.Subscription, error)
 	UpdateNotFollowLeague(*entity.Subscription) (*entity.Subscription, error)
@@ -118,7 +119,7 @@ func (r *SubscriptionRepository) Delete(c *entity.Subscription) error {
 }
 
 func (r *SubscriptionRepository) UpdateNotActive(c *entity.Subscription) (*entity.Subscription, error) {
-	err := r.db.Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Update("is_active", false).Error
+	err := r.db.Model(c).Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Update("is_active", false).Error
 	if err != nil {
 		return nil, err
 	}
@@ -126,7 +127,15 @@ func (r *SubscriptionRepository) UpdateNotActive(c *entity.Subscription) (*entit
 }
 
 func (r *SubscriptionRepository) UpdateNotRetry(c *entity.Subscription) (*entity.Subscription, error) {
-	err := r.db.Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Update("is_retry", false).Error
+	err := r.db.Model(c).Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Update("is_retry", false).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
+func (r *SubscriptionRepository) UpdateNotFree(c *entity.Subscription) (*entity.Subscription, error) {
+	err := r.db.Model(c).Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Update("is_free", false).Error
 	if err != nil {
 		return nil, err
 	}
@@ -134,7 +143,7 @@ func (r *SubscriptionRepository) UpdateNotRetry(c *entity.Subscription) (*entity
 }
 
 func (r *SubscriptionRepository) UpdateNotFollowTeam(c *entity.Subscription) (*entity.Subscription, error) {
-	err := r.db.Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Update("is_follow_team", false).Error
+	err := r.db.Model(c).Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Update("is_follow_team", false).Error
 	if err != nil {
 		return nil, err
 	}
@@ -142,7 +151,7 @@ func (r *SubscriptionRepository) UpdateNotFollowTeam(c *entity.Subscription) (*e
 }
 
 func (r *SubscriptionRepository) UpdateNotFollowLeague(c *entity.Subscription) (*entity.Subscription, error) {
-	err := r.db.Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Update("is_follow_competition", false).Error
+	err := r.db.Model(c).Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Update("is_follow_competition", false).Error
 	if err != nil {
 		return nil, err
 	}
@@ -150,7 +159,7 @@ func (r *SubscriptionRepository) UpdateNotFollowLeague(c *entity.Subscription) (
 }
 
 func (r *SubscriptionRepository) UpdateNotPrediction(c *entity.Subscription) (*entity.Subscription, error) {
-	err := r.db.Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Update("is_prediction", false).Error
+	err := r.db.Model(c).Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Update("is_prediction", false).Error
 	if err != nil {
 		return nil, err
 	}
@@ -158,7 +167,7 @@ func (r *SubscriptionRepository) UpdateNotPrediction(c *entity.Subscription) (*e
 }
 
 func (r *SubscriptionRepository) UpdateNotCreditGoal(c *entity.Subscription) (*entity.Subscription, error) {
-	err := r.db.Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Update("is_credit_goal", false).Error
+	err := r.db.Model(c).Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Update("is_credit_goal", false).Error
 	if err != nil {
 		return nil, err
 	}
@@ -167,7 +176,7 @@ func (r *SubscriptionRepository) UpdateNotCreditGoal(c *entity.Subscription) (*e
 
 func (r *SubscriptionRepository) Follow() (*[]entity.Subscription, error) {
 	var sub []entity.Subscription
-	err := r.db.Where(&entity.Subscription{IsActive: true}).Where("(is_follow_team = true OR is_follow_competition = true)").Find(&sub).Error
+	err := r.db.Where("is_active = true AND (is_follow_team = true OR is_follow_competition = true)").Find(&sub).Error
 	if err != nil {
 		return nil, err
 	}
@@ -198,7 +207,7 @@ func (r *SubscriptionRepository) Prediction() (*[]entity.Subscription, error) {
 // SELECT (UNIX_TIMESTAMP("2017-06-10 18:30:10")-UNIX_TIMESTAMP("2017-06-10 18:40:10"))/3600 hour_diff
 func (r *SubscriptionRepository) Renewal() (*[]entity.Subscription, error) {
 	var sub []entity.Subscription
-	err := r.db.Where(&entity.Subscription{IsActive: true}).Where("(UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(renewal_at)) / 3600 > 0").Order("DATE(created_at) DESC").Find(&sub).Error
+	err := r.db.Where("is_active = true AND (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(renewal_at)) / 3600 > 0").Order("DATE(created_at) DESC").Find(&sub).Error
 	if err != nil {
 		return nil, err
 	}
@@ -208,7 +217,7 @@ func (r *SubscriptionRepository) Renewal() (*[]entity.Subscription, error) {
 // SELECT (UNIX_TIMESTAMP("2017-06-10 18:30:10" + INTERVAL 1 DAY)-UNIX_TIMESTAMP("2017-06-10 18:40:10"))/3600 hour_diff (tommorow)
 func (r *SubscriptionRepository) Retry() (*[]entity.Subscription, error) {
 	var sub []entity.Subscription
-	err := r.db.Where(&entity.Subscription{IsRetry: true, IsActive: true}).Where("(UNIX_TIMESTAMP(NOW() + INTERVAL 1 DAY) - UNIX_TIMESTAMP(renewal_at)) / 3600 > 0").Order("DATE(created_at) DESC").Find(&sub).Error
+	err := r.db.Where("is_active = true AND is_retry = true AND (UNIX_TIMESTAMP(NOW() + INTERVAL 1 DAY) - UNIX_TIMESTAMP(renewal_at)) / 3600 > 0").Order("DATE(created_at) DESC").Find(&sub).Error
 	if err != nil {
 		return nil, err
 	}

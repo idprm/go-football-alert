@@ -30,7 +30,7 @@ type SMSHandler struct {
 	leagueService                   services.ILeagueService
 	teamService                     services.ITeamService
 	subscriptionCreditGoalService   services.ISubscriptionCreditGoalService
-	subscriptionPredictService      services.ISubscriptionPredictService
+	subscriptionPredictWinService   services.ISubscriptionPredictWinService
 	subscriptionFollowLeagueService services.ISubscriptionFollowLeagueService
 	subscriptionFollowTeamService   services.ISubscriptionFollowTeamService
 	verifyService                   services.IVerifyService
@@ -50,7 +50,7 @@ func NewSMSHandler(
 	leagueService services.ILeagueService,
 	teamService services.ITeamService,
 	subscriptionCreditGoalService services.ISubscriptionCreditGoalService,
-	subscriptionPredictService services.ISubscriptionPredictService,
+	subscriptionPredictWinService services.ISubscriptionPredictWinService,
 	subscriptionFollowLeagueService services.ISubscriptionFollowLeagueService,
 	subscriptionFollowTeamService services.ISubscriptionFollowTeamService,
 	verifyService services.IVerifyService,
@@ -69,7 +69,7 @@ func NewSMSHandler(
 		leagueService:                   leagueService,
 		teamService:                     teamService,
 		subscriptionCreditGoalService:   subscriptionCreditGoalService,
-		subscriptionPredictService:      subscriptionPredictService,
+		subscriptionPredictWinService:   subscriptionPredictWinService,
 		subscriptionFollowLeagueService: subscriptionFollowLeagueService,
 		subscriptionFollowTeamService:   subscriptionFollowTeamService,
 		verifyService:                   verifyService,
@@ -259,6 +259,7 @@ func (h *SMSHandler) SubAlerteCompetition(league *entity.League) {
 				LatestStatus:  STATUS_SUCCESS,
 				RenewalAt:     time.Now().AddDate(0, 0, service.GetFreeDay()),
 				LatestPayload: "-",
+				IsFree:        true,
 			},
 		)
 
@@ -512,6 +513,7 @@ func (h *SMSHandler) SubAlerteEquipe(team *entity.Team) {
 				LatestStatus:  STATUS_SUCCESS,
 				RenewalAt:     time.Now().AddDate(0, 0, service.GetFreeDay()),
 				LatestPayload: "-",
+				IsFree:        true,
 			},
 		)
 
@@ -572,6 +574,9 @@ func (h *SMSHandler) SubAlerteEquipe(team *entity.Team) {
 					LatestPayload:        string(resp),
 				},
 			)
+
+			// is_retry set to false
+			h.subscriptionService.UpdateNotRetry(sub)
 
 			h.transactionService.Save(
 				&entity.Transaction{
