@@ -23,6 +23,8 @@ type ISubscriptionService interface {
 	IsSubscription(int, string) bool
 	IsActiveSubscription(int, string) bool
 	IsActiveSubscriptionByCategory(string, string) bool
+	IsRenewal(int, string) bool
+	IsRetry(int, string) bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetByCategory(string, string) (*entity.Subscription, error)
 	Get(int, string) (*entity.Subscription, error)
@@ -54,6 +56,16 @@ func (s *SubscriptionService) IsActiveSubscription(serviceId int, msisdn string)
 
 func (s *SubscriptionService) IsActiveSubscriptionByCategory(category string, msisdn string) bool {
 	count, _ := s.subscriptionRepo.CountActiveByCategory(category, msisdn)
+	return count > 0
+}
+
+func (s *SubscriptionService) IsRenewal(serviceId int, msisdn string) bool {
+	count, _ := s.subscriptionRepo.CountRenewal(serviceId, msisdn)
+	return count > 0
+}
+
+func (s *SubscriptionService) IsRetry(serviceId int, msisdn string) bool {
+	count, _ := s.subscriptionRepo.CountRetry(serviceId, msisdn)
 	return count > 0
 }
 

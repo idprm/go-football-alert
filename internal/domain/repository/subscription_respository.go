@@ -19,6 +19,8 @@ type ISubscriptionRepository interface {
 	Count(int, string) (int64, error)
 	CountActive(int, string) (int64, error)
 	CountActiveByCategory(string, string) (int64, error)
+	CountRenewal(int, string) (int64, error)
+	CountRetry(int, string) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetByCategory(string, string) (*entity.Subscription, error)
 	Get(int, string) (*entity.Subscription, error)
@@ -60,6 +62,24 @@ func (r *SubscriptionRepository) CountActive(serviceId int, msisdn string) (int6
 func (r *SubscriptionRepository) CountActiveByCategory(category string, msisdn string) (int64, error) {
 	var count int64
 	err := r.db.Model(&entity.Subscription{}).Where("category = ?", category).Where("msisdn = ?", msisdn).Where("is_active = ?", true).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *SubscriptionRepository) CountRenewal(serviceId int, msisdn string) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Subscription{}).Where("service_id = ?", serviceId).Where("msisdn = ?", msisdn).Where("is_active = true AND (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(renewal_at)) / 3600 > 0").Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *SubscriptionRepository) CountRetry(serviceId int, msisdn string) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Subscription{}).Where("service_id = ?", serviceId).Where("msisdn = ?", msisdn).Where("is_active = true AND is_retry = true AND (UNIX_TIMESTAMP(NOW() + INTERVAL 1 DAY) - UNIX_TIMESTAMP(renewal_at)) / 3600 > 0").Count(&count).Error
 	if err != nil {
 		return count, err
 	}

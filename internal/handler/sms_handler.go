@@ -330,6 +330,9 @@ func (h *SMSHandler) SubAlerteCompetition(league *entity.League) {
 					},
 				)
 
+				// is_retry set to false
+				h.subscriptionService.UpdateNotRetry(sub)
+
 				h.transactionService.Save(
 					&entity.Transaction{
 						TrxId:        trxId,
@@ -635,6 +638,9 @@ func (h *SMSHandler) SubAlerteEquipe(team *entity.Team) {
 						LatestPayload:        string(resp),
 					},
 				)
+
+				// is_retry set to false
+				h.subscriptionService.UpdateNotRetry(sub)
 
 				h.transactionService.Save(
 					&entity.Transaction{
