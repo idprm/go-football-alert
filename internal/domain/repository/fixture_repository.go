@@ -61,14 +61,14 @@ func (r *FixtureRepository) CountByFixtureDate(fixDate time.Time) (int64, error)
 	return count, nil
 }
 
-func (r *FixtureRepository) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {
+func (r *FixtureRepository) GetAllPaginate(p *entity.Pagination) (*entity.Pagination, error) {
 	var fixtures []*entity.Fixture
-	err := r.db.Scopes(Paginate(fixtures, pagination, r.db)).Preload("Home").Preload("Away").Find(&fixtures).Error
+	err := r.db.Where("UPPER(home.name) LIKE UPPER(?) OR UPPER(away.name) LIKE UPPER(?)", "%"+p.GetSearch()+"%", "%"+p.GetSearch()+"%").Scopes(Paginate(fixtures, p, r.db)).Preload("Home").Preload("Away").Find(&fixtures).Error
 	if err != nil {
 		return nil, err
 	}
-	pagination.Rows = fixtures
-	return pagination, nil
+	p.Rows = fixtures
+	return p, nil
 }
 
 func (r *FixtureRepository) GetAll() ([]*entity.Fixture, error) {

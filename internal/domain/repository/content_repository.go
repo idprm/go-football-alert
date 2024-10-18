@@ -33,14 +33,14 @@ func (r *ContentRepository) Count(name string) (int64, error) {
 	return count, nil
 }
 
-func (r *ContentRepository) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {
+func (r *ContentRepository) GetAllPaginate(p *entity.Pagination) (*entity.Pagination, error) {
 	var contents []*entity.Content
-	err := r.db.Scopes(Paginate(contents, pagination, r.db)).Find(&contents).Error
+	err := r.db.Where("UPPER(name) LIKE UPPER(?)", "%"+p.GetSearch()+"%").Scopes(Paginate(contents, p, r.db)).Find(&contents).Error
 	if err != nil {
 		return nil, err
 	}
-	pagination.Rows = contents
-	return pagination, nil
+	p.Rows = contents
+	return p, nil
 }
 
 func (r *ContentRepository) Get(name string) (*entity.Content, error) {

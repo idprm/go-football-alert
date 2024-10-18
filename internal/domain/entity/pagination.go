@@ -4,6 +4,7 @@ type Pagination struct {
 	Limit      int         `json:"limit,omitempty" query:"limit"`
 	Page       int         `json:"page,omitempty" query:"page"`
 	Sort       string      `json:"sort,omitempty" query:"sort"`
+	Search     string      `json:"search,omitempty" query:"search"`
 	TotalRows  int64       `json:"total_rows,omitempty"`
 	TotalPages int         `json:"total_pages,omitempty"`
 	Rows       interface{} `json:"rows"`
@@ -29,9 +30,13 @@ func (p *Pagination) GetPage() int {
 
 func (p *Pagination) GetSort() string {
 	if p.Sort == "" {
-		p.Sort = "Id desc"
+		p.Sort = "id desc"
 	}
 	return p.Sort
+}
+
+func (p *Pagination) GetSearch() string {
+	return p.Search
 }
 
 type PaginateUssd struct {

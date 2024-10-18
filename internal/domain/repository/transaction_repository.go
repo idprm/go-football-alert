@@ -33,14 +33,14 @@ func (r *TransactionRepository) Count(serviceId int, msisdn, date string) (int64
 	return count, nil
 }
 
-func (r *TransactionRepository) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {
+func (r *TransactionRepository) GetAllPaginate(p *entity.Pagination) (*entity.Pagination, error) {
 	var transactions []*entity.Transaction
-	err := r.db.Scopes(Paginate(transactions, pagination, r.db)).Find(&transactions).Error
+	err := r.db.Where("UPPER(msisdn) LIKE UPPER(?) OR UPPER(keyword) LIKE UPPER(?)", "%"+p.GetSearch()+"%", "%"+p.GetSearch()+"%").Scopes(Paginate(transactions, p, r.db)).Find(&transactions).Error
 	if err != nil {
 		return nil, err
 	}
-	pagination.Rows = transactions
-	return pagination, nil
+	p.Rows = transactions
+	return p, nil
 }
 
 func (r *TransactionRepository) Get(serviceId int, msisdn, date string) (*entity.Transaction, error) {

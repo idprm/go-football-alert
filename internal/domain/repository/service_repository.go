@@ -58,14 +58,14 @@ func (r *ServiceRepository) CountByPackage(cat, pkg string) (int64, error) {
 	return count, nil
 }
 
-func (r *ServiceRepository) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {
+func (r *ServiceRepository) GetAllPaginate(p *entity.Pagination) (*entity.Pagination, error) {
 	var services []*entity.Service
-	err := r.db.Scopes(Paginate(services, pagination, r.db)).Find(&services).Error
+	err := r.db.Where("UPPER(name) LIKE UPPER(?) OR UPPER(code) LIKE UPPER(?)", "%"+p.GetSearch()+"%", "%"+p.GetSearch()+"%").Scopes(Paginate(services, p, r.db)).Find(&services).Error
 	if err != nil {
 		return nil, err
 	}
-	pagination.Rows = services
-	return pagination, nil
+	p.Rows = services
+	return p, nil
 }
 
 func (r *ServiceRepository) GetAllByCategory(cat string) ([]*entity.Service, error) {

@@ -35,12 +35,12 @@ func (r *PredictionRepository) Count(fixtureId int) (int64, error) {
 }
 
 func (r *PredictionRepository) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {
-	var news []*entity.News
-	err := r.db.Scopes(Paginate(news, pagination, r.db)).Find(&news).Error
+	var predictions []*entity.Prediction
+	err := r.db.Scopes(Paginate(predictions, pagination, r.db)).Find(&predictions).Error
 	if err != nil {
 		return nil, err
 	}
-	pagination.Rows = news
+	pagination.Rows = predictions
 	return pagination, nil
 }
 

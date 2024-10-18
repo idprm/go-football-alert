@@ -79,14 +79,14 @@ func (r *TeamRepository) CountLeagueByTeam(teamId int) (int64, error) {
 	return count, nil
 }
 
-func (r *TeamRepository) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {
+func (r *TeamRepository) GetAllPaginate(p *entity.Pagination) (*entity.Pagination, error) {
 	var teams []*entity.Team
-	err := r.db.Scopes(Paginate(teams, pagination, r.db)).Find(&teams).Error
+	err := r.db.Where("UPPER(name) LIKE UPPER(?) OR UPPER(code) LIKE UPPER(?)", "%"+p.GetSearch()+"%", "%"+p.GetSearch()+"%").Scopes(Paginate(teams, p, r.db)).Find(&teams).Error
 	if err != nil {
 		return nil, err
 	}
-	pagination.Rows = teams
-	return pagination, nil
+	p.Rows = teams
+	return p, nil
 }
 
 func (r *TeamRepository) GetAllTeamUSSD(leagueId, page int) ([]*entity.LeagueTeam, error) {

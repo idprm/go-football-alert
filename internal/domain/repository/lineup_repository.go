@@ -46,14 +46,14 @@ func (r *LineupRepository) CountByFixtureId(fixtureId int) (int64, error) {
 	return count, nil
 }
 
-func (r *LineupRepository) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {
+func (r *LineupRepository) GetAllPaginate(p *entity.Pagination) (*entity.Pagination, error) {
 	var lineups []*entity.Lineup
-	err := r.db.Scopes(Paginate(lineups, pagination, r.db)).Find(&lineups).Error
+	err := r.db.Where("UPPER(team_name) LIKE UPPER(?)", "%"+p.GetSearch()+"%").Scopes(Paginate(lineups, p, r.db)).Find(&lineups).Error
 	if err != nil {
 		return nil, err
 	}
-	pagination.Rows = lineups
-	return pagination, nil
+	p.Rows = lineups
+	return p, nil
 }
 
 func (r *LineupRepository) GetAllUSSD() ([]*entity.Lineup, error) {

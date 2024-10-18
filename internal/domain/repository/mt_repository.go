@@ -20,14 +20,14 @@ type IMTRepository interface {
 	Save(*entity.MT) (*entity.MT, error)
 }
 
-func (r *MTRepository) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {
+func (r *MTRepository) GetAllPaginate(p *entity.Pagination) (*entity.Pagination, error) {
 	var mts []*entity.MT
-	err := r.db.Scopes(Paginate(mts, pagination, r.db)).Find(&mts).Error
+	err := r.db.Where("UPPER(msisdn) LIKE UPPER(?) OR UPPER(keyword) LIKE UPPER(?) OR UPPER(content) LIKE UPPER(?)", "%"+p.GetSearch()+"%", "%"+p.GetSearch()+"%", "%"+p.GetSearch()+"%").Scopes(Paginate(mts, p, r.db)).Find(&mts).Error
 	if err != nil {
 		return nil, err
 	}
-	pagination.Rows = mts
-	return pagination, nil
+	p.Rows = mts
+	return p, nil
 }
 
 func (r *MTRepository) Save(c *entity.MT) (*entity.MT, error) {

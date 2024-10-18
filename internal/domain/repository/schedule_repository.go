@@ -43,14 +43,14 @@ func (r *ScheduleRepository) CountLocked(key, hour string) (int64, error) {
 	return count, nil
 }
 
-func (r *ScheduleRepository) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {
+func (r *ScheduleRepository) GetAllPaginate(p *entity.Pagination) (*entity.Pagination, error) {
 	var schedules []*entity.Schedule
-	err := r.db.Scopes(Paginate(schedules, pagination, r.db)).Find(&schedules).Error
+	err := r.db.Where("UPPER(name) LIKE UPPER(?)", "%"+p.GetSearch()+"%").Scopes(Paginate(schedules, p, r.db)).Find(&schedules).Error
 	if err != nil {
 		return nil, err
 	}
-	pagination.Rows = schedules
-	return pagination, nil
+	p.Rows = schedules
+	return p, nil
 }
 
 func (r *ScheduleRepository) Get(key, hour string) (*entity.Schedule, error) {

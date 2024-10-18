@@ -86,14 +86,14 @@ func (r *SubscriptionRepository) CountRetry(serviceId int, msisdn string) (int64
 	return count, nil
 }
 
-func (r *SubscriptionRepository) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {
+func (r *SubscriptionRepository) GetAllPaginate(p *entity.Pagination) (*entity.Pagination, error) {
 	var subscriptions []*entity.Subscription
-	err := r.db.Scopes(Paginate(subscriptions, pagination, r.db)).Find(&subscriptions).Error
+	err := r.db.Where("UPPER(msisdn) LIKE UPPER(?) OR UPPER(latest_keyword) LIKE UPPER(?)", "%"+p.GetSearch()+"%", "%"+p.GetSearch()+"%").Scopes(Paginate(subscriptions, p, r.db)).Find(&subscriptions).Error
 	if err != nil {
 		return nil, err
 	}
-	pagination.Rows = subscriptions
-	return pagination, nil
+	p.Rows = subscriptions
+	return p, nil
 }
 
 func (r *SubscriptionRepository) GetByCategory(category, msisdn string) (*entity.Subscription, error) {

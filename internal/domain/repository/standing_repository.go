@@ -45,14 +45,14 @@ func (r *StandingRepository) CountByRank(leagueId, rank int) (int64, error) {
 	return count, nil
 }
 
-func (r *StandingRepository) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {
+func (r *StandingRepository) GetAllPaginate(p *entity.Pagination) (*entity.Pagination, error) {
 	var standings []*entity.Standing
-	err := r.db.Scopes(Paginate(standings, pagination, r.db)).Find(&standings).Error
+	err := r.db.Scopes(Paginate(standings, p, r.db)).Find(&standings).Error
 	if err != nil {
 		return nil, err
 	}
-	pagination.Rows = standings
-	return pagination, nil
+	p.Rows = standings
+	return p, nil
 }
 
 func (r *StandingRepository) Get(id int) (*entity.Standing, error) {

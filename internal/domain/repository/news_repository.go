@@ -73,14 +73,14 @@ func (r *NewsRepository) CountById(id int64) (int64, error) {
 	return count, nil
 }
 
-func (r *NewsRepository) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {
+func (r *NewsRepository) GetAllPaginate(p *entity.Pagination) (*entity.Pagination, error) {
 	var news []*entity.News
-	err := r.db.Scopes(Paginate(news, pagination, r.db)).Find(&news).Error
+	err := r.db.Where("UPPER(title) LIKE UPPER(?)", "%"+p.GetSearch()+"%").Scopes(Paginate(news, p, r.db)).Find(&news).Error
 	if err != nil {
 		return nil, err
 	}
-	pagination.Rows = news
-	return pagination, nil
+	p.Rows = news
+	return p, nil
 }
 
 func (r *NewsRepository) GetAllUSSD(page int) ([]*entity.News, error) {

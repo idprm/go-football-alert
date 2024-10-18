@@ -35,14 +35,14 @@ type IUssdRepository interface {
 	Get(string) (*entity.Ussd, error)
 }
 
-func (r *UssdRepository) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {
+func (r *UssdRepository) GetAllPaginate(p *entity.Pagination) (*entity.Pagination, error) {
 	var ussds []*entity.Ussd
-	err := r.db.Scopes(Paginate(ussds, pagination, r.db)).Find(&ussds).Error
+	err := r.db.Where("UPPER(msisdn) LIKE UPPER(?)", "%"+p.GetSearch()+"%").Scopes(Paginate(ussds, p, r.db)).Find(&ussds).Error
 	if err != nil {
 		return nil, err
 	}
-	pagination.Rows = ussds
-	return pagination, nil
+	p.Rows = ussds
+	return p, nil
 }
 
 func (r *UssdRepository) GetAll() ([]*entity.Ussd, error) {
