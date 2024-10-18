@@ -79,8 +79,9 @@ func (h *RenewalHandler) Dailypush() {
 			var respBalance *model.QueryProfileAndBalResponse
 			xml.Unmarshal(respBal, &respBalance)
 
+			// if balance enough with service price, then deduct feee
 			if respBalance.IsEnoughBalance(service) {
-				// if balance
+
 				respDFee, err := t.DeductFee()
 				if err != nil {
 					log.Println(err.Error())

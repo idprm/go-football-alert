@@ -60,7 +60,7 @@ var publisherRenewalCmd = &cobra.Command{
 		)
 
 		/**
-		 * Looping schedule per 10 minutes
+		 * Looping schedule per 1 hour
 		 */
 		timeDuration := time.Duration(1)
 
@@ -70,7 +70,7 @@ var publisherRenewalCmd = &cobra.Command{
 				populateRenewal(db, rmq)
 			}()
 
-			time.Sleep(timeDuration * time.Minute)
+			time.Sleep(timeDuration * time.Hour)
 		}
 	},
 }
@@ -108,9 +108,9 @@ var publisherRetryCmd = &cobra.Command{
 		)
 
 		/**
-		 * Looping schedule per 30 minutes
+		 * Looping schedule per 4 hours
 		 */
-		timeDuration := time.Duration(30)
+		timeDuration := time.Duration(4)
 
 		for {
 
@@ -118,7 +118,7 @@ var publisherRetryCmd = &cobra.Command{
 				populateRetry(db, rmq)
 			}()
 
-			time.Sleep(timeDuration * time.Minute)
+			time.Sleep(timeDuration * time.Hour)
 		}
 	},
 }
@@ -179,7 +179,7 @@ var publisherPronosticCmd = &cobra.Command{
 	},
 }
 
-var publisherCreditCmd = &cobra.Command{
+var publisherCreditGoalCmd = &cobra.Command{
 	Use:   "pub_credit_goal",
 	Short: "Publisher Credit CLI",
 	Long:  ``,
@@ -203,7 +203,7 @@ var publisherCreditCmd = &cobra.Command{
 		/**
 		 * SETUP CHANNEL
 		 */
-		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_CREDIT_EXCHANGE, true, RMQ_CREDIT_QUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_CREDIT_GOAL_EXCHANGE, true, RMQ_CREDIT_GOAL_QUEUE)
 
 		/**
 		 * Looping schedule
@@ -441,7 +441,13 @@ var publisherSMSAlerteCmd = &cobra.Command{
 		/**
 		 * SETUP CHANNEL
 		 */
-		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_SMS_ALERTE_EXCHANGE, true, RMQ_SMS_ALERTE_QUEUE)
+		rmq.SetUpChannel(
+			RMQ_EXCHANGE_TYPE,
+			true,
+			RMQ_SMS_ALERTE_EXCHANGE,
+			true,
+			RMQ_SMS_ALERTE_QUEUE,
+		)
 
 		/**
 		 * Looping schedule
@@ -598,7 +604,7 @@ func populateGoalCredit(db *gorm.DB, rmq rmqp.AMQP) {
 
 		json, _ := json.Marshal(sub)
 
-		rmq.IntegratePublish(RMQ_CREDIT_EXCHANGE, RMQ_CREDIT_QUEUE, RMQ_DATA_TYPE, "", string(json))
+		rmq.IntegratePublish(RMQ_CREDIT_GOAL_EXCHANGE, RMQ_CREDIT_GOAL_QUEUE, RMQ_DATA_TYPE, "", string(json))
 
 		time.Sleep(100 * time.Microsecond)
 	}

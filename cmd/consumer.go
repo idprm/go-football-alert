@@ -600,10 +600,10 @@ var consumerCreditGoalCmd = &cobra.Command{
 		/**
 		 * SETUP CHANNEL
 		 */
-		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_CREDIT_EXCHANGE, true, RMQ_CREDIT_QUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_CREDIT_GOAL_EXCHANGE, true, RMQ_CREDIT_GOAL_QUEUE)
 		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_MT_EXCHANGE, true, RMQ_MT_QUEUE)
 
-		messagesData, errSub := rmq.Subscribe(1, false, RMQ_CREDIT_QUEUE, RMQ_CREDIT_EXCHANGE, RMQ_CREDIT_QUEUE)
+		messagesData, errSub := rmq.Subscribe(1, false, RMQ_CREDIT_GOAL_QUEUE, RMQ_CREDIT_GOAL_EXCHANGE, RMQ_CREDIT_GOAL_QUEUE)
 		if errSub != nil {
 			panic(errSub)
 		}

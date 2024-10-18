@@ -53,8 +53,8 @@ const (
 	RMQ_PRONOSTIC_QUEUE      string = "Q_PRONOSTIC"
 	RMQ_PREDICT_WIN_EXCHANGE string = "E_PREDICT_WIN"
 	RMQ_PREDICT_WIN_QUEUE    string = "Q_PREDICT_WIN"
-	RMQ_CREDIT_EXCHANGE      string = "E_CREDIT_GOAL"
-	RMQ_CREDIT_QUEUE         string = "Q_CREDIT_GOAL"
+	RMQ_CREDIT_GOAL_EXCHANGE string = "E_CREDIT_GOAL"
+	RMQ_CREDIT_GOAL_QUEUE    string = "Q_CREDIT_GOAL"
 	RMQ_RENEWAL_EXCHANGE     string = "E_RENEWAL"
 	RMQ_RENEWAL_QUEUE        string = "Q_RENEWAL"
 	RMQ_RETRY_EXCHANGE       string = "E_RETRY"
@@ -152,7 +152,7 @@ func init() {
 	rootCmd.AddCommand(publisherScrapingNewsCmd)
 	rootCmd.AddCommand(publisherSMSAlerteCmd)
 	rootCmd.AddCommand(publisherPronosticCmd)
-	rootCmd.AddCommand(publisherCreditCmd)
+	rootCmd.AddCommand(publisherCreditGoalCmd)
 	rootCmd.AddCommand(publisherPredictWinCmd)
 	rootCmd.AddCommand(publisherRenewalCmd)
 	rootCmd.AddCommand(publisherRetryCmd)
