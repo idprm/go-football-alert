@@ -33,7 +33,7 @@ func (r *SMSAlerteRespository) Count(subscriptionId, newsId int64) (int64, error
 func (r *SMSAlerteRespository) GetAllPaginate(p *entity.Pagination) (*entity.Pagination, error) {
 	var alerts []*entity.SMSAlerte
 	// Where("Subscription.msisdn LIKE UPPER(?) OR News.title LIKE UPPER(?)", p.GetSearch(), p.GetSearch())
-	err := r.db.Scopes(Paginate(alerts, p, r.db)).Joins("Subscription").Joins("News").Find(&alerts).Error
+	err := r.db.Scopes(Paginate(alerts, p, r.db)).Joins("Subscription", r.db.Where("msisdn LIKE UPPER(?)", p.GetSearch())).Joins("News", r.db.Where("UPPER(title) LIKE UPPER(?)", p.GetSearch())).Find(&alerts).Error
 	if err != nil {
 		return nil, err
 	}
