@@ -64,6 +64,7 @@ func (h *NewsHandler) Filter() {
 					log.Println(l.League)
 				}
 			}
+
 			// away
 			if h.teamService.IsTeamByName(h.news.GetWithoutAccent(h.news.GetAwayTeam())) {
 				team, err := h.teamService.GetByName(h.news.GetWithoutAccent(h.news.GetAwayTeam()))
@@ -95,6 +96,55 @@ func (h *NewsHandler) Filter() {
 					log.Println(l.League)
 				}
 			}
+
+			// league
+			if h.leagueService.IsLeagueByName(h.news.GetTitleWithoutAccents()) {
+				league, err := h.leagueService.GetByName(h.news.GetTitleWithoutAccents())
+				if err != nil {
+					log.Println(err.Error())
+				}
+				// save
+				h.newsService.SaveNewsLeague(
+					&entity.NewsLeagues{
+						NewsID:   h.news.GetId(),
+						LeagueID: league.GetId(),
+					},
+				)
+				log.Println(league)
+			}
+
+			// team
+			if h.teamService.IsTeamByName(h.news.GetTitleWithoutAccents()) {
+				team, err := h.teamService.GetByName(h.news.GetTitleWithoutAccents())
+				if err != nil {
+					log.Println(err.Error())
+				}
+				// save
+				h.newsService.SaveNewsTeam(
+					&entity.NewsTeams{
+						NewsID: h.news.GetId(),
+						TeamID: team.GetId(),
+					},
+				)
+				log.Println(team)
+
+				// assign league by team
+				if h.teamService.IsLeagueByTeam(int(team.GetId())) {
+					l, err := h.teamService.GetLeagueByTeam(int(team.GetId()))
+					if err != nil {
+						log.Println(err.Error())
+					}
+
+					h.newsService.SaveNewsLeague(
+						&entity.NewsLeagues{
+							NewsID:   h.news.GetId(),
+							LeagueID: l.League.GetId(),
+						},
+					)
+					log.Println(l.League)
+				}
+			}
+
 		} else {
 			if h.leagueService.IsLeagueByName(h.news.GetWithoutAccent(h.news.GetParseTitleLeft())) {
 				league, err := h.leagueService.GetByName(h.news.GetWithoutAccent(h.news.GetParseTitleLeft()))
@@ -113,6 +163,21 @@ func (h *NewsHandler) Filter() {
 
 			if h.leagueService.IsLeagueByName(h.news.GetWithoutAccent(h.news.GetParseTitleRight())) {
 				league, err := h.leagueService.GetByName(h.news.GetWithoutAccent(h.news.GetParseTitleRight()))
+				if err != nil {
+					log.Println(err.Error())
+				}
+				// save
+				h.newsService.SaveNewsLeague(
+					&entity.NewsLeagues{
+						NewsID:   h.news.GetId(),
+						LeagueID: league.GetId(),
+					},
+				)
+				log.Println(league)
+			}
+
+			if h.leagueService.IsLeagueByName(h.news.GetTitleWithoutAccents()) {
+				league, err := h.leagueService.GetByName(h.news.GetTitleWithoutAccents())
 				if err != nil {
 					log.Println(err.Error())
 				}
@@ -160,6 +225,37 @@ func (h *NewsHandler) Filter() {
 
 			if h.teamService.IsTeamByName(h.news.GetWithoutAccent(h.news.GetParseTitleRight())) {
 				team, err := h.teamService.GetByName(h.news.GetParseTitleRight())
+				if err != nil {
+					log.Println(err.Error())
+				}
+				// save
+				h.newsService.SaveNewsTeam(
+					&entity.NewsTeams{
+						NewsID: h.news.GetId(),
+						TeamID: team.GetId(),
+					},
+				)
+				log.Println(team)
+
+				// assign league by team
+				if h.teamService.IsLeagueByTeam(int(team.GetId())) {
+					l, err := h.teamService.GetLeagueByTeam(int(team.GetId()))
+					if err != nil {
+						log.Println(err.Error())
+					}
+
+					h.newsService.SaveNewsLeague(
+						&entity.NewsLeagues{
+							NewsID:   h.news.GetId(),
+							LeagueID: l.League.GetId(),
+						},
+					)
+					log.Println(l.League)
+				}
+			}
+
+			if h.teamService.IsTeamByName(h.news.GetTitleWithoutAccents()) {
+				team, err := h.teamService.GetByName(h.news.GetTitleWithoutAccents())
 				if err != nil {
 					log.Println(err.Error())
 				}
