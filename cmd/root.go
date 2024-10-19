@@ -78,6 +78,7 @@ const (
 	ACT_SUB                  string = "SUB"
 	ACT_UNSUB                string = "UNSUB"
 	ACT_USER_LOSES           string = "USER_LOSES"
+	ACT_PREDICTION           string = "PREDICTION"
 	ACT_SCRAPING             string = "SCRAPING"
 )
 

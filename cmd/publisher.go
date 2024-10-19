@@ -389,11 +389,11 @@ var publisherScrapingPredictionCmd = &cobra.Command{
 			scheduleRepo := repository.NewScheduleRepository(db)
 			scheduleService := services.NewScheduleService(scheduleRepo)
 
-			if scheduleService.IsUnlocked(ACT_SCRAPING, timeNow) {
+			if scheduleService.IsUnlocked(ACT_PREDICTION, timeNow) {
 
 				scheduleService.UpdateLocked(
 					&entity.Schedule{
-						Name: ACT_SCRAPING,
+						Name: ACT_PREDICTION,
 					},
 				)
 
@@ -402,10 +402,10 @@ var publisherScrapingPredictionCmd = &cobra.Command{
 				}()
 			}
 
-			if scheduleService.IsUnlocked(ACT_SCRAPING, timeNow) {
+			if scheduleService.IsUnlocked(ACT_PREDICTION, timeNow) {
 				scheduleService.Update(
 					&entity.Schedule{
-						Name:       ACT_SCRAPING,
+						Name:       ACT_PREDICTION,
 						IsUnlocked: true,
 					},
 				)
