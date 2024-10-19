@@ -63,6 +63,16 @@ func (h *DCBHandler) GetAllSummaryPaginate(c *fiber.Ctx) error {
 		)
 	}
 
+	if !req.IsDate() {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusBadRequest,
+				Message:    "please set month of date",
+			},
+		)
+	}
+
 	summaries, err := h.summaryService.GetAllPaginate(req)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
@@ -73,7 +83,62 @@ func (h *DCBHandler) GetAllSummaryPaginate(c *fiber.Ctx) error {
 			},
 		)
 	}
-	return c.Status(fiber.StatusOK).JSON(summaries)
+
+	totalSub, err := h.summaryService.GetSubByMonth(req.GetDate())
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusInternalServerError,
+				Message:    err.Error(),
+			},
+		)
+	}
+
+	totalUnsub, err := h.summaryService.GetUnsubByMonth(req.GetDate())
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusInternalServerError,
+				Message:    err.Error(),
+			},
+		)
+	}
+
+	totalRenewal, err := h.summaryService.GetRenewalByMonth(req.GetDate())
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusInternalServerError,
+				Message:    err.Error(),
+			},
+		)
+	}
+
+	totalRevenue, err := h.summaryService.GetRevenueByMonth(req.GetDate())
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusInternalServerError,
+				Message:    err.Error(),
+			},
+		)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(
+		&model.SummaryResponse{
+			Month:        req.GetDate().Month().String(),
+			Year:         req.GetDate().Year(),
+			TotalSub:     totalSub,
+			TotalUnsub:   totalUnsub,
+			TotalRenewal: totalRenewal,
+			TotalRevenue: totalRevenue,
+			Results:      summaries,
+		},
+	)
 }
 
 func (h *DCBHandler) GetAllMenuPaginate(c *fiber.Ctx) error {

@@ -21,6 +21,10 @@ type ISummaryRepository interface {
 	Count(int, time.Time) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	Get(int, time.Time) (*entity.Summary, error)
+	GetSubByMonth(time.Time) (int, error)
+	GetUnsubByMonth(time.Time) (int, error)
+	GetRenewalByMonth(time.Time) (int, error)
+	GetRevenueByMonth(time.Time) (float64, error)
 	Save(*entity.Summary) (*entity.Summary, error)
 	Update(*entity.Summary) (*entity.Summary, error)
 	Delete(*entity.Summary) error
@@ -35,14 +39,14 @@ func (r *SummaryRepository) Count(serviceId int, date time.Time) (int64, error) 
 	return count, nil
 }
 
-func (r *SummaryRepository) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {
+func (r *SummaryRepository) GetAllPaginate(p *entity.Pagination) (*entity.Pagination, error) {
 	var summaries []*entity.Summary
-	err := r.db.Scopes(Paginate(summaries, pagination, r.db)).Preload("Service").Find(&summaries).Error
+	err := r.db.Where("MONTH(created_at) = MONTH(?) AND YEAR(created_at) = YEAR(?)", p.GetDate(), p.GetDate()).Scopes(Paginate(summaries, p, r.db)).Preload("Service").Find(&summaries).Error
 	if err != nil {
 		return nil, err
 	}
-	pagination.Rows = summaries
-	return pagination, nil
+	p.Rows = summaries
+	return p, nil
 }
 
 func (r *SummaryRepository) Get(serviceId int, date time.Time) (*entity.Summary, error) {
@@ -52,6 +56,42 @@ func (r *SummaryRepository) Get(serviceId int, date time.Time) (*entity.Summary,
 		return nil, err
 	}
 	return &c, nil
+}
+
+func (r *SummaryRepository) GetSubByMonth(date time.Time) (int, error) {
+	var c entity.Summary
+	err := r.db.Table("summaries").Select("SUM(total_sub) as total_sub").Where("MONTH(created_at) = MONTH(?) AND YEAR(created_at) = YEAR(?)", date, date).Scan(&c).Error
+	if err != nil {
+		return 0, err
+	}
+	return c.TotalSub, nil
+}
+
+func (r *SummaryRepository) GetUnsubByMonth(date time.Time) (int, error) {
+	var c entity.Summary
+	err := r.db.Table("summaries").Select("SUM(total_unsub) as total_unsub").Where("MONTH(created_at) = MONTH(?) AND YEAR(created_at) = YEAR(?)", date, date).Scan(&c).Error
+	if err != nil {
+		return 0, err
+	}
+	return c.TotalUnsub, nil
+}
+
+func (r *SummaryRepository) GetRenewalByMonth(date time.Time) (int, error) {
+	var c entity.Summary
+	err := r.db.Table("summaries").Select("SUM(total_renewal) as total_renewal").Where("MONTH(created_at) = MONTH(?) AND YEAR(created_at) = YEAR(?)", date, date).Scan(&c).Error
+	if err != nil {
+		return 0, err
+	}
+	return c.TotalRenewal, nil
+}
+
+func (r *SummaryRepository) GetRevenueByMonth(date time.Time) (float64, error) {
+	var c entity.Summary
+	err := r.db.Table("summaries").Select("SUM(total_revenue) as total_revenue").Where("MONTH(created_at) = MONTH(?) AND YEAR(created_at) = YEAR(?)", date, date).Scan(&c).Error
+	if err != nil {
+		return 0, err
+	}
+	return c.TotalRevenue, nil
 }
 
 func (r *SummaryRepository) Save(c *entity.Summary) (*entity.Summary, error) {

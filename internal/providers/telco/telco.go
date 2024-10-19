@@ -5,7 +5,6 @@ import (
 	"encoding/xml"
 	"io"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/idprm/go-football-alert/internal/domain/entity"
@@ -65,12 +64,12 @@ func (p *Telco) QueryProfileAndBal() ([]byte, error) {
 
 	tr := &http.Transport{
 		MaxIdleConns:       10,
-		IdleConnTimeout:    30 * time.Second,
+		IdleConnTimeout:    60 * time.Second,
 		DisableCompression: true,
 	}
 
 	client := &http.Client{
-		Timeout:   30 * time.Second,
+		Timeout:   60 * time.Second,
 		Transport: tr,
 	}
 
@@ -125,7 +124,7 @@ func (p *Telco) DeductFee() ([]byte, error) {
 	reqXml.SetMsisdn(p.subscription.GetMsisdn())
 	reqXml.SetAccountCode("")
 	reqXml.SetAcctResCode("1")
-	reqXml.SetDeductBalance(strconv.FormatFloat(p.service.GetPrice(), 'f', 0, 64))
+	reqXml.SetDeductBalance(p.service.GetPriceToString())
 
 	payload, err := xml.Marshal(&reqXml)
 	if err != nil {
@@ -141,12 +140,12 @@ func (p *Telco) DeductFee() ([]byte, error) {
 
 	tr := &http.Transport{
 		MaxIdleConns:       10,
-		IdleConnTimeout:    30 * time.Second,
+		IdleConnTimeout:    60 * time.Second,
 		DisableCompression: true,
 	}
 
 	client := &http.Client{
-		Timeout:   30 * time.Second,
+		Timeout:   60 * time.Second,
 		Transport: tr,
 	}
 

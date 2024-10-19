@@ -7,6 +7,16 @@ type WebResponse struct {
 	RedirectUrl string `json:"redirect_url,omitempty"`
 }
 
+type SummaryResponse struct {
+	Month        string      `json:"month"`
+	Year         int         `json:"year"`
+	TotalSub     int         `json:"total_sub"`
+	TotalUnsub   int         `json:"total_unsub"`
+	TotalRenewal int         `json:"total_renewal"`
+	TotalRevenue float64     `json:"total_revenue"`
+	Results      interface{} `json:"results"`
+}
+
 type ApiFbResponse struct {
 	League  *LeagueResponse    `json:"league"`
 	Country *CountryResponse   `json:"country"`
