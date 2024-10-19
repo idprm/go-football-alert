@@ -129,6 +129,7 @@ func (h *RenewalHandler) Dailypush() {
 					)
 					// setter summary
 					summary.SetTotalChargeSuccess(1)
+					summary.SetTotalRevenue(service.GetPrice())
 				}
 
 				if respDeduct.IsFailed() {

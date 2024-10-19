@@ -129,6 +129,7 @@ func (h *RetryHandler) Firstpush() {
 
 					// setter summary
 					summary.SetTotalChargeSuccess(1)
+					summary.SetTotalRevenue(service.GetPrice())
 				}
 				// summary save
 				h.summaryService.Save(summary)
@@ -218,6 +219,7 @@ func (h *RetryHandler) Dailypush() {
 
 					// setter summary
 					summary.SetTotalChargeSuccess(1)
+					summary.SetTotalRevenue(service.GetPrice())
 				}
 
 				// summary save

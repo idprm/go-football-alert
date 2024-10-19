@@ -41,7 +41,7 @@ func (r *SummaryRepository) Count(serviceId int, date time.Time) (int64, error) 
 
 func (r *SummaryRepository) GetAllPaginate(p *entity.Pagination) (*entity.Pagination, error) {
 	var summaries []*entity.Summary
-	err := r.db.Where("MONTH(created_at) = MONTH(?) AND YEAR(created_at) = YEAR(?)", p.GetDate(), p.GetDate()).Scopes(Paginate(summaries, p, r.db)).Preload("Service").Find(&summaries).Error
+	err := r.db.Where("MONTH(created_at) = MONTH(?) AND YEAR(created_at) = YEAR(?)", p.GetDate(), p.GetDate()).Scopes(Paginate(summaries, p, r.db)).Find(&summaries).Error
 	if err != nil {
 		return nil, err
 	}

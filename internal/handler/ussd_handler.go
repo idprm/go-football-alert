@@ -259,6 +259,38 @@ func (h *UssdHandler) Subscription() {
 				// setter summary
 				summary.SetTotalChargeFailed(1)
 			}
+		} else {
+			h.subscriptionService.Update(
+				&entity.Subscription{
+					ServiceID:     service.GetId(),
+					Msisdn:        sub.GetMsisdn(),
+					LatestTrxId:   trxId,
+					LatestSubject: SUBJECT_FIRSTPUSH,
+					LatestStatus:  STATUS_FAILED,
+					RenewalAt:     time.Now().AddDate(0, 0, 1),
+					RetryAt:       time.Now(),
+					TotalFailed:   sub.TotalFailed + 1,
+					IsRetry:       true,
+					LatestPayload: string(respBal),
+				},
+			)
+
+			h.transactionService.Save(
+				&entity.Transaction{
+					TrxId:        trxId,
+					ServiceID:    service.GetId(),
+					Msisdn:       sub.GetMsisdn(),
+					Keyword:      sub.GetLatestKeyword(),
+					Status:       STATUS_FAILED,
+					StatusCode:   "",
+					StatusDetail: "INSUFF_BALANCE",
+					Subject:      SUBJECT_FIRSTPUSH,
+					Payload:      string(respBal),
+				},
+			)
+
+			// setter summary
+			summary.SetTotalChargeFailed(1)
 		}
 
 	}
