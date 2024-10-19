@@ -306,7 +306,7 @@ func (h *ScraperHandler) Predictions() {
 				}
 			}
 
-			time.Sleep(30 * time.Second)
+			time.Sleep(45 * time.Second)
 		}
 	}
 }

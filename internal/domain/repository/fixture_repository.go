@@ -109,7 +109,7 @@ func (r *FixtureRepository) GetAllByLeagueIdUSSD(leagueId, page int) ([]*entity.
 
 func (r *FixtureRepository) GetAllByFixtureDate(fixDate time.Time) ([]*entity.Fixture, error) {
 	var c []*entity.Fixture
-	err := r.db.Where("DATE(fixture_date) BETWEEN DATE(?) AND DATE(? + INTERVAL 2 DAY)", fixDate, fixDate).Preload("Home").Preload("Away").Find(&c).Error
+	err := r.db.Where("DATE(fixture_date) BETWEEN DATE(?) AND DATE(? + INTERVAL 4 DAY)", fixDate, fixDate).Preload("Home").Preload("Away").Find(&c).Error
 	if err != nil {
 		return nil, err
 	}

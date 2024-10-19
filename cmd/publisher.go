@@ -225,7 +225,7 @@ var publisherCreditGoalCmd = &cobra.Command{
 				)
 
 				go func() {
-					populateGoalCredit(db, rmq)
+					populateCreditGoal(db, rmq)
 				}()
 			}
 
@@ -586,7 +586,7 @@ func populatePredictWin(db *gorm.DB, rmq rmqp.AMQP) {
 	}
 }
 
-func populateGoalCredit(db *gorm.DB, rmq rmqp.AMQP) {
+func populateCreditGoal(db *gorm.DB, rmq rmqp.AMQP) {
 	subscriptionRepo := repository.NewSubscriptionRepository(db)
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
 
