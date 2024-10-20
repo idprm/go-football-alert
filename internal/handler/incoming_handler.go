@@ -16,6 +16,7 @@ import (
 	"github.com/idprm/go-football-alert/internal/logger"
 	"github.com/idprm/go-football-alert/internal/services"
 	"github.com/idprm/go-football-alert/internal/utils"
+	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
 	"github.com/wiliehidayat87/rmqp"
 )
@@ -51,13 +52,15 @@ var (
 	RMQ_USSD_QUEUE      string = "Q_USSD"
 	RMQ_SMS_EXCHANGE    string = "E_SMS"
 	RMQ_SMS_QUEUE       string = "Q_SMS"
+	RMQ_WAP_EXCHANGE    string = "E_WAP"
+	RMQ_WAP_QUEUE       string = "Q_WAP"
 	RMQ_MT_EXCHANGE     string = "E_MT"
 	RMQ_MT_QUEUE        string = "Q_MT"
 	RMQ_NEWS_EXCHANGE   string = "E_NEWS"
 	RMQ_NEWS_QUEUE      string = "Q_NEWS"
 	MT_SMS_ALERTE       string = "SMS_ALERTE"
 	MT_CREDIT_GOAL      string = "CREDIT_GOAL"
-	MT_PREDICTION       string = "PREDICTION"
+	MT_PREDICT_WIN      string = "PREDICT_WIN"
 	MT_FIRSTPUSH        string = "FIRSTPUSH"
 	MT_RENEWAL          string = "RENEWAL"
 	MT_NEWS             string = "NEWS"
@@ -78,9 +81,11 @@ var (
 	ACT_NEWS            string = "NEWS"
 	CHANNEL_USSD        string = "USSD"
 	CHANNEL_SMS         string = "SMS"
+	CHANNEL_WAP         string = "WAP"
 )
 
 type IncomingHandler struct {
+	rds                 *redis.Client
 	rmq                 rmqp.AMQP
 	logger              *logger.Logger
 	menuService         services.IMenuService
@@ -100,6 +105,7 @@ type IncomingHandler struct {
 }
 
 func NewIncomingHandler(
+	rds *redis.Client,
 	rmq rmqp.AMQP,
 	logger *logger.Logger,
 	menuService services.IMenuService,
@@ -118,6 +124,7 @@ func NewIncomingHandler(
 	bettingService services.IBettingService,
 ) *IncomingHandler {
 	return &IncomingHandler{
+		rds:                 rds,
 		rmq:                 rmq,
 		logger:              logger,
 		menuService:         menuService,
@@ -198,6 +205,14 @@ func (h *IncomingHandler) MessageOriginated(c *fiber.Ctx) error {
 	)
 
 	return c.Status(fiber.StatusOK).SendString("OK")
+}
+
+func (h *IncomingHandler) CreateSub(c *fiber.Ctx) error {
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"": ""})
+}
+
+func (h *IncomingHandler) VerifySub(c *fiber.Ctx) error {
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"": ""})
 }
 
 func (h *IncomingHandler) Main(c *fiber.Ctx) error {

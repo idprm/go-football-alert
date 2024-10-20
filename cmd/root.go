@@ -111,6 +111,7 @@ const (
 	SMS_FLASH_NEWS_SUB                   string = "FLASH_NEWS_SUB"
 	SMS_INFO                             string = "INFO"
 	SMS_STOP                             string = "STOP"
+	SMS_OTP                              string = "OTP"
 )
 
 var (

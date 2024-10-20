@@ -63,6 +63,8 @@ func (h *RetryHandler) Firstpush() {
 			if err != nil {
 				log.Println(err.Error())
 			}
+			// smart billing set discount based on retry
+			service.SetPriceWithDiscount(0)
 
 			summary := &entity.Summary{
 				ServiceID: service.GetId(),
@@ -111,6 +113,8 @@ func (h *RetryHandler) Firstpush() {
 
 					// is_retry set to false
 					h.subscriptionService.UpdateNotRetry(sub)
+					// is_free set to false
+					h.subscriptionService.UpdateNotFree(sub)
 
 					h.transactionService.Update(
 						&entity.Transaction{
@@ -119,6 +123,7 @@ func (h *RetryHandler) Firstpush() {
 							Msisdn:       h.sub.GetMsisdn(),
 							Keyword:      sub.GetLatestKeyword(),
 							Amount:       service.GetPrice(),
+							Discount:     0,
 							Status:       STATUS_SUCCESS,
 							StatusCode:   respDeduct.GetAcctResCode(),
 							StatusDetail: respDeduct.GetAcctResName(),
@@ -154,6 +159,8 @@ func (h *RetryHandler) Dailypush() {
 			if err != nil {
 				log.Println(err.Error())
 			}
+			// smart billing set discount based on retry
+			service.SetPriceWithDiscount(0)
 
 			summary := &entity.Summary{
 				ServiceID: service.GetId(),
@@ -201,6 +208,8 @@ func (h *RetryHandler) Dailypush() {
 
 					// is_retry set to false
 					h.subscriptionService.UpdateNotRetry(sub)
+					// is_free set to false
+					h.subscriptionService.UpdateNotFree(sub)
 
 					h.transactionService.Update(
 						&entity.Transaction{
@@ -209,6 +218,7 @@ func (h *RetryHandler) Dailypush() {
 							Msisdn:       h.sub.GetMsisdn(),
 							Keyword:      sub.GetLatestKeyword(),
 							Amount:       service.GetPrice(),
+							Discount:     0,
 							Status:       STATUS_SUCCESS,
 							StatusCode:   respDeduct.GetAcctResCode(),
 							StatusDetail: respDeduct.GetAcctResName(),

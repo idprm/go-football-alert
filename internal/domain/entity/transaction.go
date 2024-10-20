@@ -11,7 +11,8 @@ type Transaction struct {
 	Service      *Service `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"service,omitempty"`
 	Msisdn       string   `gorm:"size:15;not null" json:"msisdn"`
 	Keyword      string   `gorm:"size:50" json:"keyword,omitempty"`
-	Amount       float64  `gorm:"default:0" json:"amount,omitempty"`
+	Amount       float64  `gorm:"size:10;default:0" json:"amount,omitempty"`
+	Discount     float64  `gorm:"size:10;default:0" json:"discount,omitempty"`
 	Status       string   `gorm:"size:25" json:"status,omitempty"`
 	StatusCode   string   `gorm:"size:85" json:"status_code,omitempty"`
 	StatusDetail string   `gorm:"size:85" json:"status_detail,omitempty"`
@@ -35,6 +36,10 @@ func (e *Transaction) GetMsisdn() string {
 
 func (t *Transaction) SetAmount(v float64) {
 	t.Amount = v
+}
+
+func (t *Transaction) SetDiscount(v float64) {
+	t.Discount = v
 }
 
 func (t *Transaction) SetStatus(v string) {

@@ -435,6 +435,12 @@ func seederDB(db *gorm.DB) {
 			Name:     SMS_STOP,
 			Value:    "Services FFC: Vous venez d envoyer STOP. Orange vous remercie d avoir utiliser nos services! Visitez www.orangemali.com pour en savoir plus sur Football Fan Club",
 		},
+		{
+			Category: ACT_CONFIRMATION,
+			Channel:  ACT_SMS,
+			Name:     SMS_OTP,
+			Value:    "Votre code OTP est {pin}. Services FFC",
+		},
 	}
 
 	var schedules = []entity.Schedule{

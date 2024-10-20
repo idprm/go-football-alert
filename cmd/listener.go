@@ -209,6 +209,7 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	smsAlerteService := services.NewSMSAlerteService(smsAlerteRepo)
 
 	h := handler.NewIncomingHandler(
+		rds,
 		rmq,
 		logger,
 		menuService,
@@ -264,6 +265,8 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	)
 
 	r.Get("/mo", h.MessageOriginated)
+	r.Post("/sub", h.CreateSub)
+	r.Post("/otp", h.VerifySub)
 
 	lp := r.Group("p")
 	lp.Get("/:service", h.LandingPage)

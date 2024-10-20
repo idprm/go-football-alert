@@ -59,6 +59,10 @@ func (s *Service) GetPrice() float64 {
 	return s.Price
 }
 
+func (s *Service) GetDiscount(discountPercentage int) float64 {
+	return (s.GetPrice() * float64(discountPercentage) / 100)
+}
+
 func (s *Service) GetPriceToString() string {
 	return strconv.FormatFloat(s.GetPrice(), 'f', 0, 64)
 }
@@ -92,7 +96,6 @@ func (e *Service) GetUrlMT() string {
 }
 
 func (e *Service) SetUrlMT(smsc, username, password, from, to, content string) {
-
 	replacer := strings.NewReplacer(
 		"{smsc}", url.QueryEscape(smsc),
 		"{username}", url.QueryEscape(username),
@@ -102,4 +105,8 @@ func (e *Service) SetUrlMT(smsc, username, password, from, to, content string) {
 		"{text}", url.QueryEscape(content))
 
 	e.UrlMT = replacer.Replace(e.UrlMT)
+}
+
+func (s *Service) SetPriceWithDiscount(discountPercentage int) {
+	s.Price = s.GetPrice() - (s.GetPrice() * float64(discountPercentage) / 100)
 }

@@ -107,3 +107,8 @@ func (e *Content) SetValueCreditGoal(home, away, score, credit, price, currency 
 		"{currency}", url.QueryEscape(currency))
 	e.Value = replacer.Replace(e.Value)
 }
+
+func (e *Content) SetValueOTP(pin string) {
+	replacer := strings.NewReplacer("{pin}", pin)
+	e.Value = replacer.Replace(e.Value)
+}

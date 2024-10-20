@@ -112,6 +112,8 @@ func (h *RenewalHandler) Dailypush() {
 					)
 					// is_retry set to false
 					h.subscriptionService.UpdateNotRetry(sub)
+					// is_free set to false
+					h.subscriptionService.UpdateNotFree(sub)
 
 					h.transactionService.Save(
 						&entity.Transaction{
@@ -148,6 +150,9 @@ func (h *RenewalHandler) Dailypush() {
 						},
 					)
 
+					// is_free set to false
+					h.subscriptionService.UpdateNotFree(sub)
+
 					h.transactionService.Save(
 						&entity.Transaction{
 							TrxId:        trxId,
@@ -180,6 +185,8 @@ func (h *RenewalHandler) Dailypush() {
 						LatestPayload: string(respBal),
 					},
 				)
+				// is_free set to false
+				h.subscriptionService.UpdateNotFree(sub)
 
 				h.transactionService.Save(
 					&entity.Transaction{
