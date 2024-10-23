@@ -42,8 +42,6 @@ jobs:
             image: idprm/fb-alert-pub-scraping-prediction-service
           - dockerfile: ./Dockerfile.pub_scraping_news
             image: idprm/fb-alert-pub-scraping-news-service
-          - dockerfile: ./Dockerfile.pub_sms_alerte
-            image: idprm/fb-alert-pub-sms-alerte-service
           - dockerfile: ./Dockerfile.pub_pronostic
             image: idprm/fb-alert-pub-pronostic-service
           - dockerfile: ./Dockerfile.pub_credit_goal
