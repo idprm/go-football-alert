@@ -18,6 +18,8 @@ func NewSubscriptionFollowTeamRepository(db *gorm.DB) *SubscriptionFollowTeamRep
 type ISubscriptionFollowTeamRepository interface {
 	CountBySub(int64) (int64, error)
 	CountByTeam(int64) (int64, error)
+	CountByLimit(int64) (int64, error)
+	CountByUpdated(subId int64) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetBySub(int64) (*entity.SubscriptionFollowTeam, error)
 	Save(*entity.SubscriptionFollowTeam) (*entity.SubscriptionFollowTeam, error)
@@ -39,6 +41,28 @@ func (r *SubscriptionFollowTeamRepository) CountBySub(subId int64) (int64, error
 func (r *SubscriptionFollowTeamRepository) CountByTeam(teamId int64) (int64, error) {
 	var count int64
 	err := r.db.Model(&entity.SubscriptionFollowTeam{}).Where(&entity.SubscriptionFollowTeam{TeamID: teamId}).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *SubscriptionFollowTeamRepository) CountByLimit(subId int64) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.SubscriptionFollowTeam{}).Where(
+		&entity.SubscriptionFollowTeam{SubscriptionID: subId, IsActive: true}).
+		Where("limit_per_day >= sent AND DATE(updated_at) = DATE(NOW())").Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *SubscriptionFollowTeamRepository) CountByUpdated(subId int64) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.SubscriptionFollowTeam{}).Where(
+		&entity.SubscriptionFollowTeam{SubscriptionID: subId, IsActive: true}).
+		Where("").Count(&count).Error
 	if err != nil {
 		return count, err
 	}

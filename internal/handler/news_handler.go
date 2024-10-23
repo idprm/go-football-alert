@@ -387,17 +387,22 @@ func (h *NewsHandler) SMSAlerteLeague(leagueId int64) {
 
 	if len(*subs) > 0 {
 		for _, s := range *subs {
+			// counter
+			h.subscriptionFollowLeagueService.Sent(&entity.SubscriptionFollowLeague{SubscriptionID: s.SubscriptionID, LeagueID: leagueId})
+			// limit
+			if h.subscriptionFollowLeagueService.IsLimit(s.SubscriptionID) {
+				jsonData, err := json.Marshal(&entity.SMSAlerte{SubscriptionID: s.SubscriptionID, NewsID: h.news.GetId()})
+				if err != nil {
+					log.Println(err.Error())
+				}
 
-			jsonData, err := json.Marshal(&entity.SMSAlerte{SubscriptionID: s.SubscriptionID, NewsID: h.news.GetId()})
-			if err != nil {
-				log.Println(err.Error())
+				h.rmq.IntegratePublish(
+					RMQ_SMS_ALERTE_EXCHANGE,
+					RMQ_SMS_ALERTE_QUEUE,
+					RMQ_DATA_TYPE, "", string(jsonData),
+				)
 			}
 
-			h.rmq.IntegratePublish(
-				RMQ_SMS_ALERTE_EXCHANGE,
-				RMQ_SMS_ALERTE_QUEUE,
-				RMQ_DATA_TYPE, "", string(jsonData),
-			)
 		}
 	}
 }
@@ -408,17 +413,22 @@ func (h *NewsHandler) SMSAlerteTeam(teamId int64) {
 
 	if len(*subs) > 0 {
 		for _, s := range *subs {
+			// counter
+			h.subscriptionFollowTeamService.Sent(&entity.SubscriptionFollowTeam{SubscriptionID: s.SubscriptionID, TeamID: teamId})
+			// limit
+			if h.subscriptionFollowTeamService.IsLimit(s.SubscriptionID) {
+				jsonData, err := json.Marshal(&entity.SMSAlerte{SubscriptionID: s.SubscriptionID, NewsID: h.news.GetId()})
+				if err != nil {
+					log.Println(err.Error())
+				}
 
-			jsonData, err := json.Marshal(&entity.SMSAlerte{SubscriptionID: s.SubscriptionID, NewsID: h.news.GetId()})
-			if err != nil {
-				log.Println(err.Error())
+				h.rmq.IntegratePublish(
+					RMQ_SMS_ALERTE_EXCHANGE,
+					RMQ_SMS_ALERTE_QUEUE,
+					RMQ_DATA_TYPE, "", string(jsonData),
+				)
 			}
 
-			h.rmq.IntegratePublish(
-				RMQ_SMS_ALERTE_EXCHANGE,
-				RMQ_SMS_ALERTE_QUEUE,
-				RMQ_DATA_TYPE, "", string(jsonData),
-			)
 		}
 	}
 }

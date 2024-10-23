@@ -309,7 +309,7 @@ var publisherScrapingNewsCmd = &cobra.Command{
 		/**
 		 * Looping schedule
 		 */
-		timeDuration := time.Duration(45)
+		timeDuration := time.Duration(35)
 
 		for {
 

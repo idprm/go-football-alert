@@ -28,6 +28,7 @@ type ISubscriptionFollowLeagueService interface {
 	GetBySub(int64) (*entity.SubscriptionFollowLeague, error)
 	Save(*entity.SubscriptionFollowLeague) (*entity.SubscriptionFollowLeague, error)
 	Update(*entity.SubscriptionFollowLeague) (*entity.SubscriptionFollowLeague, error)
+	Sent(*entity.SubscriptionFollowLeague) error
 	Disable(*entity.SubscriptionFollowLeague) error
 	Delete(*entity.SubscriptionFollowLeague) error
 	GetAllSubByLeague(int64) *[]entity.SubscriptionFollowLeague
@@ -83,9 +84,7 @@ func (s *SubscriptionFollowLeagueService) Sent(a *entity.SubscriptionFollowLeagu
 				},
 			)
 		}
-	}
-
-	if !s.IsUpdated(a.SubscriptionID) {
+	} else {
 		// reset
 		s.subFollowLeagueRepo.Update(
 			&entity.SubscriptionFollowLeague{

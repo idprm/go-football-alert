@@ -42,7 +42,7 @@ func (r *SubscriptionFollowLeagueRepository) CountByLimit(subId int64) (int64, e
 	var count int64
 	err := r.db.Model(&entity.SubscriptionFollowLeague{}).Where(
 		&entity.SubscriptionFollowLeague{SubscriptionID: subId, IsActive: true}).
-		Where("limit_per_day >= sent").Count(&count).Error
+		Where("limit_per_day >= sent AND DATE(updated_at) = DATE(NOW())").Count(&count).Error
 	if err != nil {
 		return count, err
 	}
