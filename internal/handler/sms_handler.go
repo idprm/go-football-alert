@@ -17,6 +17,10 @@ import (
 	"github.com/wiliehidayat87/rmqp"
 )
 
+const (
+	LIMIT_PER_DAY int = 1
+)
+
 type SMSHandler struct {
 	rmq                             rmqp.AMQP
 	rds                             *redis.Client
@@ -225,6 +229,7 @@ func (h *SMSHandler) SubAlerteCompetition(league *entity.League) {
 			&entity.SubscriptionFollowLeague{
 				SubscriptionID: sub.GetId(),
 				LeagueID:       league.GetId(),
+				LimitPerDay:    LIMIT_PER_DAY,
 				IsActive:       true,
 			},
 		)
@@ -234,6 +239,7 @@ func (h *SMSHandler) SubAlerteCompetition(league *entity.League) {
 			&entity.SubscriptionFollowLeague{
 				SubscriptionID: sub.GetId(),
 				LeagueID:       league.GetId(),
+				LimitPerDay:    LIMIT_PER_DAY,
 				IsActive:       true,
 			},
 		)
@@ -535,6 +541,7 @@ func (h *SMSHandler) SubAlerteEquipe(team *entity.Team) {
 			&entity.SubscriptionFollowTeam{
 				SubscriptionID: sub.GetId(),
 				TeamID:         team.GetId(),
+				LimitPerDay:    LIMIT_PER_DAY,
 				IsActive:       true,
 			},
 		)
@@ -544,6 +551,7 @@ func (h *SMSHandler) SubAlerteEquipe(team *entity.Team) {
 			&entity.SubscriptionFollowTeam{
 				SubscriptionID: sub.GetId(),
 				TeamID:         team.GetId(),
+				LimitPerDay:    LIMIT_PER_DAY,
 				IsActive:       true,
 			},
 		)
@@ -831,6 +839,7 @@ func (h *SMSHandler) AlreadySubAlerteCompetition(league *entity.League) {
 			&entity.SubscriptionFollowLeague{
 				SubscriptionID: sub.GetId(),
 				LeagueID:       league.GetId(),
+				LimitPerDay:    LIMIT_PER_DAY,
 				IsActive:       true,
 			},
 		)
@@ -900,6 +909,7 @@ func (h *SMSHandler) AlreadySubAlerteEquipe(team *entity.Team) {
 			&entity.SubscriptionFollowTeam{
 				SubscriptionID: sub.GetId(),
 				TeamID:         team.GetId(),
+				LimitPerDay:    LIMIT_PER_DAY,
 				IsActive:       true,
 			},
 		)
