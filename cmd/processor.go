@@ -134,6 +134,61 @@ func (p *Processor) SMS(wg *sync.WaitGroup, message []byte) {
 	wg.Done()
 }
 
+func (p *Processor) MO(wg *sync.WaitGroup, message []byte) {
+
+	serviceRepo := repository.NewServiceRepository(p.db)
+	serviceService := services.NewServiceService(serviceRepo)
+	contentRepo := repository.NewContentRepository(p.db)
+	contentService := services.NewContentService(contentRepo)
+	subscriptionRepo := repository.NewSubscriptionRepository(p.db)
+	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+	transactionRepo := repository.NewTransactionRepository(p.db)
+	transactionService := services.NewTransactionService(transactionRepo)
+	historyRepo := repository.NewHistoryRepository(p.db)
+	historyService := services.NewHistoryService(historyRepo)
+	summaryRepo := repository.NewSummaryRepository(p.db)
+	summaryService := services.NewSummaryService(summaryRepo)
+	leagueRepo := repository.NewLeagueRepository(p.db)
+	leagueService := services.NewLeagueService(leagueRepo)
+	teamRepo := repository.NewTeamRepository(p.db)
+	teamService := services.NewTeamService(teamRepo)
+	subscriptionCreditGoalRepo := repository.NewSubscriptionCreditGoalRepository(p.db)
+	subscriptionCreditGoalService := services.NewSubscriptionCreditGoalService(subscriptionCreditGoalRepo)
+	subscriptionPredictWinRepo := repository.NewSubscriptionPredictWinRepository(p.db)
+	subscriptionPredictWinService := services.NewSubscriptionPredictWinService(subscriptionPredictWinRepo)
+	subscriptionFollowLeagueRepo := repository.NewSubscriptionFollowLeagueRepository(p.db)
+	subscriptionFollowLeagueService := services.NewSubscriptionFollowLeagueService(subscriptionFollowLeagueRepo)
+	subscriptionFollowTeamRepo := repository.NewSubscriptionFollowTeamRepository(p.db)
+	subscriptionFollowTeamService := services.NewSubscriptionFollowTeamService(subscriptionFollowTeamRepo)
+	verifyRepo := repository.NewVerifyRepository(p.rds)
+	verifyService := services.NewVerifyService(verifyRepo)
+
+	h := handler.NewMOHandler(
+		p.rmq,
+		p.rds,
+		p.logger,
+		serviceService,
+		contentService,
+		subscriptionService,
+		transactionService,
+		historyService,
+		summaryService,
+		leagueService,
+		teamService,
+		subscriptionCreditGoalService,
+		subscriptionPredictWinService,
+		subscriptionFollowLeagueService,
+		subscriptionFollowTeamService,
+		verifyService,
+	)
+
+	h.Firstpush()
+
+	h.Unsub()
+
+	wg.Done()
+}
+
 func (p *Processor) MT(wg *sync.WaitGroup, message []byte) {
 
 	mtRepo := repository.NewMTRepository(p.db)
@@ -164,15 +219,22 @@ func (p *Processor) News(wg *sync.WaitGroup, message []byte) {
 	teamService := services.NewTeamService(teamRepo)
 	newsRepo := repository.NewNewsRepository(p.db)
 	newsService := services.NewNewsService(newsRepo)
+	subscriptionFollowLeagueRepo := repository.NewSubscriptionFollowLeagueRepository(p.db)
+	subscriptionFollowLeagueService := services.NewSubscriptionFollowLeagueService(subscriptionFollowLeagueRepo)
+	subscriptionFollowTeamRepo := repository.NewSubscriptionFollowTeamRepository(p.db)
+	subscriptionFollowTeamService := services.NewSubscriptionFollowTeamService(subscriptionFollowTeamRepo)
 
 	// parsing json to string
 	var news *entity.News
 	json.Unmarshal(message, &news)
 
 	h := handler.NewNewsHandler(
+		p.rmq,
 		leagueService,
 		teamService,
 		newsService,
+		subscriptionFollowLeagueService,
+		subscriptionFollowTeamService,
 		news,
 	)
 
@@ -199,19 +261,19 @@ func (p *Processor) SMSAlerte(wg *sync.WaitGroup, message []byte) {
 	smsAlerteService := services.NewSMSAlerteService(smsAlerteRepo)
 
 	// parsing json to string
-	var sub *entity.Subscription
-	json.Unmarshal(message, &sub)
+	var smsAlerte *entity.SMSAlerte
+	json.Unmarshal(message, &smsAlerte)
 
 	h := handler.NewSMSAlerteHandler(
 		p.rmq,
 		p.logger,
-		sub,
 		serviceService,
 		subscriptionService,
 		newsService,
 		subscriptionFollowLeagueService,
 		subscriptionFollowTeamService,
 		smsAlerteService,
+		smsAlerte,
 	)
 
 	// Send SMS Alerte

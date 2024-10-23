@@ -1,50 +1,114 @@
-@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Teko:wght@500&display=swap');
 
 body {
-    font-family: 'Poppins', sans-serif;
-    background-color: #070238;
-    background-repeat: no-repeat;
-    display: block;
-    background-size: contain;
-    background-position: center bottom;
-    min-height: 100vh;
-}
-
-.header {
-    background-color: #1f3a93;
+    font-family: 'arial', sans-serif;
 }
 
 .box-wrapper {
     max-width: 576px;
 }
 
-#video {
-    max-width: 100%;
-}
-.container-fluid {
-    display: flex;
-    flex-flow: column;
-    flex: 1;
-    justify-content: center;
-}
 .title {
-    font-family: 'Poppins', sans-serif;
-    font-size: 1.35rem;
-    line-height: 1.3;
+    font-family: 'Teko', sans-serif;
+    font-size: 1.65rem;
+    line-height: 1.85rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .button-wrapper {
-    border: 2px solid #FFFFFF;
-    padding: 0.25rem;
-    width: 75%;
+    width: 100%;
+}
+
+.banner {
+    position: relative;
+    background-image: url('img/bg-game.jpg');
+    background-size: auto;
+    animation-name: animate-bg;
+    animation-timing-function: linear;
+    animation-duration: 2000s;
+    animation-iteration-count: infinite;
+    animation-direction: normal;
+}
+.banner img {
+    position: relative;
+    z-index: 9;
+}
+.banner::after {
+    content: '';
+    background-color: rgba(243, 207, 207, 0.75);
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 0;
 }
 
 .button {
-    background-color: #21D4FD;
-    background-image: linear-gradient(19deg, #21D4FD 0%, #B721FF 100%);
     letter-spacing: 1px;
-    font-size: 1rem;
-    font-family: 'Poppins', sans-serif;
+    font-size: 1.25rem;
+    line-height: 1.5;
+    color: white;
+    background-color: #ff7900;
+    border: 2px solid white;
+    width: 75%;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 0.5rem;
+    position: relative;
+    font-weight: bold;
+    overflow: hidden;
+}
+.button:hover,
+.button:focus {
+    color: white;
+}
+.button::before {
+    content: '';
+    position: absolute;
+    height: 100%;
+    width: 45px;
+    display: inline-block;
+    background-image: url('img/arrow-right.gif');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: left center;
+    left: 0.5rem;
+    transform: translateY(-50%);
+    top: 50%;
+    opacity: 0.25;
+}
+.button::after {
+    content: '';
+    position: absolute;
+    height: 100%;
+    width: 45px;
+    display: inline-block;
+    background-image: url('img/arrow-left.gif');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: right center;
+    right: 0.5rem;
+    transform: translateY(-50%);
+    top: 50%;
+    opacity: 0.25;
+}
+.button-light {
+    width: 30px;
+    height: 200px;
+    position: absolute;
+    left: -20px;
+    top: 0;
+    margin-top: -20px;
+    background: white;
+    opacity: 0.6;
+    filter: blur(20px);
+    animation: blur 2s infinite;
+    animation-delay: 0s;
+    transform-origin: top;
 }
 
 .info,
@@ -52,52 +116,39 @@ body {
     font-size: 0.75rem;
     line-height: 1.5;
     opacity: 0.8;
-    position: relative;
-    z-index: 99;
 }
 
-.input-group {
-    margin: auto;
+@keyframes animate-bg {
+	100% {background-position: 100000px 0}
+}
+@-webkit-keyframes animate-bg {
+	100% {background-position: 100000px 0}
+}
+@-moz-keyframes animate-bg {
+	100% {background-position: 100000px 0}
+}
+@-o-keyframes animate-bg {
+	100% {background-position: 100000px 0}
 }
 
-.input-group-text,
-.input-group > .form-control {
-    padding: 1.25rem .75rem;
+@keyframes blur {
+    from {
+        transform: translate(0) rotate(45deg);
+    }
+    to {
+        transform: translateX(370px) rotate(45deg);
+    }
 }
 
-.input-group-text {
-    border-radius: 2rem 0 0 2rem;
+@media only screen and (max-width: 414px) {
+    .button {
+        font-size: 1.125rem;
+    }
 }
 
-.input-group > .form-control {
-    border-radius: 0 2rem 2rem 0 !important;
-}
-
-.button {
-    background: linear-gradient(90deg, #c0e169 0%, #2bb14a 51%, #2bb14a 100%);
-    border-radius: 2rem;
-}
-
-.img-fluid {
-    margin-bottom: -2.5rem;
-}
-
-.modal-content {
-    background-color: #fff;
-    color: #333;
-}
-
-.modal-header {
-    border-bottom-color: rgba(0,0,0,.15);
-    color: inherit;
-}
-
-.btn-close {
-    filter: none;
-    -webkit-filter: none;
-}
-
-.modal-body ol,
-.modal-body ul {
-    padding-left: 1rem;
+@media only screen and (max-width: 385px) {
+    .button {
+        width: 100%;
+        font-size: 1.125rem;
+    }
 }

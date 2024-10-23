@@ -18,8 +18,8 @@ jobs:
             image: idprm/fb-alert-ussd-service
           - dockerfile: ./Dockerfile.sms
             image: idprm/fb-alert-sms-service
-          - dockerfile: ./Dockerfile.wap
-            image: idprm/fb-alert-wap-service
+          - dockerfile: ./Dockerfile.mo
+            image: idprm/fb-alert-mo-service
           - dockerfile: ./Dockerfile.news
             image: idprm/fb-alert-news-service
           - dockerfile: ./Dockerfile.sms_alerte

@@ -45,6 +45,8 @@ const (
 	RMQ_USSD_QUEUE           string = "Q_USSD"
 	RMQ_SMS_EXCHANGE         string = "E_SMS"
 	RMQ_SMS_QUEUE            string = "Q_SMS"
+	RMQ_MO_EXCHANGE          string = "E_MO"
+	RMQ_MO_QUEUE             string = "Q_MO"
 	RMQ_NEWS_EXCHANGE        string = "E_NEWS"
 	RMQ_NEWS_QUEUE           string = "Q_NEWS"
 	RMQ_SMS_ALERTE_EXCHANGE  string = "E_SMS_ALERTE"
@@ -137,6 +139,7 @@ func init() {
 	 */
 	rootCmd.AddCommand(consumerUSSDCmd)
 	rootCmd.AddCommand(consumerSMSCmd)
+	rootCmd.AddCommand(consumerMOCmd)
 	rootCmd.AddCommand(consumerNewsCmd)
 	rootCmd.AddCommand(consumerSMSAlerteCmd)
 	rootCmd.AddCommand(consumerPronosticCmd)
@@ -152,7 +155,6 @@ func init() {
 	rootCmd.AddCommand(publisherScrapingFixturesCmd)
 	rootCmd.AddCommand(publisherScrapingPredictionCmd)
 	rootCmd.AddCommand(publisherScrapingNewsCmd)
-	rootCmd.AddCommand(publisherSMSAlerteCmd)
 	rootCmd.AddCommand(publisherPronosticCmd)
 	rootCmd.AddCommand(publisherCreditGoalCmd)
 	rootCmd.AddCommand(publisherPredictWinCmd)

@@ -15,18 +15,6 @@ import (
 	loggerDb "gorm.io/gorm/logger"
 )
 
-/**
-	RENEWAL at
-	RETRY at
-	SCRAPING_FIXTURES at
-	SCRAPING_CREDITGOAL at
-	SCRAPING_PREDICTION at
-	CREDIT_GOAL at
-	PREDICTION at
-	FOLLOW_COMPETITION at
-	FOLLOW_TEAM at
-**/
-
 var publisherRenewalCmd = &cobra.Command{
 	Use:   "pub_renewal",
 	Short: "Renewal CLI",
@@ -417,77 +405,6 @@ var publisherScrapingPredictionCmd = &cobra.Command{
 	},
 }
 
-var publisherSMSAlerteCmd = &cobra.Command{
-	Use:   "pub_sms_alerte",
-	Short: "Publisher SMS Alerte CLI",
-	Long:  ``,
-	Run: func(cmd *cobra.Command, args []string) {
-		/**
-		 * connect mysql
-		 */
-		db, err := connectDb()
-		if err != nil {
-			panic(err)
-		}
-
-		/**
-		 * connect rabbitmq
-		 */
-		rmq, err := connectRabbitMq()
-		if err != nil {
-			panic(err)
-		}
-
-		/**
-		 * SETUP CHANNEL
-		 */
-		rmq.SetUpChannel(
-			RMQ_EXCHANGE_TYPE,
-			true,
-			RMQ_SMS_ALERTE_EXCHANGE,
-			true,
-			RMQ_SMS_ALERTE_QUEUE,
-		)
-
-		/**
-		 * Looping schedule
-		 */
-		timeDuration := time.Duration(1)
-
-		for {
-			timeNow := time.Now().Format("15:04")
-
-			scheduleRepo := repository.NewScheduleRepository(db)
-			scheduleService := services.NewScheduleService(scheduleRepo)
-
-			if scheduleService.IsUnlocked(ACT_SMS_ALERTE, timeNow) {
-
-				scheduleService.UpdateLocked(
-					&entity.Schedule{
-						Name: ACT_SMS_ALERTE,
-					},
-				)
-
-				go func() {
-					populateSMSAlerte(db, rmq)
-				}()
-			}
-
-			if scheduleService.IsLocked(ACT_SMS_ALERTE, timeNow) {
-				scheduleService.Update(
-					&entity.Schedule{
-						Name:       ACT_SMS_ALERTE,
-						IsUnlocked: true,
-					},
-				)
-			}
-
-			time.Sleep(timeDuration * time.Minute)
-
-		}
-	},
-}
-
 func populateRenewal(db *gorm.DB, rmq rmqp.AMQP) {
 	subscriptionRepo := repository.NewSubscriptionRepository(db)
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
@@ -533,30 +450,6 @@ func populateRetry(db *gorm.DB, rmq rmqp.AMQP) {
 		json, _ := json.Marshal(sub)
 
 		rmq.IntegratePublish(RMQ_RETRY_EXCHANGE, RMQ_RETRY_QUEUE, RMQ_DATA_TYPE, "", string(json))
-
-		time.Sleep(100 * time.Microsecond)
-	}
-}
-
-func populateSMSAlerte(db *gorm.DB, rmq rmqp.AMQP) {
-	subscriptionRepo := repository.NewSubscriptionRepository(db)
-	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
-
-	followsLeague := subscriptionService.Follow()
-
-	for _, s := range *followsLeague {
-		var sub entity.Subscription
-
-		sub.ID = s.ID
-		sub.ServiceID = s.ServiceID
-		sub.Msisdn = s.Msisdn
-		sub.LatestKeyword = s.LatestKeyword
-		sub.LatestSubject = s.LatestSubject
-		sub.CreatedAt = s.CreatedAt
-
-		json, _ := json.Marshal(sub)
-
-		rmq.IntegratePublish(RMQ_SMS_ALERTE_EXCHANGE, RMQ_SMS_ALERTE_QUEUE, RMQ_DATA_TYPE, "", string(json))
 
 		time.Sleep(100 * time.Microsecond)
 	}

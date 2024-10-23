@@ -24,6 +24,7 @@ type ISubscriptionFollowTeamRepository interface {
 	Update(*entity.SubscriptionFollowTeam) (*entity.SubscriptionFollowTeam, error)
 	Disable(*entity.SubscriptionFollowTeam) error
 	Delete(*entity.SubscriptionFollowTeam) error
+	GetAllSubByTeam(int64) (*[]entity.SubscriptionFollowTeam, error)
 }
 
 func (r *SubscriptionFollowTeamRepository) CountBySub(subId int64) (int64, error) {
@@ -93,4 +94,14 @@ func (r *SubscriptionFollowTeamRepository) Delete(c *entity.SubscriptionFollowTe
 		return err
 	}
 	return nil
+}
+
+func (r *SubscriptionFollowTeamRepository) GetAllSubByTeam(teamId int64) (*[]entity.SubscriptionFollowTeam, error) {
+	var sub []entity.SubscriptionFollowTeam
+	err := r.db.Where(&entity.SubscriptionFollowTeam{TeamID: teamId, IsActive: true}).Find(&sub).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &sub, nil
 }

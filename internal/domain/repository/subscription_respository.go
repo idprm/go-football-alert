@@ -19,11 +19,13 @@ type ISubscriptionRepository interface {
 	Count(int, string) (int64, error)
 	CountActive(int, string) (int64, error)
 	CountActiveByCategory(string, string) (int64, error)
+	CountActiveBySubId(int64) (int64, error)
 	CountRenewal(int, string) (int64, error)
 	CountRetry(int, string) (int64, error)
 	CountTotalActiveSub() (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetByCategory(string, string) (*entity.Subscription, error)
+	GetBySubId(int64) (*entity.Subscription, error)
 	Get(int, string) (*entity.Subscription, error)
 	Save(*entity.Subscription) (*entity.Subscription, error)
 	Update(*entity.Subscription) (*entity.Subscription, error)
@@ -63,6 +65,15 @@ func (r *SubscriptionRepository) CountActive(serviceId int, msisdn string) (int6
 func (r *SubscriptionRepository) CountActiveByCategory(category string, msisdn string) (int64, error) {
 	var count int64
 	err := r.db.Model(&entity.Subscription{}).Where("category = ?", category).Where("msisdn = ?", msisdn).Where("is_active = ?", true).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *SubscriptionRepository) CountActiveBySubId(subId int64) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Subscription{}).Where("id = ?", subId).Where("is_active = ?", true).Count(&count).Error
 	if err != nil {
 		return count, err
 	}
@@ -109,6 +120,15 @@ func (r *SubscriptionRepository) GetAllPaginate(p *entity.Pagination) (*entity.P
 func (r *SubscriptionRepository) GetByCategory(category, msisdn string) (*entity.Subscription, error) {
 	var c entity.Subscription
 	err := r.db.Where("category = ?", category).Where("msisdn = ?", msisdn).Take(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return &c, nil
+}
+
+func (r *SubscriptionRepository) GetBySubId(subId int64) (*entity.Subscription, error) {
+	var c entity.Subscription
+	err := r.db.Where("id = ?", subId).Take(&c).Error
 	if err != nil {
 		return nil, err
 	}

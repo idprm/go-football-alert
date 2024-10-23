@@ -23,11 +23,13 @@ type ISubscriptionService interface {
 	IsSubscription(int, string) bool
 	IsActiveSubscription(int, string) bool
 	IsActiveSubscriptionByCategory(string, string) bool
+	IsActiveSubscriptionBySubId(int64) bool
 	IsRenewal(int, string) bool
 	IsRetry(int, string) bool
 	GetTotalActiveSubscription() int
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetByCategory(string, string) (*entity.Subscription, error)
+	GetBySubId(int64) (*entity.Subscription, error)
 	Get(int, string) (*entity.Subscription, error)
 	Save(*entity.Subscription) (*entity.Subscription, error)
 	Update(*entity.Subscription) (*entity.Subscription, error)
@@ -60,6 +62,11 @@ func (s *SubscriptionService) IsActiveSubscriptionByCategory(category string, ms
 	return count > 0
 }
 
+func (s *SubscriptionService) IsActiveSubscriptionBySubId(subId int64) bool {
+	count, _ := s.subscriptionRepo.CountActiveBySubId(subId)
+	return count > 0
+}
+
 func (s *SubscriptionService) IsRenewal(serviceId int, msisdn string) bool {
 	count, _ := s.subscriptionRepo.CountRenewal(serviceId, msisdn)
 	return count > 0
@@ -81,6 +88,10 @@ func (s *SubscriptionService) GetAllPaginate(pagination *entity.Pagination) (*en
 
 func (s *SubscriptionService) GetByCategory(category, msisdn string) (*entity.Subscription, error) {
 	return s.subscriptionRepo.GetByCategory(category, msisdn)
+}
+
+func (s *SubscriptionService) GetBySubId(subId int64) (*entity.Subscription, error) {
+	return s.subscriptionRepo.GetBySubId(subId)
 }
 
 func (s *SubscriptionService) Get(serviceId int, msisdn string) (*entity.Subscription, error) {

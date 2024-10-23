@@ -15,126 +15,88 @@ import (
 type SMSAlerteHandler struct {
 	rmq                             rmqp.AMQP
 	logger                          *logger.Logger
-	sub                             *entity.Subscription
 	serviceService                  services.IServiceService
 	subscriptionService             services.ISubscriptionService
 	newsService                     services.INewsService
 	subscriptionFollowLeagueService services.ISubscriptionFollowLeagueService
 	subscriptionFollowTeamService   services.ISubscriptionFollowTeamService
 	smsAlerteService                services.ISMSAlerteService
+	sub                             *entity.SMSAlerte
 }
 
 func NewSMSAlerteHandler(
 	rmq rmqp.AMQP,
 	logger *logger.Logger,
-	sub *entity.Subscription,
 	serviceService services.IServiceService,
 	subscriptionService services.ISubscriptionService,
 	newsService services.INewsService,
 	subscriptionFollowLeagueService services.ISubscriptionFollowLeagueService,
 	subscriptionFollowTeamService services.ISubscriptionFollowTeamService,
 	smsAlerteService services.ISMSAlerteService,
+	sub *entity.SMSAlerte,
 ) *SMSAlerteHandler {
 	return &SMSAlerteHandler{
 		rmq:                             rmq,
 		logger:                          logger,
-		sub:                             sub,
 		serviceService:                  serviceService,
 		subscriptionService:             subscriptionService,
 		newsService:                     newsService,
 		subscriptionFollowLeagueService: subscriptionFollowLeagueService,
 		subscriptionFollowTeamService:   subscriptionFollowTeamService,
 		smsAlerteService:                smsAlerteService,
+		sub:                             sub,
 	}
 }
 
 func (h *SMSAlerteHandler) SMSAlerte() {
-	if h.subscriptionService.IsActiveSubscription(h.sub.GetServiceId(), h.sub.GetMsisdn()) {
-		trxId := utils.GenerateTrxId()
 
-		service, err := h.serviceService.GetById(h.sub.GetServiceId())
-		if err != nil {
-			log.Println(err.Error())
-		}
+	if !h.smsAlerteService.ISMSAlerte(h.sub.SubscriptionID, h.sub.NewsID) {
 
-		if h.subscriptionFollowLeagueService.IsSub(h.sub.GetId()) {
-			sl, err := h.subscriptionFollowLeagueService.GetBySub(h.sub.GetId())
+		if h.subscriptionService.IsActiveSubscriptionBySubId(h.sub.SubscriptionID) {
+			// save
+			h.smsAlerteService.Save(
+				&entity.SMSAlerte{
+					SubscriptionID: h.sub.SubscriptionID,
+					NewsID:         h.sub.NewsID,
+				},
+			)
+
+			trxId := utils.GenerateTrxId()
+
+			sub, err := h.subscriptionService.GetBySubId(h.sub.SubscriptionID)
 			if err != nil {
 				log.Println(err.Error())
 			}
 
-			// news league
-			newsLeague, _ := h.newsService.GetAllNewsLeague(sl.LeagueID)
-			for _, n := range newsLeague {
-				// subId, newsId
-				if !h.smsAlerteService.ISMSAlerte(h.sub.GetId(), n.NewsID) {
-					h.smsAlerteService.Save(
-						&entity.SMSAlerte{
-							SubscriptionID: h.sub.GetId(),
-							NewsID:         n.NewsID,
-						},
-					)
-					mt := &model.MTRequest{
-						Smsc:         service.ScSubMT,
-						Service:      service,
-						Subscription: h.sub,
-						Content:      &entity.Content{Value: n.News.GetTitleWithoutAccents()},
-					}
-					mt.SetTrxId(trxId)
-
-					jsonData, err := json.Marshal(mt)
-					if err != nil {
-						log.Println(err.Error())
-					}
-
-					h.rmq.IntegratePublish(
-						RMQ_MT_EXCHANGE,
-						RMQ_MT_QUEUE,
-						RMQ_DATA_TYPE, "", string(jsonData),
-					)
-				}
-
-			}
-		}
-
-		if h.subscriptionFollowTeamService.IsSub(h.sub.GetId()) {
-			st, err := h.subscriptionFollowTeamService.GetBySub(h.sub.GetId())
+			news, err := h.newsService.GetById(h.sub.NewsID)
 			if err != nil {
 				log.Println(err.Error())
 			}
 
-			// news team
-			newsTeam, _ := h.newsService.GetAllNewsTeam(st.TeamID)
-			for _, n := range newsTeam {
-				// subId, newsId
-				if !h.smsAlerteService.ISMSAlerte(h.sub.GetId(), n.NewsID) {
-					h.smsAlerteService.Save(
-						&entity.SMSAlerte{
-							SubscriptionID: h.sub.GetId(),
-							NewsID:         n.NewsID,
-						},
-					)
-					mt := &model.MTRequest{
-						Smsc:         service.ScSubMT,
-						Service:      service,
-						Subscription: h.sub,
-						Content:      &entity.Content{Value: n.News.GetTitleWithoutAccents()},
-					}
-					mt.SetTrxId(trxId)
-
-					jsonData, err := json.Marshal(mt)
-					if err != nil {
-						log.Println(err.Error())
-					}
-
-					h.rmq.IntegratePublish(
-						RMQ_MT_EXCHANGE,
-						RMQ_MT_QUEUE,
-						RMQ_DATA_TYPE, "", string(jsonData),
-					)
-				}
-
+			service, err := h.serviceService.GetById(sub.GetServiceId())
+			if err != nil {
+				log.Println(err.Error())
 			}
+
+			mt := &model.MTRequest{
+				Smsc:         service.ScSubMT,
+				Service:      service,
+				Subscription: sub,
+				Content:      &entity.Content{Value: news.GetTitleWithoutAccents()},
+			}
+			mt.SetTrxId(trxId)
+
+			jsonData, err := json.Marshal(mt)
+			if err != nil {
+				log.Println(err.Error())
+			}
+
+			h.rmq.IntegratePublish(
+				RMQ_MT_EXCHANGE,
+				RMQ_MT_QUEUE,
+				RMQ_DATA_TYPE, "", string(jsonData),
+			)
 		}
+
 	}
 }

@@ -190,6 +190,12 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	subscriptionRepo := repository.NewSubscriptionRepository(db)
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
 
+	subscriptionFollowLeagueRepo := repository.NewSubscriptionFollowLeagueRepository(db)
+	subscriptionFollowLeagueService := services.NewSubscriptionFollowLeagueService(subscriptionFollowLeagueRepo)
+
+	subscriptionFollowTeamRepo := repository.NewSubscriptionFollowTeamRepository(db)
+	subscriptionFollowTeamService := services.NewSubscriptionFollowTeamService(subscriptionFollowTeamRepo)
+
 	transactionRepo := repository.NewTransactionRepository(db)
 	transactionService := services.NewTransactionService(transactionRepo)
 
@@ -244,9 +250,12 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	)
 
 	newsHandler := handler.NewNewsHandler(
+		rmq,
 		leagueService,
 		teamService,
 		newsService,
+		subscriptionFollowLeagueService,
+		subscriptionFollowTeamService,
 		&entity.News{},
 	)
 

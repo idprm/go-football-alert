@@ -16,14 +16,14 @@ func NewNewsService(newsRepo repository.INewsRepository) *NewsService {
 }
 
 type INewsService interface {
-	IsNews(string, string) bool
+	IsNews(string) bool
 	IsNewsLeague(leagueId int64) bool
 	IsNewsTeam(teamId int64) bool
 	IsNewsById(int64) bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetAllUSSD(int) ([]*entity.News, error)
 	GetByTeamUSSD(int) (*entity.News, error)
-	Get(string, string) (*entity.News, error)
+	Get(string) (*entity.News, error)
 	GetById(int64) (*entity.News, error)
 	GetBySlug(string) (*entity.News, error)
 	Save(*entity.News) (*entity.News, error)
@@ -37,8 +37,8 @@ type INewsService interface {
 	UpdateNewsTeam(*entity.NewsTeams) (*entity.NewsTeams, error)
 }
 
-func (s *NewsService) IsNews(slug, pubAt string) bool {
-	count, _ := s.newsRepo.Count(slug, pubAt)
+func (s *NewsService) IsNews(slug string) bool {
+	count, _ := s.newsRepo.Count(slug)
 	return count > 0
 }
 
@@ -69,8 +69,8 @@ func (s *NewsService) GetByTeamUSSD(teamId int) (*entity.News, error) {
 	return s.newsRepo.GetByTeamUSSD(teamId)
 }
 
-func (s *NewsService) Get(slug, pubAt string) (*entity.News, error) {
-	return s.newsRepo.Get(slug, pubAt)
+func (s *NewsService) Get(slug string) (*entity.News, error) {
+	return s.newsRepo.Get(slug)
 }
 
 func (s *NewsService) GetById(id int64) (*entity.News, error) {

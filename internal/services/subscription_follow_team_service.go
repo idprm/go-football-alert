@@ -1,6 +1,8 @@
 package services
 
 import (
+	"log"
+
 	"github.com/idprm/go-football-alert/internal/domain/entity"
 	"github.com/idprm/go-football-alert/internal/domain/repository"
 )
@@ -26,6 +28,7 @@ type ISubscriptionFollowTeamService interface {
 	Update(*entity.SubscriptionFollowTeam) (*entity.SubscriptionFollowTeam, error)
 	Disable(*entity.SubscriptionFollowTeam) error
 	Delete(*entity.SubscriptionFollowTeam) error
+	GetAllSubByTeam(int64) *[]entity.SubscriptionFollowTeam
 }
 
 func (s *SubscriptionFollowTeamService) IsSub(subId int64) bool {
@@ -60,4 +63,12 @@ func (s *SubscriptionFollowTeamService) Disable(a *entity.SubscriptionFollowTeam
 
 func (s *SubscriptionFollowTeamService) Delete(a *entity.SubscriptionFollowTeam) error {
 	return s.subFollowTeamRepo.Delete(a)
+}
+
+func (s *SubscriptionFollowTeamService) GetAllSubByTeam(teamId int64) *[]entity.SubscriptionFollowTeam {
+	subs, err := s.subFollowTeamRepo.GetAllSubByTeam(teamId)
+	if err != nil {
+		log.Println(err)
+	}
+	return subs
 }
