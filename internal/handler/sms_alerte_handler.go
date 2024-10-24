@@ -53,7 +53,6 @@ func (h *SMSAlerteHandler) SMSAlerte() {
 	if !h.smsAlerteService.ISMSAlerte(h.sub.SubscriptionID, h.sub.NewsID) {
 
 		if h.subscriptionService.IsActiveSubscriptionBySubId(h.sub.SubscriptionID) {
-
 			// save
 			h.smsAlerteService.Save(
 				&entity.SMSAlerte{
