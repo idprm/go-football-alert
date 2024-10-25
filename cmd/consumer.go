@@ -523,6 +523,7 @@ var consumerNewsCmd = &cobra.Command{
 		 * SETUP CHANNEL
 		 */
 		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_NEWS_EXCHANGE, true, RMQ_NEWS_QUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_SMS_ALERTE_EXCHANGE, true, RMQ_SMS_ALERTE_QUEUE)
 
 		messagesData, errSub := rmq.Subscribe(1, false, RMQ_NEWS_QUEUE, RMQ_NEWS_EXCHANGE, RMQ_NEWS_QUEUE)
 		if errSub != nil {
