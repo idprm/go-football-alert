@@ -123,7 +123,7 @@ func (r *NewsRepository) GetBySlug(slug string) (*entity.News, error) {
 
 func (r *NewsRepository) Get(pubAt time.Time, slug string) (*entity.News, error) {
 	var c entity.News
-	err := r.db.Where("DATE(created_at) = DATE(?) AND slug = ?", pubAt, slug).Take(&c).Error
+	err := r.db.Where("DATE(publish_at) = DATE(?) AND slug = ?", pubAt, slug).Take(&c).Error
 	if err != nil {
 		return nil, err
 	}
