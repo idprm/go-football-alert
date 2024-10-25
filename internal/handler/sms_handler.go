@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	LIMIT_PER_DAY int = 1
+	LIMIT_PER_DAY int = 4
 )
 
 type SMSHandler struct {

@@ -39,7 +39,7 @@ type INewsRepository interface {
 
 func (r *NewsRepository) Count(slug string) (int64, error) {
 	var count int64
-	err := r.db.Model(&entity.News{}).Where("DATE(created_at) = DATE(NOW()) AND slug = ?", slug).Count(&count).Error
+	err := r.db.Model(&entity.News{}).Where("slug = ?", slug).Count(&count).Error
 	if err != nil {
 		return count, err
 	}

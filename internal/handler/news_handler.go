@@ -91,7 +91,6 @@ func (h *NewsHandler) Filter() {
 						LeagueID: league.GetId(),
 					},
 				)
-				log.Println(league)
 
 				h.SMSAlerteLeague(league.GetId())
 			}

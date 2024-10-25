@@ -73,7 +73,7 @@ func (r *SubscriptionRepository) CountActiveByCategory(category string, msisdn s
 
 func (r *SubscriptionRepository) CountActiveBySubId(subId int64) (int64, error) {
 	var count int64
-	err := r.db.Model(&entity.Subscription{}).Where("id = ?", subId).Where("is_active = ?", true).Count(&count).Error
+	err := r.db.Model(&entity.Subscription{}).Where("id = ?", subId).Where("is_retry = false AND is_active = true").Count(&count).Error
 	if err != nil {
 		return count, err
 	}
