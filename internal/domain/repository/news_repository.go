@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"time"
+
 	"github.com/idprm/go-football-alert/internal/domain/entity"
 	"gorm.io/gorm"
 )
@@ -16,7 +18,7 @@ func NewNewsRepository(db *gorm.DB) *NewsRepository {
 }
 
 type INewsRepository interface {
-	Count(string) (int64, error)
+	Count(time.Time, string) (int64, error)
 	CountNewsLeague(int64) (int64, error)
 	CountNewsTeam(int64) (int64, error)
 	CountById(int64) (int64, error)
@@ -25,7 +27,7 @@ type INewsRepository interface {
 	GetByTeamUSSD(int) (*entity.News, error)
 	GetById(int64) (*entity.News, error)
 	GetBySlug(string) (*entity.News, error)
-	Get(string) (*entity.News, error)
+	Get(time.Time, string) (*entity.News, error)
 	Save(*entity.News) (*entity.News, error)
 	Update(*entity.News) (*entity.News, error)
 	Delete(*entity.News) error
@@ -37,9 +39,9 @@ type INewsRepository interface {
 	UpdateNewsTeam(*entity.NewsTeams) (*entity.NewsTeams, error)
 }
 
-func (r *NewsRepository) Count(slug string) (int64, error) {
+func (r *NewsRepository) Count(pubAt time.Time, slug string) (int64, error) {
 	var count int64
-	err := r.db.Model(&entity.News{}).Where("slug = ?", slug).Count(&count).Error
+	err := r.db.Model(&entity.News{}).Where("DATE(publish_at) = DATE(?) AND slug = ?", pubAt, slug).Count(&count).Error
 	if err != nil {
 		return count, err
 	}
@@ -119,9 +121,9 @@ func (r *NewsRepository) GetBySlug(slug string) (*entity.News, error) {
 	return &c, nil
 }
 
-func (r *NewsRepository) Get(slug string) (*entity.News, error) {
+func (r *NewsRepository) Get(pubAt time.Time, slug string) (*entity.News, error) {
 	var c entity.News
-	err := r.db.Where("DATE(created_at) = DATE(NOW()) AND slug = ?", slug).Take(&c).Error
+	err := r.db.Where("DATE(created_at) = DATE(?) AND slug = ?", pubAt, slug).Take(&c).Error
 	if err != nil {
 		return nil, err
 	}

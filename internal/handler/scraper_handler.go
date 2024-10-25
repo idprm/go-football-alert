@@ -469,7 +469,7 @@ func (h *ScraperHandler) NewsMaxiFoot() {
 
 		d, _ := time.Parse(time.RFC1123Z, el.PubDate)
 
-		if !h.newsService.IsNews(slug.Make(el.Title)) {
+		if !h.newsService.IsNews(d, slug.Make(el.Title)) {
 			news := &entity.News{
 				Title:       el.Title,
 				Slug:        slug.Make(el.Title),
@@ -507,7 +507,7 @@ func (h *ScraperHandler) NewsMadeInFoot() {
 
 		d, _ := time.Parse(time.RFC1123Z, el.PubDate)
 
-		if !h.newsService.IsNews(slug.Make(el.Title)) {
+		if !h.newsService.IsNews(d, slug.Make(el.Title)) {
 			news := &entity.News{
 				Title:       el.Title,
 				Slug:        slug.Make(el.Title),
@@ -548,7 +548,7 @@ func (h *ScraperHandler) NewsAfricaTopSports() {
 
 		d, _ := time.Parse(time.RFC1123Z, el.PubDate)
 
-		if !h.newsService.IsNews(slug.Make(el.Title)) {
+		if !h.newsService.IsNews(d, slug.Make(el.Title)) {
 
 			news := &entity.News{
 				Title:       el.Title,
@@ -586,7 +586,7 @@ func (h *ScraperHandler) NewsFootMercato() {
 
 	for _, el := range resp.Url.News {
 		d, _ := time.Parse(time.RFC3339, el.PubDate)
-		if !h.newsService.IsNews(slug.Make(el.Title)) {
+		if !h.newsService.IsNews(d, slug.Make(el.Title)) {
 			news := &entity.News{
 				Title:       el.Title,
 				Slug:        slug.Make(el.Title),
