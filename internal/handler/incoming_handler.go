@@ -164,19 +164,88 @@ func ValidateStruct(data interface{}) []*model.ErrorResponse {
 	return errors
 }
 
+func (h *IncomingHandler) LPAlerteSMS(c *fiber.Ctx) error {
+	return c.Render("fb-alert/smsalerte/index",
+		fiber.Map{
+			"host": c.BaseURL(),
+		},
+	)
+}
+
 func (h *IncomingHandler) Sub(c *fiber.Ctx) error {
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
+	req := new(model.CampaignSubRequest)
+
+	err := c.QueryParser(req)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).SendString(err.Error())
+	}
+
+	errors := ValidateStruct(*req)
+	if errors != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(errors)
+	}
+
+	req.SetCode(strings.ToUpper(c.Params("code")))
+
+	if h.serviceService.IsService(req.GetCode()) {
+
+		service, err := h.serviceService.Get(req.GetCode())
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(
+				&model.WebResponse{
+					Error:      true,
+					StatusCode: fiber.StatusInternalServerError,
+					Message:    err.Error(),
+				})
+		}
+		return c.Render("fb-alert/smsalerte/sub",
+			fiber.Map{
+				"host":    c.BaseURL(),
+				"package": service.GetPackage(),
+				"price":   service.GetPrice(),
+			},
+		)
+	}
+
+	return c.Redirect("https://www.google.com")
 }
 
 func (h *IncomingHandler) UnSub(c *fiber.Ctx) error {
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
-}
+	req := new(model.CampaignUnSubRequest)
 
-func (h *IncomingHandler) LandingPage(c *fiber.Ctx) error {
-	if h.serviceService.IsService(c.Params("service")) {
-		return c.Render("fb-alert/sub", fiber.Map{})
+	err := c.QueryParser(req)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).SendString(err.Error())
 	}
-	return c.Redirect("https://www.google.com/")
+
+	errors := ValidateStruct(*req)
+	if errors != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(errors)
+	}
+
+	req.SetCode(strings.ToUpper(c.Params("code")))
+
+	if h.serviceService.IsService(req.GetCode()) {
+
+		service, err := h.serviceService.Get(req.GetCode())
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(
+				&model.WebResponse{
+					Error:      true,
+					StatusCode: fiber.StatusInternalServerError,
+					Message:    err.Error(),
+				})
+		}
+		return c.Render("fb-alert/smsalerte/unsub",
+			fiber.Map{
+				"host":    c.BaseURL(),
+				"package": service.GetPackage(),
+				"price":   service.GetPrice(),
+			},
+		)
+	}
+
+	return c.Redirect("https://www.google.com")
 }
 
 func (h *IncomingHandler) MessageOriginated(c *fiber.Ctx) error {

@@ -277,9 +277,6 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	r.Post("/sub", h.CreateSub)
 	r.Post("/otp", h.VerifySub)
 
-	lp := r.Group("p")
-	lp.Get("/:service", h.LandingPage)
-
 	// v1
 	v1 := r.Group(API_VERSION)
 	// fiture
@@ -334,8 +331,9 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 
 	// landing page
 	p := v1.Group("p")
-	p.Get("sub", h.Sub)
-	p.Get("unsub", h.UnSub)
+	p.Get("/alertesms", h.LPAlerteSMS)
+	p.Get("/alertesms/:code/sub", h.Sub)
+	p.Get("/alertesms/:code/unsub", h.UnSub)
 
 	// summaries
 	summaries := dcb.Group("summaries")

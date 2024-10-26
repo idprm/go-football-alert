@@ -206,6 +206,83 @@ type ErrorResponse struct {
 	Value       string `json:"value" xml:"value"`
 }
 
+type CampaignSubRequest struct {
+	Code      string `validate:"required" query:"code" json:"code" xml:"code"`
+	Msisdn    string `validate:"required" query:"msisdn" json:"msisdn" xml:"msisdn"`
+	Keyword   string `query:"keyword" json:"keyword" xml:"keyword"`
+	Subkey    string `query:"subkey" json:"subkey" xml:"subkey"`
+	Adnet     string `query:"adn" json:"adnet" xml:"adnet"`
+	PubId     string `query:"pubid" json:"pubid" xml:"pubid"`
+	ClickId   string `query:"clickid" json:"clickid" xml:"clickid"`
+	IpAddress string `query:"ip_address" json:"ip_address"`
+}
+
+func (m *CampaignSubRequest) GetCode() string {
+	return m.Code
+}
+
+func (m *CampaignSubRequest) GetMsisdn() string {
+	return m.Msisdn
+}
+
+func (m *CampaignSubRequest) GetKeyword() string {
+	return m.Keyword
+}
+
+func (m *CampaignSubRequest) GetSubkey() string {
+	return m.Subkey
+}
+
+func (m *CampaignSubRequest) GetAdnet() string {
+	return m.Adnet
+}
+
+func (m *CampaignSubRequest) GetPubId() string {
+	return m.PubId
+}
+
+func (m *CampaignSubRequest) GetClickId() string {
+	return m.ClickId
+}
+
+func (m *CampaignSubRequest) GetIpAddress() string {
+	return m.IpAddress
+}
+
+func (m *CampaignSubRequest) SetCode(v string) {
+	m.Code = v
+}
+
+func (m *CampaignSubRequest) SetClickId(v string) {
+	m.ClickId = v
+}
+
+func (m *CampaignSubRequest) SetIpAddress(v string) {
+	m.IpAddress = v
+}
+
+type CampaignUnSubRequest struct {
+	Code      string `validate:"required" query:"code" json:"code" xml:"code"`
+	Msisdn    string `validate:"required" query:"msisdn" json:"msisdn" xml:"msisdn"`
+	IpAddress string `query:"ip_address" json:"ip_address"`
+}
+
+func (m *CampaignUnSubRequest) GetCode() string {
+	return m.Code
+}
+
+func (m *CampaignUnSubRequest) GetMsisdn() string {
+	return m.Msisdn
+}
+
+func (m *CampaignUnSubRequest) SetCode(v string) {
+	m.Code = v
+}
+
+func (m *CampaignUnSubRequest) SetIpAddress(v string) {
+	m.IpAddress = v
+}
+
 /***
 **
 ***/

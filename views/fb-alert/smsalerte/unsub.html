@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alerte SMS de désabonnement</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+  <!-- MDB -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.10.0/mdb.dark.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background-color: black;
+    }
+
+    .wrapper {
+      min-height: 100vh;
+      height: 100%;
+      display: flex;
+      align-items: center;
+    }
+
+    .title {
+      font-weight: bold;
+      font-size: 21px;
+      line-height: normal;
+    }
+
+    .button {
+      background-color: #21D4FD;
+      background-image: linear-gradient(19deg, #21D4FD 0%, #B721FF 100%);
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrapper">
+    <div class="container box-wrapper text-center pb-3">
+      <div class="text-center mb-3">
+        <img src="/static/assets/dreamleague/img/icon-sad-dreamleague.png" class="img-responsive" width="125"
+          alt="People">
+      </div>
+      <p class="title mb-2">Alerte SMS de désabonnement</p>
+      <small class="d-block mb-3">C'est triste de savoir que tu pars.</small>
+      <div class="button-wrapper mx-auto">
+        <input id="host" name="host" type="hidden" value="{{.host}}" />
+        <button id="btnSubmit" class="btn btn-primary button btn-lg w-50 rounded-pill mb-2">Se désabonner</button>
+      </div>
+    </div>
+  </div>
+</body>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"
+  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script src="/static/assets/dreamleague/js/mdb.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  $(document).ready(function () {
+    var ip = "";
+    $.getJSON("https://api.ipify.org/?format=json", function (e) {
+      ip = e.ip;
+    });
+
+    var getUrlParameter = function getUrlParameter(sParam) {
+      var sPageURL = window.location.search.substring(1),
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
+
+      for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
+
+        if (sParameterName[0] === sParam) {
+          return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+        }
+      }
+      return "";
+    };
+
+
+
+    $('#btnSubmit').click(function (event) {
+      event.preventDefault();
+
+      var host = $("#host").val();
+      var msisdn = "";
+
+      msisdn = getUrlParameter('msisdn');
+
+      if (msisdn) {
+        Swal.fire({
+          title: "Es-tu sûr?",
+          text: "Voulez-vous vous désinscrire",
+          icon: "question",
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Sim',
+          allowOutsideClick: false,
+        }).then((result) => {
+          if (result.value) {
+            Swal.fire({
+              title: "S'il vous plaît, attendez!",
+              html: 'Traitement...',
+              showConfirmButton: false,
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              didOpen: () => {
+                Swal.showLoading()
+              },
+            });
+
+            $.ajax({
+              type: 'POST',
+              url: host + '/unsub',
+              data: JSON.stringify({
+                code: "SA1",
+                msisdn: msisdn,
+                channel: "MANUAL",
+                ip_address: ip,
+              }),
+              dataType: 'json',
+              contentType: "application/json; charset=utf-8",
+              success: function (json) {
+                if (json.error == false) {
+
+                  // success
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Succès',
+                    text: json.message,
+                  });
+
+                  setTimeout(function () {
+                    window.location.href = json.redirect;
+                  }, 2100);
+                } else {
+                  // not success
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: json.message,
+                  });
+                }
+              },
+              error: function () {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Oups...',
+                  text: "Délai d'erreur",
+                });
+              }
+            });
+          }
+        })
+      }
+    });
+  })
+</script>
+
+</html>

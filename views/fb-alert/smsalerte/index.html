@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/static/assets/dreamleague/css/mdb.dark.min.css">
+  <link rel="stylesheet" href="/static/assets/dreamleague/style.css">
+  <title>SMS Alerte</title>
+</head>
+
+<body>
+  <div class="mx-auto box-wrapper">
+    <img src="/static/assets/dreamleague/img/dreamleague.jpg" class="img-fluid" alt="Banner">
+  </div>
+  <div class="container-fluid box-wrapper text-center pb-3 mt-3">
+    <h4 class="mb-2 title text-uppercase">Obtenez les dernières informations <span style="color: #FFF200;">sur vos ligues et équipes préférées.</span></h4>
+    <p class="mb-2 small">Option d'abonnement :</p>
+
+    <div class="row gx-3">
+      <div class="col-4">
+        <button id="daily" class="btn btn-transparent button btn-lg w-100 text-white mb-3"><span class="block-on-sm">30
+            MT</span>/jour</button>
+      </div>
+      <div class="col-4">
+        <button id="weekly" class="btn btn-transparent button btn-lg w-100 text-white mb-3"><span class="block-on-sm">40
+            MT</span>/semaine</button>
+      </div>
+      <div class="col-4">
+        <button id="monthly" class="btn btn-transparent button btn-lg w-100 text-white mb-3"><span class="block-on-sm">80
+            MT</span>/mensuel</button>
+      </div>
+    </div>
+
+    <div class="w-75 text-start mx-auto">
+      <div class="d-block">
+        <div class="form-check d-inline-block small mx-auto">
+          <input class="form-check-input confirm" type="checkbox" value="" id="confirm1" />
+          <label class="form-check-label">Accepter les <a style="color: #A09914;" href="/dreamleague/term">termes et conditions</a></label>
+        </div>
+      </div>
+      <div class="d-block">
+        <div class="form-check text-center d-inline-block small mx-auto">
+          <input class="form-check-input confirm" type="checkbox" value="" id="confirm2" />
+          <label class="form-check-label">Accepter les <a style="color: #A09914;" href="/dreamleague/privacy-policy">politique de confidentialité</a></label>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-fluid mt-3">
+      <p class="info mb-2">Pour tout amateur de sport, la véritable expérience sur le terrain est aussi passionnante que rare ! Pour changer cette réalité, SMS Alerte est apparu. Notre objectif est de vous rendre plus intéressé par les informations les plus récentes et amusantes. Abonnez-vous au service SMS Alerte et accédez aux mises à jour et actualités du football.</p>
+    </div>
+  </div>
+</body>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"
+  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script src="/static/assets/dreamleague/js/mdb.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  $(document).ready(function () {
+
+    var confirm1 = document.getElementById("confirm1");
+    var confirm2 = document.getElementById("confirm2");
+    var confirm3 = document.getElementById("confirm3");
+
+    var getUrlParameter = function getUrlParameter(sParam) {
+      var sPageURL = window.location.search.substring(1),
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
+
+      for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
+
+        if (sParameterName[0] === sParam) {
+          return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+        }
+      }
+      return false;
+    };
+
+    $('#daily').click(function (event) {
+      event.preventDefault();
+      if (confirm1.checked == false) {
+        Swal.fire({
+          icon: 'warning',
+          text: "Veuillez accepter les termes et conditions en cochant une case",
+        });
+        return false;
+      }
+      if (confirm2.checked == false) {
+        Swal.fire({
+          icon: 'warning',
+          text: "Veuillez accepter la politique de confidentialité en cochant une case",
+        });
+        return false;
+      }
+      if (confirm1.checked == true && confirm2.checked == true) {
+        window.location.href = "{{.host}}/smsalerte/daily";
+      }
+    });
+
+    $('#weekly').click(function (event) {
+      event.preventDefault();
+      if (confirm1.checked == false) {
+        Swal.fire({
+          icon: 'warning',
+          text: "Veuillez accepter les termes et conditions en cochant une case",
+        });
+        return false;
+      }
+      if (confirm2.checked == false) {
+        Swal.fire({
+          icon: 'warning',
+          text: "Veuillez accepter la politique de confidentialité en cochant une case",
+        });
+        return false;
+      }
+      if (confirm1.checked == true && confirm2.checked == true) {
+        window.location.href = "{{.host}}/smsalerte/weekly";
+      }
+    });
+
+    $('#monthly').click(function (event) {
+      event.preventDefault();
+      if (confirm1.checked == false) {
+        Swal.fire({
+          icon: 'warning',
+          text: "Veuillez accepter les termes et conditions en cochant une case",
+        });
+        return false;
+      }
+      if (confirm2.checked == false) {
+        Swal.fire({
+          icon: 'warning',
+          text: "Veuillez accepter la politique de confidentialité en cochant une case",
+        });
+        return false;
+      }
+      if (confirm1.checked == true && confirm2.checked == true) {
+        window.location.href = "{{.host}}/smsalerte/monthly";
+      }
+    });
+
+  })
+</script>
+
+
+</html>
