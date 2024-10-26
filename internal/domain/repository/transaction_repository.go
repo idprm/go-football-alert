@@ -19,8 +19,8 @@ type ITransactionRepository interface {
 	Count(int, string, string) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	Get(int, string, string) (*entity.Transaction, error)
-	Save(*entity.Transaction) (*entity.Transaction, error)
-	Update(*entity.Transaction) (*entity.Transaction, error)
+	Save(*entity.Transaction) error
+	Update(*entity.Transaction) error
 	Delete(*entity.Transaction) error
 }
 
@@ -52,24 +52,24 @@ func (r *TransactionRepository) Get(serviceId int, msisdn, date string) (*entity
 	return &c, nil
 }
 
-func (r *TransactionRepository) Save(c *entity.Transaction) (*entity.Transaction, error) {
+func (r *TransactionRepository) Save(c *entity.Transaction) error {
 	err := r.db.Create(&c).Error
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return c, nil
+	return nil
 }
 
-func (r *TransactionRepository) Update(c *entity.Transaction) (*entity.Transaction, error) {
-	err := r.db.Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Where("DATE(created_at) = DATE(NOW())").Updates(&c).Error
+func (r *TransactionRepository) Update(c *entity.Transaction) error {
+	err := r.db.Where("service_id = ? AND msisdn = ? AND DATE(created_at) = DATE(NOW())", c.ServiceID, c.Msisdn).Updates(&c).Error
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return c, nil
+	return nil
 }
 
 func (r *TransactionRepository) Delete(c *entity.Transaction) error {
-	err := r.db.Delete(&c, c.ID).Error
+	err := r.db.Where("service_id = ? AND msisdn = ? AND subject = ? AND status = ? AND DATE(created_at) = DATE(NOW())", c.ServiceID, c.Msisdn, c.Subject, c.Status).Delete(&c, c.ID).Error
 	if err != nil {
 		return err
 	}
