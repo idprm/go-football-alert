@@ -143,6 +143,18 @@ func (s *MORequest) GetIpAddress() string {
 	return s.IpAddress
 }
 
+func (m *MORequest) IsProno() bool {
+	return m.GetSMS() == "PRONO"
+}
+
+func (m *MORequest) IsTicket() bool {
+	return m.GetSMS() == "TICKET"
+}
+
+func (m *MORequest) IsVIP() bool {
+	return m.GetSMS() == "VIP"
+}
+
 func (m *MORequest) IsInfo() bool {
 	return m.GetSMS() == "INFO"
 }

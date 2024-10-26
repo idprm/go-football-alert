@@ -87,9 +87,11 @@ const (
 	CATEGORY_SMSALERTE             string = "SMSALERTE"
 	CATEGORY_CREDIT_GOAL           string = "CREDITGOAL"
 	CATEGORY_PREDICT               string = "PREDICTION"
-	CATEGORY_PRONOSTIC             string = "PRONOSTIC"
 	SUBCATEGORY_FOLLOW_COMPETITION string = "FOLLOW_COMPETITION"
 	SUBCATEGORY_FOLLOW_TEAM        string = "FOLLOW_TEAM"
+	CATEGORY_PRONOSTIC_SAFE        string = "PRONOSTIC_SAFE"
+	CATEGORY_PRONOSTIC_COMBINED    string = "PRONOSTIC_COMBINED"
+	CATEGORY_PRONOSTIC_VIP         string = "PRONOSTIC_VIP"
 )
 
 const (
@@ -117,6 +119,9 @@ const (
 	SMS_FOLLOW_COMPETITION_UNVALID_SUB   string = "FOLLOW_COMPETITION_UNVALID_SUB"
 	SMS_FOLLOW_COMPETITION_EXPIRE_SUB    string = "FOLLOW_COMPETITION_EXPIRE_SUB"
 	SMS_FOLLOW_UNVALID_SUB               string = "FOLLOW_UNVALID_SUB"
+	SMS_PRONOSTIC_SAFE_SUB               string = "PRONOSTIC_SAFE_SUB"
+	SMS_PRONOSTIC_COMBINED_SUB           string = "PRONOSTIC_COMBINED_SUB"
+	SMS_PRONOSTIC_VIP_SUB                string = "PRONOSTIC_VIP_SUB"
 	SMS_CONFIRMATION                     string = "CONFIRMATION"
 	SMS_INFO                             string = "INFO"
 	SMS_STOP                             string = "STOP"
@@ -157,6 +162,27 @@ func (h *SMSHandler) SMSAlerte() {
 		}
 	} else if h.req.IsInfo() {
 		h.Info()
+	} else if h.req.IsProno() {
+		// Pronostic Safe Sub
+		if !h.IsActiveSubByCategory(CATEGORY_PRONOSTIC_SAFE) {
+			h.SubSafe()
+		} else {
+			h.AlreadySubSafe()
+		}
+	} else if h.req.IsTicket() {
+		// Pronostic Combined Sub
+		if !h.IsActiveSubByCategory(CATEGORY_PRONOSTIC_SAFE) {
+			h.SubCombined()
+		} else {
+			h.AlreadySubCombined()
+		}
+	} else if h.req.IsVIP() {
+		// Pronostic VIP Sub
+		if !h.IsActiveSubByCategory(CATEGORY_PRONOSTIC_SAFE) {
+			h.SubVIP()
+		} else {
+			h.AlreadySubVIP()
+		}
 	} else if h.req.IsStop() {
 		if h.req.IsStopAlerte() {
 			if h.IsActiveSubByCategory(CATEGORY_SMSALERTE) {
@@ -945,6 +971,307 @@ func (h *SMSHandler) AlreadySubAlerteEquipe(team *entity.Team) {
 	)
 }
 
+func (h *SMSHandler) SubSafe() {
+	trxId := utils.GenerateTrxId()
+
+	service, err := h.getServicePronosticSafeDaily()
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	content, err := h.getContent(SMS_PRONOSTIC_SAFE_SUB)
+	if err != nil {
+		log.Println(err)
+	}
+
+	summary := &entity.Summary{
+		ServiceID: service.GetId(),
+		CreatedAt: time.Now(),
+	}
+
+	subscription := &entity.Subscription{
+		ServiceID:      service.GetId(),
+		Category:       service.GetCategory(),
+		Msisdn:         h.req.GetMsisdn(),
+		LatestTrxId:    trxId,
+		LatestKeyword:  h.req.GetSMS(),
+		LatestSubject:  SUBJECT_FIRSTPUSH,
+		IsActive:       true,
+		IsFollowLeague: true,
+		IpAddress:      h.req.GetIpAddress(),
+	}
+
+	if h.IsSub() {
+		h.subscriptionService.Update(subscription)
+	} else {
+		h.subscriptionService.Save(subscription)
+	}
+
+	sub, err := h.subscriptionService.Get(service.GetId(), h.req.GetMsisdn())
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	if sub.IsFirstFreeDay() {
+		// free 1 day
+		h.subscriptionService.Update(
+			&entity.Subscription{
+				ServiceID:     service.GetId(),
+				Msisdn:        h.req.GetMsisdn(),
+				LatestTrxId:   trxId,
+				LatestSubject: SUBJECT_FREEPUSH,
+				LatestStatus:  STATUS_SUCCESS,
+				RenewalAt:     time.Now().AddDate(0, 0, service.GetFreeDay()),
+				LatestPayload: "-",
+				IsFree:        true,
+			},
+		)
+
+		h.transactionService.Save(
+			&entity.Transaction{
+				TrxId:        trxId,
+				ServiceID:    service.GetId(),
+				Msisdn:       h.req.GetMsisdn(),
+				Keyword:      h.req.GetSMS(),
+				Amount:       0,
+				Status:       STATUS_SUCCESS,
+				StatusCode:   "",
+				StatusDetail: "",
+				Subject:      SUBJECT_FREEPUSH,
+				Payload:      "-",
+			},
+		)
+
+		h.historyService.Save(
+			&entity.History{
+				SubscriptionID: sub.GetId(),
+				ServiceID:      service.GetId(),
+				Msisdn:         h.req.GetMsisdn(),
+				Keyword:        h.req.GetSMS(),
+				Subject:        SUBJECT_FREEPUSH,
+				Status:         STATUS_SUCCESS,
+			},
+		)
+
+	} else {
+		// charging if free day >= 1
+		t := telco.NewTelco(h.logger, service, subscription, trxId)
+
+		respBal, err := t.QueryProfileAndBal()
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		var respBalance *model.QueryProfileAndBalResponse
+		xml.Unmarshal(respBal, &respBalance)
+
+		if respBalance.IsEnoughBalance(service) {
+			resp, err := t.DeductFee()
+			if err != nil {
+				log.Println(err.Error())
+			}
+
+			var respDeduct *model.DeductResponse
+			xml.Unmarshal(resp, &respDeduct)
+
+			if respDeduct.IsSuccess() {
+				h.subscriptionService.Update(
+					&entity.Subscription{
+						ServiceID:            service.GetId(),
+						Msisdn:               h.req.GetMsisdn(),
+						LatestTrxId:          trxId,
+						LatestSubject:        SUBJECT_FIRSTPUSH,
+						LatestStatus:         STATUS_SUCCESS,
+						TotalAmount:          service.GetPrice(),
+						RenewalAt:            time.Now().AddDate(0, 0, service.GetRenewalDay()),
+						ChargeAt:             time.Now(),
+						TotalSuccess:         sub.TotalSuccess + 1,
+						IsRetry:              false,
+						TotalFirstpush:       sub.TotalFirstpush + 1,
+						TotalAmountFirstpush: service.GetPrice(),
+						LatestPayload:        string(resp),
+					},
+				)
+
+				// is_retry set to false
+				h.subscriptionService.UpdateNotRetry(sub)
+
+				h.transactionService.Save(
+					&entity.Transaction{
+						TrxId:        trxId,
+						ServiceID:    service.GetId(),
+						Msisdn:       h.req.GetMsisdn(),
+						Keyword:      h.req.GetSMS(),
+						Amount:       service.GetPrice(),
+						Status:       STATUS_SUCCESS,
+						StatusCode:   "",
+						StatusDetail: "",
+						Subject:      SUBJECT_FIRSTPUSH,
+						Payload:      string(resp),
+					},
+				)
+
+				h.historyService.Save(
+					&entity.History{
+						SubscriptionID: sub.GetId(),
+						ServiceID:      service.GetId(),
+						Msisdn:         h.req.GetMsisdn(),
+						Keyword:        h.req.GetSMS(),
+						Subject:        SUBJECT_FIRSTPUSH,
+						Status:         STATUS_SUCCESS,
+					},
+				)
+
+				summary.SetTotalChargeSuccess(1)
+				summary.SetTotalRevenue(service.GetPrice())
+			}
+
+			if respDeduct.IsFailed() {
+				h.subscriptionService.Update(
+					&entity.Subscription{
+						ServiceID:     service.GetId(),
+						Msisdn:        h.req.GetMsisdn(),
+						LatestTrxId:   trxId,
+						LatestSubject: SUBJECT_FIRSTPUSH,
+						LatestStatus:  STATUS_FAILED,
+						RenewalAt:     time.Now().AddDate(0, 0, 1),
+						RetryAt:       time.Now(),
+						TotalFailed:   sub.TotalFailed + 1,
+						IsRetry:       true,
+						LatestPayload: string(resp),
+					},
+				)
+
+				h.transactionService.Save(
+					&entity.Transaction{
+						TrxId:        trxId,
+						ServiceID:    service.GetId(),
+						Msisdn:       h.req.GetMsisdn(),
+						Keyword:      h.req.GetSMS(),
+						Status:       STATUS_FAILED,
+						StatusCode:   respDeduct.GetFaultCode(),
+						StatusDetail: respDeduct.GetFaultString(),
+						Subject:      SUBJECT_FIRSTPUSH,
+						Payload:      string(resp),
+					},
+				)
+
+				h.historyService.Save(
+					&entity.History{
+						SubscriptionID: sub.GetId(),
+						ServiceID:      service.GetId(),
+						Msisdn:         h.req.GetMsisdn(),
+						Keyword:        h.req.GetSMS(),
+						Subject:        SUBJECT_FIRSTPUSH,
+						Status:         STATUS_FAILED,
+					},
+				)
+
+				// setter summary
+				summary.SetTotalChargeFailed(1)
+			}
+		} else {
+			h.subscriptionService.Update(
+				&entity.Subscription{
+					ServiceID:     service.GetId(),
+					Msisdn:        h.req.GetMsisdn(),
+					LatestTrxId:   trxId,
+					LatestSubject: SUBJECT_FIRSTPUSH,
+					LatestStatus:  STATUS_FAILED,
+					RenewalAt:     time.Now().AddDate(0, 0, 1),
+					RetryAt:       time.Now(),
+					TotalFailed:   sub.TotalFailed + 1,
+					IsRetry:       true,
+					LatestPayload: string(respBal),
+				},
+			)
+
+			h.transactionService.Save(
+				&entity.Transaction{
+					TrxId:        trxId,
+					ServiceID:    service.GetId(),
+					Msisdn:       h.req.GetMsisdn(),
+					Keyword:      h.req.GetSMS(),
+					Status:       STATUS_FAILED,
+					StatusCode:   "",
+					StatusDetail: "INSUFF BALANCE",
+					Subject:      SUBJECT_FIRSTPUSH,
+					Payload:      string(respBal),
+				},
+			)
+
+			h.historyService.Save(
+				&entity.History{
+					SubscriptionID: sub.GetId(),
+					ServiceID:      service.GetId(),
+					Msisdn:         h.req.GetMsisdn(),
+					Keyword:        h.req.GetSMS(),
+					Subject:        SUBJECT_FIRSTPUSH,
+					Status:         STATUS_FAILED,
+				},
+			)
+
+			// setter summary
+			summary.SetTotalChargeFailed(1)
+		}
+	}
+
+	// setter summary
+	summary.SetTotalSub(1)
+	// summary save
+	h.summaryService.Save(summary)
+
+	// count total sub
+	h.subscriptionService.Update(
+		&entity.Subscription{
+			ServiceID: service.GetId(),
+			Msisdn:    h.req.GetMsisdn(),
+			TotalSub:  sub.TotalSub + 1,
+		},
+	)
+
+	mt := &model.MTRequest{
+		Smsc:         h.req.GetTo(),
+		Keyword:      h.req.GetSMS(),
+		Service:      service,
+		Subscription: sub,
+		Content:      content,
+	}
+	mt.SetTrxId(trxId)
+
+	jsonData, err := json.Marshal(mt)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	h.rmq.IntegratePublish(
+		RMQ_MT_EXCHANGE,
+		RMQ_MT_QUEUE,
+		RMQ_DATA_TYPE, "", string(jsonData),
+	)
+
+}
+
+func (h *SMSHandler) SubCombined() {
+
+}
+
+func (h *SMSHandler) SubVIP() {
+
+}
+
+func (h *SMSHandler) AlreadySubSafe() {
+
+}
+
+func (h *SMSHandler) AlreadySubCombined() {
+
+}
+
+func (h *SMSHandler) AlreadySubVIP() {
+
+}
+
 func (h *SMSHandler) Info() {
 	trxId := utils.GenerateTrxId()
 
@@ -1170,6 +1497,18 @@ func (h *SMSHandler) IsSub() bool {
 
 func (h *SMSHandler) getServiceSMSAlerteDaily() (*entity.Service, error) {
 	return h.serviceService.Get("SA1")
+}
+
+func (h *SMSHandler) getServicePronosticSafeDaily() (*entity.Service, error) {
+	return h.serviceService.Get("PS1")
+}
+
+func (h *SMSHandler) getServicePronosticCombinedDaily() (*entity.Service, error) {
+	return h.serviceService.Get("PC1")
+}
+
+func (h *SMSHandler) getServicePronosticVIPDaily() (*entity.Service, error) {
+	return h.serviceService.Get("PV1")
 }
 
 func (h *SMSHandler) getContent(v string) (*entity.Content, error) {
