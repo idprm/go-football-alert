@@ -459,7 +459,7 @@ func populatePredictWin(db *gorm.DB, rmq rmqp.AMQP) {
 	subscriptionRepo := repository.NewSubscriptionRepository(db)
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
 
-	subs := subscriptionService.Prediction()
+	subs := subscriptionService.PredictWin()
 
 	for _, s := range *subs {
 		var sub entity.Subscription

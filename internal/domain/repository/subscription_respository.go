@@ -35,10 +35,10 @@ type ISubscriptionRepository interface {
 	UpdateNotRetry(*entity.Subscription) (*entity.Subscription, error)
 	UpdateNotFollowTeam(*entity.Subscription) (*entity.Subscription, error)
 	UpdateNotFollowLeague(*entity.Subscription) (*entity.Subscription, error)
-	UpdateNotPrediction(*entity.Subscription) (*entity.Subscription, error)
+	UpdateNotPredictWin(*entity.Subscription) (*entity.Subscription, error)
 	UpdateNotCreditGoal(*entity.Subscription) (*entity.Subscription, error)
 	CreditGoal() (*[]entity.Subscription, error)
-	Prediction() (*[]entity.Subscription, error)
+	PredictWin() (*[]entity.Subscription, error)
 	Follow() (*[]entity.Subscription, error)
 	Renewal() (*[]entity.Subscription, error)
 	Retry() (*[]entity.Subscription, error)
@@ -208,7 +208,7 @@ func (r *SubscriptionRepository) UpdateNotFollowLeague(c *entity.Subscription) (
 	return c, nil
 }
 
-func (r *SubscriptionRepository) UpdateNotPrediction(c *entity.Subscription) (*entity.Subscription, error) {
+func (r *SubscriptionRepository) UpdateNotPredictWin(c *entity.Subscription) (*entity.Subscription, error) {
 	err := r.db.Model(c).Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Update("is_prediction", false).Error
 	if err != nil {
 		return nil, err
@@ -244,9 +244,9 @@ func (r *SubscriptionRepository) CreditGoal() (*[]entity.Subscription, error) {
 	return &sub, nil
 }
 
-func (r *SubscriptionRepository) Prediction() (*[]entity.Subscription, error) {
+func (r *SubscriptionRepository) PredictWin() (*[]entity.Subscription, error) {
 	var sub []entity.Subscription
-	err := r.db.Where(&entity.Subscription{IsPrediction: true, IsActive: true}).Find(&sub).Error
+	err := r.db.Where(&entity.Subscription{IsPredictWin: true, IsActive: true}).Find(&sub).Error
 	if err != nil {
 		return nil, err
 	}

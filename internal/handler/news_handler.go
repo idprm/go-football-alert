@@ -389,7 +389,7 @@ func (h *NewsHandler) SMSAlerteLeague(leagueId int64) {
 			// counter
 			h.subscriptionFollowLeagueService.Sent(&entity.SubscriptionFollowLeague{SubscriptionID: s.SubscriptionID, LeagueID: leagueId})
 			// limit
-			if h.subscriptionFollowLeagueService.IsLimit(s.SubscriptionID) {
+			if h.subscriptionFollowLeagueService.IsLimit(s.SubscriptionID, leagueId) {
 				jsonData, err := json.Marshal(&entity.SMSAlerte{SubscriptionID: s.SubscriptionID, NewsID: h.news.GetId()})
 				if err != nil {
 					log.Println(err.Error())
@@ -415,7 +415,7 @@ func (h *NewsHandler) SMSAlerteTeam(teamId int64) {
 			// counter
 			h.subscriptionFollowTeamService.Sent(&entity.SubscriptionFollowTeam{SubscriptionID: s.SubscriptionID, TeamID: teamId})
 			// limit
-			if h.subscriptionFollowTeamService.IsLimit(s.SubscriptionID) {
+			if h.subscriptionFollowTeamService.IsLimit(s.SubscriptionID, teamId) {
 				jsonData, err := json.Marshal(&entity.SMSAlerte{SubscriptionID: s.SubscriptionID, NewsID: h.news.GetId()})
 				if err != nil {
 					log.Println(err.Error())

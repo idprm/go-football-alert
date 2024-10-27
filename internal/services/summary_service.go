@@ -29,6 +29,7 @@ type ISummaryService interface {
 	GetRevenueByMonth(time.Time) (float64, error)
 	Save(*entity.Summary) (*entity.Summary, error)
 	Update(*entity.Summary) (*entity.Summary, error)
+	UpdateRetry(*entity.Summary) (*entity.Summary, error)
 	Delete(*entity.Summary) error
 }
 
@@ -85,6 +86,25 @@ func (s *SummaryService) Save(a *entity.Summary) (*entity.Summary, error) {
 
 func (s *SummaryService) Update(a *entity.Summary) (*entity.Summary, error) {
 	return s.summaryRepo.Update(a)
+}
+
+func (s *SummaryService) UpdateRetry(a *entity.Summary) (*entity.Summary, error) {
+	if s.IsSummary(a.ServiceID, a.CreatedAt) {
+		summ, err := s.Get(a.ServiceID, a.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		return s.summaryRepo.Update(
+			&entity.Summary{
+				ServiceID:          a.ServiceID,
+				CreatedAt:          a.CreatedAt,
+				TotalChargeSuccess: summ.TotalChargeSuccess + a.TotalChargeSuccess,
+				TotalChargeFailed:  summ.TotalChargeFailed - 1,
+				TotalRevenue:       summ.TotalRevenue + a.TotalRevenue,
+			},
+		)
+	}
+	return s.summaryRepo.Save(a)
 }
 
 func (s *SummaryService) Delete(a *entity.Summary) error {

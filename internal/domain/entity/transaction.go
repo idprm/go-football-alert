@@ -19,6 +19,7 @@ type Transaction struct {
 	Subject      string   `gorm:"size:25" json:"subject,omitempty"`
 	IpAddress    string   `gorm:"size:30" json:"ip_address,omitempty"`
 	Payload      string   `gorm:"type:text" json:"payload,omitempty"`
+	Note         string   `gorm:"type:text" json:"note,omitempty"`
 	gorm.Model   `json:"-"`
 }
 
@@ -56,4 +57,8 @@ func (t *Transaction) SetStatusDetail(v string) {
 
 func (t *Transaction) SetSubject(v string) {
 	t.Subject = v
+}
+
+func (t *Transaction) SetNote(v string) {
+	t.Note = v
 }

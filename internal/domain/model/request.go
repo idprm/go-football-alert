@@ -143,6 +143,26 @@ func (s *MORequest) GetIpAddress() string {
 	return s.IpAddress
 }
 
+func (s *MORequest) GetStopKeyword() string {
+	index := strings.Split(s.GetSMS(), " ")
+
+	if index[0] == "STOP" {
+		if strings.Contains(s.GetSMS(), "STOP") {
+			if len(index) > 1 {
+				return index[1]
+			}
+			return ""
+		}
+		return ""
+	}
+	return ""
+}
+
+func (m *MORequest) IsStop() bool {
+	index := strings.Split(m.GetSMS(), " ")
+	return index[0] == "STOP" && (strings.Contains(m.GetSMS(), "STOP"))
+}
+
 func (m *MORequest) IsProno() bool {
 	return m.GetSMS() == "PRONO"
 }
@@ -159,10 +179,6 @@ func (m *MORequest) IsInfo() bool {
 	return m.GetSMS() == "INFO"
 }
 
-func (m *MORequest) IsStop() bool {
-	return strings.Contains(m.GetSMS(), "STOP")
-}
-
 func (m *MORequest) IsStopAlive() bool {
 	return strings.Contains(m.GetSMS(), "STOP ALIVE")
 }
@@ -173,6 +189,18 @@ func (m *MORequest) IsStopFlashNews() bool {
 
 func (m *MORequest) IsStopAlerte() bool {
 	return strings.Contains(m.GetSMS(), "STOP ALERTE")
+}
+
+func (m *MORequest) IsStopProno() bool {
+	return strings.Contains(m.GetSMS(), "STOP PRONO")
+}
+
+func (m *MORequest) IsStopTicket() bool {
+	return strings.Contains(m.GetSMS(), "STOP TICKET")
+}
+
+func (m *MORequest) IsStopVIP() bool {
+	return strings.Contains(m.GetSMS(), "STOP VIP")
 }
 
 func (m *MORequest) IsCreditGoal(s *entity.Service) bool {

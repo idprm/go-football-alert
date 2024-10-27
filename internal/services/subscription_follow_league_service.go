@@ -20,12 +20,12 @@ func NewSubscriptionFollowLeagueService(
 }
 
 type ISubscriptionFollowLeagueService interface {
-	IsSub(int64) bool
+	IsSub(int64, int64) bool
 	IsLeague(int64) bool
-	IsLimit(int64) bool
-	IsUpdated(int64) bool
+	IsLimit(int64, int64) bool
+	IsUpdated(int64, int64) bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
-	GetBySub(int64) (*entity.SubscriptionFollowLeague, error)
+	Get(int64, int64) (*entity.SubscriptionFollowLeague, error)
 	Save(*entity.SubscriptionFollowLeague) (*entity.SubscriptionFollowLeague, error)
 	Update(*entity.SubscriptionFollowLeague) (*entity.SubscriptionFollowLeague, error)
 	Sent(*entity.SubscriptionFollowLeague) error
@@ -34,8 +34,8 @@ type ISubscriptionFollowLeagueService interface {
 	GetAllSubByLeague(int64) *[]entity.SubscriptionFollowLeague
 }
 
-func (s *SubscriptionFollowLeagueService) IsSub(subId int64) bool {
-	count, _ := s.subFollowLeagueRepo.CountBySub(subId)
+func (s *SubscriptionFollowLeagueService) IsSub(subId, leagueId int64) bool {
+	count, _ := s.subFollowLeagueRepo.Count(subId, leagueId)
 	return count > 0
 }
 
@@ -44,13 +44,13 @@ func (s *SubscriptionFollowLeagueService) IsLeague(leagueId int64) bool {
 	return count > 0
 }
 
-func (s *SubscriptionFollowLeagueService) IsLimit(subId int64) bool {
-	count, _ := s.subFollowLeagueRepo.CountByLimit(subId)
+func (s *SubscriptionFollowLeagueService) IsLimit(subId, leagueId int64) bool {
+	count, _ := s.subFollowLeagueRepo.CountByLimit(subId, leagueId)
 	return count > 0
 }
 
-func (s *SubscriptionFollowLeagueService) IsUpdated(subId int64) bool {
-	count, _ := s.subFollowLeagueRepo.CountByUpdated(subId)
+func (s *SubscriptionFollowLeagueService) IsUpdated(subId, leagueId int64) bool {
+	count, _ := s.subFollowLeagueRepo.CountByUpdated(subId, leagueId)
 	return count > 0
 }
 
@@ -58,8 +58,8 @@ func (s *SubscriptionFollowLeagueService) GetAllPaginate(pagination *entity.Pagi
 	return s.subFollowLeagueRepo.GetAllPaginate(pagination)
 }
 
-func (s *SubscriptionFollowLeagueService) GetBySub(subId int64) (*entity.SubscriptionFollowLeague, error) {
-	return s.subFollowLeagueRepo.GetBySub(subId)
+func (s *SubscriptionFollowLeagueService) Get(subId, leagueId int64) (*entity.SubscriptionFollowLeague, error) {
+	return s.subFollowLeagueRepo.Get(subId, leagueId)
 }
 
 func (s *SubscriptionFollowLeagueService) Save(a *entity.SubscriptionFollowLeague) (*entity.SubscriptionFollowLeague, error) {
@@ -71,15 +71,16 @@ func (s *SubscriptionFollowLeagueService) Update(a *entity.SubscriptionFollowLea
 }
 
 func (s *SubscriptionFollowLeagueService) Sent(a *entity.SubscriptionFollowLeague) error {
-	if s.IsUpdated(a.SubscriptionID) {
-		if s.IsLimit(a.SubscriptionID) {
-			sl, err := s.GetBySub(a.SubscriptionID)
+	if s.IsUpdated(a.SubscriptionID, a.LeagueID) {
+		if s.IsLimit(a.SubscriptionID, a.LeagueID) {
+			sl, err := s.Get(a.SubscriptionID, a.LeagueID)
 			if err != nil {
 				return err
 			}
 			s.subFollowLeagueRepo.Update(
 				&entity.SubscriptionFollowLeague{
 					SubscriptionID: a.SubscriptionID,
+					LeagueID:       a.LeagueID,
 					Sent:           sl.Sent + 1,
 				},
 			)
@@ -89,6 +90,7 @@ func (s *SubscriptionFollowLeagueService) Sent(a *entity.SubscriptionFollowLeagu
 		s.subFollowLeagueRepo.Update(
 			&entity.SubscriptionFollowLeague{
 				SubscriptionID: a.SubscriptionID,
+				LeagueID:       a.LeagueID,
 				Sent:           1,
 			},
 		)

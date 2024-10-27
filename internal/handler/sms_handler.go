@@ -84,11 +84,10 @@ func NewSMSHandler(
 const (
 	CATEGORY_LIVEMATCH             string = "LIVEMATCH"
 	CATEGORY_FLASHNEWS             string = "FLASHNEWS"
-	CATEGORY_SMSALERTE             string = "SMSALERTE"
+	CATEGORY_SMSALERTE_COMPETITION string = "SMSALERTE_COMPETITION"
+	CATEGORY_SMSALERTE_EQUIPE      string = "SMSALERTE_EQUIPE"
 	CATEGORY_CREDIT_GOAL           string = "CREDITGOAL"
 	CATEGORY_PREDICT               string = "PREDICTION"
-	SUBCATEGORY_FOLLOW_COMPETITION string = "FOLLOW_COMPETITION"
-	SUBCATEGORY_FOLLOW_TEAM        string = "FOLLOW_TEAM"
 	CATEGORY_PRONOSTIC_SAFE        string = "PRONOSTIC_SAFE"
 	CATEGORY_PRONOSTIC_COMBINED    string = "PRONOSTIC_COMBINED"
 	CATEGORY_PRONOSTIC_VIP         string = "PRONOSTIC_VIP"
@@ -143,7 +142,7 @@ func (h *SMSHandler) SMSAlerte() {
 		if err != nil {
 			log.Println(err.Error())
 		}
-		if !h.IsActiveSubByCategory(CATEGORY_SMSALERTE) {
+		if !h.IsActiveSubByCategory(CATEGORY_SMSALERTE_COMPETITION) {
 			h.SubAlerteCompetition(league)
 		} else {
 			// SMS-Alerte Competition
@@ -154,7 +153,7 @@ func (h *SMSHandler) SMSAlerte() {
 		if err != nil {
 			log.Println(err.Error())
 		}
-		if !h.IsActiveSubByCategory(CATEGORY_SMSALERTE) {
+		if !h.IsActiveSubByCategory(CATEGORY_SMSALERTE_EQUIPE) {
 			h.SubAlerteEquipe(team)
 		} else {
 			// SMS-Alerte Equipe
@@ -184,354 +183,73 @@ func (h *SMSHandler) SMSAlerte() {
 			h.AlreadySubVIP()
 		}
 	} else if h.req.IsStop() {
-		if h.req.IsStopAlerte() {
-			if h.IsActiveSubByCategory(CATEGORY_SMSALERTE) {
-				h.Stop(CATEGORY_SMSALERTE)
+		if h.leagueService.IsLeagueByName(h.req.GetStopKeyword()) {
+			// Stop SMS Alerte Competition
+			league, err := h.leagueService.GetByName(h.req.GetStopKeyword())
+			if err != nil {
+				log.Println(err.Error())
+			}
+
+			if h.IsActiveSubByCategory(CATEGORY_SMSALERTE_COMPETITION) {
+				h.StopAlerteCompetition(CATEGORY_SMSALERTE_COMPETITION, league.GetId())
 			}
 		}
 
+		if h.teamService.IsTeamByName(h.req.GetStopKeyword()) {
+			// Stop SMS Alerte Equipe
+			team, err := h.teamService.GetByName(h.req.GetStopKeyword())
+			if err != nil {
+				log.Println(err.Error())
+			}
+
+			if h.IsActiveSubByCategory(CATEGORY_SMSALERTE_EQUIPE) {
+				h.StopAlerteEquipe(CATEGORY_SMSALERTE_EQUIPE, team.GetId())
+			}
+		}
+
+		// Stop alive ussd
 		if h.req.IsStopAlive() {
 			if h.IsActiveSubByCategory(CATEGORY_LIVEMATCH) {
-				h.Stop(CATEGORY_LIVEMATCH)
+				h.Unsub(CATEGORY_LIVEMATCH)
 			}
 		}
 
+		// Stop flashnews ussd
 		if h.req.IsStopFlashNews() {
 			if h.IsActiveSubByCategory(CATEGORY_FLASHNEWS) {
-				h.Stop(CATEGORY_FLASHNEWS)
+				h.Unsub(CATEGORY_FLASHNEWS)
+			}
+		}
+
+		// Stop prono (safe)
+		if h.req.IsStopProno() {
+			if h.IsActiveSubByCategory(CATEGORY_PRONOSTIC_SAFE) {
+				h.Unsub(CATEGORY_PRONOSTIC_SAFE)
+			}
+
+		}
+
+		// Stop ticket (combined)
+		if h.req.IsStopTicket() {
+			if h.IsActiveSubByCategory(CATEGORY_PRONOSTIC_COMBINED) {
+				h.Unsub(CATEGORY_PRONOSTIC_COMBINED)
+			}
+		}
+
+		// Stop VIP
+		if h.req.IsStopVIP() {
+			if h.IsActiveSubByCategory(CATEGORY_PRONOSTIC_VIP) {
+				h.Unsub(CATEGORY_PRONOSTIC_VIP)
 			}
 		}
 
 	} else {
 		h.Unvalid(SMS_FOLLOW_UNVALID_SUB)
 	}
-
 }
 
-func (h *SMSHandler) SubAlerteCompetition(league *entity.League) {
+func (h *SMSHandler) Firstpush(service *entity.Service, content *entity.Content) {
 	trxId := utils.GenerateTrxId()
-
-	service, err := h.getServiceSMSAlerteDaily()
-	if err != nil {
-		log.Println(err.Error())
-	}
-
-	content, err := h.getContentFollowCompetition(SMS_FOLLOW_COMPETITION_SUB, service, league)
-	if err != nil {
-		log.Println(err)
-	}
-
-	summary := &entity.Summary{
-		ServiceID: service.GetId(),
-		CreatedAt: time.Now(),
-	}
-
-	subscription := &entity.Subscription{
-		ServiceID:      service.GetId(),
-		Category:       service.GetCategory(),
-		Msisdn:         h.req.GetMsisdn(),
-		LatestTrxId:    trxId,
-		LatestKeyword:  h.req.GetSMS(),
-		LatestSubject:  SUBJECT_FIRSTPUSH,
-		IsActive:       true,
-		IsFollowLeague: true,
-		IpAddress:      h.req.GetIpAddress(),
-	}
-
-	if h.IsSub() {
-		h.subscriptionService.Update(subscription)
-	} else {
-		h.subscriptionService.Save(subscription)
-	}
-
-	sub, err := h.subscriptionService.Get(service.GetId(), h.req.GetMsisdn())
-	if err != nil {
-		log.Println(err.Error())
-	}
-
-	if !h.subscriptionFollowLeagueService.IsSub(sub.GetId()) {
-		// insert follow league
-		h.subscriptionFollowLeagueService.Save(
-			&entity.SubscriptionFollowLeague{
-				SubscriptionID: sub.GetId(),
-				LeagueID:       league.GetId(),
-				LimitPerDay:    LIMIT_PER_DAY,
-				IsActive:       true,
-			},
-		)
-	} else {
-		// update follow league
-		h.subscriptionFollowLeagueService.Update(
-			&entity.SubscriptionFollowLeague{
-				SubscriptionID: sub.GetId(),
-				LeagueID:       league.GetId(),
-				LimitPerDay:    LIMIT_PER_DAY,
-				IsActive:       true,
-			},
-		)
-	}
-
-	// disable if follow team
-	if h.subscriptionFollowTeamService.IsSub(sub.GetId()) {
-		h.subscriptionFollowTeamService.Disable(
-			&entity.SubscriptionFollowTeam{
-				SubscriptionID: sub.GetId(),
-			},
-		)
-	}
-
-	if sub.IsFirstFreeDay() {
-		// free 1 day
-		h.subscriptionService.Update(
-			&entity.Subscription{
-				ServiceID:     service.GetId(),
-				Msisdn:        h.req.GetMsisdn(),
-				LatestTrxId:   trxId,
-				LatestSubject: SUBJECT_FREEPUSH,
-				LatestStatus:  STATUS_SUCCESS,
-				RenewalAt:     time.Now().AddDate(0, 0, service.GetFreeDay()),
-				LatestPayload: "-",
-				IsFree:        true,
-			},
-		)
-
-		h.transactionService.Save(
-			&entity.Transaction{
-				TrxId:        trxId,
-				ServiceID:    service.GetId(),
-				Msisdn:       h.req.GetMsisdn(),
-				Keyword:      h.req.GetSMS(),
-				Amount:       0,
-				Status:       STATUS_SUCCESS,
-				StatusCode:   "",
-				StatusDetail: "",
-				Subject:      SUBJECT_FREEPUSH,
-				Payload:      "-",
-			},
-		)
-
-		h.historyService.Save(
-			&entity.History{
-				SubscriptionID: sub.GetId(),
-				ServiceID:      service.GetId(),
-				Msisdn:         h.req.GetMsisdn(),
-				Keyword:        h.req.GetSMS(),
-				Subject:        SUBJECT_FREEPUSH,
-				Status:         STATUS_SUCCESS,
-			},
-		)
-
-	} else {
-
-		// charging if free day >= 1
-		t := telco.NewTelco(h.logger, service, subscription, trxId)
-
-		respBal, err := t.QueryProfileAndBal()
-		if err != nil {
-			log.Println(err.Error())
-		}
-
-		var respBalance *model.QueryProfileAndBalResponse
-		xml.Unmarshal(respBal, &respBalance)
-
-		if respBalance.IsEnoughBalance(service) {
-			resp, err := t.DeductFee()
-			if err != nil {
-				log.Println(err.Error())
-			}
-
-			var respDeduct *model.DeductResponse
-			xml.Unmarshal(resp, &respDeduct)
-
-			if respDeduct.IsSuccess() {
-				h.subscriptionService.Update(
-					&entity.Subscription{
-						ServiceID:            service.GetId(),
-						Msisdn:               h.req.GetMsisdn(),
-						LatestTrxId:          trxId,
-						LatestSubject:        SUBJECT_FIRSTPUSH,
-						LatestStatus:         STATUS_SUCCESS,
-						TotalAmount:          service.GetPrice(),
-						RenewalAt:            time.Now().AddDate(0, 0, service.GetRenewalDay()),
-						ChargeAt:             time.Now(),
-						TotalSuccess:         sub.TotalSuccess + 1,
-						IsRetry:              false,
-						TotalFirstpush:       sub.TotalFirstpush + 1,
-						TotalAmountFirstpush: service.GetPrice(),
-						LatestPayload:        string(resp),
-					},
-				)
-
-				// is_retry set to false
-				h.subscriptionService.UpdateNotRetry(sub)
-
-				h.transactionService.Save(
-					&entity.Transaction{
-						TrxId:        trxId,
-						ServiceID:    service.GetId(),
-						Msisdn:       h.req.GetMsisdn(),
-						Keyword:      h.req.GetSMS(),
-						Amount:       service.GetPrice(),
-						Status:       STATUS_SUCCESS,
-						StatusCode:   "",
-						StatusDetail: "",
-						Subject:      SUBJECT_FIRSTPUSH,
-						Payload:      string(resp),
-					},
-				)
-
-				h.historyService.Save(
-					&entity.History{
-						SubscriptionID: sub.GetId(),
-						ServiceID:      service.GetId(),
-						Msisdn:         h.req.GetMsisdn(),
-						Keyword:        h.req.GetSMS(),
-						Subject:        SUBJECT_FIRSTPUSH,
-						Status:         STATUS_SUCCESS,
-					},
-				)
-
-				summary.SetTotalChargeSuccess(1)
-				summary.SetTotalRevenue(service.GetPrice())
-			}
-
-			if respDeduct.IsFailed() {
-				h.subscriptionService.Update(
-					&entity.Subscription{
-						ServiceID:     service.GetId(),
-						Msisdn:        h.req.GetMsisdn(),
-						LatestTrxId:   trxId,
-						LatestSubject: SUBJECT_FIRSTPUSH,
-						LatestStatus:  STATUS_FAILED,
-						RenewalAt:     time.Now().AddDate(0, 0, 1),
-						RetryAt:       time.Now(),
-						TotalFailed:   sub.TotalFailed + 1,
-						IsRetry:       true,
-						LatestPayload: string(resp),
-					},
-				)
-
-				h.transactionService.Save(
-					&entity.Transaction{
-						TrxId:        trxId,
-						ServiceID:    service.GetId(),
-						Msisdn:       h.req.GetMsisdn(),
-						Keyword:      h.req.GetSMS(),
-						Status:       STATUS_FAILED,
-						StatusCode:   respDeduct.GetFaultCode(),
-						StatusDetail: respDeduct.GetFaultString(),
-						Subject:      SUBJECT_FIRSTPUSH,
-						Payload:      string(resp),
-					},
-				)
-
-				h.historyService.Save(
-					&entity.History{
-						SubscriptionID: sub.GetId(),
-						ServiceID:      service.GetId(),
-						Msisdn:         h.req.GetMsisdn(),
-						Keyword:        h.req.GetSMS(),
-						Subject:        SUBJECT_FIRSTPUSH,
-						Status:         STATUS_FAILED,
-					},
-				)
-
-				// setter summary
-				summary.SetTotalChargeFailed(1)
-			}
-		} else {
-			h.subscriptionService.Update(
-				&entity.Subscription{
-					ServiceID:     service.GetId(),
-					Msisdn:        h.req.GetMsisdn(),
-					LatestTrxId:   trxId,
-					LatestSubject: SUBJECT_FIRSTPUSH,
-					LatestStatus:  STATUS_FAILED,
-					RenewalAt:     time.Now().AddDate(0, 0, 1),
-					RetryAt:       time.Now(),
-					TotalFailed:   sub.TotalFailed + 1,
-					IsRetry:       true,
-					LatestPayload: string(respBal),
-				},
-			)
-
-			h.transactionService.Save(
-				&entity.Transaction{
-					TrxId:        trxId,
-					ServiceID:    service.GetId(),
-					Msisdn:       h.req.GetMsisdn(),
-					Keyword:      h.req.GetSMS(),
-					Status:       STATUS_FAILED,
-					StatusCode:   "",
-					StatusDetail: "INSUFF BALANCE",
-					Subject:      SUBJECT_FIRSTPUSH,
-					Payload:      string(respBal),
-				},
-			)
-
-			h.historyService.Save(
-				&entity.History{
-					SubscriptionID: sub.GetId(),
-					ServiceID:      service.GetId(),
-					Msisdn:         h.req.GetMsisdn(),
-					Keyword:        h.req.GetSMS(),
-					Subject:        SUBJECT_FIRSTPUSH,
-					Status:         STATUS_FAILED,
-				},
-			)
-
-			// setter summary
-			summary.SetTotalChargeFailed(1)
-		}
-	}
-
-	// setter summary
-	summary.SetTotalSub(1)
-	// summary save
-	h.summaryService.Save(summary)
-
-	// count total sub
-	h.subscriptionService.Update(
-		&entity.Subscription{
-			ServiceID: service.GetId(),
-			Msisdn:    h.req.GetMsisdn(),
-			TotalSub:  sub.TotalSub + 1,
-		},
-	)
-
-	mt := &model.MTRequest{
-		Smsc:         h.req.GetTo(),
-		Keyword:      h.req.GetSMS(),
-		Service:      service,
-		Subscription: sub,
-		Content:      content,
-	}
-	mt.SetTrxId(trxId)
-
-	jsonData, err := json.Marshal(mt)
-	if err != nil {
-		log.Println(err.Error())
-	}
-
-	h.rmq.IntegratePublish(
-		RMQ_MT_EXCHANGE,
-		RMQ_MT_QUEUE,
-		RMQ_DATA_TYPE, "", string(jsonData),
-	)
-}
-
-func (h *SMSHandler) SubAlerteEquipe(team *entity.Team) {
-	trxId := utils.GenerateTrxId()
-
-	service, err := h.getServiceSMSAlerteDaily()
-	if err != nil {
-		log.Println(err.Error())
-	}
-
-	content, err := h.getContentFollowTeam(SMS_FOLLOW_TEAM_SUB, service, team)
-	if err != nil {
-		log.Println(err)
-	}
 
 	summary := &entity.Summary{
 		ServiceID: service.GetId(),
@@ -561,37 +279,6 @@ func (h *SMSHandler) SubAlerteEquipe(team *entity.Team) {
 		log.Println(err.Error())
 	}
 
-	if !h.subscriptionFollowTeamService.IsSub(sub.GetId()) {
-		// insert follow team
-		h.subscriptionFollowTeamService.Save(
-			&entity.SubscriptionFollowTeam{
-				SubscriptionID: sub.GetId(),
-				TeamID:         team.GetId(),
-				LimitPerDay:    LIMIT_PER_DAY,
-				IsActive:       true,
-			},
-		)
-	} else {
-		// update follow team
-		h.subscriptionFollowTeamService.Update(
-			&entity.SubscriptionFollowTeam{
-				SubscriptionID: sub.GetId(),
-				TeamID:         team.GetId(),
-				LimitPerDay:    LIMIT_PER_DAY,
-				IsActive:       true,
-			},
-		)
-	}
-
-	// disable if follow league
-	if h.subscriptionFollowLeagueService.IsSub(sub.GetId()) {
-		h.subscriptionFollowLeagueService.Disable(
-			&entity.SubscriptionFollowLeague{
-				SubscriptionID: sub.GetId(),
-			},
-		)
-	}
-
 	if sub.IsFirstFreeDay() {
 		// free 1 day
 		h.subscriptionService.Update(
@@ -602,6 +289,7 @@ func (h *SMSHandler) SubAlerteEquipe(team *entity.Team) {
 				LatestSubject: SUBJECT_FREEPUSH,
 				LatestStatus:  STATUS_SUCCESS,
 				RenewalAt:     time.Now().AddDate(0, 0, service.GetFreeDay()),
+				FreeAt:        time.Now(),
 				LatestPayload: "-",
 				IsFree:        true,
 			},
@@ -831,10 +519,8 @@ func (h *SMSHandler) SubAlerteEquipe(team *entity.Team) {
 	)
 }
 
-func (h *SMSHandler) AlreadySubAlerteCompetition(league *entity.League) {
-	trxId := utils.GenerateTrxId()
-
-	service, err := h.getServiceSMSAlerteDaily()
+func (h *SMSHandler) SubAlerteCompetition(league *entity.League) {
+	service, err := h.getServiceSMSAlerteCompetitionDaily()
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -844,23 +530,25 @@ func (h *SMSHandler) AlreadySubAlerteCompetition(league *entity.League) {
 		log.Println(err)
 	}
 
+	h.Firstpush(service, content)
+
 	sub, err := h.subscriptionService.Get(service.GetId(), h.req.GetMsisdn())
 	if err != nil {
 		log.Println(err.Error())
 	}
 
-	// update keyword in sub
-	h.subscriptionService.Update(
-		&entity.Subscription{
-			ServiceID:     service.GetId(),
-			Msisdn:        h.req.GetMsisdn(),
-			LatestTrxId:   trxId,
-			LatestKeyword: h.req.GetSMS(),
-		},
-	)
-
-	// update in follow league
-	if h.subscriptionFollowLeagueService.IsSub(sub.GetId()) {
+	if !h.subscriptionFollowLeagueService.IsSub(sub.GetId(), league.GetId()) {
+		// insert follow league
+		h.subscriptionFollowLeagueService.Save(
+			&entity.SubscriptionFollowLeague{
+				SubscriptionID: sub.GetId(),
+				LeagueID:       league.GetId(),
+				LimitPerDay:    LIMIT_PER_DAY,
+				IsActive:       true,
+			},
+		)
+	} else {
+		// update follow league
 		h.subscriptionFollowLeagueService.Update(
 			&entity.SubscriptionFollowLeague{
 				SubscriptionID: sub.GetId(),
@@ -870,14 +558,66 @@ func (h *SMSHandler) AlreadySubAlerteCompetition(league *entity.League) {
 			},
 		)
 	}
+}
 
-	// disable if follow team
-	if h.subscriptionFollowTeamService.IsSub(sub.GetId()) {
-		h.subscriptionFollowTeamService.Disable(
+func (h *SMSHandler) SubAlerteEquipe(team *entity.Team) {
+	service, err := h.getServiceSMSAlerteEquipeDaily()
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	content, err := h.getContentFollowTeam(SMS_FOLLOW_TEAM_SUB, service, team)
+	if err != nil {
+		log.Println(err)
+	}
+
+	// firstpush
+	h.Firstpush(service, content)
+
+	sub, err := h.subscriptionService.Get(service.GetId(), h.req.GetMsisdn())
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	if !h.subscriptionFollowTeamService.IsSub(sub.GetId(), team.GetId()) {
+		// insert follow team
+		h.subscriptionFollowTeamService.Save(
 			&entity.SubscriptionFollowTeam{
 				SubscriptionID: sub.GetId(),
+				TeamID:         team.GetId(),
+				LimitPerDay:    LIMIT_PER_DAY,
+				IsActive:       true,
 			},
 		)
+	} else {
+		// update follow team
+		h.subscriptionFollowTeamService.Update(
+			&entity.SubscriptionFollowTeam{
+				SubscriptionID: sub.GetId(),
+				TeamID:         team.GetId(),
+				LimitPerDay:    LIMIT_PER_DAY,
+				IsActive:       true,
+			},
+		)
+	}
+}
+
+func (h *SMSHandler) AlreadySubAlerteCompetition(league *entity.League) {
+	trxId := utils.GenerateTrxId()
+
+	service, err := h.getServiceSMSAlerteCompetitionDaily()
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	content, err := h.getContentFollowCompetition(SMS_FOLLOW_COMPETITION_ALREADY_SUB, service, league)
+	if err != nil {
+		log.Println(err)
+	}
+
+	sub, err := h.subscriptionService.Get(service.GetId(), h.req.GetMsisdn())
+	if err != nil {
+		log.Println(err.Error())
 	}
 
 	mt := &model.MTRequest{
@@ -904,12 +644,12 @@ func (h *SMSHandler) AlreadySubAlerteCompetition(league *entity.League) {
 func (h *SMSHandler) AlreadySubAlerteEquipe(team *entity.Team) {
 	trxId := utils.GenerateTrxId()
 
-	service, err := h.getServiceSMSAlerteDaily()
+	service, err := h.getServiceSMSAlerteEquipeDaily()
 	if err != nil {
 		log.Println(err.Error())
 	}
 
-	content, err := h.getContentFollowTeam(SMS_FOLLOW_TEAM_SUB, service, team)
+	content, err := h.getContentFollowTeam(SMS_FOLLOW_COMPETITION_ALREADY_SUB, service, team)
 	if err != nil {
 		log.Println(err)
 	}
@@ -917,37 +657,6 @@ func (h *SMSHandler) AlreadySubAlerteEquipe(team *entity.Team) {
 	sub, err := h.subscriptionService.Get(service.GetId(), h.req.GetMsisdn())
 	if err != nil {
 		log.Println(err.Error())
-	}
-
-	// update keyword in sub
-	h.subscriptionService.Update(
-		&entity.Subscription{
-			ServiceID:     service.GetId(),
-			Msisdn:        h.req.GetMsisdn(),
-			LatestTrxId:   trxId,
-			LatestKeyword: h.req.GetSMS(),
-		},
-	)
-
-	// update in follow team
-	if h.subscriptionFollowTeamService.IsSub(sub.GetId()) {
-		h.subscriptionFollowTeamService.Update(
-			&entity.SubscriptionFollowTeam{
-				SubscriptionID: sub.GetId(),
-				TeamID:         team.GetId(),
-				LimitPerDay:    LIMIT_PER_DAY,
-				IsActive:       true,
-			},
-		)
-	}
-
-	// disable if follow league
-	if h.subscriptionFollowLeagueService.IsSub(sub.GetId()) {
-		h.subscriptionFollowLeagueService.Disable(
-			&entity.SubscriptionFollowLeague{
-				SubscriptionID: sub.GetId(),
-			},
-		)
 	}
 
 	mt := &model.MTRequest{
@@ -972,8 +681,6 @@ func (h *SMSHandler) AlreadySubAlerteEquipe(team *entity.Team) {
 }
 
 func (h *SMSHandler) SubSafe() {
-	trxId := utils.GenerateTrxId()
-
 	service, err := h.getServicePronosticSafeDaily()
 	if err != nil {
 		log.Println(err.Error())
@@ -984,280 +691,35 @@ func (h *SMSHandler) SubSafe() {
 		log.Println(err)
 	}
 
-	summary := &entity.Summary{
-		ServiceID: service.GetId(),
-		CreatedAt: time.Now(),
-	}
-
-	subscription := &entity.Subscription{
-		ServiceID:      service.GetId(),
-		Category:       service.GetCategory(),
-		Msisdn:         h.req.GetMsisdn(),
-		LatestTrxId:    trxId,
-		LatestKeyword:  h.req.GetSMS(),
-		LatestSubject:  SUBJECT_FIRSTPUSH,
-		IsActive:       true,
-		IsFollowLeague: true,
-		IpAddress:      h.req.GetIpAddress(),
-	}
-
-	if h.IsSub() {
-		h.subscriptionService.Update(subscription)
-	} else {
-		h.subscriptionService.Save(subscription)
-	}
-
-	sub, err := h.subscriptionService.Get(service.GetId(), h.req.GetMsisdn())
-	if err != nil {
-		log.Println(err.Error())
-	}
-
-	if sub.IsFirstFreeDay() {
-		// free 1 day
-		h.subscriptionService.Update(
-			&entity.Subscription{
-				ServiceID:     service.GetId(),
-				Msisdn:        h.req.GetMsisdn(),
-				LatestTrxId:   trxId,
-				LatestSubject: SUBJECT_FREEPUSH,
-				LatestStatus:  STATUS_SUCCESS,
-				RenewalAt:     time.Now().AddDate(0, 0, service.GetFreeDay()),
-				LatestPayload: "-",
-				IsFree:        true,
-			},
-		)
-
-		h.transactionService.Save(
-			&entity.Transaction{
-				TrxId:        trxId,
-				ServiceID:    service.GetId(),
-				Msisdn:       h.req.GetMsisdn(),
-				Keyword:      h.req.GetSMS(),
-				Amount:       0,
-				Status:       STATUS_SUCCESS,
-				StatusCode:   "",
-				StatusDetail: "",
-				Subject:      SUBJECT_FREEPUSH,
-				Payload:      "-",
-			},
-		)
-
-		h.historyService.Save(
-			&entity.History{
-				SubscriptionID: sub.GetId(),
-				ServiceID:      service.GetId(),
-				Msisdn:         h.req.GetMsisdn(),
-				Keyword:        h.req.GetSMS(),
-				Subject:        SUBJECT_FREEPUSH,
-				Status:         STATUS_SUCCESS,
-			},
-		)
-
-	} else {
-		// charging if free day >= 1
-		t := telco.NewTelco(h.logger, service, subscription, trxId)
-
-		respBal, err := t.QueryProfileAndBal()
-		if err != nil {
-			log.Println(err.Error())
-		}
-
-		var respBalance *model.QueryProfileAndBalResponse
-		xml.Unmarshal(respBal, &respBalance)
-
-		if respBalance.IsEnoughBalance(service) {
-			resp, err := t.DeductFee()
-			if err != nil {
-				log.Println(err.Error())
-			}
-
-			var respDeduct *model.DeductResponse
-			xml.Unmarshal(resp, &respDeduct)
-
-			if respDeduct.IsSuccess() {
-				h.subscriptionService.Update(
-					&entity.Subscription{
-						ServiceID:            service.GetId(),
-						Msisdn:               h.req.GetMsisdn(),
-						LatestTrxId:          trxId,
-						LatestSubject:        SUBJECT_FIRSTPUSH,
-						LatestStatus:         STATUS_SUCCESS,
-						TotalAmount:          service.GetPrice(),
-						RenewalAt:            time.Now().AddDate(0, 0, service.GetRenewalDay()),
-						ChargeAt:             time.Now(),
-						TotalSuccess:         sub.TotalSuccess + 1,
-						IsRetry:              false,
-						TotalFirstpush:       sub.TotalFirstpush + 1,
-						TotalAmountFirstpush: service.GetPrice(),
-						LatestPayload:        string(resp),
-					},
-				)
-
-				// is_retry set to false
-				h.subscriptionService.UpdateNotRetry(sub)
-
-				h.transactionService.Save(
-					&entity.Transaction{
-						TrxId:        trxId,
-						ServiceID:    service.GetId(),
-						Msisdn:       h.req.GetMsisdn(),
-						Keyword:      h.req.GetSMS(),
-						Amount:       service.GetPrice(),
-						Status:       STATUS_SUCCESS,
-						StatusCode:   "",
-						StatusDetail: "",
-						Subject:      SUBJECT_FIRSTPUSH,
-						Payload:      string(resp),
-					},
-				)
-
-				h.historyService.Save(
-					&entity.History{
-						SubscriptionID: sub.GetId(),
-						ServiceID:      service.GetId(),
-						Msisdn:         h.req.GetMsisdn(),
-						Keyword:        h.req.GetSMS(),
-						Subject:        SUBJECT_FIRSTPUSH,
-						Status:         STATUS_SUCCESS,
-					},
-				)
-
-				summary.SetTotalChargeSuccess(1)
-				summary.SetTotalRevenue(service.GetPrice())
-			}
-
-			if respDeduct.IsFailed() {
-				h.subscriptionService.Update(
-					&entity.Subscription{
-						ServiceID:     service.GetId(),
-						Msisdn:        h.req.GetMsisdn(),
-						LatestTrxId:   trxId,
-						LatestSubject: SUBJECT_FIRSTPUSH,
-						LatestStatus:  STATUS_FAILED,
-						RenewalAt:     time.Now().AddDate(0, 0, 1),
-						RetryAt:       time.Now(),
-						TotalFailed:   sub.TotalFailed + 1,
-						IsRetry:       true,
-						LatestPayload: string(resp),
-					},
-				)
-
-				h.transactionService.Save(
-					&entity.Transaction{
-						TrxId:        trxId,
-						ServiceID:    service.GetId(),
-						Msisdn:       h.req.GetMsisdn(),
-						Keyword:      h.req.GetSMS(),
-						Status:       STATUS_FAILED,
-						StatusCode:   respDeduct.GetFaultCode(),
-						StatusDetail: respDeduct.GetFaultString(),
-						Subject:      SUBJECT_FIRSTPUSH,
-						Payload:      string(resp),
-					},
-				)
-
-				h.historyService.Save(
-					&entity.History{
-						SubscriptionID: sub.GetId(),
-						ServiceID:      service.GetId(),
-						Msisdn:         h.req.GetMsisdn(),
-						Keyword:        h.req.GetSMS(),
-						Subject:        SUBJECT_FIRSTPUSH,
-						Status:         STATUS_FAILED,
-					},
-				)
-
-				// setter summary
-				summary.SetTotalChargeFailed(1)
-			}
-		} else {
-			h.subscriptionService.Update(
-				&entity.Subscription{
-					ServiceID:     service.GetId(),
-					Msisdn:        h.req.GetMsisdn(),
-					LatestTrxId:   trxId,
-					LatestSubject: SUBJECT_FIRSTPUSH,
-					LatestStatus:  STATUS_FAILED,
-					RenewalAt:     time.Now().AddDate(0, 0, 1),
-					RetryAt:       time.Now(),
-					TotalFailed:   sub.TotalFailed + 1,
-					IsRetry:       true,
-					LatestPayload: string(respBal),
-				},
-			)
-
-			h.transactionService.Save(
-				&entity.Transaction{
-					TrxId:        trxId,
-					ServiceID:    service.GetId(),
-					Msisdn:       h.req.GetMsisdn(),
-					Keyword:      h.req.GetSMS(),
-					Status:       STATUS_FAILED,
-					StatusCode:   "",
-					StatusDetail: "INSUFF BALANCE",
-					Subject:      SUBJECT_FIRSTPUSH,
-					Payload:      string(respBal),
-				},
-			)
-
-			h.historyService.Save(
-				&entity.History{
-					SubscriptionID: sub.GetId(),
-					ServiceID:      service.GetId(),
-					Msisdn:         h.req.GetMsisdn(),
-					Keyword:        h.req.GetSMS(),
-					Subject:        SUBJECT_FIRSTPUSH,
-					Status:         STATUS_FAILED,
-				},
-			)
-
-			// setter summary
-			summary.SetTotalChargeFailed(1)
-		}
-	}
-
-	// setter summary
-	summary.SetTotalSub(1)
-	// summary save
-	h.summaryService.Save(summary)
-
-	// count total sub
-	h.subscriptionService.Update(
-		&entity.Subscription{
-			ServiceID: service.GetId(),
-			Msisdn:    h.req.GetMsisdn(),
-			TotalSub:  sub.TotalSub + 1,
-		},
-	)
-
-	mt := &model.MTRequest{
-		Smsc:         h.req.GetTo(),
-		Keyword:      h.req.GetSMS(),
-		Service:      service,
-		Subscription: sub,
-		Content:      content,
-	}
-	mt.SetTrxId(trxId)
-
-	jsonData, err := json.Marshal(mt)
-	if err != nil {
-		log.Println(err.Error())
-	}
-
-	h.rmq.IntegratePublish(
-		RMQ_MT_EXCHANGE,
-		RMQ_MT_QUEUE,
-		RMQ_DATA_TYPE, "", string(jsonData),
-	)
-
+	h.Firstpush(service, content)
 }
 
 func (h *SMSHandler) SubCombined() {
+	service, err := h.getServicePronosticSafeDaily()
+	if err != nil {
+		log.Println(err.Error())
+	}
 
+	content, err := h.getContent(SMS_PRONOSTIC_COMBINED_SUB)
+	if err != nil {
+		log.Println(err)
+	}
+
+	h.Firstpush(service, content)
 }
 
 func (h *SMSHandler) SubVIP() {
+	service, err := h.getServicePronosticSafeDaily()
+	if err != nil {
+		log.Println(err.Error())
+	}
 
+	content, err := h.getContent(SMS_PRONOSTIC_VIP_SUB)
+	if err != nil {
+		log.Println(err)
+	}
+
+	h.Firstpush(service, content)
 }
 
 func (h *SMSHandler) AlreadySubSafe() {
@@ -1304,53 +766,64 @@ func (h *SMSHandler) Info() {
 	)
 }
 
-func (h *SMSHandler) Stop(category string) {
-	trxId := utils.GenerateTrxId()
+func (h *SMSHandler) StopAlerteCompetition(category string, leagueId int64) {
 
 	sub, err := h.subscriptionService.GetByCategory(category, h.req.GetMsisdn())
 	if err != nil {
 		log.Println(err.Error())
 	}
 
-	service, err := h.serviceService.GetById(sub.GetServiceId())
+	// unfollow league
+	if h.subscriptionFollowLeagueService.IsSub(sub.GetId(), leagueId) {
+		h.subscriptionFollowLeagueService.Disable(
+			&entity.SubscriptionFollowLeague{
+				SubscriptionID: sub.GetId(),
+				LeagueID:       leagueId,
+			},
+		)
+	}
+}
+
+func (h *SMSHandler) StopAlerteEquipe(category string, teamId int64) {
+
+	sub, err := h.subscriptionService.GetByCategory(category, h.req.GetMsisdn())
 	if err != nil {
 		log.Println(err.Error())
 	}
 
-	content, err := h.getContent(SMS_STOP)
+	// unfollow team
+	if h.subscriptionFollowTeamService.IsSub(sub.GetId(), teamId) {
+		h.subscriptionFollowTeamService.Disable(
+			&entity.SubscriptionFollowTeam{
+				SubscriptionID: sub.GetId(),
+				TeamID:         teamId,
+			},
+		)
+	}
+}
+
+func (h *SMSHandler) Unvalid(v string) {
+	trxId := utils.GenerateTrxId()
+
+	service, err := h.getServiceSMSAlerteEquipeDaily()
 	if err != nil {
 		log.Println(err.Error())
 	}
 
-	sub.SetLatestTrxId(trxId)
-	// unsub
-	h.Unsub(sub)
-
-	// If SMS Alerte
-	if category == CATEGORY_SMSALERTE {
-		// unfollow league
-		if h.subscriptionFollowLeagueService.IsSub(sub.GetId()) {
-			h.subscriptionFollowLeagueService.Disable(
-				&entity.SubscriptionFollowLeague{
-					SubscriptionID: sub.GetId(),
-				},
-			)
-		}
-
-		// unfollow team
-		if h.subscriptionFollowTeamService.IsSub(sub.GetId()) {
-			h.subscriptionFollowTeamService.Disable(
-				&entity.SubscriptionFollowTeam{
-					SubscriptionID: sub.GetId(),
-				},
-			)
-		}
+	content, err := h.getContentSMSAlerteUnvalid(v, service)
+	if err != nil {
+		log.Println(err.Error())
 	}
+
 	mt := &model.MTRequest{
-		Smsc:         h.req.GetTo(),
-		Keyword:      h.req.GetSMS(),
-		Service:      service,
-		Subscription: sub,
+		Smsc:    h.req.GetTo(),
+		Keyword: h.req.GetSMS(),
+		Service: &entity.Service{
+			UrlMT:  URL_MT,
+			UserMT: USER_MT,
+			PassMT: PASS_MT,
+		},
+		Subscription: &entity.Subscription{Msisdn: h.req.GetMsisdn()},
 		Content:      content,
 	}
 	mt.SetTrxId(trxId)
@@ -1367,10 +840,48 @@ func (h *SMSHandler) Stop(category string) {
 	)
 }
 
-func (h *SMSHandler) Unvalid(v string) {
+func (h *SMSHandler) UnvalidCompetition(v string) {
 	trxId := utils.GenerateTrxId()
 
-	service, err := h.getServiceSMSAlerteDaily()
+	service, err := h.getServiceSMSAlerteCompetitionDaily()
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	content, err := h.getContentSMSAlerteUnvalid(v, service)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	mt := &model.MTRequest{
+		Smsc:    h.req.GetTo(),
+		Keyword: h.req.GetSMS(),
+		Service: &entity.Service{
+			UrlMT:  URL_MT,
+			UserMT: USER_MT,
+			PassMT: PASS_MT,
+		},
+		Subscription: &entity.Subscription{Msisdn: h.req.GetMsisdn()},
+		Content:      content,
+	}
+	mt.SetTrxId(trxId)
+
+	jsonData, err := json.Marshal(mt)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	h.rmq.IntegratePublish(
+		RMQ_MT_EXCHANGE,
+		RMQ_MT_QUEUE,
+		RMQ_DATA_TYPE, "", string(jsonData),
+	)
+}
+
+func (h *SMSHandler) UnvalidEquipe(v string) {
+	trxId := utils.GenerateTrxId()
+
+	service, err := h.getServiceSMSAlerteEquipeDaily()
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -1409,7 +920,26 @@ func (h *SMSHandler) IsActiveSubByCategory(v string) bool {
 	return h.subscriptionService.IsActiveSubscriptionByCategory(v, h.req.GetMsisdn())
 }
 
-func (h *SMSHandler) Unsub(sub *entity.Subscription) {
+func (h *SMSHandler) Unsub(category string) {
+	trxId := utils.GenerateTrxId()
+
+	sub, err := h.subscriptionService.GetByCategory(category, h.req.GetMsisdn())
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	service, err := h.serviceService.GetById(sub.GetServiceId())
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	content, err := h.getContent(SMS_STOP)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	sub.SetLatestTrxId(trxId)
+
 	summary := &entity.Summary{
 		ServiceID: sub.GetServiceId(),
 		CreatedAt: time.Now(),
@@ -1477,26 +1007,42 @@ func (h *SMSHandler) Unsub(sub *entity.Subscription) {
 	h.subscriptionService.UpdateNotActive(s)
 	// set false is_retry
 	h.subscriptionService.UpdateNotRetry(s)
-}
 
-func (h *SMSHandler) IsActiveSub() bool {
-	service, err := h.getServiceSMSAlerteDaily()
-	if err != nil {
-		log.Println(err)
+	mt := &model.MTRequest{
+		Smsc:         h.req.GetTo(),
+		Keyword:      h.req.GetSMS(),
+		Service:      service,
+		Subscription: sub,
+		Content:      content,
 	}
-	return h.subscriptionService.IsActiveSubscription(service.GetId(), h.req.GetMsisdn())
+	mt.SetTrxId(trxId)
+
+	jsonData, err := json.Marshal(mt)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	h.rmq.IntegratePublish(
+		RMQ_MT_EXCHANGE,
+		RMQ_MT_QUEUE,
+		RMQ_DATA_TYPE, "", string(jsonData),
+	)
 }
 
 func (h *SMSHandler) IsSub() bool {
-	service, err := h.getServiceSMSAlerteDaily()
+	service, err := h.getServiceSMSAlerteCompetitionDaily()
 	if err != nil {
 		log.Println(err)
 	}
 	return h.subscriptionService.IsSubscription(service.GetId(), h.req.GetMsisdn())
 }
 
-func (h *SMSHandler) getServiceSMSAlerteDaily() (*entity.Service, error) {
-	return h.serviceService.Get("SA1")
+func (h *SMSHandler) getServiceSMSAlerteCompetitionDaily() (*entity.Service, error) {
+	return h.serviceService.Get("SAC1")
+}
+
+func (h *SMSHandler) getServiceSMSAlerteEquipeDaily() (*entity.Service, error) {
+	return h.serviceService.Get("SAE1")
 }
 
 func (h *SMSHandler) getServicePronosticSafeDaily() (*entity.Service, error) {

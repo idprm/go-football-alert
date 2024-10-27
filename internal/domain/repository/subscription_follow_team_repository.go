@@ -16,12 +16,12 @@ func NewSubscriptionFollowTeamRepository(db *gorm.DB) *SubscriptionFollowTeamRep
 }
 
 type ISubscriptionFollowTeamRepository interface {
-	CountBySub(int64) (int64, error)
+	Count(int64, int64) (int64, error)
 	CountByTeam(int64) (int64, error)
-	CountByLimit(int64) (int64, error)
-	CountByUpdated(int64) (int64, error)
+	CountByLimit(int64, int64) (int64, error)
+	CountByUpdated(int64, int64) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
-	GetBySub(int64) (*entity.SubscriptionFollowTeam, error)
+	Get(int64, int64) (*entity.SubscriptionFollowTeam, error)
 	Save(*entity.SubscriptionFollowTeam) (*entity.SubscriptionFollowTeam, error)
 	Update(*entity.SubscriptionFollowTeam) (*entity.SubscriptionFollowTeam, error)
 	Disable(*entity.SubscriptionFollowTeam) error
@@ -29,9 +29,10 @@ type ISubscriptionFollowTeamRepository interface {
 	GetAllSubByTeam(int64) (*[]entity.SubscriptionFollowTeam, error)
 }
 
-func (r *SubscriptionFollowTeamRepository) CountBySub(subId int64) (int64, error) {
+func (r *SubscriptionFollowTeamRepository) Count(subId, teamId int64) (int64, error) {
 	var count int64
-	err := r.db.Model(&entity.SubscriptionFollowTeam{}).Where(&entity.SubscriptionFollowTeam{SubscriptionID: subId, IsActive: true}).Count(&count).Error
+	err := r.db.Model(&entity.SubscriptionFollowTeam{}).Where(
+		&entity.SubscriptionFollowTeam{SubscriptionID: subId, TeamID: teamId, IsActive: true}).Count(&count).Error
 	if err != nil {
 		return count, err
 	}
@@ -47,21 +48,21 @@ func (r *SubscriptionFollowTeamRepository) CountByTeam(teamId int64) (int64, err
 	return count, nil
 }
 
-func (r *SubscriptionFollowTeamRepository) CountByLimit(subId int64) (int64, error) {
+func (r *SubscriptionFollowTeamRepository) CountByLimit(subId, teamId int64) (int64, error) {
 	var count int64
 	err := r.db.Model(&entity.SubscriptionFollowTeam{}).Where(
-		&entity.SubscriptionFollowTeam{SubscriptionID: subId, IsActive: true}).
-		Where("limit_per_day >= sent AND DATE(updated_at) = DATE(NOW())").Count(&count).Error
+		&entity.SubscriptionFollowTeam{SubscriptionID: subId, TeamID: teamId, IsActive: true}).
+		Where("sent <= limit_per_day AND DATE(updated_at) = DATE(NOW())").Count(&count).Error
 	if err != nil {
 		return count, err
 	}
 	return count, nil
 }
 
-func (r *SubscriptionFollowTeamRepository) CountByUpdated(subId int64) (int64, error) {
+func (r *SubscriptionFollowTeamRepository) CountByUpdated(subId, teamId int64) (int64, error) {
 	var count int64
 	err := r.db.Model(&entity.SubscriptionFollowTeam{}).Where(
-		&entity.SubscriptionFollowTeam{SubscriptionID: subId, IsActive: true}).
+		&entity.SubscriptionFollowTeam{SubscriptionID: subId, TeamID: teamId, IsActive: true}).
 		Where("DATE(updated_at) = DATE(NOW())").Count(&count).Error
 	if err != nil {
 		return count, err
@@ -79,9 +80,9 @@ func (r *SubscriptionFollowTeamRepository) GetAllPaginate(pagination *entity.Pag
 	return pagination, nil
 }
 
-func (r *SubscriptionFollowTeamRepository) GetBySub(subId int64) (*entity.SubscriptionFollowTeam, error) {
+func (r *SubscriptionFollowTeamRepository) Get(subId, teamId int64) (*entity.SubscriptionFollowTeam, error) {
 	var c entity.SubscriptionFollowTeam
-	err := r.db.Where(&entity.SubscriptionFollowTeam{SubscriptionID: subId, IsActive: true}).Take(&c).Error
+	err := r.db.Where(&entity.SubscriptionFollowTeam{SubscriptionID: subId, TeamID: teamId, IsActive: true}).Take(&c).Error
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +98,7 @@ func (r *SubscriptionFollowTeamRepository) Save(c *entity.SubscriptionFollowTeam
 }
 
 func (r *SubscriptionFollowTeamRepository) Update(c *entity.SubscriptionFollowTeam) (*entity.SubscriptionFollowTeam, error) {
-	err := r.db.Where("subscription_id = ?", c.SubscriptionID).Updates(&c).Error
+	err := r.db.Where("subscription_id = ? AND team_id = ?", c.SubscriptionID, c.TeamID).Updates(&c).Error
 	if err != nil {
 		return nil, err
 	}
@@ -105,7 +106,7 @@ func (r *SubscriptionFollowTeamRepository) Update(c *entity.SubscriptionFollowTe
 }
 
 func (r *SubscriptionFollowTeamRepository) Disable(c *entity.SubscriptionFollowTeam) error {
-	err := r.db.Model(c).Where("subscription_id = ?", c.SubscriptionID).Update("is_active", false).Error
+	err := r.db.Model(c).Where("subscription_id = ? AND team_id = ?", c.SubscriptionID, c.TeamID).Update("is_active", false).Error
 	if err != nil {
 		return err
 	}

@@ -19,6 +19,7 @@ type Subscription struct {
 	LatestSubject        string    `gorm:"size:25" json:"latest_subject,omitempty"`
 	LatestStatus         string    `gorm:"size:25" json:"latest_status,omitempty"`
 	LatestPayload        string    `gorm:"type:text" json:"latest_payload,omitempty"`
+	LatestNote           string    `gorm:"type:text" json:"latest_note,omitempty"`
 	RenewalAt            time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"renewal_at,omitempty"`
 	UnsubAt              time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"unsub_at,omitempty"`
 	ChargeAt             time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"charge_at,omitempty"`
@@ -35,6 +36,8 @@ type Subscription struct {
 	TotalRenewal         int       `gorm:"default:0" json:"total_renewal,omitempty"`
 	TotalSub             int       `gorm:"default:0" json:"total_sub,omitempty"`
 	TotalUnsub           int       `gorm:"default:0" json:"total_unsub,omitempty"`
+	TotalFollowLeague    int       `gorm:"default:0" json:"total_follow_league,omitempty"`
+	TotalFollowTeam      int       `gorm:"default:0" json:"total_follow_team,omitempty"`
 	TotalAmountFirstpush float64   `gorm:"default:0" json:"total_amount_firstpush,omitempty"`
 	TotalAmountRenewal   float64   `gorm:"default:0" json:"total_amount_renewal,omitempty"`
 	BeforeBalance        float64   `gorm:"default:0" json:"before_balance,omitempty"`
@@ -42,8 +45,9 @@ type Subscription struct {
 	IpAddress            string    `gorm:"size:25" json:"ip_address,omitempty"`
 	IsFollowTeam         bool      `gorm:"type:boolean;column:is_follow_team" json:"is_follow_team,omitempty"`
 	IsFollowLeague       bool      `gorm:"type:boolean;column:is_follow_competition" json:"is_follow_competition,omitempty"`
-	IsPrediction         bool      `gorm:"type:boolean;column:is_prediction" json:"is_prediction,omitempty"`
+	IsPredictWin         bool      `gorm:"type:boolean;column:is_predict_win" json:"is_predict_win,omitempty"`
 	IsCreditGoal         bool      `gorm:"type:boolean;column:is_credit_goal" json:"is_credit_goal,omitempty"`
+	IsPronostic          bool      `gorm:"type:boolean;column:is_prono" json:"is_prono,omitempty"`
 	IsRetry              bool      `gorm:"type:boolean;column:is_retry" json:"is_retry,omitempty"`
 	IsFree               bool      `gorm:"type:boolean;column:is_free" json:"is_free,omitempty"`
 	IsActive             bool      `gorm:"type:boolean;column:is_active" json:"is_active,omitempty"`
@@ -98,8 +102,8 @@ func (s *Subscription) SetLatestPayload(v string) {
 	s.LatestPayload = v
 }
 
-func (s *Subscription) SetIsPrediction(v bool) {
-	s.IsPrediction = v
+func (s *Subscription) SetIsPredictWin(v bool) {
+	s.IsPredictWin = v
 }
 
 func (s *Subscription) SetIsFollowTeam(v bool) {
