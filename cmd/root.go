@@ -65,6 +65,8 @@ const (
 	RMQ_NOTIF_QUEUE          string = "Q_NOTIF"
 	RMQ_MT_EXCHANGE          string = "E_MT"
 	RMQ_MT_QUEUE             string = "Q_MT"
+	RMQ_POSTBACK_MO_EXCHANGE string = "E_POSTBACK_MO"
+	RMQ_POSTBACK_MO_QUEUE    string = "Q_POSTBACK_MO"
 	ACT_USSD                 string = "USSD"
 	ACT_SMS                  string = "SMS"
 	ACT_CONFIRMATION         string = "CONFIRMATION"
@@ -151,6 +153,7 @@ func init() {
 	rootCmd.AddCommand(consumerRenewalCmd)
 	rootCmd.AddCommand(consumerRetryCmd)
 	rootCmd.AddCommand(consumerMTCmd)
+	rootCmd.AddCommand(consumerPostbackMOCmd)
 
 	/**
 	 * Publisher Scraping service

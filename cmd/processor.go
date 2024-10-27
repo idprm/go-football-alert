@@ -470,3 +470,7 @@ func (p *Processor) Retry(wg *sync.WaitGroup, message []byte) {
 
 	wg.Done()
 }
+
+func (p *Processor) PostbackMO(wg *sync.WaitGroup, message []byte) {
+	wg.Done()
+}

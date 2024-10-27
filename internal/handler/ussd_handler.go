@@ -133,6 +133,7 @@ func (h *UssdHandler) Subscription() {
 				LatestSubject: SUBJECT_FREEPUSH,
 				LatestStatus:  STATUS_SUCCESS,
 				RenewalAt:     time.Now().AddDate(0, 0, service.GetFreeDay()),
+				FreeAt:        time.Now(),
 				LatestPayload: "-",
 			},
 		)

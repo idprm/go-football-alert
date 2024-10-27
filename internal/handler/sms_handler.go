@@ -17,10 +17,6 @@ import (
 	"github.com/wiliehidayat87/rmqp"
 )
 
-const (
-	LIMIT_PER_DAY int = 4
-)
-
 type SMSHandler struct {
 	rmq                             rmqp.AMQP
 	rds                             *redis.Client
@@ -124,6 +120,10 @@ const (
 	SMS_CONFIRMATION                     string = "CONFIRMATION"
 	SMS_INFO                             string = "INFO"
 	SMS_STOP                             string = "STOP"
+)
+
+const (
+	LIMIT_PER_DAY int = 4
 )
 
 func (h *SMSHandler) Registration() {
