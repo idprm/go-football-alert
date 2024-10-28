@@ -18,16 +18,16 @@ type Service struct {
 	RewardGoal float64 `gorm:"size:15" json:"reward_goal"`
 	RenewalDay int     `gorm:"size:2;default:0" json:"renewal_day"`
 	FreeDay    int     `gorm:"size:2;default:0" json:"free_day"`
-	UrlTelco   string  `gorm:"size:350;not null" json:"url_telco"`
-	UserTelco  string  `gorm:"size:100;not null" json:"user_telco"`
-	PassTelco  string  `gorm:"size:100;not null" json:"pass_telco"`
-	UrlMT      string  `gorm:"size:350;not null" json:"url_mt"`
-	UserMT     string  `gorm:"size:100;not null" json:"user_mt"`
-	PassMT     string  `gorm:"size:100;not null" json:"pass_mt"`
-	ScSubMT    string  `gorm:"size:15;not null" json:"sc_sub_mt"`
-	ScUnsubMT  string  `gorm:"size:15;not null" json:"sc_unsub_mt"`
-	ShortCode  string  `gorm:"size:15;not null" json:"short_code"`
-	UssdCode   string  `gorm:"size:15;not null" json:"ussd_code"`
+	UrlTelco   string  `gorm:"size:350;not null" json:"-"`
+	UserTelco  string  `gorm:"size:100;not null" json:"-"`
+	PassTelco  string  `gorm:"size:100;not null" json:"-"`
+	UrlMT      string  `gorm:"size:350;not null" json:"-"`
+	UserMT     string  `gorm:"size:100;not null" json:"-"`
+	PassMT     string  `gorm:"size:100;not null" json:"-"`
+	ScSubMT    string  `gorm:"size:15;not null" json:"-"`
+	ScUnsubMT  string  `gorm:"size:15;not null" json:"-"`
+	ShortCode  string  `gorm:"size:15;not null" json:"-"`
+	UssdCode   string  `gorm:"size:15;not null" json:"-"`
 	IsActive   bool    `gorm:"type:boolean;default:false" json:"is_active"`
 }
 

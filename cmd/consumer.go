@@ -211,7 +211,7 @@ var consumerMOCmd = &cobra.Command{
 		 */
 		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_MO_EXCHANGE, true, RMQ_MO_QUEUE)
 		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_MT_EXCHANGE, true, RMQ_MT_QUEUE)
-		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_POSTBACK_MO_EXCHANGE, true, RMQ_POSTBACK_MO_QUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_PB_MO_EXCHANGE, true, RMQ_PB_MO_QUEUE)
 
 		messagesData, errSub := rmq.Subscribe(1, false, RMQ_MO_QUEUE, RMQ_MO_EXCHANGE, RMQ_MO_QUEUE)
 		if errSub != nil {
@@ -902,9 +902,9 @@ var consumerPostbackMOCmd = &cobra.Command{
 		/**
 		 * SETUP CHANNEL
 		 */
-		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_POSTBACK_MO_EXCHANGE, true, RMQ_POSTBACK_MO_QUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_PB_MO_EXCHANGE, true, RMQ_PB_MO_QUEUE)
 
-		messagesData, errSub := rmq.Subscribe(1, false, RMQ_POSTBACK_MO_QUEUE, RMQ_POSTBACK_MO_EXCHANGE, RMQ_POSTBACK_MO_QUEUE)
+		messagesData, errSub := rmq.Subscribe(1, false, RMQ_PB_MO_QUEUE, RMQ_PB_MO_EXCHANGE, RMQ_PB_MO_QUEUE)
 		if errSub != nil {
 			panic(errSub)
 		}

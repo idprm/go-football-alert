@@ -209,7 +209,7 @@ func (r *SubscriptionRepository) UpdateNotFollowLeague(c *entity.Subscription) (
 }
 
 func (r *SubscriptionRepository) UpdateNotPredictWin(c *entity.Subscription) (*entity.Subscription, error) {
-	err := r.db.Model(c).Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Update("is_prediction", false).Error
+	err := r.db.Model(c).Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Update("is_predict_win", false).Error
 	if err != nil {
 		return nil, err
 	}
