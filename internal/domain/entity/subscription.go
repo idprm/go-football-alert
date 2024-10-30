@@ -158,6 +158,14 @@ func (e *Subscription) SetTotalUnsub(v int) {
 	e.TotalUnsub = v
 }
 
+func (e *Subscription) SetTotalFollowLeague(v int) {
+	e.TotalFollowLeague = v
+}
+
+func (e *Subscription) SetTotalFollowTeam(v int) {
+	e.TotalFollowTeam = v
+}
+
 func (e *Subscription) SetTotalAmountFirstpush(v float64) {
 	e.TotalAmountFirstpush = v
 }

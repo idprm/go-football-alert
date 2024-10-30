@@ -40,6 +40,8 @@ type ISubscriptionService interface {
 	UpdateNotFollowTeam(*entity.Subscription) (*entity.Subscription, error)
 	UpdateNotFollowLeague(*entity.Subscription) (*entity.Subscription, error)
 	UpdateNotPredictWin(*entity.Subscription) (*entity.Subscription, error)
+	SaveTotalFollowLeague(*entity.Subscription) error
+	SaveTotalFollowTeam(*entity.Subscription) error
 	PredictWin() *[]entity.Subscription
 	CreditGoal() *[]entity.Subscription
 	Follow() *[]entity.Subscription
@@ -132,6 +134,41 @@ func (s *SubscriptionService) UpdateNotFollowLeague(a *entity.Subscription) (*en
 
 func (s *SubscriptionService) UpdateNotPredictWin(a *entity.Subscription) (*entity.Subscription, error) {
 	return s.subscriptionRepo.UpdateNotPredictWin(a)
+}
+
+func (s *SubscriptionService) SaveTotalFollowLeague(a *entity.Subscription) error {
+
+	if s.IsActiveSubscription(a.ServiceID, a.Msisdn) {
+		sub, err := s.Get(a.ServiceID, a.Msisdn)
+		if err != nil {
+			return nil
+		}
+		s.subscriptionRepo.Update(
+			&entity.Subscription{
+				ServiceID:         a.ServiceID,
+				Msisdn:            a.Msisdn,
+				TotalFollowLeague: sub.TotalFollowLeague + 1,
+			},
+		)
+	}
+	return nil
+}
+
+func (s *SubscriptionService) SaveTotalFollowTeam(a *entity.Subscription) error {
+	if s.IsActiveSubscription(a.ServiceID, a.Msisdn) {
+		sub, err := s.Get(a.ServiceID, a.Msisdn)
+		if err != nil {
+			return nil
+		}
+		s.subscriptionRepo.Update(
+			&entity.Subscription{
+				ServiceID:       a.ServiceID,
+				Msisdn:          a.Msisdn,
+				TotalFollowTeam: sub.TotalFollowTeam + 1,
+			},
+		)
+	}
+	return nil
 }
 
 func (s *SubscriptionService) CreditGoal() *[]entity.Subscription {

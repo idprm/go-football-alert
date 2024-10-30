@@ -547,6 +547,8 @@ func (h *SMSHandler) SubAlerteCompetition(league *entity.League) {
 				IsActive:       true,
 			},
 		)
+		// update total follow league
+		h.subscriptionService.SaveTotalFollowLeague(sub)
 	} else {
 		// update follow league
 		h.subscriptionFollowLeagueService.Update(
@@ -589,6 +591,8 @@ func (h *SMSHandler) SubAlerteEquipe(team *entity.Team) {
 				IsActive:       true,
 			},
 		)
+		// update total follow team
+		h.subscriptionService.SaveTotalFollowTeam(sub)
 	} else {
 		// update follow team
 		h.subscriptionFollowTeamService.Update(
@@ -600,6 +604,7 @@ func (h *SMSHandler) SubAlerteEquipe(team *entity.Team) {
 			},
 		)
 	}
+
 }
 
 func (h *SMSHandler) AlreadySubAlerteCompetition(league *entity.League) {
@@ -630,6 +635,8 @@ func (h *SMSHandler) AlreadySubAlerteCompetition(league *entity.League) {
 				IsActive:       true,
 			},
 		)
+		// update total follow league
+		h.subscriptionService.SaveTotalFollowLeague(sub)
 	} else {
 		// update follow league
 		h.subscriptionFollowLeagueService.Update(
@@ -641,8 +648,6 @@ func (h *SMSHandler) AlreadySubAlerteCompetition(league *entity.League) {
 			},
 		)
 	}
-
-	//
 
 	mt := &model.MTRequest{
 		Smsc:         h.req.GetTo(),
@@ -681,6 +686,30 @@ func (h *SMSHandler) AlreadySubAlerteEquipe(team *entity.Team) {
 	sub, err := h.subscriptionService.Get(service.GetId(), h.req.GetMsisdn())
 	if err != nil {
 		log.Println(err.Error())
+	}
+
+	if !h.subscriptionFollowTeamService.IsSub(sub.GetId(), team.GetId()) {
+		// insert follow team
+		h.subscriptionFollowTeamService.Save(
+			&entity.SubscriptionFollowTeam{
+				SubscriptionID: sub.GetId(),
+				TeamID:         team.GetId(),
+				LimitPerDay:    LIMIT_PER_DAY,
+				IsActive:       true,
+			},
+		)
+		// update total follow team
+		h.subscriptionService.SaveTotalFollowTeam(sub)
+	} else {
+		// update follow team
+		h.subscriptionFollowTeamService.Update(
+			&entity.SubscriptionFollowTeam{
+				SubscriptionID: sub.GetId(),
+				TeamID:         team.GetId(),
+				LimitPerDay:    LIMIT_PER_DAY,
+				IsActive:       true,
+			},
+		)
 	}
 
 	mt := &model.MTRequest{
