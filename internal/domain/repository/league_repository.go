@@ -54,7 +54,7 @@ func (r *LeagueRepository) CountByPrimaryId(primaryId int) (int64, error) {
 
 func (r *LeagueRepository) CountByName(name string) (int64, error) {
 	var count int64
-	err := r.db.Model(&entity.League{}).Where("is_active = ?", true).Where("UPPER(name) LIKE UPPER(?) OR UPPER(keyword) LIKE UPPER(?)", "%"+name+"%", "%"+name+"%").Count(&count).Error
+	err := r.db.Model(&entity.League{}).Where("is_active = ?", true).Where("UPPER(name) LIKE UPPER(?) OR UPPER(code) LIKE UPPER(?) OR UPPER(keyword) LIKE UPPER(?)", "%"+name+"%", "%"+name+"%", "%"+name+"%").Count(&count).Error
 	if err != nil {
 		return count, err
 	}
@@ -136,7 +136,7 @@ func (r *LeagueRepository) GetByPrimaryId(primaryId int) (*entity.League, error)
 
 func (r *LeagueRepository) GetByName(name string) (*entity.League, error) {
 	var c entity.League
-	err := r.db.Where("is_active = ?", true).Where("UPPER(name) LIKE UPPER(?) OR UPPER(keyword) LIKE UPPER(?)", "%"+name+"%", "%"+name+"%").Take(&c).Error
+	err := r.db.Where("is_active = ?", true).Where("UPPER(name) LIKE UPPER(?) OR UPPER(code) LIKE UPPER(?) OR UPPER(keyword) LIKE UPPER(?)", "%"+name+"%", "%"+name+"%", "%"+name+"%").Take(&c).Error
 	if err != nil {
 		return nil, err
 	}
