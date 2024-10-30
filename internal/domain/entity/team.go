@@ -15,6 +15,7 @@ type Team struct {
 	Founded   int    `json:"founded"`
 	Country   string `json:"country"`
 	Keyword   string `json:"keyword"`
+	IsActive  bool   `gorm:"type:boolean;default:false;column:is_active" json:"is_active,omitempty"`
 }
 
 func (e *Team) GetId() int64 {
