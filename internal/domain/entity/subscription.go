@@ -183,5 +183,5 @@ func (s *Subscription) IsRenewal() bool {
 }
 
 func (e *Subscription) IsFirstFreeDay() bool {
-	return !e.IsFree
+	return e.CreatedAt.Format("2006-01-02") == time.Now().Format("2006-01-02")
 }

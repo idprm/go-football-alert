@@ -620,6 +620,30 @@ func (h *SMSHandler) AlreadySubAlerteCompetition(league *entity.League) {
 		log.Println(err.Error())
 	}
 
+	if !h.subscriptionFollowLeagueService.IsSub(sub.GetId(), league.GetId()) {
+		// insert follow league
+		h.subscriptionFollowLeagueService.Save(
+			&entity.SubscriptionFollowLeague{
+				SubscriptionID: sub.GetId(),
+				LeagueID:       league.GetId(),
+				LimitPerDay:    LIMIT_PER_DAY,
+				IsActive:       true,
+			},
+		)
+	} else {
+		// update follow league
+		h.subscriptionFollowLeagueService.Update(
+			&entity.SubscriptionFollowLeague{
+				SubscriptionID: sub.GetId(),
+				LeagueID:       league.GetId(),
+				LimitPerDay:    LIMIT_PER_DAY,
+				IsActive:       true,
+			},
+		)
+	}
+
+	//
+
 	mt := &model.MTRequest{
 		Smsc:         h.req.GetTo(),
 		Keyword:      h.req.GetSMS(),
