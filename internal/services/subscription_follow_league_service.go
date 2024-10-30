@@ -21,6 +21,7 @@ func NewSubscriptionFollowLeagueService(
 
 type ISubscriptionFollowLeagueService interface {
 	IsSub(int64, int64) bool
+	CountSub(int64, int64) int64
 	IsLeague(int64) bool
 	IsLimit(int64, int64) bool
 	IsUpdated(int64, int64) bool
@@ -37,6 +38,11 @@ type ISubscriptionFollowLeagueService interface {
 func (s *SubscriptionFollowLeagueService) IsSub(subId, leagueId int64) bool {
 	count, _ := s.subFollowLeagueRepo.Count(subId, leagueId)
 	return count > 0
+}
+
+func (s *SubscriptionFollowLeagueService) CountSub(subId, teamId int64) int64 {
+	count, _ := s.subFollowLeagueRepo.Count(subId, teamId)
+	return count
 }
 
 func (s *SubscriptionFollowLeagueService) IsLeague(leagueId int64) bool {

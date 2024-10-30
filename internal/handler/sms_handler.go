@@ -615,7 +615,7 @@ func (h *SMSHandler) AlreadySubAlerteCompetition(league *entity.League) {
 		log.Println(err.Error())
 	}
 
-	content, err := h.getContentFollowCompetition(SMS_FOLLOW_COMPETITION_ALREADY_SUB, service, league)
+	content, err := h.getContentFollowCompetition(SMS_FOLLOW_COMPETITION_SUB, service, league)
 	if err != nil {
 		log.Println(err)
 	}
@@ -678,7 +678,7 @@ func (h *SMSHandler) AlreadySubAlerteEquipe(team *entity.Team) {
 		log.Println(err.Error())
 	}
 
-	content, err := h.getContentFollowTeam(SMS_FOLLOW_COMPETITION_ALREADY_SUB, service, team)
+	content, err := h.getContentFollowTeam(SMS_FOLLOW_COMPETITION_SUB, service, team)
 	if err != nil {
 		log.Println(err)
 	}

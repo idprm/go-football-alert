@@ -24,32 +24,32 @@ jobs:
             image: idprm/fb-alert-news-service
           - dockerfile: ./Dockerfile.sms_alerte
             image: idprm/fb-alert-sms-alerte-service
-          - dockerfile: ./Dockerfile.pronostic
-            image: idprm/fb-alert-pronostic-service
-          - dockerfile: ./Dockerfile.credit_goal
-            image: idprm/fb-alert-credit-goal-service
-          - dockerfile: ./Dockerfile.predict_win
-            image: idprm/fb-alert-predict-win-service
+          # - dockerfile: ./Dockerfile.pronostic
+          #   image: idprm/fb-alert-pronostic-service
+          # - dockerfile: ./Dockerfile.credit_goal
+          #   image: idprm/fb-alert-credit-goal-service
+          # - dockerfile: ./Dockerfile.predict_win
+          #   image: idprm/fb-alert-predict-win-service
           - dockerfile: ./Dockerfile.renewal
             image: idprm/fb-alert-renewal-service
           - dockerfile: ./Dockerfile.retry
             image: idprm/fb-alert-retry-service
           - dockerfile: ./Dockerfile.mt
             image: idprm/fb-alert-mt-service
-          - dockerfile: ./Dockerfile.postback_mo
-            image: idprm/fb-alert-postback-mo-service
+          # - dockerfile: ./Dockerfile.postback_mo
+          #   image: idprm/fb-alert-postback-mo-service
           - dockerfile: ./Dockerfile.pub_scraping_fixtures
             image: idprm/fb-alert-pub-scraping-fixtures-service
           - dockerfile: ./Dockerfile.pub_scraping_prediction
             image: idprm/fb-alert-pub-scraping-prediction-service
           - dockerfile: ./Dockerfile.pub_scraping_news
             image: idprm/fb-alert-pub-scraping-news-service
-          - dockerfile: ./Dockerfile.pub_pronostic
-            image: idprm/fb-alert-pub-pronostic-service
-          - dockerfile: ./Dockerfile.pub_credit_goal
-            image: idprm/fb-alert-pub-credit-goal-service
-          - dockerfile: ./Dockerfile.pub_predict_win
-            image: idprm/fb-alert-pub-predict-win-service
+          # - dockerfile: ./Dockerfile.pub_pronostic
+          #   image: idprm/fb-alert-pub-pronostic-service
+          # - dockerfile: ./Dockerfile.pub_credit_goal
+          #   image: idprm/fb-alert-pub-credit-goal-service
+          # - dockerfile: ./Dockerfile.pub_predict_win
+          #   image: idprm/fb-alert-pub-predict-win-service
           - dockerfile: ./Dockerfile.pub_renewal
             image: idprm/fb-alert-pub-renewal-service
           - dockerfile: ./Dockerfile.pub_retry
