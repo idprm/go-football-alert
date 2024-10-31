@@ -15,7 +15,7 @@ type Subscription struct {
 	Msisdn               string    `gorm:"size:15;not null" json:"msisdn"`
 	Channel              string    `gorm:"size:15" json:"channel,omitempty"`
 	LatestTrxId          string    `gorm:"size:100" json:"trx_id,omitempty"`
-	LatestKeyword        string    `gorm:"size:50" json:"latest_keyword,omitempty"`
+	LatestKeyword        string    `gorm:"size:100" json:"latest_keyword,omitempty"`
 	LatestSubject        string    `gorm:"size:25" json:"latest_subject,omitempty"`
 	LatestStatus         string    `gorm:"size:25" json:"latest_status,omitempty"`
 	LatestPayload        string    `gorm:"type:text" json:"latest_payload,omitempty"`
@@ -51,7 +51,7 @@ type Subscription struct {
 	IsRetry              bool      `gorm:"type:boolean;column:is_retry" json:"is_retry,omitempty"`
 	IsFree               bool      `gorm:"type:boolean;column:is_free" json:"is_free,omitempty"`
 	IsActive             bool      `gorm:"type:boolean;column:is_active" json:"is_active,omitempty"`
-	gorm.Model           `json:"-"`
+	gorm.Model
 }
 
 func (e *Subscription) GetId() int64 {
@@ -191,5 +191,7 @@ func (s *Subscription) IsRenewal() bool {
 }
 
 func (e *Subscription) IsFirstFreeDay() bool {
-	return e.CreatedAt.Format("2006-01-02") == time.Now().Format("2006-01-02")
+	t := e.CreatedAt.Add(time.Hour * 24)
+	diff := t.Sub(e.CreatedAt)
+	return diff <= 24*time.Hour
 }
