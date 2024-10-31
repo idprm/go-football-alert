@@ -248,7 +248,7 @@ func (h *SMSHandler) SMSAlerte() {
 	}
 }
 
-func (h *SMSHandler) Firstpush(service *entity.Service, content *entity.Content) {
+func (h *SMSHandler) Firstpush(category string, service *entity.Service, content *entity.Content) {
 	trxId := utils.GenerateTrxId()
 
 	summary := &entity.Summary{
@@ -268,7 +268,7 @@ func (h *SMSHandler) Firstpush(service *entity.Service, content *entity.Content)
 		IpAddress:     h.req.GetIpAddress(),
 	}
 
-	if h.IsSub() {
+	if h.IsSub(category) {
 		h.subscriptionService.Update(subscription)
 	} else {
 		h.subscriptionService.Save(subscription)
@@ -530,7 +530,7 @@ func (h *SMSHandler) SubAlerteCompetition(league *entity.League) {
 		log.Println(err)
 	}
 
-	h.Firstpush(service, content)
+	h.Firstpush(CATEGORY_SMSALERTE_COMPETITION, service, content)
 
 	sub, err := h.subscriptionService.Get(service.GetId(), h.req.GetMsisdn())
 	if err != nil {
@@ -574,7 +574,7 @@ func (h *SMSHandler) SubAlerteEquipe(team *entity.Team) {
 	}
 
 	// firstpush
-	h.Firstpush(service, content)
+	h.Firstpush(CATEGORY_SMSALERTE_EQUIPE, service, content)
 
 	sub, err := h.subscriptionService.Get(service.GetId(), h.req.GetMsisdn())
 	if err != nil {
@@ -744,7 +744,7 @@ func (h *SMSHandler) SubSafe() {
 		log.Println(err)
 	}
 
-	h.Firstpush(service, content)
+	h.Firstpush(CATEGORY_PRONOSTIC_SAFE, service, content)
 }
 
 func (h *SMSHandler) SubCombined() {
@@ -758,7 +758,7 @@ func (h *SMSHandler) SubCombined() {
 		log.Println(err)
 	}
 
-	h.Firstpush(service, content)
+	h.Firstpush(CATEGORY_PRONOSTIC_COMBINED, service, content)
 }
 
 func (h *SMSHandler) SubVIP() {
@@ -772,7 +772,7 @@ func (h *SMSHandler) SubVIP() {
 		log.Println(err)
 	}
 
-	h.Firstpush(service, content)
+	h.Firstpush(CATEGORY_PRONOSTIC_VIP, service, content)
 }
 
 func (h *SMSHandler) AlreadySubSafe() {
@@ -1082,11 +1082,14 @@ func (h *SMSHandler) Unsub(category string) {
 	)
 }
 
-func (h *SMSHandler) IsSub() bool {
-	service, err := h.getServiceSMSAlerteCompetitionDaily()
-	if err != nil {
-		log.Println(err)
+func (h *SMSHandler) IsSub(category string) bool {
+	var service *entity.Service
+	if category == CATEGORY_SMSALERTE_COMPETITION {
+		service, _ = h.getServiceSMSAlerteCompetitionDaily()
+	} else {
+		service, _ = h.getServiceSMSAlerteEquipeDaily()
 	}
+
 	return h.subscriptionService.IsSubscription(service.GetId(), h.req.GetMsisdn())
 }
 
