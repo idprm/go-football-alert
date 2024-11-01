@@ -758,6 +758,13 @@ func seederDB(db *gorm.DB) {
 			Name:     SMS_PRONOSTIC_SAFE_SUB,
 			Value:    "Pronostic: Vous avez souscrit avec succes! Vous recevrez toutes les pronostics en direct. {price}{currency}/{duration} jour",
 		},
+
+		{
+			Category: ACT_CONFIRMATION,
+			Channel:  ACT_SMS,
+			Name:     SMS_PRONOSTIC_SAFE_ALREADY_SUB,
+			Value:    "Pronostic: Vous etes deja abonne aux pronostics",
+		},
 		{
 			Category: ACT_CONFIRMATION,
 			Channel:  ACT_SMS,
@@ -767,27 +774,20 @@ func seederDB(db *gorm.DB) {
 		{
 			Category: ACT_CONFIRMATION,
 			Channel:  ACT_SMS,
+			Name:     SMS_PRONOSTIC_COMBINED_ALREADY_SUB,
+			Value:    "Pronostic: Vous etes deja abonne aux pronostics ticket",
+		},
+		{
+			Category: ACT_CONFIRMATION,
+			Channel:  ACT_SMS,
 			Name:     SMS_PRONOSTIC_VIP_SUB,
 			Value:    "Pronostic: Vous avez souscrit avec succes! Vous recevrez toutes les pronostics VIP en direct. {price}{currency}/{duration} jour",
-		},
-
-		{
-			Category: ACT_CONFIRMATION,
-			Channel:  ACT_SMS,
-			Name:     SMS_PRONOSTIC_SAFE_ALREADY_SUB,
-			Value:    "",
-		},
-		{
-			Category: ACT_CONFIRMATION,
-			Channel:  ACT_SMS,
-			Name:     SMS_PRONOSTIC_COMBINED_ALREADY_SUB,
-			Value:    "",
 		},
 		{
 			Category: ACT_CONFIRMATION,
 			Channel:  ACT_SMS,
 			Name:     SMS_PRONOSTIC_VIP_ALREADY_SUB,
-			Value:    "",
+			Value:    "Pronostic: Vous etes deja abonne aux pronostics VIP",
 		},
 	}
 
