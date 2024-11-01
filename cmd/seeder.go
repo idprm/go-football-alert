@@ -313,7 +313,7 @@ func seederDB(db *gorm.DB) {
 			IsActive:   true,
 		},
 		{
-			ID:         9,
+			ID:         12,
 			Category:   "SMSALERTE_COMPETITION",
 			Channel:    "SMS",
 			Name:       "SMSAlerteCompetition30",
@@ -338,7 +338,7 @@ func seederDB(db *gorm.DB) {
 		},
 
 		{
-			ID:         10,
+			ID:         13,
 			Category:   "PRONOSTIC_SAFE",
 			Channel:    "SMS",
 			Name:       "PronosticSafe1",
@@ -362,7 +362,7 @@ func seederDB(db *gorm.DB) {
 			IsActive:   true,
 		},
 		{
-			ID:         11,
+			ID:         14,
 			Category:   "PRONOSTIC_SAFE",
 			Channel:    "SMS",
 			Name:       "PronosticSafe7",
@@ -386,7 +386,7 @@ func seederDB(db *gorm.DB) {
 			IsActive:   true,
 		},
 		{
-			ID:         12,
+			ID:         15,
 			Category:   "PRONOSTIC_SAFE",
 			Channel:    "SMS",
 			Name:       "PronosticSafe30",
@@ -409,8 +409,9 @@ func seederDB(db *gorm.DB) {
 			UssdCode:   "#101#36#",
 			IsActive:   true,
 		},
+
 		{
-			ID:         13,
+			ID:         16,
 			Category:   "PRONOSTIC_COMBINED",
 			Channel:    "SMS",
 			Name:       "PronosticCombined1",
@@ -434,7 +435,7 @@ func seederDB(db *gorm.DB) {
 			IsActive:   true,
 		},
 		{
-			ID:         14,
+			ID:         17,
 			Category:   "PRONOSTIC_COMBINED",
 			Channel:    "SMS",
 			Name:       "PronosticCombined7",
@@ -458,7 +459,7 @@ func seederDB(db *gorm.DB) {
 			IsActive:   true,
 		},
 		{
-			ID:         15,
+			ID:         18,
 			Category:   "PRONOSTIC_COMBINED",
 			Channel:    "SMS",
 			Name:       "PronosticCombined30",
@@ -481,8 +482,9 @@ func seederDB(db *gorm.DB) {
 			UssdCode:   "#101#36#",
 			IsActive:   true,
 		},
+
 		{
-			ID:         16,
+			ID:         19,
 			Category:   "PRONOSTIC_VIP",
 			Channel:    "SMS",
 			Name:       "PronosticVIP1",
@@ -506,7 +508,7 @@ func seederDB(db *gorm.DB) {
 			IsActive:   true,
 		},
 		{
-			ID:         17,
+			ID:         20,
 			Category:   "PRONOSTIC_VIP",
 			Channel:    "SMS",
 			Name:       "PronosticVIP7",
@@ -530,7 +532,7 @@ func seederDB(db *gorm.DB) {
 			IsActive:   true,
 		},
 		{
-			ID:         18,
+			ID:         21,
 			Category:   "PRONOSTIC_VIP",
 			Channel:    "SMS",
 			Name:       "PronosticVIP30",
@@ -748,6 +750,44 @@ func seederDB(db *gorm.DB) {
 			Channel:  ACT_SMS,
 			Name:     SMS_PREDICT_MATCH_END_LOSER_NOTIF,
 			Value:    "Prono: Desole! Votre pronostic n a pas ete le bon pour le match {home}-{away}. Retentez votre chance pour les prochains matchs .Bonne chance!",
+		},
+
+		{
+			Category: ACT_CONFIRMATION,
+			Channel:  ACT_SMS,
+			Name:     SMS_PRONOSTIC_SAFE_SUB,
+			Value:    "Pronostic: Vous avez souscrit avec succes! Vous recevrez toutes les pronostics en direct. {price}{currency}/{duration} jour",
+		},
+		{
+			Category: ACT_CONFIRMATION,
+			Channel:  ACT_SMS,
+			Name:     SMS_PRONOSTIC_COMBINED_SUB,
+			Value:    "Pronostic: Vous avez souscrit avec succes! Vous recevrez toutes les pronostics ticket en direct. {price}{currency}/{duration} jour",
+		},
+		{
+			Category: ACT_CONFIRMATION,
+			Channel:  ACT_SMS,
+			Name:     SMS_PRONOSTIC_VIP_SUB,
+			Value:    "Pronostic: Vous avez souscrit avec succes! Vous recevrez toutes les pronostics VIP en direct. {price}{currency}/{duration} jour",
+		},
+
+		{
+			Category: ACT_CONFIRMATION,
+			Channel:  ACT_SMS,
+			Name:     SMS_PRONOSTIC_SAFE_ALREADY_SUB,
+			Value:    "",
+		},
+		{
+			Category: ACT_CONFIRMATION,
+			Channel:  ACT_SMS,
+			Name:     SMS_PRONOSTIC_COMBINED_ALREADY_SUB,
+			Value:    "",
+		},
+		{
+			Category: ACT_CONFIRMATION,
+			Channel:  ACT_SMS,
+			Name:     SMS_PRONOSTIC_VIP_ALREADY_SUB,
+			Value:    "",
 		},
 	}
 

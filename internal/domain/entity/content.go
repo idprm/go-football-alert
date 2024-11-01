@@ -2,6 +2,7 @@ package entity
 
 import (
 	"net/url"
+	"strconv"
 	"strings"
 	"unicode"
 
@@ -75,6 +76,15 @@ func (e *Content) SetValueSubFollowTeam(team, day, month, price, currency string
 		"{month}", month,
 		"{price}", price,
 		"{currency}", url.QueryEscape(currency))
+	e.Value = replacer.Replace(e.Value)
+}
+
+func (e *Content) SetValuePronostic(sc string, price string, currency string, duration int) {
+	replacer := strings.NewReplacer(
+		"{sc}", sc,
+		"{price}", price,
+		"{currency}", url.QueryEscape(currency),
+		"{duration}", strconv.Itoa(duration))
 	e.Value = replacer.Replace(e.Value)
 }
 

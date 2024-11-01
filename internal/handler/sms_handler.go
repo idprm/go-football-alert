@@ -82,11 +82,11 @@ const (
 	CATEGORY_FLASHNEWS             string = "FLASHNEWS"
 	CATEGORY_SMSALERTE_COMPETITION string = "SMSALERTE_COMPETITION"
 	CATEGORY_SMSALERTE_EQUIPE      string = "SMSALERTE_EQUIPE"
-	CATEGORY_CREDIT_GOAL           string = "CREDITGOAL"
-	CATEGORY_PREDICT               string = "PREDICTION"
 	CATEGORY_PRONOSTIC_SAFE        string = "PRONOSTIC_SAFE"
 	CATEGORY_PRONOSTIC_COMBINED    string = "PRONOSTIC_COMBINED"
 	CATEGORY_PRONOSTIC_VIP         string = "PRONOSTIC_VIP"
+	CATEGORY_CREDIT_GOAL           string = "CREDIT_GOAL"
+	CATEGORY_PREDICT_WIN           string = "PREDICT_WIN"
 )
 
 const (
@@ -115,8 +115,11 @@ const (
 	SMS_FOLLOW_COMPETITION_EXPIRE_SUB    string = "FOLLOW_COMPETITION_EXPIRE_SUB"
 	SMS_FOLLOW_UNVALID_SUB               string = "FOLLOW_UNVALID_SUB"
 	SMS_PRONOSTIC_SAFE_SUB               string = "PRONOSTIC_SAFE_SUB"
+	SMS_PRONOSTIC_SAFE_ALREADY_SUB       string = "PRONOSTIC_SAFE_ALREADY_SUB"
 	SMS_PRONOSTIC_COMBINED_SUB           string = "PRONOSTIC_COMBINED_SUB"
+	SMS_PRONOSTIC_COMBINED_ALREADY_SUB   string = "PRONOSTIC_COMBINED_ALREADY_SUB"
 	SMS_PRONOSTIC_VIP_SUB                string = "PRONOSTIC_VIP_SUB"
+	SMS_PRONOSTIC_VIP_ALREADY_SUB        string = "PRONOSTIC_VIP_ALREADY_SUB"
 	SMS_CONFIRMATION                     string = "CONFIRMATION"
 	SMS_INFO                             string = "INFO"
 	SMS_STOP                             string = "STOP"
@@ -170,14 +173,14 @@ func (h *SMSHandler) SMSAlerte() {
 		}
 	} else if h.req.IsTicket() {
 		// Pronostic Combined Sub
-		if !h.IsActiveSubByCategory(CATEGORY_PRONOSTIC_SAFE) {
+		if !h.IsActiveSubByCategory(CATEGORY_PRONOSTIC_COMBINED) {
 			h.SubCombined()
 		} else {
 			h.AlreadySubCombined()
 		}
 	} else if h.req.IsVIP() {
 		// Pronostic VIP Sub
-		if !h.IsActiveSubByCategory(CATEGORY_PRONOSTIC_SAFE) {
+		if !h.IsActiveSubByCategory(CATEGORY_PRONOSTIC_VIP) {
 			h.SubVIP()
 		} else {
 			h.AlreadySubVIP()
@@ -525,7 +528,7 @@ func (h *SMSHandler) SubAlerteCompetition(league *entity.League) {
 		log.Println(err.Error())
 	}
 
-	content, err := h.getContentFollowCompetition(SMS_FOLLOW_COMPETITION_SUB, service, league)
+	content, err := h.getContentFollowCompetition(service, league)
 	if err != nil {
 		log.Println(err)
 	}
@@ -568,7 +571,7 @@ func (h *SMSHandler) SubAlerteEquipe(team *entity.Team) {
 		log.Println(err.Error())
 	}
 
-	content, err := h.getContentFollowTeam(SMS_FOLLOW_TEAM_SUB, service, team)
+	content, err := h.getContentFollowTeam(service, team)
 	if err != nil {
 		log.Println(err)
 	}
@@ -615,7 +618,7 @@ func (h *SMSHandler) AlreadySubAlerteCompetition(league *entity.League) {
 		log.Println(err.Error())
 	}
 
-	content, err := h.getContentFollowCompetition(SMS_FOLLOW_COMPETITION_SUB, service, league)
+	content, err := h.getContentFollowCompetition(service, league)
 	if err != nil {
 		log.Println(err)
 	}
@@ -678,7 +681,7 @@ func (h *SMSHandler) AlreadySubAlerteEquipe(team *entity.Team) {
 		log.Println(err.Error())
 	}
 
-	content, err := h.getContentFollowTeam(SMS_FOLLOW_COMPETITION_SUB, service, team)
+	content, err := h.getContentFollowTeam(service, team)
 	if err != nil {
 		log.Println(err)
 	}
@@ -739,7 +742,7 @@ func (h *SMSHandler) SubSafe() {
 		log.Println(err.Error())
 	}
 
-	content, err := h.getContent(SMS_PRONOSTIC_SAFE_SUB)
+	content, err := h.getContentPronostic(SMS_PRONOSTIC_SAFE_SUB, service)
 	if err != nil {
 		log.Println(err)
 	}
@@ -748,12 +751,12 @@ func (h *SMSHandler) SubSafe() {
 }
 
 func (h *SMSHandler) SubCombined() {
-	service, err := h.getServicePronosticSafeDaily()
+	service, err := h.getServicePronosticCombinedDaily()
 	if err != nil {
 		log.Println(err.Error())
 	}
 
-	content, err := h.getContent(SMS_PRONOSTIC_COMBINED_SUB)
+	content, err := h.getContentPronostic(SMS_PRONOSTIC_COMBINED_SUB, service)
 	if err != nil {
 		log.Println(err)
 	}
@@ -762,12 +765,12 @@ func (h *SMSHandler) SubCombined() {
 }
 
 func (h *SMSHandler) SubVIP() {
-	service, err := h.getServicePronosticSafeDaily()
+	service, err := h.getServicePronosticVIPDaily()
 	if err != nil {
 		log.Println(err.Error())
 	}
 
-	content, err := h.getContent(SMS_PRONOSTIC_VIP_SUB)
+	content, err := h.getContentPronostic(SMS_PRONOSTIC_VIP_SUB, service)
 	if err != nil {
 		log.Println(err)
 	}
@@ -776,15 +779,120 @@ func (h *SMSHandler) SubVIP() {
 }
 
 func (h *SMSHandler) AlreadySubSafe() {
+	trxId := utils.GenerateTrxId()
 
+	service, err := h.getServicePronosticSafeDaily()
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	content, err := h.getContent(SMS_PRONOSTIC_SAFE_ALREADY_SUB)
+	if err != nil {
+		log.Println(err)
+	}
+
+	sub, err := h.subscriptionService.Get(service.GetId(), h.req.GetMsisdn())
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	mt := &model.MTRequest{
+		Smsc:         h.req.GetTo(),
+		Keyword:      h.req.GetSMS(),
+		Service:      service,
+		Subscription: sub,
+		Content:      content,
+	}
+	mt.SetTrxId(trxId)
+
+	jsonData, err := json.Marshal(mt)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	h.rmq.IntegratePublish(
+		RMQ_MT_EXCHANGE,
+		RMQ_MT_QUEUE,
+		RMQ_DATA_TYPE, "", string(jsonData),
+	)
 }
 
 func (h *SMSHandler) AlreadySubCombined() {
+	trxId := utils.GenerateTrxId()
 
+	service, err := h.getServicePronosticCombinedDaily()
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	content, err := h.getContent(SMS_PRONOSTIC_COMBINED_ALREADY_SUB)
+	if err != nil {
+		log.Println(err)
+	}
+
+	sub, err := h.subscriptionService.Get(service.GetId(), h.req.GetMsisdn())
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	mt := &model.MTRequest{
+		Smsc:         h.req.GetTo(),
+		Keyword:      h.req.GetSMS(),
+		Service:      service,
+		Subscription: sub,
+		Content:      content,
+	}
+	mt.SetTrxId(trxId)
+
+	jsonData, err := json.Marshal(mt)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	h.rmq.IntegratePublish(
+		RMQ_MT_EXCHANGE,
+		RMQ_MT_QUEUE,
+		RMQ_DATA_TYPE, "", string(jsonData),
+	)
 }
 
 func (h *SMSHandler) AlreadySubVIP() {
+	trxId := utils.GenerateTrxId()
 
+	service, err := h.getServicePronosticVIPDaily()
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	content, err := h.getContent(SMS_PRONOSTIC_VIP_ALREADY_SUB)
+	if err != nil {
+		log.Println(err)
+	}
+
+	sub, err := h.subscriptionService.Get(service.GetId(), h.req.GetMsisdn())
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	mt := &model.MTRequest{
+		Smsc:         h.req.GetTo(),
+		Keyword:      h.req.GetSMS(),
+		Service:      service,
+		Subscription: sub,
+		Content:      content,
+	}
+	mt.SetTrxId(trxId)
+
+	jsonData, err := json.Marshal(mt)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	h.rmq.IntegratePublish(
+		RMQ_MT_EXCHANGE,
+		RMQ_MT_QUEUE,
+		RMQ_DATA_TYPE, "", string(jsonData),
+	)
 }
 
 func (h *SMSHandler) Info() {
@@ -1086,10 +1194,19 @@ func (h *SMSHandler) IsSub(category string) bool {
 	var service *entity.Service
 	if category == CATEGORY_SMSALERTE_COMPETITION {
 		service, _ = h.getServiceSMSAlerteCompetitionDaily()
-	} else {
+	}
+	if category == CATEGORY_SMSALERTE_EQUIPE {
 		service, _ = h.getServiceSMSAlerteEquipeDaily()
 	}
-
+	if category == CATEGORY_PRONOSTIC_SAFE {
+		service, _ = h.getServicePronosticSafeDaily()
+	}
+	if category == CATEGORY_PRONOSTIC_COMBINED {
+		service, _ = h.getServicePronosticCombinedDaily()
+	}
+	if category == CATEGORY_PRONOSTIC_VIP {
+		service, _ = h.getServicePronosticVIPDaily()
+	}
 	return h.subscriptionService.IsSubscription(service.GetId(), h.req.GetMsisdn())
 }
 
@@ -1125,18 +1242,29 @@ func (h *SMSHandler) getContent(v string) (*entity.Content, error) {
 	return h.contentService.Get(v)
 }
 
-func (h *SMSHandler) getContentFollowCompetition(v string, service *entity.Service, league *entity.League) (*entity.Content, error) {
-	if !h.contentService.IsContent(v) {
+func (h *SMSHandler) getContentFollowCompetition(service *entity.Service, league *entity.League) (*entity.Content, error) {
+	if !h.contentService.IsContent(SMS_FOLLOW_COMPETITION_SUB) {
 		return &entity.Content{
 			Category: "CATEGORY",
 			Channel:  "SMS",
 			Value:    "SAMPLE_TEXT",
 		}, nil
 	}
-	return h.contentService.GetFollowCompetition(v, service, league)
+	return h.contentService.GetFollowCompetition(SMS_FOLLOW_COMPETITION_SUB, service, league)
 }
 
-func (h *SMSHandler) getContentFollowTeam(v string, service *entity.Service, team *entity.Team) (*entity.Content, error) {
+func (h *SMSHandler) getContentFollowTeam(service *entity.Service, team *entity.Team) (*entity.Content, error) {
+	if !h.contentService.IsContent(SMS_FOLLOW_TEAM_SUB) {
+		return &entity.Content{
+			Category: "CATEGORY",
+			Channel:  "SMS",
+			Value:    "SAMPLE_TEXT",
+		}, nil
+	}
+	return h.contentService.GetFollowTeam(SMS_FOLLOW_TEAM_SUB, service, team)
+}
+
+func (h *SMSHandler) getContentPronostic(v string, service *entity.Service) (*entity.Content, error) {
 	if !h.contentService.IsContent(v) {
 		return &entity.Content{
 			Category: "CATEGORY",
@@ -1144,7 +1272,7 @@ func (h *SMSHandler) getContentFollowTeam(v string, service *entity.Service, tea
 			Value:    "SAMPLE_TEXT",
 		}, nil
 	}
-	return h.contentService.GetFollowTeam(v, service, team)
+	return h.contentService.GetPronostic(v, service)
 }
 
 func (h *SMSHandler) getContentSMSAlerteUnvalid(v string, service *entity.Service) (*entity.Content, error) {
