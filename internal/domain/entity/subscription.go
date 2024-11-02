@@ -11,7 +11,7 @@ type Subscription struct {
 	ID                   int64     `gorm:"primaryKey" json:"id"`
 	ServiceID            int       `json:"service_id"`
 	Service              *Service  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"service,omitempty"`
-	Category             string    `gorm:"size:20" json:"category"`
+	Category             string    `gorm:"size:30" json:"category"`
 	Msisdn               string    `gorm:"size:15;not null" json:"msisdn"`
 	Channel              string    `gorm:"size:15" json:"channel,omitempty"`
 	LatestTrxId          string    `gorm:"size:100" json:"trx_id,omitempty"`
