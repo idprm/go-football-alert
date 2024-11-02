@@ -74,7 +74,11 @@ func (e *News) GetPublishAt() time.Time {
 }
 
 func (e *News) GetParseTitleLeft() string {
-	return strings.TrimSpace(e.Title[:strings.IndexByte(e.Title, ':')])
+	t := strings.TrimSpace(e.Title[:strings.IndexByte(e.Title, ':')])
+	replacer := strings.NewReplacer(
+		`Mercato`, "",
+	)
+	return strings.TrimSpace(replacer.Replace(t))
 }
 
 func (e *News) GetParseTitleRight() string {
