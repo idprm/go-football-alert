@@ -20,17 +20,19 @@ func NewSubscriptionService(
 }
 
 type ISubscriptionService interface {
-	IsSubscription(int, string) bool
-	IsActiveSubscription(int, string) bool
-	IsActiveSubscriptionByCategory(string, string) bool
+	IsSubscription(int, string, string) bool
+	IsActiveSubscription(int, string, string) bool
+	IsActiveSubscriptionByCategory(string, string, string) bool
+	IsActiveSubscriptionByNonSMSAlerte(string, string) bool
 	IsActiveSubscriptionBySubId(int64) bool
-	IsRenewal(int, string) bool
-	IsRetry(int, string) bool
+	IsRenewal(int, string, string) bool
+	IsRetry(int, string, string) bool
 	GetTotalActiveSubscription() int
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
-	GetByCategory(string, string) (*entity.Subscription, error)
+	GetByCategory(string, string, string) (*entity.Subscription, error)
+	GetByNonSMSAlerte(string, string) (*entity.Subscription, error)
 	GetBySubId(int64) (*entity.Subscription, error)
-	Get(int, string) (*entity.Subscription, error)
+	Get(int, string, string) (*entity.Subscription, error)
 	Save(*entity.Subscription) (*entity.Subscription, error)
 	Update(*entity.Subscription) (*entity.Subscription, error)
 	Delete(*entity.Subscription) error
@@ -40,8 +42,6 @@ type ISubscriptionService interface {
 	UpdateNotFollowTeam(*entity.Subscription) (*entity.Subscription, error)
 	UpdateNotFollowLeague(*entity.Subscription) (*entity.Subscription, error)
 	UpdateNotPredictWin(*entity.Subscription) (*entity.Subscription, error)
-	SaveTotalFollowLeague(*entity.Subscription) error
-	SaveTotalFollowTeam(*entity.Subscription) error
 	PredictWin() *[]entity.Subscription
 	CreditGoal() *[]entity.Subscription
 	Follow() *[]entity.Subscription
@@ -49,18 +49,23 @@ type ISubscriptionService interface {
 	Retry() *[]entity.Subscription
 }
 
-func (s *SubscriptionService) IsSubscription(serviceId int, msisdn string) bool {
-	count, _ := s.subscriptionRepo.Count(serviceId, msisdn)
+func (s *SubscriptionService) IsSubscription(serviceId int, msisdn, code string) bool {
+	count, _ := s.subscriptionRepo.Count(serviceId, msisdn, code)
 	return count > 0
 }
 
-func (s *SubscriptionService) IsActiveSubscription(serviceId int, msisdn string) bool {
-	count, _ := s.subscriptionRepo.CountActive(serviceId, msisdn)
+func (s *SubscriptionService) IsActiveSubscription(serviceId int, msisdn, code string) bool {
+	count, _ := s.subscriptionRepo.CountActive(serviceId, msisdn, code)
 	return count > 0
 }
 
-func (s *SubscriptionService) IsActiveSubscriptionByCategory(category string, msisdn string) bool {
-	count, _ := s.subscriptionRepo.CountActiveByCategory(category, msisdn)
+func (s *SubscriptionService) IsActiveSubscriptionByCategory(category, msisdn, code string) bool {
+	count, _ := s.subscriptionRepo.CountActiveByCategory(category, msisdn, code)
+	return count > 0
+}
+
+func (s *SubscriptionService) IsActiveSubscriptionByNonSMSAlerte(category, msisdn string) bool {
+	count, _ := s.subscriptionRepo.CountActiveByNonSMSAlerte(category, msisdn)
 	return count > 0
 }
 
@@ -69,13 +74,13 @@ func (s *SubscriptionService) IsActiveSubscriptionBySubId(subId int64) bool {
 	return count > 0
 }
 
-func (s *SubscriptionService) IsRenewal(serviceId int, msisdn string) bool {
-	count, _ := s.subscriptionRepo.CountRenewal(serviceId, msisdn)
+func (s *SubscriptionService) IsRenewal(serviceId int, msisdn, code string) bool {
+	count, _ := s.subscriptionRepo.CountRenewal(serviceId, msisdn, code)
 	return count > 0
 }
 
-func (s *SubscriptionService) IsRetry(serviceId int, msisdn string) bool {
-	count, _ := s.subscriptionRepo.CountRetry(serviceId, msisdn)
+func (s *SubscriptionService) IsRetry(serviceId int, msisdn, code string) bool {
+	count, _ := s.subscriptionRepo.CountRetry(serviceId, msisdn, code)
 	return count > 0
 }
 
@@ -88,16 +93,20 @@ func (s *SubscriptionService) GetAllPaginate(pagination *entity.Pagination) (*en
 	return s.subscriptionRepo.GetAllPaginate(pagination)
 }
 
-func (s *SubscriptionService) GetByCategory(category, msisdn string) (*entity.Subscription, error) {
-	return s.subscriptionRepo.GetByCategory(category, msisdn)
+func (s *SubscriptionService) GetByCategory(category, msisdn, code string) (*entity.Subscription, error) {
+	return s.subscriptionRepo.GetByCategory(category, msisdn, code)
+}
+
+func (s *SubscriptionService) GetByNonSMSAlerte(category, msisdn string) (*entity.Subscription, error) {
+	return s.subscriptionRepo.GetByNonSMSAlerte(category, msisdn)
 }
 
 func (s *SubscriptionService) GetBySubId(subId int64) (*entity.Subscription, error) {
 	return s.subscriptionRepo.GetBySubId(subId)
 }
 
-func (s *SubscriptionService) Get(serviceId int, msisdn string) (*entity.Subscription, error) {
-	return s.subscriptionRepo.Get(serviceId, msisdn)
+func (s *SubscriptionService) Get(serviceId int, msisdn, code string) (*entity.Subscription, error) {
+	return s.subscriptionRepo.Get(serviceId, msisdn, code)
 }
 
 func (s *SubscriptionService) Save(a *entity.Subscription) (*entity.Subscription, error) {
@@ -134,41 +143,6 @@ func (s *SubscriptionService) UpdateNotFollowLeague(a *entity.Subscription) (*en
 
 func (s *SubscriptionService) UpdateNotPredictWin(a *entity.Subscription) (*entity.Subscription, error) {
 	return s.subscriptionRepo.UpdateNotPredictWin(a)
-}
-
-func (s *SubscriptionService) SaveTotalFollowLeague(a *entity.Subscription) error {
-
-	if s.IsActiveSubscription(a.ServiceID, a.Msisdn) {
-		sub, err := s.Get(a.ServiceID, a.Msisdn)
-		if err != nil {
-			return nil
-		}
-		s.subscriptionRepo.Update(
-			&entity.Subscription{
-				ServiceID:         a.ServiceID,
-				Msisdn:            a.Msisdn,
-				TotalFollowLeague: sub.TotalFollowLeague + 1,
-			},
-		)
-	}
-	return nil
-}
-
-func (s *SubscriptionService) SaveTotalFollowTeam(a *entity.Subscription) error {
-	if s.IsActiveSubscription(a.ServiceID, a.Msisdn) {
-		sub, err := s.Get(a.ServiceID, a.Msisdn)
-		if err != nil {
-			return nil
-		}
-		s.subscriptionRepo.Update(
-			&entity.Subscription{
-				ServiceID:       a.ServiceID,
-				Msisdn:          a.Msisdn,
-				TotalFollowTeam: sub.TotalFollowTeam + 1,
-			},
-		)
-	}
-	return nil
 }
 
 func (s *SubscriptionService) CreditGoal() *[]entity.Subscription {

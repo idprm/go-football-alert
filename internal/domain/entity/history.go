@@ -9,6 +9,7 @@ type History struct {
 	ServiceID      int           `json:"service_id"`
 	Service        *Service      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"service,omitempty"`
 	Msisdn         string        `gorm:"size:15;not null" json:"msisdn"`
+	Code           string        `gorm:"size:25;not null" json:"code"`
 	Keyword        string        `json:"keyword"`
 	Subject        string        `json:"subject"`
 	Status         string        `json:"status"`
@@ -30,4 +31,8 @@ func (e *History) GetServiceId() int {
 
 func (e *History) GetMsisdn() string {
 	return e.Msisdn
+}
+
+func (e *History) GetCode() string {
+	return e.Code
 }

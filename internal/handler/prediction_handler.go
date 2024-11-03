@@ -47,7 +47,7 @@ func NewPredictionHandler(
 }
 
 func (h *PredictionHandler) Prediction() {
-	if h.subscriptionService.IsActiveSubscription(h.sub.GetServiceId(), h.sub.GetMsisdn()) {
+	if h.subscriptionService.IsActiveSubscription(h.sub.GetServiceId(), h.sub.GetMsisdn(), "PR") {
 		service, err := h.serviceService.GetById(h.sub.GetServiceId())
 		if err != nil {
 			log.Println(err.Error())

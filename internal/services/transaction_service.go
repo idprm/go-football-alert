@@ -18,16 +18,16 @@ func NewTransactionService(
 }
 
 type ITransactionService interface {
-	IsTransaction(int, string, string) bool
+	IsTransaction(int, string, string, string) bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
-	Get(int, string, string) (*entity.Transaction, error)
+	Get(int, string, string, string) (*entity.Transaction, error)
 	Save(*entity.Transaction) error
 	Update(*entity.Transaction) error
 	Delete(*entity.Transaction) error
 }
 
-func (s *TransactionService) IsTransaction(serviceId int, msisdn, date string) bool {
-	count, _ := s.transactionRepo.Count(serviceId, msisdn, date)
+func (s *TransactionService) IsTransaction(serviceId int, msisdn, code, date string) bool {
+	count, _ := s.transactionRepo.Count(serviceId, msisdn, code, date)
 	return count > 0
 }
 
@@ -35,8 +35,8 @@ func (s *TransactionService) GetAllPaginate(pagination *entity.Pagination) (*ent
 	return s.transactionRepo.GetAllPaginate(pagination)
 }
 
-func (s *TransactionService) Get(serviceId int, msisdn, date string) (*entity.Transaction, error) {
-	return s.transactionRepo.Get(serviceId, msisdn, date)
+func (s *TransactionService) Get(serviceId int, msisdn, code, date string) (*entity.Transaction, error) {
+	return s.transactionRepo.Get(serviceId, msisdn, code, date)
 }
 
 func (s *TransactionService) Save(a *entity.Transaction) error {
@@ -47,6 +47,7 @@ func (s *TransactionService) Update(a *entity.Transaction) error {
 	d := &entity.Transaction{
 		ServiceID: a.ServiceID,
 		Msisdn:    a.Msisdn,
+		Code:      a.Code,
 		Subject:   a.Subject,
 		Status:    "FAILED",
 	}

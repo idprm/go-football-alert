@@ -40,8 +40,6 @@ var publisherRenewalCmd = &cobra.Command{
 		 * SETUP CHANNEL
 		 */
 		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_RENEWAL_EXCHANGE, true, RMQ_RENEWAL_QUEUE)
-		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_RENEWAL_COMPETITION_EXCHANGE, true, RMQ_RENEWAL_COMPETITION_QUEUE)
-		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_RENEWAL_EQUIPE_EXCHANGE, true, RMQ_RENEWAL_EQUIPE_QUEUE)
 
 		/**
 		 * Looping schedule per 1 hour
@@ -51,12 +49,7 @@ var publisherRenewalCmd = &cobra.Command{
 		for {
 
 			go func() {
-				// renewal non sms alerte
 				populateRenewal(db, rmq)
-
-				// renewal sms alerte
-				populateAlerteCompetition(db, rmq)
-				populateAlerteEquipe(db, rmq)
 			}()
 
 			time.Sleep(timeDuration * time.Hour)
@@ -418,6 +411,7 @@ func populateRenewal(db *gorm.DB, rmq rmqp.AMQP) {
 		sub.ID = s.ID
 		sub.ServiceID = s.ServiceID
 		sub.Msisdn = s.Msisdn
+		sub.Code = s.Code
 		sub.LatestKeyword = s.LatestKeyword
 		sub.LatestSubject = s.LatestSubject
 		sub.CreatedAt = s.CreatedAt
@@ -444,6 +438,7 @@ func populateRetry(db *gorm.DB, rmq rmqp.AMQP) {
 		sub.ID = s.ID
 		sub.ServiceID = s.ServiceID
 		sub.Msisdn = s.Msisdn
+		sub.Code = s.Code
 		sub.LatestKeyword = s.LatestKeyword
 		sub.LatestSubject = s.LatestSubject
 		sub.CreatedAt = s.CreatedAt
@@ -451,58 +446,6 @@ func populateRetry(db *gorm.DB, rmq rmqp.AMQP) {
 		json, _ := json.Marshal(sub)
 
 		rmq.IntegratePublish(RMQ_RETRY_EXCHANGE, RMQ_RETRY_QUEUE, RMQ_DATA_TYPE, "", string(json))
-
-		time.Sleep(100 * time.Microsecond)
-	}
-}
-
-func populateAlerteCompetition(db *gorm.DB, rmq rmqp.AMQP) {
-	subFollowLeagueRepo := repository.NewSubscriptionFollowLeagueRepository(db)
-	subFollowLeagueService := services.NewSubscriptionFollowLeagueService(subFollowLeagueRepo)
-
-	subs := subFollowLeagueService.Renewal()
-
-	for _, s := range *subs {
-		var sub entity.SubscriptionFollowLeague
-
-		sub.ID = s.ID
-		sub.SubscriptionID = s.SubscriptionID
-		sub.LeagueID = s.LeagueID
-		sub.LatestKeyword = s.LatestKeyword
-		sub.RenewalAt = s.RenewalAt
-		sub.CreatedAt = s.CreatedAt
-
-		json, _ := json.Marshal(sub)
-
-		log.Println(json)
-
-		rmq.IntegratePublish(RMQ_RENEWAL_COMPETITION_EXCHANGE, RMQ_RENEWAL_COMPETITION_QUEUE, RMQ_DATA_TYPE, "", string(json))
-
-		time.Sleep(100 * time.Microsecond)
-	}
-}
-
-func populateAlerteEquipe(db *gorm.DB, rmq rmqp.AMQP) {
-	subFollowTeamRepo := repository.NewSubscriptionFollowTeamRepository(db)
-	subFollowTeamService := services.NewSubscriptionFollowTeamService(subFollowTeamRepo)
-
-	subs := subFollowTeamService.Renewal()
-
-	for _, s := range *subs {
-		var sub entity.SubscriptionFollowTeam
-
-		sub.ID = s.ID
-		sub.SubscriptionID = s.SubscriptionID
-		sub.TeamID = s.TeamID
-		sub.LatestKeyword = s.LatestKeyword
-		sub.RenewalAt = s.RenewalAt
-		sub.CreatedAt = s.CreatedAt
-
-		json, _ := json.Marshal(sub)
-
-		log.Println(json)
-
-		rmq.IntegratePublish(RMQ_RENEWAL_EQUIPE_EXCHANGE, RMQ_RENEWAL_EQUIPE_QUEUE, RMQ_DATA_TYPE, "", string(json))
 
 		time.Sleep(100 * time.Microsecond)
 	}
@@ -520,6 +463,7 @@ func populatePredictWin(db *gorm.DB, rmq rmqp.AMQP) {
 		sub.ID = s.ID
 		sub.ServiceID = s.ServiceID
 		sub.Msisdn = s.Msisdn
+		sub.Code = s.Code
 		sub.LatestKeyword = s.LatestKeyword
 		sub.LatestSubject = s.LatestSubject
 		sub.CreatedAt = s.CreatedAt
@@ -544,6 +488,7 @@ func populateCreditGoal(db *gorm.DB, rmq rmqp.AMQP) {
 		sub.ID = s.ID
 		sub.ServiceID = s.ServiceID
 		sub.Msisdn = s.Msisdn
+		sub.Code = s.Code
 		sub.LatestKeyword = s.LatestKeyword
 		sub.LatestSubject = s.LatestSubject
 		sub.CreatedAt = s.CreatedAt

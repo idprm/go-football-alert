@@ -118,7 +118,7 @@ func (h *UssdHandler) Subscription() {
 		h.subscriptionService.Save(subscription)
 	}
 
-	sub, err := h.subscriptionService.Get(service.GetId(), h.req.GetMsisdn())
+	sub, err := h.subscriptionService.Get(service.GetId(), h.req.GetMsisdn(), service.GetCode())
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -336,7 +336,7 @@ func (h *UssdHandler) IsSub() bool {
 	if err != nil {
 		log.Println(err)
 	}
-	return h.subscriptionService.IsSubscription(service.GetId(), h.req.GetMsisdn())
+	return h.subscriptionService.IsSubscription(service.GetId(), h.req.GetMsisdn(), service.GetCode())
 }
 
 func (h *UssdHandler) getServiceByCode(code string) (*entity.Service, error) {

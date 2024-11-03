@@ -16,17 +16,17 @@ func NewTransactionRepository(db *gorm.DB) *TransactionRepository {
 }
 
 type ITransactionRepository interface {
-	Count(int, string, string) (int64, error)
+	Count(int, string, string, string) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
-	Get(int, string, string) (*entity.Transaction, error)
+	Get(int, string, string, string) (*entity.Transaction, error)
 	Save(*entity.Transaction) error
 	Update(*entity.Transaction) error
 	Delete(*entity.Transaction) error
 }
 
-func (r *TransactionRepository) Count(serviceId int, msisdn, date string) (int64, error) {
+func (r *TransactionRepository) Count(serviceId int, msisdn, code, date string) (int64, error) {
 	var count int64
-	err := r.db.Model(&entity.Transaction{}).Where("service_id = ?", serviceId).Where("msisdn = ?", msisdn).Where("DATE(created_at) = DATE(?)", date).Count(&count).Error
+	err := r.db.Model(&entity.Transaction{}).Where("service_id = ? AND msisdn = ? AND code = ?", serviceId, msisdn, code).Where("DATE(created_at) = DATE(?)", date).Count(&count).Error
 	if err != nil {
 		return count, err
 	}
@@ -43,9 +43,9 @@ func (r *TransactionRepository) GetAllPaginate(p *entity.Pagination) (*entity.Pa
 	return p, nil
 }
 
-func (r *TransactionRepository) Get(serviceId int, msisdn, date string) (*entity.Transaction, error) {
+func (r *TransactionRepository) Get(serviceId int, msisdn, code, date string) (*entity.Transaction, error) {
 	var c entity.Transaction
-	err := r.db.Where("service_id = ?", serviceId).Where("msisdn = ?", msisdn).Where("DATE(created_at) = DATE(?)", date).Take(&c).Error
+	err := r.db.Where("service_id = ? AND msisdn = ? AND code = ?", serviceId, msisdn, code).Where("DATE(created_at) = DATE(?)", date).Take(&c).Error
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +61,7 @@ func (r *TransactionRepository) Save(c *entity.Transaction) error {
 }
 
 func (r *TransactionRepository) Update(c *entity.Transaction) error {
-	err := r.db.Where("service_id = ? AND msisdn = ? AND DATE(created_at) = DATE(NOW())", c.ServiceID, c.Msisdn).Updates(&c).Error
+	err := r.db.Where("service_id = ? AND msisdn = ? AND code = ? AND DATE(created_at) = DATE(NOW())", c.ServiceID, c.Msisdn, c.Code).Updates(&c).Error
 	if err != nil {
 		return err
 	}
@@ -69,7 +69,7 @@ func (r *TransactionRepository) Update(c *entity.Transaction) error {
 }
 
 func (r *TransactionRepository) Delete(c *entity.Transaction) error {
-	err := r.db.Where("service_id = ? AND msisdn = ? AND subject = ? AND status = ? AND DATE(created_at) = DATE(NOW())", c.ServiceID, c.Msisdn, c.Subject, c.Status).Delete(&c, c.ID).Error
+	err := r.db.Where("service_id = ? AND msisdn = ? AND code = ? AND subject = ? AND status = ? AND DATE(created_at) = DATE(NOW())", c.ServiceID, c.Msisdn, c.Code, c.Subject, c.Status).Delete(&c, c.ID).Error
 	if err != nil {
 		return err
 	}

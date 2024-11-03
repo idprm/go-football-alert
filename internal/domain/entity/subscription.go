@@ -25,6 +25,7 @@ type Subscription struct {
 	Service              *Service  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"service,omitempty"`
 	Category             string    `gorm:"size:30" json:"category"`
 	Msisdn               string    `gorm:"size:15;not null" json:"msisdn"`
+	Code                 string    `gorm:"size:25;not null" json:"code"`
 	Channel              string    `gorm:"size:15" json:"channel,omitempty"`
 	LatestTrxId          string    `gorm:"size:100" json:"trx_id,omitempty"`
 	LatestKeyword        string    `gorm:"size:100" json:"latest_keyword,omitempty"`
@@ -48,8 +49,6 @@ type Subscription struct {
 	TotalRenewal         int       `gorm:"default:0" json:"total_renewal,omitempty"`
 	TotalSub             int       `gorm:"default:0" json:"total_sub,omitempty"`
 	TotalUnsub           int       `gorm:"default:0" json:"total_unsub,omitempty"`
-	TotalFollowLeague    int       `gorm:"default:0" json:"total_follow_league,omitempty"`
-	TotalFollowTeam      int       `gorm:"default:0" json:"total_follow_team,omitempty"`
 	TotalAmountFirstpush float64   `gorm:"default:0" json:"total_amount_firstpush,omitempty"`
 	TotalAmountRenewal   float64   `gorm:"default:0" json:"total_amount_renewal,omitempty"`
 	BeforeBalance        float64   `gorm:"default:0" json:"before_balance,omitempty"`
@@ -76,6 +75,10 @@ func (e *Subscription) GetServiceId() int {
 
 func (e *Subscription) GetMsisdn() string {
 	return e.Msisdn
+}
+
+func (e *Subscription) GetCode() string {
+	return e.Code
 }
 
 func (s *Subscription) GetLatestTrxId() string {
@@ -168,14 +171,6 @@ func (e *Subscription) SetTotalSub(v int) {
 
 func (e *Subscription) SetTotalUnsub(v int) {
 	e.TotalUnsub = v
-}
-
-func (e *Subscription) SetTotalFollowLeague(v int) {
-	e.TotalFollowLeague = v
-}
-
-func (e *Subscription) SetTotalFollowTeam(v int) {
-	e.TotalFollowTeam = v
 }
 
 func (e *Subscription) SetTotalAmountFirstpush(v float64) {

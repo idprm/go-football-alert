@@ -10,6 +10,7 @@ type Transaction struct {
 	ServiceID    int      `json:"service_id"`
 	Service      *Service `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"service,omitempty"`
 	Msisdn       string   `gorm:"size:15;not null" json:"msisdn"`
+	Code         string   `gorm:"size:25;not null" json:"code"`
 	Keyword      string   `gorm:"size:50" json:"keyword,omitempty"`
 	Amount       float64  `gorm:"size:10;default:0" json:"amount,omitempty"`
 	Discount     float64  `gorm:"size:10;default:0" json:"discount,omitempty"`
@@ -33,6 +34,10 @@ func (e *Transaction) GetServiceId() int {
 
 func (e *Transaction) GetMsisdn() string {
 	return e.Msisdn
+}
+
+func (e *Transaction) GetCode() string {
+	return e.Code
 }
 
 func (t *Transaction) SetAmount(v float64) {

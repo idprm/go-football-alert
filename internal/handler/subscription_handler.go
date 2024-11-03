@@ -52,7 +52,7 @@ func (h *SubscriptionHandler) Get(c *fiber.Ctx) error {
 	service, _ := strconv.Atoi(c.Params("service"))
 	msisdn := c.Params("msisdn")
 
-	if !h.subscriptionService.IsSubscription(service, msisdn) {
+	if !h.subscriptionService.IsSubscription(service, msisdn, "CODE") {
 		return c.Status(fiber.StatusNotFound).JSON(
 			&model.WebResponse{
 				Error:      true,
@@ -62,7 +62,7 @@ func (h *SubscriptionHandler) Get(c *fiber.Ctx) error {
 		)
 	}
 
-	subscription, err := h.subscriptionService.Get(service, msisdn)
+	subscription, err := h.subscriptionService.Get(service, msisdn, "CODE")
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
 			&model.WebResponse{
@@ -87,7 +87,7 @@ func (h *SubscriptionHandler) Delete(c *fiber.Ctx) error {
 	service, _ := strconv.Atoi(c.Params("service"))
 	msisdn := c.Params("msisdn")
 
-	if !h.subscriptionService.IsSubscription(service, msisdn) {
+	if !h.subscriptionService.IsSubscription(service, msisdn, "CODE") {
 		return c.Status(fiber.StatusNotFound).JSON(
 			&model.WebResponse{
 				Error:      true,

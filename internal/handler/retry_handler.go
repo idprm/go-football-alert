@@ -55,12 +55,12 @@ func NewRetryHandler(
 
 func (h *RetryHandler) Firstpush() {
 	// check if active sub
-	if h.subscriptionService.IsActiveSubscription(h.sub.GetServiceId(), h.sub.GetMsisdn()) {
+	if h.subscriptionService.IsActiveSubscription(h.sub.GetServiceId(), h.sub.GetMsisdn(), h.sub.GetCode()) {
 		// check is retry
-		if h.subscriptionService.IsRetry(h.sub.GetServiceId(), h.sub.GetMsisdn()) {
+		if h.subscriptionService.IsRetry(h.sub.GetServiceId(), h.sub.GetMsisdn(), h.sub.GetCode()) {
 			trxId := utils.GenerateTrxId()
 
-			sub, err := h.subscriptionService.Get(h.sub.GetServiceId(), h.sub.GetMsisdn())
+			sub, err := h.subscriptionService.Get(h.sub.GetServiceId(), h.sub.GetMsisdn(), h.sub.GetCode())
 			if err != nil {
 				log.Println(err.Error())
 			}
@@ -101,6 +101,7 @@ func (h *RetryHandler) Firstpush() {
 						&entity.Subscription{
 							ServiceID:            service.GetId(),
 							Msisdn:               h.sub.GetMsisdn(),
+							Code:                 h.sub.GetCode(),
 							LatestTrxId:          trxId,
 							LatestSubject:        SUBJECT_FIRSTPUSH,
 							LatestStatus:         STATUS_SUCCESS,
@@ -127,6 +128,7 @@ func (h *RetryHandler) Firstpush() {
 							TrxId:        trxId,
 							ServiceID:    service.GetId(),
 							Msisdn:       h.sub.GetMsisdn(),
+							Code:         h.sub.GetCode(),
 							Keyword:      sub.GetLatestKeyword(),
 							Amount:       service.GetPrice(),
 							Discount:     0,
@@ -151,12 +153,12 @@ func (h *RetryHandler) Firstpush() {
 
 func (h *RetryHandler) Dailypush() {
 	// check if active sub
-	if h.subscriptionService.IsActiveSubscription(h.sub.GetServiceId(), h.sub.GetMsisdn()) {
+	if h.subscriptionService.IsActiveSubscription(h.sub.GetServiceId(), h.sub.GetMsisdn(), h.sub.GetCode()) {
 		// check is retry
-		if h.subscriptionService.IsRetry(h.sub.GetServiceId(), h.sub.GetMsisdn()) {
+		if h.subscriptionService.IsRetry(h.sub.GetServiceId(), h.sub.GetMsisdn(), h.sub.GetCode()) {
 			trxId := utils.GenerateTrxId()
 
-			sub, err := h.subscriptionService.Get(h.sub.GetServiceId(), h.sub.GetMsisdn())
+			sub, err := h.subscriptionService.Get(h.sub.GetServiceId(), h.sub.GetMsisdn(), h.sub.GetCode())
 			if err != nil {
 				log.Println(err.Error())
 			}
@@ -196,6 +198,7 @@ func (h *RetryHandler) Dailypush() {
 						&entity.Subscription{
 							ServiceID:          service.GetId(),
 							Msisdn:             h.sub.GetMsisdn(),
+							Code:               h.sub.GetCode(),
 							LatestTrxId:        trxId,
 							LatestSubject:      SUBJECT_RENEWAL,
 							LatestStatus:       STATUS_SUCCESS,
@@ -222,6 +225,7 @@ func (h *RetryHandler) Dailypush() {
 							TrxId:        trxId,
 							ServiceID:    service.GetId(),
 							Msisdn:       h.sub.GetMsisdn(),
+							Code:         h.sub.GetCode(),
 							Keyword:      sub.GetLatestKeyword(),
 							Amount:       service.GetPrice(),
 							Discount:     0,

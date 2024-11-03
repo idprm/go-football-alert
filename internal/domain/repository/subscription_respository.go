@@ -16,17 +16,19 @@ func NewSubscriptionRepository(db *gorm.DB) *SubscriptionRepository {
 }
 
 type ISubscriptionRepository interface {
-	Count(int, string) (int64, error)
-	CountActive(int, string) (int64, error)
-	CountActiveByCategory(string, string) (int64, error)
+	Count(int, string, string) (int64, error)
+	CountActive(int, string, string) (int64, error)
+	CountActiveByCategory(string, string, string) (int64, error)
+	CountActiveByNonSMSAlerte(string, string) (int64, error)
 	CountActiveBySubId(int64) (int64, error)
-	CountRenewal(int, string) (int64, error)
-	CountRetry(int, string) (int64, error)
+	CountRenewal(int, string, string) (int64, error)
+	CountRetry(int, string, string) (int64, error)
 	CountTotalActiveSub() (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
-	GetByCategory(string, string) (*entity.Subscription, error)
+	GetByCategory(string, string, string) (*entity.Subscription, error)
+	GetByNonSMSAlerte(string, string) (*entity.Subscription, error)
 	GetBySubId(int64) (*entity.Subscription, error)
-	Get(int, string) (*entity.Subscription, error)
+	Get(int, string, string) (*entity.Subscription, error)
 	Save(*entity.Subscription) (*entity.Subscription, error)
 	Update(*entity.Subscription) (*entity.Subscription, error)
 	Delete(*entity.Subscription) error
@@ -44,27 +46,36 @@ type ISubscriptionRepository interface {
 	Retry() (*[]entity.Subscription, error)
 }
 
-func (r *SubscriptionRepository) Count(serviceId int, msisdn string) (int64, error) {
+func (r *SubscriptionRepository) Count(serviceId int, msisdn, code string) (int64, error) {
 	var count int64
-	err := r.db.Model(&entity.Subscription{}).Where("service_id = ?", serviceId).Where("msisdn = ?", msisdn).Count(&count).Error
+	err := r.db.Model(&entity.Subscription{}).Where("service_id = ? AND msisdn = ? AND code = ?", serviceId, msisdn, code).Count(&count).Error
 	if err != nil {
 		return count, err
 	}
 	return count, nil
 }
 
-func (r *SubscriptionRepository) CountActive(serviceId int, msisdn string) (int64, error) {
+func (r *SubscriptionRepository) CountActive(serviceId int, msisdn, code string) (int64, error) {
 	var count int64
-	err := r.db.Model(&entity.Subscription{}).Where("service_id = ?", serviceId).Where("msisdn = ?", msisdn).Where("is_active = ?", true).Count(&count).Error
+	err := r.db.Model(&entity.Subscription{}).Where("service_id = ? AND msisdn = ? AND code = ?", serviceId, msisdn, code).Where("is_active = ?", true).Count(&count).Error
 	if err != nil {
 		return count, err
 	}
 	return count, nil
 }
 
-func (r *SubscriptionRepository) CountActiveByCategory(category string, msisdn string) (int64, error) {
+func (r *SubscriptionRepository) CountActiveByCategory(category, msisdn, code string) (int64, error) {
 	var count int64
-	err := r.db.Model(&entity.Subscription{}).Where("category = ?", category).Where("msisdn = ?", msisdn).Where("is_active = ?", true).Count(&count).Error
+	err := r.db.Model(&entity.Subscription{}).Where("category = ? AND msisdn = ? AND code = ?", category, msisdn, code).Where("is_active = ?", true).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *SubscriptionRepository) CountActiveByNonSMSAlerte(category, msisdn string) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Subscription{}).Where("category = ? AND msisdn = ?", category, msisdn).Where("is_active = ?", true).Count(&count).Error
 	if err != nil {
 		return count, err
 	}
@@ -80,18 +91,18 @@ func (r *SubscriptionRepository) CountActiveBySubId(subId int64) (int64, error) 
 	return count, nil
 }
 
-func (r *SubscriptionRepository) CountRenewal(serviceId int, msisdn string) (int64, error) {
+func (r *SubscriptionRepository) CountRenewal(serviceId int, msisdn, code string) (int64, error) {
 	var count int64
-	err := r.db.Model(&entity.Subscription{}).Where("service_id = ?", serviceId).Where("msisdn = ?", msisdn).Where("is_active = true AND (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(renewal_at)) / 3600 > 0").Count(&count).Error
+	err := r.db.Model(&entity.Subscription{}).Where("service_id = ? AND msisdn = ? AND code = ?", serviceId, msisdn, code).Where("is_active = true AND (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(renewal_at)) / 3600 > 0").Count(&count).Error
 	if err != nil {
 		return count, err
 	}
 	return count, nil
 }
 
-func (r *SubscriptionRepository) CountRetry(serviceId int, msisdn string) (int64, error) {
+func (r *SubscriptionRepository) CountRetry(serviceId int, msisdn, code string) (int64, error) {
 	var count int64
-	err := r.db.Model(&entity.Subscription{}).Where("service_id = ?", serviceId).Where("msisdn = ?", msisdn).Where("is_active = true AND is_retry = true AND (UNIX_TIMESTAMP(NOW() + INTERVAL 1 DAY) - UNIX_TIMESTAMP(renewal_at)) / 3600 > 0").Count(&count).Error
+	err := r.db.Model(&entity.Subscription{}).Where("service_id = ? AND msisdn = ? AND code = ?", serviceId, msisdn, code).Where("is_active = true AND is_retry = true AND (UNIX_TIMESTAMP(NOW() + INTERVAL 1 DAY) - UNIX_TIMESTAMP(renewal_at)) / 3600 > 0").Count(&count).Error
 	if err != nil {
 		return count, err
 	}
@@ -117,9 +128,18 @@ func (r *SubscriptionRepository) GetAllPaginate(p *entity.Pagination) (*entity.P
 	return p, nil
 }
 
-func (r *SubscriptionRepository) GetByCategory(category, msisdn string) (*entity.Subscription, error) {
+func (r *SubscriptionRepository) GetByCategory(category, msisdn, code string) (*entity.Subscription, error) {
 	var c entity.Subscription
-	err := r.db.Where("category = ?", category).Where("msisdn = ?", msisdn).Take(&c).Error
+	err := r.db.Where("category = ? AND msisdn = ? AND code = ?", category, msisdn, code).Take(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return &c, nil
+}
+
+func (r *SubscriptionRepository) GetByNonSMSAlerte(category, msisdn string) (*entity.Subscription, error) {
+	var c entity.Subscription
+	err := r.db.Where("category = ? AND msisdn = ?", category, msisdn).Take(&c).Error
 	if err != nil {
 		return nil, err
 	}
@@ -135,9 +155,9 @@ func (r *SubscriptionRepository) GetBySubId(subId int64) (*entity.Subscription, 
 	return &c, nil
 }
 
-func (r *SubscriptionRepository) Get(serviceId int, msisdn string) (*entity.Subscription, error) {
+func (r *SubscriptionRepository) Get(serviceId int, msisdn, code string) (*entity.Subscription, error) {
 	var c entity.Subscription
-	err := r.db.Where("service_id = ?", serviceId).Where("msisdn = ?", msisdn).Take(&c).Error
+	err := r.db.Where("service_id = ? AND msisdn = ? AND code = ?", serviceId, msisdn, code).Take(&c).Error
 	if err != nil {
 		return nil, err
 	}
@@ -153,7 +173,7 @@ func (r *SubscriptionRepository) Save(c *entity.Subscription) (*entity.Subscript
 }
 
 func (r *SubscriptionRepository) Update(c *entity.Subscription) (*entity.Subscription, error) {
-	err := r.db.Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Updates(&c).Error
+	err := r.db.Where("service_id = ? AND msisdn = ? AND code = ?", c.ServiceID, c.Msisdn, c.Code).Updates(&c).Error
 	if err != nil {
 		return nil, err
 	}
@@ -169,7 +189,7 @@ func (r *SubscriptionRepository) Delete(c *entity.Subscription) error {
 }
 
 func (r *SubscriptionRepository) UpdateNotActive(c *entity.Subscription) (*entity.Subscription, error) {
-	err := r.db.Model(c).Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Update("is_active", false).Error
+	err := r.db.Model(c).Where("service_id = ? AND msisdn = ? AND code = ?", c.ServiceID, c.Msisdn, c.Code).Update("is_active", false).Error
 	if err != nil {
 		return nil, err
 	}
@@ -177,7 +197,7 @@ func (r *SubscriptionRepository) UpdateNotActive(c *entity.Subscription) (*entit
 }
 
 func (r *SubscriptionRepository) UpdateNotRetry(c *entity.Subscription) (*entity.Subscription, error) {
-	err := r.db.Model(c).Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Update("is_retry", false).Error
+	err := r.db.Model(c).Where("service_id = ? AND msisdn = ? AND code = ?", c.ServiceID, c.Msisdn, c.Code).Update("is_retry", false).Error
 	if err != nil {
 		return nil, err
 	}
@@ -185,7 +205,7 @@ func (r *SubscriptionRepository) UpdateNotRetry(c *entity.Subscription) (*entity
 }
 
 func (r *SubscriptionRepository) UpdateNotFree(c *entity.Subscription) (*entity.Subscription, error) {
-	err := r.db.Model(c).Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Update("is_free", false).Error
+	err := r.db.Model(c).Where("service_id = ? AND msisdn = ? AND code = ?", c.ServiceID, c.Msisdn, c.Code).Update("is_free", false).Error
 	if err != nil {
 		return nil, err
 	}
@@ -193,7 +213,7 @@ func (r *SubscriptionRepository) UpdateNotFree(c *entity.Subscription) (*entity.
 }
 
 func (r *SubscriptionRepository) UpdateNotFollowTeam(c *entity.Subscription) (*entity.Subscription, error) {
-	err := r.db.Model(c).Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Update("is_follow_team", false).Error
+	err := r.db.Model(c).Where("service_id = ? AND msisdn = ? AND code = ?", c.ServiceID, c.Msisdn, c.Code).Update("is_follow_team", false).Error
 	if err != nil {
 		return nil, err
 	}
@@ -201,7 +221,7 @@ func (r *SubscriptionRepository) UpdateNotFollowTeam(c *entity.Subscription) (*e
 }
 
 func (r *SubscriptionRepository) UpdateNotFollowLeague(c *entity.Subscription) (*entity.Subscription, error) {
-	err := r.db.Model(c).Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Update("is_follow_competition", false).Error
+	err := r.db.Model(c).Where("service_id = ? AND msisdn = ? AND code = ?", c.ServiceID, c.Msisdn, c.Code).Update("is_follow_competition", false).Error
 	if err != nil {
 		return nil, err
 	}
@@ -209,7 +229,7 @@ func (r *SubscriptionRepository) UpdateNotFollowLeague(c *entity.Subscription) (
 }
 
 func (r *SubscriptionRepository) UpdateNotPredictWin(c *entity.Subscription) (*entity.Subscription, error) {
-	err := r.db.Model(c).Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Update("is_predict_win", false).Error
+	err := r.db.Model(c).Where("service_id = ? AND msisdn = ? AND code = ?", c.ServiceID, c.Msisdn, c.Code).Update("is_predict_win", false).Error
 	if err != nil {
 		return nil, err
 	}
@@ -217,7 +237,7 @@ func (r *SubscriptionRepository) UpdateNotPredictWin(c *entity.Subscription) (*e
 }
 
 func (r *SubscriptionRepository) UpdateNotCreditGoal(c *entity.Subscription) (*entity.Subscription, error) {
-	err := r.db.Model(c).Where("service_id = ?", c.ServiceID).Where("msisdn = ?", c.Msisdn).Update("is_credit_goal", false).Error
+	err := r.db.Model(c).Where("service_id = ? AND msisdn = ? AND code = ?", c.ServiceID, c.Msisdn, c.Code).Update("is_credit_goal", false).Error
 	if err != nil {
 		return nil, err
 	}

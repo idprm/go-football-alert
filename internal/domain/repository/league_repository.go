@@ -17,6 +17,7 @@ func NewLeagueRepository(db *gorm.DB) *LeagueRepository {
 
 type ILeagueRepository interface {
 	Count(string) (int64, error)
+	CountByCode(string) (int64, error)
 	CountByPrimaryId(int) (int64, error)
 	CountByName(string) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
@@ -26,6 +27,7 @@ type ILeagueRepository interface {
 	GetAllAfriqueUSSD(int) ([]*entity.League, error)
 	GetAllWorldUSSD(int) ([]*entity.League, error)
 	Get(string) (*entity.League, error)
+	GetByCode(string) (*entity.League, error)
 	GetByPrimaryId(int) (*entity.League, error)
 	GetByName(string) (*entity.League, error)
 	Save(*entity.League) (*entity.League, error)
@@ -37,6 +39,15 @@ type ILeagueRepository interface {
 func (r *LeagueRepository) Count(slug string) (int64, error) {
 	var count int64
 	err := r.db.Model(&entity.League{}).Where("slug = ?", slug).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *LeagueRepository) CountByCode(code string) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.League{}).Where("code = ? AND is_active = true", code).Count(&count).Error
 	if err != nil {
 		return count, err
 	}
@@ -119,6 +130,15 @@ func (r *LeagueRepository) GetAllWorldUSSD(page int) ([]*entity.League, error) {
 func (r *LeagueRepository) Get(slug string) (*entity.League, error) {
 	var c entity.League
 	err := r.db.Where("slug = ?", slug).Take(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return &c, nil
+}
+
+func (r *LeagueRepository) GetByCode(slug string) (*entity.League, error) {
+	var c entity.League
+	err := r.db.Where("code = ? AND is_active = true", slug).Take(&c).Error
 	if err != nil {
 		return nil, err
 	}

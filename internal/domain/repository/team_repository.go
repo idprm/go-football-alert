@@ -17,6 +17,7 @@ func NewTeamRepository(db *gorm.DB) *TeamRepository {
 
 type ITeamRepository interface {
 	Count(string) (int64, error)
+	CountByCode(string) (int64, error)
 	CountByPrimaryId(int) (int64, error)
 	CountByName(string) (int64, error)
 	CountByLeagueTeam(*entity.LeagueTeam) (int64, error)
@@ -24,6 +25,7 @@ type ITeamRepository interface {
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetAllTeamUSSD(int, int) ([]*entity.LeagueTeam, error)
 	Get(string) (*entity.Team, error)
+	GetByCode(string) (*entity.Team, error)
 	GetByPrimaryId(int) (*entity.Team, error)
 	GetByName(string) (*entity.Team, error)
 	Save(*entity.Team) (*entity.Team, error)
@@ -37,6 +39,15 @@ type ITeamRepository interface {
 func (r *TeamRepository) Count(slug string) (int64, error) {
 	var count int64
 	err := r.db.Model(&entity.Team{}).Where("slug = ?", slug).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *TeamRepository) CountByCode(code string) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Team{}).Where("code = ? AND is_active = true", code).Count(&count).Error
 	if err != nil {
 		return count, err
 	}
@@ -81,7 +92,7 @@ func (r *TeamRepository) CountLeagueByTeam(teamId int) (int64, error) {
 
 func (r *TeamRepository) GetAllPaginate(p *entity.Pagination) (*entity.Pagination, error) {
 	var teams []*entity.Team
-	err := r.db.Where("is_active = true AND (UPPER(name) LIKE UPPER(?) OR UPPER(code) LIKE UPPER(?))", "%"+p.GetSearch()+"%", "%"+p.GetSearch()+"%").Scopes(Paginate(teams, p, r.db)).Find(&teams).Error
+	err := r.db.Where("is_active = true AND (UPPER(name) LIKE UPPER(?) OR UPPER(code) LIKE UPPER(?))", "%"+p.GetSearch()+"%", "%"+p.GetSearch()+"%").Scopes(PaginateIsActive(teams, p, r.db)).Find(&teams).Error
 	if err != nil {
 		return nil, err
 	}
@@ -101,6 +112,15 @@ func (r *TeamRepository) GetAllTeamUSSD(leagueId, page int) ([]*entity.LeagueTea
 func (r *TeamRepository) Get(slug string) (*entity.Team, error) {
 	var c entity.Team
 	err := r.db.Where("slug = ?", slug).Take(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return &c, nil
+}
+
+func (r *TeamRepository) GetByCode(code string) (*entity.Team, error) {
+	var c entity.Team
+	err := r.db.Where("code = ? AND is_active = true", code).Take(&c).Error
 	if err != nil {
 		return nil, err
 	}

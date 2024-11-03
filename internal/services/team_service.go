@@ -17,6 +17,7 @@ func NewTeamService(teamRepo repository.ITeamRepository) *TeamService {
 
 type ITeamService interface {
 	IsTeam(string) bool
+	IsTeamByCode(string) bool
 	IsTeamByPrimaryId(int) bool
 	IsTeamByName(string) bool
 	IsLeagueTeam(*entity.LeagueTeam) bool
@@ -24,6 +25,7 @@ type ITeamService interface {
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetAllTeamUSSD(int, int) ([]*entity.LeagueTeam, error)
 	Get(string) (*entity.Team, error)
+	GetByCode(string) (*entity.Team, error)
 	GetByPrimaryId(int) (*entity.Team, error)
 	GetByName(string) (*entity.Team, error)
 	Save(*entity.Team) (*entity.Team, error)
@@ -36,6 +38,11 @@ type ITeamService interface {
 
 func (s *TeamService) IsTeam(slug string) bool {
 	count, _ := s.teamRepo.Count(slug)
+	return count > 0
+}
+
+func (s *TeamService) IsTeamByCode(code string) bool {
+	count, _ := s.teamRepo.CountByCode(code)
 	return count > 0
 }
 
@@ -69,6 +76,10 @@ func (s *TeamService) GetAllTeamUSSD(leagueId, page int) ([]*entity.LeagueTeam, 
 
 func (s *TeamService) Get(slug string) (*entity.Team, error) {
 	return s.teamRepo.Get(slug)
+}
+
+func (s *TeamService) GetByCode(code string) (*entity.Team, error) {
+	return s.teamRepo.GetByCode(code)
 }
 
 func (s *TeamService) GetByPrimaryId(primaryId int) (*entity.Team, error) {

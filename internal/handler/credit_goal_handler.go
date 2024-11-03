@@ -44,7 +44,7 @@ func NewCreditGoalHandler(
 }
 
 func (h *CreditGoalHandler) CreditGoal() {
-	if h.subscriptionService.IsActiveSubscription(h.sub.GetServiceId(), h.sub.GetMsisdn()) {
+	if h.subscriptionService.IsActiveSubscription(h.sub.GetServiceId(), h.sub.GetMsisdn(), "CG") {
 		// service, err := h.serviceService.GetById(h.sub.GetServiceId())
 		// if err != nil {
 		// 	log.Println(err.Error())

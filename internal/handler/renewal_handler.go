@@ -55,12 +55,12 @@ func NewRenewalHandler(
 
 func (h *RenewalHandler) Dailypush() {
 	// check is active
-	if h.subscriptionService.IsActiveSubscription(h.sub.GetServiceId(), h.sub.GetMsisdn()) {
+	if h.subscriptionService.IsActiveSubscription(h.sub.GetServiceId(), h.sub.GetMsisdn(), h.sub.GetCode()) {
 		// check is renewal
-		if h.subscriptionService.IsRenewal(h.sub.GetServiceId(), h.sub.GetMsisdn()) {
+		if h.subscriptionService.IsRenewal(h.sub.GetServiceId(), h.sub.GetMsisdn(), h.sub.GetCode()) {
 			trxId := utils.GenerateTrxId()
 
-			sub, err := h.subscriptionService.Get(h.sub.GetServiceId(), h.sub.GetMsisdn())
+			sub, err := h.subscriptionService.Get(h.sub.GetServiceId(), h.sub.GetMsisdn(), h.sub.GetCode())
 			if err != nil {
 				log.Println(err.Error())
 			}
@@ -73,10 +73,6 @@ func (h *RenewalHandler) Dailypush() {
 			summary := &entity.Summary{
 				ServiceID: service.GetId(),
 				CreatedAt: time.Now(),
-			}
-
-			// check alerte sms
-			if h.sub.ISMSAlerte() {
 			}
 
 			t := telco.NewTelco(h.logger, service, h.sub, trxId)
@@ -105,6 +101,7 @@ func (h *RenewalHandler) Dailypush() {
 						&entity.Subscription{
 							ServiceID:          service.GetId(),
 							Msisdn:             h.sub.GetMsisdn(),
+							Code:               h.sub.GetCode(),
 							LatestTrxId:        trxId,
 							LatestSubject:      SUBJECT_RENEWAL,
 							LatestStatus:       STATUS_SUCCESS,
@@ -130,6 +127,7 @@ func (h *RenewalHandler) Dailypush() {
 							TrxId:        trxId,
 							ServiceID:    service.GetId(),
 							Msisdn:       h.sub.GetMsisdn(),
+							Code:         h.sub.GetCode(),
 							Keyword:      sub.GetLatestKeyword(),
 							Amount:       service.GetPrice(),
 							Status:       STATUS_SUCCESS,
@@ -149,6 +147,7 @@ func (h *RenewalHandler) Dailypush() {
 						&entity.Subscription{
 							ServiceID:     service.GetId(),
 							Msisdn:        h.sub.GetMsisdn(),
+							Code:          h.sub.GetCode(),
 							LatestTrxId:   trxId,
 							LatestSubject: SUBJECT_RENEWAL,
 							LatestStatus:  STATUS_FAILED,
@@ -168,6 +167,7 @@ func (h *RenewalHandler) Dailypush() {
 							TrxId:        trxId,
 							ServiceID:    service.GetId(),
 							Msisdn:       h.sub.GetMsisdn(),
+							Code:         h.sub.GetCode(),
 							Keyword:      sub.GetLatestKeyword(),
 							Status:       STATUS_FAILED,
 							StatusCode:   respDeduct.GetFaultCode(),
@@ -185,6 +185,7 @@ func (h *RenewalHandler) Dailypush() {
 					&entity.Subscription{
 						ServiceID:     service.GetId(),
 						Msisdn:        h.sub.GetMsisdn(),
+						Code:          h.sub.GetCode(),
 						LatestTrxId:   trxId,
 						LatestSubject: SUBJECT_RENEWAL,
 						LatestStatus:  STATUS_FAILED,
@@ -203,6 +204,7 @@ func (h *RenewalHandler) Dailypush() {
 						TrxId:        trxId,
 						ServiceID:    service.GetId(),
 						Msisdn:       h.sub.GetMsisdn(),
+						Code:         h.sub.GetCode(),
 						Keyword:      sub.GetLatestKeyword(),
 						Status:       STATUS_FAILED,
 						StatusCode:   "",

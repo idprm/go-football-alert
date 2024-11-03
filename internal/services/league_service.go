@@ -17,6 +17,7 @@ func NewLeagueService(leagueRepo repository.ILeagueRepository) *LeagueService {
 
 type ILeagueService interface {
 	IsLeague(string) bool
+	IsLeagueByCode(string) bool
 	IsLeagueByPrimaryId(int) bool
 	IsLeagueByName(string) bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
@@ -26,6 +27,7 @@ type ILeagueService interface {
 	GetAllAfriqueUSSD(int) ([]*entity.League, error)
 	GetAllWorldUSSD(int) ([]*entity.League, error)
 	Get(string) (*entity.League, error)
+	GetByCode(string) (*entity.League, error)
 	GetByPrimaryId(int) (*entity.League, error)
 	GetByName(string) (*entity.League, error)
 	Save(*entity.League) (*entity.League, error)
@@ -36,6 +38,11 @@ type ILeagueService interface {
 
 func (s *LeagueService) IsLeague(key string) bool {
 	count, _ := s.leagueRepo.Count(key)
+	return count > 0
+}
+
+func (s *LeagueService) IsLeagueByCode(code string) bool {
+	count, _ := s.leagueRepo.CountByCode(code)
 	return count > 0
 }
 
@@ -55,6 +62,10 @@ func (s *LeagueService) GetAllPaginate(pagination *entity.Pagination) (*entity.P
 
 func (s *LeagueService) Get(slug string) (*entity.League, error) {
 	return s.leagueRepo.Get(slug)
+}
+
+func (s *LeagueService) GetByCode(code string) (*entity.League, error) {
+	return s.leagueRepo.GetByCode(code)
 }
 
 func (s *LeagueService) GetAllByActive() ([]*entity.League, error) {
