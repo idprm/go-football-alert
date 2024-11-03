@@ -27,6 +27,8 @@ type ISubscriptionFollowTeamRepository interface {
 	Disable(*entity.SubscriptionFollowTeam) error
 	Delete(*entity.SubscriptionFollowTeam) error
 	GetAllSubByTeam(int64) (*[]entity.SubscriptionFollowTeam, error)
+	Renewal() (*[]entity.SubscriptionFollowTeam, error)
+	Retry() (*[]entity.SubscriptionFollowTeam, error)
 }
 
 func (r *SubscriptionFollowTeamRepository) Count(subId, teamId int64) (int64, error) {
@@ -128,5 +130,25 @@ func (r *SubscriptionFollowTeamRepository) GetAllSubByTeam(teamId int64) (*[]ent
 		return nil, err
 	}
 
+	return &sub, nil
+}
+
+// SELECT (UNIX_TIMESTAMP("2017-06-10 18:30:10")-UNIX_TIMESTAMP("2017-06-10 18:40:10"))/3600 hour_diff
+func (r *SubscriptionFollowTeamRepository) Renewal() (*[]entity.SubscriptionFollowTeam, error) {
+	var sub []entity.SubscriptionFollowTeam
+	err := r.db.Where("is_active = true AND (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(renewal_at)) / 3600 > 0").Order("DATE(created_at) DESC").Find(&sub).Error
+	if err != nil {
+		return nil, err
+	}
+	return &sub, nil
+}
+
+// SELECT (UNIX_TIMESTAMP("2017-06-10 18:30:10" + INTERVAL 1 DAY)-UNIX_TIMESTAMP("2017-06-10 18:40:10"))/3600 hour_diff (tommorow)
+func (r *SubscriptionFollowTeamRepository) Retry() (*[]entity.SubscriptionFollowTeam, error) {
+	var sub []entity.SubscriptionFollowTeam
+	err := r.db.Where("is_active = true AND is_retry = true AND (UNIX_TIMESTAMP(NOW() + INTERVAL 1 DAY) - UNIX_TIMESTAMP(renewal_at)) / 3600 > 0").Order("DATE(created_at) DESC").Find(&sub).Error
+	if err != nil {
+		return nil, err
+	}
 	return &sub, nil
 }

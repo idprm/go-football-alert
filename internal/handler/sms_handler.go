@@ -1060,7 +1060,9 @@ func (h *SMSHandler) StopAlerteCompetition(category string, leagueId int64) {
 			&entity.SubscriptionFollowLeague{
 				SubscriptionID: sub.GetId(),
 				LeagueID:       leagueId,
-				Keyword:        h.req.GetSMS(),
+				LatestKeyword:  h.req.GetSMS(),
+				LatestSubject:  SUBJECT_UNSUB,
+				LatestStatus:   STATUS_SUCCESS,
 				UnsubAt:        time.Now(),
 			},
 		)
@@ -1172,7 +1174,9 @@ func (h *SMSHandler) StopAlerteEquipe(category string, teamId int64) {
 			&entity.SubscriptionFollowTeam{
 				SubscriptionID: sub.GetId(),
 				TeamID:         teamId,
-				Keyword:        h.req.GetSMS(),
+				LatestKeyword:  h.req.GetSMS(),
+				LatestSubject:  SUBJECT_UNSUB,
+				LatestStatus:   STATUS_SUCCESS,
 				UnsubAt:        time.Now(),
 			},
 		)
@@ -1210,6 +1214,7 @@ func (h *SMSHandler) StopAlerteEquipe(category string, teamId int64) {
 				LatestSubject:   SUBJECT_UNSUB,
 				LatestStatus:    STATUS_SUCCESS,
 				LatestKeyword:   h.req.GetSMS(),
+				LatestNote:      "",
 				UnsubAt:         time.Now(),
 				IpAddress:       h.req.GetIpAddress(),
 				TotalUnsub:      sub.TotalUnsub + 1,

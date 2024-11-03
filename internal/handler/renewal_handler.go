@@ -15,14 +15,16 @@ import (
 )
 
 type RenewalHandler struct {
-	rmq                 rmqp.AMQP
-	logger              *logger.Logger
-	sub                 *entity.Subscription
-	serviceService      services.IServiceService
-	contentService      services.IContentService
-	subscriptionService services.ISubscriptionService
-	transactionService  services.ITransactionService
-	summaryService      services.ISummaryService
+	rmq                             rmqp.AMQP
+	logger                          *logger.Logger
+	sub                             *entity.Subscription
+	serviceService                  services.IServiceService
+	contentService                  services.IContentService
+	subscriptionService             services.ISubscriptionService
+	subscriptionFollowLeagueService services.ISubscriptionFollowLeagueService
+	subscriptionFollowTeamService   services.ISubscriptionFollowTeamService
+	transactionService              services.ITransactionService
+	summaryService                  services.ISummaryService
 }
 
 func NewRenewalHandler(
@@ -32,18 +34,22 @@ func NewRenewalHandler(
 	serviceService services.IServiceService,
 	contentService services.IContentService,
 	subscriptionService services.ISubscriptionService,
+	subscriptionFollowLeagueService services.ISubscriptionFollowLeagueService,
+	subscriptionFollowTeamService services.ISubscriptionFollowTeamService,
 	transactionService services.ITransactionService,
 	summaryService services.ISummaryService,
 ) *RenewalHandler {
 	return &RenewalHandler{
-		rmq:                 rmq,
-		logger:              logger,
-		sub:                 sub,
-		serviceService:      serviceService,
-		contentService:      contentService,
-		subscriptionService: subscriptionService,
-		transactionService:  transactionService,
-		summaryService:      summaryService,
+		rmq:                             rmq,
+		logger:                          logger,
+		sub:                             sub,
+		serviceService:                  serviceService,
+		contentService:                  contentService,
+		subscriptionService:             subscriptionService,
+		subscriptionFollowLeagueService: subscriptionFollowLeagueService,
+		subscriptionFollowTeamService:   subscriptionFollowTeamService,
+		transactionService:              transactionService,
+		summaryService:                  summaryService,
 	}
 }
 
@@ -67,6 +73,10 @@ func (h *RenewalHandler) Dailypush() {
 			summary := &entity.Summary{
 				ServiceID: service.GetId(),
 				CreatedAt: time.Now(),
+			}
+
+			// check alerte sms
+			if h.sub.ISMSAlerte() {
 			}
 
 			t := telco.NewTelco(h.logger, service, h.sub, trxId)
@@ -210,7 +220,6 @@ func (h *RenewalHandler) Dailypush() {
 			summary.SetTotalRenewal(1)
 			// summary save
 			h.summaryService.Save(summary)
-
 		}
 	}
 }

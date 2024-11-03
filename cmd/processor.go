@@ -403,6 +403,10 @@ func (p *Processor) Renewal(wg *sync.WaitGroup, message []byte) {
 	contentService := services.NewContentService(contentRepo)
 	subscriptionRepo := repository.NewSubscriptionRepository(p.db)
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+	subscriptionFollowLeagueRepo := repository.NewSubscriptionFollowLeagueRepository(p.db)
+	subscriptionFollowLeagueService := services.NewSubscriptionFollowLeagueService(subscriptionFollowLeagueRepo)
+	subscriptionFollowTeamRepo := repository.NewSubscriptionFollowTeamRepository(p.db)
+	subscriptionFollowTeamService := services.NewSubscriptionFollowTeamService(subscriptionFollowTeamRepo)
 	transactionRepo := repository.NewTransactionRepository(p.db)
 	transactionService := services.NewTransactionService(transactionRepo)
 	summaryRepo := repository.NewSummaryRepository(p.db)
@@ -419,6 +423,8 @@ func (p *Processor) Renewal(wg *sync.WaitGroup, message []byte) {
 		serviceService,
 		contentService,
 		subscriptionService,
+		subscriptionFollowLeagueService,
+		subscriptionFollowTeamService,
 		transactionService,
 		summaryService,
 	)
@@ -439,6 +445,10 @@ func (p *Processor) Retry(wg *sync.WaitGroup, message []byte) {
 	contentService := services.NewContentService(contentRepo)
 	subscriptionRepo := repository.NewSubscriptionRepository(p.db)
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+	subscriptionFollowLeagueRepo := repository.NewSubscriptionFollowLeagueRepository(p.db)
+	subscriptionFollowLeagueService := services.NewSubscriptionFollowLeagueService(subscriptionFollowLeagueRepo)
+	subscriptionFollowTeamRepo := repository.NewSubscriptionFollowTeamRepository(p.db)
+	subscriptionFollowTeamService := services.NewSubscriptionFollowTeamService(subscriptionFollowTeamRepo)
 	transactionRepo := repository.NewTransactionRepository(p.db)
 	transactionService := services.NewTransactionService(transactionRepo)
 	summaryRepo := repository.NewSummaryRepository(p.db)
@@ -455,6 +465,8 @@ func (p *Processor) Retry(wg *sync.WaitGroup, message []byte) {
 		serviceService,
 		contentService,
 		subscriptionService,
+		subscriptionFollowLeagueService,
+		subscriptionFollowTeamService,
 		transactionService,
 		summaryService,
 	)

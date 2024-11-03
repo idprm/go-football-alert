@@ -7,6 +7,18 @@ import (
 	"gorm.io/gorm"
 )
 
+const (
+	CATEGORY_LIVEMATCH             string = "LIVEMATCH"
+	CATEGORY_FLASHNEWS             string = "FLASHNEWS"
+	CATEGORY_SMSALERTE_COMPETITION string = "SMSALERTE_COMPETITION"
+	CATEGORY_SMSALERTE_EQUIPE      string = "SMSALERTE_EQUIPE"
+	CATEGORY_PRONOSTIC_SAFE        string = "PRONOSTIC_SAFE"
+	CATEGORY_PRONOSTIC_COMBINED    string = "PRONOSTIC_COMBINED"
+	CATEGORY_PRONOSTIC_VIP         string = "PRONOSTIC_VIP"
+	CATEGORY_CREDIT_GOAL           string = "CREDIT_GOAL"
+	CATEGORY_PREDICT_WIN           string = "PREDICT_WIN"
+)
+
 type Subscription struct {
 	ID                   int64     `gorm:"primaryKey" json:"id"`
 	ServiceID            int       `json:"service_id"`
@@ -194,4 +206,8 @@ func (e *Subscription) IsFirstFreeDay() bool {
 	t := e.CreatedAt.Add(time.Hour * 24)
 	diff := t.Sub(e.CreatedAt)
 	return diff <= 24*time.Hour
+}
+
+func (e *Subscription) ISMSAlerte() bool {
+	return e.Category == CATEGORY_SMSALERTE_COMPETITION || e.Category == CATEGORY_SMSALERTE_EQUIPE
 }

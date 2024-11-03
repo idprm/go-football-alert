@@ -15,14 +15,16 @@ import (
 )
 
 type RetryHandler struct {
-	rmq                 rmqp.AMQP
-	logger              *logger.Logger
-	sub                 *entity.Subscription
-	serviceService      services.IServiceService
-	contentService      services.IContentService
-	subscriptionService services.ISubscriptionService
-	transactionService  services.ITransactionService
-	summaryService      services.ISummaryService
+	rmq                             rmqp.AMQP
+	logger                          *logger.Logger
+	sub                             *entity.Subscription
+	serviceService                  services.IServiceService
+	contentService                  services.IContentService
+	subscriptionService             services.ISubscriptionService
+	subscriptionFollowLeagueService services.ISubscriptionFollowLeagueService
+	subscriptionFollowTeamService   services.ISubscriptionFollowTeamService
+	transactionService              services.ITransactionService
+	summaryService                  services.ISummaryService
 }
 
 func NewRetryHandler(
@@ -32,18 +34,22 @@ func NewRetryHandler(
 	serviceService services.IServiceService,
 	contentService services.IContentService,
 	subscriptionService services.ISubscriptionService,
+	subscriptionFollowLeagueService services.ISubscriptionFollowLeagueService,
+	subscriptionFollowTeamService services.ISubscriptionFollowTeamService,
 	transactionService services.ITransactionService,
 	summaryService services.ISummaryService,
 ) *RetryHandler {
 	return &RetryHandler{
-		rmq:                 rmq,
-		logger:              logger,
-		sub:                 sub,
-		serviceService:      serviceService,
-		contentService:      contentService,
-		subscriptionService: subscriptionService,
-		transactionService:  transactionService,
-		summaryService:      summaryService,
+		rmq:                             rmq,
+		logger:                          logger,
+		sub:                             sub,
+		serviceService:                  serviceService,
+		contentService:                  contentService,
+		subscriptionService:             subscriptionService,
+		subscriptionFollowLeagueService: subscriptionFollowLeagueService,
+		subscriptionFollowTeamService:   subscriptionFollowTeamService,
+		transactionService:              transactionService,
+		summaryService:                  summaryService,
 	}
 }
 

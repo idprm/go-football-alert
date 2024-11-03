@@ -33,6 +33,8 @@ type ISubscriptionFollowTeamService interface {
 	Disable(*entity.SubscriptionFollowTeam) error
 	Delete(*entity.SubscriptionFollowTeam) error
 	GetAllSubByTeam(int64) *[]entity.SubscriptionFollowTeam
+	Renewal() *[]entity.SubscriptionFollowTeam
+	Retry() *[]entity.SubscriptionFollowTeam
 }
 
 func (s *SubscriptionFollowTeamService) IsSub(subId, teamId int64) bool {
@@ -114,6 +116,22 @@ func (s *SubscriptionFollowTeamService) Delete(a *entity.SubscriptionFollowTeam)
 
 func (s *SubscriptionFollowTeamService) GetAllSubByTeam(teamId int64) *[]entity.SubscriptionFollowTeam {
 	subs, err := s.subFollowTeamRepo.GetAllSubByTeam(teamId)
+	if err != nil {
+		log.Println(err)
+	}
+	return subs
+}
+
+func (s *SubscriptionFollowTeamService) Renewal() *[]entity.SubscriptionFollowTeam {
+	subs, err := s.subFollowTeamRepo.Renewal()
+	if err != nil {
+		log.Println(err)
+	}
+	return subs
+}
+
+func (s *SubscriptionFollowTeamService) Retry() *[]entity.SubscriptionFollowTeam {
+	subs, err := s.subFollowTeamRepo.Retry()
 	if err != nil {
 		log.Println(err)
 	}
