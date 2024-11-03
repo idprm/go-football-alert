@@ -63,7 +63,7 @@ func (r *LeagueRepository) CountByName(name string) (int64, error) {
 
 func (r *LeagueRepository) GetAllPaginate(p *entity.Pagination) (*entity.Pagination, error) {
 	var leagues []*entity.League
-	err := r.db.Where("is_active", true).Where("UPPER(name) LIKE UPPER(?)", "%"+p.GetSearch()+"%").Scopes(Paginate(leagues, p, r.db)).Find(&leagues).Error
+	err := r.db.Where("is_active = ?", true).Where("UPPER(name) LIKE UPPER(?)", "%"+p.GetSearch()+"%").Scopes(PaginateIsActive(leagues, p, r.db)).Find(&leagues).Error
 	if err != nil {
 		return nil, err
 	}
