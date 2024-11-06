@@ -1490,7 +1490,7 @@ func (h *SMSHandler) getContentUnFollowCompetition(service *entity.Service, leag
 			Value:    "SAMPLE_TEXT",
 		}, nil
 	}
-	return h.contentService.GetUnSubFollowCompetition(SMS_FOLLOW_COMPETITION_SUB, service, league)
+	return h.contentService.GetUnSubFollowCompetition(SMS_FOLLOW_COMPETITION_STOP, service, league)
 }
 
 func (h *SMSHandler) getContentUnFollowTeam(service *entity.Service, team *entity.Team) (*entity.Content, error) {
@@ -1501,7 +1501,7 @@ func (h *SMSHandler) getContentUnFollowTeam(service *entity.Service, team *entit
 			Value:    "SAMPLE_TEXT",
 		}, nil
 	}
-	return h.contentService.GetUnSubFollowTeam(SMS_FOLLOW_TEAM_SUB, service, team)
+	return h.contentService.GetUnSubFollowTeam(SMS_FOLLOW_TEAM_STOP, service, team)
 }
 
 func (h *SMSHandler) getContentPronostic(v string, service *entity.Service) (*entity.Content, error) {
