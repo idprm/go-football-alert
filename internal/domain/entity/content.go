@@ -69,6 +69,13 @@ func (e *Content) SetValueSubFollowCompetition(league, day, month, price, curren
 	e.Value = replacer.Replace(e.Value)
 }
 
+func (e *Content) SetValueUnSubFollowCompetition(league string) {
+	replacer := strings.NewReplacer(
+		"{league}", league,
+	)
+	e.Value = replacer.Replace(e.Value)
+}
+
 func (e *Content) SetValueSubFollowTeam(team, day, month, price, currency string) {
 	replacer := strings.NewReplacer(
 		"{team}", team,
@@ -76,6 +83,13 @@ func (e *Content) SetValueSubFollowTeam(team, day, month, price, currency string
 		"{month}", month,
 		"{price}", price,
 		"{currency}", url.QueryEscape(currency))
+	e.Value = replacer.Replace(e.Value)
+}
+
+func (e *Content) SetValueUnSubFollowTeam(team string) {
+	replacer := strings.NewReplacer(
+		"{team}", team,
+	)
 	e.Value = replacer.Replace(e.Value)
 }
 

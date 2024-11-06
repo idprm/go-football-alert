@@ -596,6 +596,12 @@ func seederDB(db *gorm.DB) {
 			Value:    "SMS Alerte: Desole mais votre abonnement pour suivre votre equipe vient de se terminer. Pour le renouveler, envoyer au {sc} le nom de lequipe a suivre. {price}{currency}",
 		},
 		{
+			Category: ACT_NOTIFICATION,
+			Channel:  ACT_SMS,
+			Name:     SMS_FOLLOW_TEAM_STOP,
+			Value:    "Votre abonnement au service OFC {team} a ete resilié. Vous ne serez plus facturé et vous ne pourrez plus accéder à ce service à la fin de l'échéance de votre abonnement.",
+		},
+		{
 			Category: ACT_CONFIRMATION,
 			Channel:  ACT_SMS,
 			Name:     SMS_FOLLOW_COMPETITION_SUB,
@@ -618,6 +624,12 @@ func seederDB(db *gorm.DB) {
 			Channel:  ACT_SMS,
 			Name:     SMS_FOLLOW_COMPETITION_EXPIRE_SUB,
 			Value:    "SMS Alerte: Desole mais votre abonnement pour suivre votre competition vient de se terminer. Pour le renouveler, envoyer au {sc} le nom de la competition a suivre.",
+		},
+		{
+			Category: ACT_NOTIFICATION,
+			Channel:  ACT_SMS,
+			Name:     SMS_FOLLOW_COMPETITION_STOP,
+			Value:    "Votre abonnement au service OFC {league} a ete resilié. Vous ne serez plus facturé et vous ne pourrez plus accéder à ce service à la fin de l'échéance de votre abonnement",
 		},
 		{
 			Category: ACT_CONFIRMATION,

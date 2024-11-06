@@ -26,6 +26,8 @@ type IContentService interface {
 	GetFlashNews(string, *entity.Service) (*entity.Content, error)
 	GetFollowCompetition(string, *entity.Service, *entity.League) (*entity.Content, error)
 	GetFollowTeam(string, *entity.Service, *entity.Team) (*entity.Content, error)
+	GetUnSubFollowCompetition(string, *entity.Service, *entity.League) (*entity.Content, error)
+	GetUnSubFollowTeam(string, *entity.Service, *entity.Team) (*entity.Content, error)
 	GetPronostic(string, *entity.Service) (*entity.Content, error)
 	GetSMSAlerteUnvalid(string, *entity.Service) (*entity.Content, error)
 	Get(string) (*entity.Content, error)
@@ -76,6 +78,24 @@ func (s *ContentService) GetFollowTeam(name string, service *entity.Service, tea
 		return nil, err
 	}
 	c.SetValueSubFollowTeam(team.GetName(), strconv.Itoa(time.Now().Day()), utils.FormatFROnlyMonth(time.Now()), service.GetPriceToString(), service.GetCurrency())
+	return c, nil
+}
+
+func (s *ContentService) GetUnSubFollowCompetition(name string, service *entity.Service, league *entity.League) (*entity.Content, error) {
+	c, err := s.contentRepo.Get(name)
+	if err != nil {
+		return nil, err
+	}
+	c.SetValueUnSubFollowCompetition(league.GetName())
+	return c, nil
+}
+
+func (s *ContentService) GetUnSubFollowTeam(name string, service *entity.Service, team *entity.Team) (*entity.Content, error) {
+	c, err := s.contentRepo.Get(name)
+	if err != nil {
+		return nil, err
+	}
+	c.SetValueUnSubFollowTeam(team.GetName())
 	return c, nil
 }
 

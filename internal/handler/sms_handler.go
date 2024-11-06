@@ -110,10 +110,12 @@ const (
 	SMS_FOLLOW_TEAM_ALREADY_SUB          string = "FOLLOW_TEAM_ALREADY_SUB"
 	SMS_FOLLOW_TEAM_UNVALID_SUB          string = "FOLLOW_TEAM_UNVALID_SUB"
 	SMS_FOLLOW_TEAM_EXPIRE_SUB           string = "FOLLOW_TEAM_EXPIRE_SUB"
+	SMS_FOLLOW_TEAM_STOP                 string = "FOLLOW_TEAM_STOP"
 	SMS_FOLLOW_COMPETITION_SUB           string = "FOLLOW_COMPETITION_SUB"
 	SMS_FOLLOW_COMPETITION_ALREADY_SUB   string = "FOLLOW_COMPETITION_ALREADY_SUB"
 	SMS_FOLLOW_COMPETITION_UNVALID_SUB   string = "FOLLOW_COMPETITION_UNVALID_SUB"
 	SMS_FOLLOW_COMPETITION_EXPIRE_SUB    string = "FOLLOW_COMPETITION_EXPIRE_SUB"
+	SMS_FOLLOW_COMPETITION_STOP          string = "FOLLOW_COMPETITION_STOP"
 	SMS_FOLLOW_UNVALID_SUB               string = "FOLLOW_UNVALID_SUB"
 	SMS_PRONOSTIC_SAFE_SUB               string = "PRONOSTIC_SAFE_SUB"
 	SMS_PRONOSTIC_SAFE_ALREADY_SUB       string = "PRONOSTIC_SAFE_ALREADY_SUB"
@@ -1117,7 +1119,7 @@ func (h *SMSHandler) StopAlerteCompetition(category string, league *entity.Leagu
 			log.Println(err.Error())
 		}
 
-		content, err := h.getContent(SMS_STOP)
+		content, err := h.getContentUnFollowCompetition(service, league)
 		if err != nil {
 			log.Println(err.Error())
 		}
@@ -1227,7 +1229,7 @@ func (h *SMSHandler) StopAlerteEquipe(category string, team *entity.Team) {
 			log.Println(err.Error())
 		}
 
-		content, err := h.getContent(SMS_STOP)
+		content, err := h.getContentUnFollowTeam(service, team)
 		if err != nil {
 			log.Println(err.Error())
 		}
@@ -1478,6 +1480,28 @@ func (h *SMSHandler) getContentFollowTeam(service *entity.Service, team *entity.
 		}, nil
 	}
 	return h.contentService.GetFollowTeam(SMS_FOLLOW_TEAM_SUB, service, team)
+}
+
+func (h *SMSHandler) getContentUnFollowCompetition(service *entity.Service, league *entity.League) (*entity.Content, error) {
+	if !h.contentService.IsContent(SMS_FOLLOW_COMPETITION_STOP) {
+		return &entity.Content{
+			Category: "CATEGORY",
+			Channel:  "SMS",
+			Value:    "SAMPLE_TEXT",
+		}, nil
+	}
+	return h.contentService.GetUnSubFollowCompetition(SMS_FOLLOW_COMPETITION_SUB, service, league)
+}
+
+func (h *SMSHandler) getContentUnFollowTeam(service *entity.Service, team *entity.Team) (*entity.Content, error) {
+	if !h.contentService.IsContent(SMS_FOLLOW_TEAM_STOP) {
+		return &entity.Content{
+			Category: "CATEGORY",
+			Channel:  "SMS",
+			Value:    "SAMPLE_TEXT",
+		}, nil
+	}
+	return h.contentService.GetUnSubFollowTeam(SMS_FOLLOW_TEAM_SUB, service, team)
 }
 
 func (h *SMSHandler) getContentPronostic(v string, service *entity.Service) (*entity.Content, error) {
