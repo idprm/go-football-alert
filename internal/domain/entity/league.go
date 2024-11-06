@@ -53,7 +53,7 @@ func (e *League) GetLogo() string {
 }
 
 func (e *League) GetCode() string {
-	return e.Logo
+	return e.Code
 }
 
 func (e *League) GetCountry() string {

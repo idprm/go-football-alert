@@ -599,7 +599,7 @@ func seederDB(db *gorm.DB) {
 			Category: ACT_NOTIFICATION,
 			Channel:  ACT_SMS,
 			Name:     SMS_FOLLOW_TEAM_STOP,
-			Value:    "Votre abonnement au service OFC {team} a ete resilié. Vous ne serez plus facturé et vous ne pourrez plus accéder à ce service à la fin de l'échéance de votre abonnement.",
+			Value:    "Votre abonnement au service OFC {team} a ete resilie. Vous ne serez plus facture et vous ne pourrez plus acceder a ce service a la fin de l'echeance de votre abonnement.",
 		},
 		{
 			Category: ACT_CONFIRMATION,
@@ -629,7 +629,7 @@ func seederDB(db *gorm.DB) {
 			Category: ACT_NOTIFICATION,
 			Channel:  ACT_SMS,
 			Name:     SMS_FOLLOW_COMPETITION_STOP,
-			Value:    "Votre abonnement au service OFC {league} a ete resilié. Vous ne serez plus facturé et vous ne pourrez plus accéder à ce service à la fin de l'échéance de votre abonnement",
+			Value:    "Votre abonnement au service OFC {league} a ete resilie. Vous ne serez plus facture et vous ne pourrez plus acceder a ce service a la fin de l'echeance de votre abonnement.",
 		},
 		{
 			Category: ACT_CONFIRMATION,
