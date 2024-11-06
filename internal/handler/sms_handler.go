@@ -1233,7 +1233,7 @@ func (h *SMSHandler) StopAlerteEquipe(category string, team *entity.Team) {
 		if err != nil {
 			log.Println(err.Error())
 		}
-
+		// 123
 		sub.SetLatestTrxId(trxId)
 
 		summary := &entity.Summary{
