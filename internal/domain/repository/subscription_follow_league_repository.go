@@ -125,7 +125,7 @@ func (r *SubscriptionFollowLeagueRepository) Update(c *entity.SubscriptionFollow
 }
 
 func (r *SubscriptionFollowLeagueRepository) Disable(c *entity.SubscriptionFollowLeague) error {
-	err := r.db.Model(c).Where("subscription_id = ? AND AND league_id = ?", c.SubscriptionID, c.LeagueID).Update("is_active", false).Error
+	err := r.db.Model(c).Where("subscription_id = ? AND league_id = ?", c.SubscriptionID, c.LeagueID).Update("is_active", false).Error
 	if err != nil {
 		return err
 	}
