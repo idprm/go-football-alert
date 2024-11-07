@@ -289,7 +289,7 @@ func (h *IncomingHandler) VerifySub(c *fiber.Ctx) error {
 }
 
 func (h *IncomingHandler) Main(c *fiber.Ctx) error {
-	c.Set("Content-type", "text/xml; charset=utf-8")
+	c.Set("Content-type", "text/xml; charset=iso-8859-1")
 	menu, err := h.menuService.GetBySlug("home")
 	if err != nil {
 		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
@@ -304,7 +304,7 @@ func (h *IncomingHandler) Main(c *fiber.Ctx) error {
 }
 
 func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
-	c.Set("Content-type", "text/xml; charset=utf-8")
+	c.Set("Content-type", "text/xml; charset=iso-8859-1")
 	req := new(model.UssdRequest)
 
 	err := c.QueryParser(req)
@@ -464,7 +464,7 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 }
 
 func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
-	c.Set("Content-type", "text/xml; charset=utf-8")
+	c.Set("Content-type", "text/xml; charset=iso-8859-1")
 	req := new(model.UssdRequest)
 
 	err := c.QueryParser(req)
@@ -503,7 +503,7 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 }
 
 func (h *IncomingHandler) Confirm(c *fiber.Ctx) error {
-	c.Set("Content-type", "text/xml; charset=utf-8")
+	c.Set("Content-type", "text/xml; charset=iso-8859-1")
 	req := new(model.UssdRequest)
 
 	err := c.QueryParser(req)
@@ -556,7 +556,7 @@ func (h *IncomingHandler) Confirm(c *fiber.Ctx) error {
 }
 
 func (h *IncomingHandler) Buy(c *fiber.Ctx) error {
-	c.Set("Content-type", "text/xml; charset=utf-8")
+	c.Set("Content-type", "text/xml; charset=iso-8859-1")
 	l := h.logger.Init("mo", true)
 	req := new(model.UssdRequest)
 
@@ -993,7 +993,7 @@ func (h *IncomingHandler) ChampionLeagues(baseUrl string, leagueId, page int) st
 }
 
 func (h *IncomingHandler) TestBalance(c *fiber.Ctx) error {
-	c.Set("Content-type", "text/xml; charset=utf-8")
+	c.Set("Content-type", "text/xml; charset=iso-8859-1")
 	xmlFile, err := os.Open("./views/xml/ball_resp.xml")
 	if err != nil {
 		fmt.Println(err)
@@ -1004,7 +1004,7 @@ func (h *IncomingHandler) TestBalance(c *fiber.Ctx) error {
 }
 
 func (h *IncomingHandler) TestCharge(c *fiber.Ctx) error {
-	c.Set("Content-type", "text/xml; charset=utf-8")
+	c.Set("Content-type", "text/xml; charset=iso-8859-1")
 	xmlFile, err := os.Open("./views/xml/deduct_resp.xml")
 	if err != nil {
 		fmt.Println(err)
@@ -1015,7 +1015,7 @@ func (h *IncomingHandler) TestCharge(c *fiber.Ctx) error {
 }
 
 func (h *IncomingHandler) TestChargeFailed(c *fiber.Ctx) error {
-	c.Set("Content-type", "text/xml; charset=utf-8")
+	c.Set("Content-type", "text/xml; charset=iso-8859-1")
 	xmlFile, err := os.Open("./views/xml/deduct_failed_resp.xml")
 	if err != nil {
 		fmt.Println(err)
