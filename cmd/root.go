@@ -121,6 +121,7 @@ const (
 	SMS_PRONOSTIC_SAFE_ALREADY_SUB       string = "PRONOSTIC_SAFE_ALREADY_SUB"
 	SMS_PRONOSTIC_COMBINED_ALREADY_SUB   string = "PRONOSTIC_COMBINED_ALREADY_SUB"
 	SMS_PRONOSTIC_VIP_ALREADY_SUB        string = "PRONOSTIC_VIP_ALREADY_SUB"
+	SMS_PRONOSTIC_STOP                   string = "PRONOSTIC_STOP"
 	SMS_INFO                             string = "INFO"
 	SMS_STOP                             string = "STOP"
 	SMS_OTP                              string = "OTP"

@@ -78,10 +78,10 @@ func (e *News) GetParseTitleLeft() string {
 	replacer := strings.NewReplacer(
 		`Mercato`, "",
 	)
-	if strings.TrimSpace(replacer.Replace(t)) == "" {
-		return "-"
+	if len(strings.TrimSpace(replacer.Replace(t))) > 0 {
+		return strings.TrimSpace(replacer.Replace(t))
 	}
-	return strings.TrimSpace(replacer.Replace(t))
+	return "-"
 }
 
 func (e *News) GetParseTitleRight() string {

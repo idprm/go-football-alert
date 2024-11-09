@@ -123,6 +123,7 @@ const (
 	SMS_PRONOSTIC_COMBINED_ALREADY_SUB   string = "PRONOSTIC_COMBINED_ALREADY_SUB"
 	SMS_PRONOSTIC_VIP_SUB                string = "PRONOSTIC_VIP_SUB"
 	SMS_PRONOSTIC_VIP_ALREADY_SUB        string = "PRONOSTIC_VIP_ALREADY_SUB"
+	SMS_PRONOSTIC_STOP                   string = "PRONOSTIC_STOP"
 	SMS_CONFIRMATION                     string = "CONFIRMATION"
 	SMS_INFO                             string = "INFO"
 	SMS_STOP                             string = "STOP"
@@ -223,7 +224,7 @@ func (h *SMSHandler) Registration() {
 		// Stop prono (safe)
 		if h.req.IsStopProno() {
 			if h.IsActiveSubByNonSMSAlerte(CATEGORY_PRONOSTIC_SAFE) {
-				h.Unsub(CATEGORY_PRONOSTIC_SAFE)
+				h.StopPronostic(CATEGORY_PRONOSTIC_SAFE)
 			}
 
 		}
@@ -231,14 +232,14 @@ func (h *SMSHandler) Registration() {
 		// Stop ticket (combined)
 		if h.req.IsStopTicket() {
 			if h.IsActiveSubByNonSMSAlerte(CATEGORY_PRONOSTIC_COMBINED) {
-				h.Unsub(CATEGORY_PRONOSTIC_COMBINED)
+				h.StopPronostic(CATEGORY_PRONOSTIC_COMBINED)
 			}
 		}
 
 		// Stop VIP
 		if h.req.IsStopVIP() {
 			if h.IsActiveSubByNonSMSAlerte(CATEGORY_PRONOSTIC_VIP) {
-				h.Unsub(CATEGORY_PRONOSTIC_VIP)
+				h.StopPronostic(CATEGORY_PRONOSTIC_VIP)
 			}
 		}
 	} else {
@@ -1309,6 +1310,121 @@ func (h *SMSHandler) StopAlerteEquipe(category string, team *entity.Team) {
 	}
 }
 
+func (h *SMSHandler) StopPronostic(category string) {
+	trxId := utils.GenerateTrxId()
+
+	sub, err := h.subscriptionService.GetByNonSMSAlerte(category, h.req.GetMsisdn())
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	service, err := h.serviceService.GetById(sub.GetServiceId())
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	content, err := h.getContentStopPronostic()
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	sub.SetLatestTrxId(trxId)
+
+	summary := &entity.Summary{
+		ServiceID: sub.GetServiceId(),
+		CreatedAt: time.Now(),
+	}
+
+	// unsub not sms-alerte
+	h.subscriptionService.Update(
+		&entity.Subscription{
+			ServiceID:     sub.GetServiceId(),
+			Msisdn:        sub.GetMsisdn(),
+			Code:          service.GetCode(),
+			LatestTrxId:   sub.GetLatestTrxId(),
+			LatestSubject: SUBJECT_UNSUB,
+			LatestStatus:  STATUS_SUCCESS,
+			LatestKeyword: h.req.GetSMS(),
+			UnsubAt:       time.Now(),
+			IpAddress:     h.req.GetIpAddress(),
+		},
+	)
+
+	h.subscriptionService.Update(
+		&entity.Subscription{
+			ServiceID:  sub.GetServiceId(),
+			Msisdn:     sub.GetMsisdn(),
+			Code:       service.GetCode(),
+			TotalUnsub: sub.TotalUnsub + 1,
+		},
+	)
+
+	h.transactionService.Save(
+		&entity.Transaction{
+			TrxId:        sub.GetLatestTrxId(),
+			ServiceID:    sub.GetServiceId(),
+			Msisdn:       h.req.GetMsisdn(),
+			Code:         service.GetCode(),
+			Keyword:      h.req.GetSMS(),
+			Status:       STATUS_SUCCESS,
+			StatusCode:   "",
+			StatusDetail: "",
+			Subject:      SUBJECT_UNSUB,
+			IpAddress:    h.req.GetIpAddress(),
+			Payload:      "",
+		},
+	)
+
+	h.historyService.Save(
+		&entity.History{
+			SubscriptionID: sub.GetId(),
+			ServiceID:      sub.GetServiceId(),
+			Msisdn:         sub.GetMsisdn(),
+			Code:           service.GetCode(),
+			Keyword:        h.req.GetSMS(),
+			Subject:        SUBJECT_UNSUB,
+			Status:         STATUS_SUCCESS,
+			IpAddress:      h.req.GetIpAddress(),
+		},
+	)
+
+	// setter summary
+	summary.SetTotalUnsub(1)
+	// save summary
+	h.summaryService.Save(summary)
+
+	s := &entity.Subscription{
+		ServiceID: sub.GetServiceId(),
+		Msisdn:    sub.GetMsisdn(),
+		Code:      sub.GetCode(),
+	}
+
+	// set false is_active
+	h.subscriptionService.UpdateNotActive(s)
+	// set false is_retry
+	h.subscriptionService.UpdateNotRetry(s)
+
+	mt := &model.MTRequest{
+		Smsc:         h.req.GetTo(),
+		Keyword:      h.req.GetSMS(),
+		Service:      service,
+		Subscription: sub,
+		Content:      content,
+	}
+	mt.SetTrxId(trxId)
+
+	jsonData, err := json.Marshal(mt)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	h.rmq.IntegratePublish(
+		RMQ_MT_EXCHANGE,
+		RMQ_MT_QUEUE,
+		RMQ_DATA_TYPE, "", string(jsonData),
+	)
+}
+
 func (h *SMSHandler) Unsub(category string) {
 	trxId := utils.GenerateTrxId()
 
@@ -1513,6 +1629,17 @@ func (h *SMSHandler) getContentPronostic(v string, service *entity.Service) (*en
 		}, nil
 	}
 	return h.contentService.GetPronostic(v, service)
+}
+
+func (h *SMSHandler) getContentStopPronostic() (*entity.Content, error) {
+	if !h.contentService.IsContent(SMS_PRONOSTIC_STOP) {
+		return &entity.Content{
+			Category: "CATEGORY",
+			Channel:  "SMS",
+			Value:    "SAMPLE_TEXT",
+		}, nil
+	}
+	return h.contentService.Get(SMS_PRONOSTIC_STOP)
 }
 
 func (h *SMSHandler) getContentSMSAlerteUnvalid(v string, service *entity.Service) (*entity.Content, error) {
