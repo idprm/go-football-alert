@@ -19,7 +19,7 @@ type News struct {
 	Description string    `gorm:"type:text" json:"description"`
 	Source      string    `gorm:"size:45" json:"source"`
 	PublishAt   time.Time `json:"publish_at"`
-	gorm.Model  `json:"-"`
+	gorm.Model
 }
 
 func (e *News) GetId() int64 {

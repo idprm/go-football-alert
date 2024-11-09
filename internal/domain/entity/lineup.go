@@ -17,5 +17,5 @@ type Lineup struct {
 	TeamName    string    `json:"team_name,omitempty"`
 	FixtureDate time.Time `json:"fixture_date"`
 	Formation   string    `gorm:"size:30" json:"formation,omitempty"`
-	gorm.Model  `json:"-"`
+	gorm.Model
 }

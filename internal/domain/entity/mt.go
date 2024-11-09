@@ -11,5 +11,5 @@ type MT struct {
 	StatusCode int    `gorm:"size:10" json:"status_code"`
 	StatusText string `gorm:"size:100" json:"status_text"`
 	Payload    string `gorm:"type:text" json:"payload"`
-	gorm.Model `json:"-"`
+	gorm.Model
 }

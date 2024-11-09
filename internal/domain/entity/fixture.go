@@ -21,7 +21,7 @@ type Fixture struct {
 	Away        *Team     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"away,omitempty"`
 	Goal        string    `json:"goal"`
 	IsDone      bool      `gorm:"type:boolean;default:false" json:"is_done"`
-	gorm.Model  `json:"-"`
+	gorm.Model
 }
 
 func (e *Fixture) GetId() int64 {

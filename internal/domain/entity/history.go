@@ -14,7 +14,7 @@ type History struct {
 	Subject        string        `json:"subject"`
 	Status         string        `json:"status"`
 	IpAddress      string        `json:"ip_address"`
-	gorm.Model     `json:"-"`
+	gorm.Model
 }
 
 func (e *History) GetId() int64 {

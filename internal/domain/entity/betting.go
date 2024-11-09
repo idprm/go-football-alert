@@ -10,5 +10,5 @@ type Betting struct {
 	Subscription   *Subscription `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"subscription,omitempty"`
 	Bet            float64       `gorm:"size:8" json:"bet"`
 	Profit         float64       `gorm:"size:8" json:"profit"`
-	gorm.Model     `json:"-"`
+	gorm.Model
 }
