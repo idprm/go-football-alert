@@ -16,13 +16,14 @@ var menus = []entity.Menu{
 <pages descr="Orange Football Club">
   <page>
     Orange Football Club, votre choix:<br/>
-    <a href="{{.url}}/{{.version}}/ussd/q?slug=lm&title=Live+Match">Live Match</a>
-    <a href="{{.url}}/{{.version}}/ussd/q?slug=flash-news&title=Flash+News">Flash News</a>
-    <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali">Champ. Mali</a>
-    <a href="{{.url}}/{{.version}}/ussd/q?slug=sms-alerte&title=SMS+Alerte">SMS Alerte</a>
-    <a href="{{.url}}/{{.version}}/ussd/q?slug=kit-foot&title=Kit+Foot">Kit Foot</a>
-    <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe">Foot Europe</a>
-    <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-afrique&title=Foot+Afrique">Foot Afrique</a>
+	<br/>
+    <a href="{{.url}}/{{.version}}/ussd/q?slug=lm&title=Live+Match">Live Match</a><br/>
+    <a href="{{.url}}/{{.version}}/ussd/q?slug=flash-news&title=Flash+News">Flash News</a><br/>
+    <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali">Champ. Mali</a><br/>
+    <a href="{{.url}}/{{.version}}/ussd/q?slug=sms-alerte&title=SMS+Alerte">SMS Alerte</a><br/>
+    <a href="{{.url}}/{{.version}}/ussd/q?slug=kit-foot&title=Kit+Foot">Kit Foot</a><br/>
+    <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe">Foot Europe</a><br/>
+    <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-afrique&title=Foot+Afrique">Foot Afrique</a><br/>
 	<a href="{{.url}}/{{.version}}/ussd/q?slug=foot-international&title=Foot+International">Foot International</a>
   </page>
 </pages>`,
@@ -39,6 +40,7 @@ var menus = []entity.Menu{
 <pages descr="S'abonner">
 	<page>
 		{{.title}}<br/>
+		<br/>
         {{.data}}
         <br/>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
@@ -60,9 +62,10 @@ var menus = []entity.Menu{
 		{{.title}} <br/>
         {{.title}} Obtenez en direct toutes les informations sur votre mobile sur la {{.title}}. Confirmez-vous votre inscription aux alertes?<br/>
 		Prix : {{.price}} / 1 {{.package}}.
+		<br/>
 		<a href="{{.url}}/{{.version}}/ussd/buy?slug={{.slug}}&code={{.code}}&title={{.title}}" key="1">Oui</a>
         <br/>
-		<a href="{{.url}}/{{.version}}/ussd/q?slug=flash-news" key="0">Ecran Précédent</a>
+		<a href="{{.url}}/{{.version}}/ussd/q?slug=flash-news" key="0">Ecran Précédent</a><br/>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
     </page>
 </pages>
@@ -80,7 +83,7 @@ var menus = []entity.Menu{
 <pages descr="Succes">
 	<page>
 		Vous avez souscrit avec succes!<br/>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug={{.slug}}">{{.title}}</a>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug={{.slug}}">{{.title}}</a><br/>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
     </page>
 </pages>
@@ -98,6 +101,7 @@ var menus = []entity.Menu{
 <pages descr="S'abonner">
 	<page>
 		{{.title}}<br/>
+		<br/>
         {{.data}}
         <br/>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
@@ -118,7 +122,7 @@ var menus = []entity.Menu{
   <page descr="{{.title}}">
   	{{.title}}
 	<br/>
-    <a href="{{.url}}/{{.version}}/ussd/q?slug={{.slug}}" key="0">Ecran Précédent</a>
+    <a href="{{.url}}/{{.version}}/ussd/q?slug={{.slug}}" key="0">Ecran Précédent</a><br/>
 	<a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
   </page>
 </pages>
@@ -136,6 +140,7 @@ var menus = []entity.Menu{
 <pages>
   <page>
   	Menu non trouvé<br/>
+	<br/>
     <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
   </page>
 </pages>
@@ -153,6 +158,7 @@ var menus = []entity.Menu{
 <pages>
   <page>
   	Msisdn not found<br/>
+	<br/>
     <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
   </page>
 </pages>
@@ -170,11 +176,12 @@ var menus = []entity.Menu{
 <pages descr="Live Match">
     <page>
         Live Match<br/>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=lm-live-match">Live Match</a>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=lm-schedule">Schedule</a>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=lm-lineup">Line Up</a>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=lm-display">Display Live match</a>
-        <br />
+		<br/>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=lm-live-match">Live Match</a><br/>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=lm-schedule">Schedule</a><br/>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=lm-lineup">Line Up</a><br/>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=lm-display">Display Live match</a><br/>
+        <br/>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
     </page>
 </pages>		
@@ -192,10 +199,12 @@ var menus = []entity.Menu{
 <pages descr="Live Match">
 	<page>
 		Live Match<br/>
+		<br/>
 		{{.data}}
 		<br/>
 		{{.paginate}}
-		<a href="{{.url}}/{{.version}}/ussd/q?slug=lm&title=Live+Match" key="0">Ecran Précédent</a>
+		<br/>
+		<a href="{{.url}}/{{.version}}/ussd/q?slug=lm&title=Live+Match" key="0">Ecran Précédent</a><br/>
 		<a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
@@ -213,10 +222,12 @@ var menus = []entity.Menu{
 <pages descr="Schedule">
 	<page>
 		Schedule<br/>
+		<br/>
 		{{.data}}
 		<br/>
 		{{.paginate}}
-		<a href="{{.url}}/{{.version}}/ussd/q?slug=lm&title=Live+Match" key="0">Ecran Précédent</a>
+		<br/>
+		<a href="{{.url}}/{{.version}}/ussd/q?slug=lm&title=Live+Match" key="0">Ecran Précédent</a><br/>
 		<a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
@@ -234,10 +245,12 @@ var menus = []entity.Menu{
 <pages descr="Lineup">
 	<page>
 		Lineup<br/>
+		<br/>
 		{{.data}}
 		<br/>
 		{{.paginate}}
-		<a href="{{.url}}/{{.version}}/ussd/q?slug=lm&title=Live+Match" key="0">Ecran Précédent</a>
+		<br/>
+		<a href="{{.url}}/{{.version}}/ussd/q?slug=lm&title=Live+Match" key="0">Ecran Précédent</a><br/>
 		<a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
@@ -255,10 +268,12 @@ var menus = []entity.Menu{
 <pages descr="Match Stats">
 	<page>
 		Match Stats<br/>
+		<br/>
 		{{.data}}
 		<br/>
 		{{.paginate}}
-		<a href="{{.url}}/{{.version}}/ussd/q?slug=lm&title=Live+Match" key="0">Ecran Précédent</a>
+		<br/>
+		<a href="{{.url}}/{{.version}}/ussd/q?slug=lm&title=Live+Match" key="0">Ecran Précédent</a><br/>
 		<a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
@@ -278,7 +293,8 @@ var menus = []entity.Menu{
 	Display Live match<br/>
 	<br/>
 	{{.paginate}}
-    <a href="{{.url}}/{{.version}}/ussd/q?slug=lm&title=Live+Match" key="0">Ecran Précédent</a>
+	<br/>
+    <a href="{{.url}}/{{.version}}/ussd/q?slug=lm&title=Live+Match" key="0">Ecran Précédent</a><br/>
     <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
@@ -296,9 +312,11 @@ var menus = []entity.Menu{
 <pages descr="Flash News">
 	<page>
 		Flash News {{.date}}<br/>
+		<br/>
 		{{.data}}
 		<br/>
 		{{.paginate}}
+		<br/>
 		<a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
@@ -316,9 +334,11 @@ var menus = []entity.Menu{
 <pages descr="Crédit Goal">
 	<page>
 		Crédit Goal {{.date}}<br/>
+		<br/>
         {{.data}}
 		<br/>
 		{{.paginate}}
+		<br/>
 		<a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
@@ -336,16 +356,17 @@ var menus = []entity.Menu{
 <pages descr="Champ. Mali">
     <page>
         Champ. Mali {{.date}}<br/>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali-results">Results</a>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali-standings">Standings</a>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali-schedule">Schedule</a>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali-team">Team</a>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali-credit-score">Crédit Score</a>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali-credit-goal">Crédit Goal</a>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali-sms-alerte">SMS Alerte</a>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali-sms-alerte-equipe">SMS Alerte Equipe</a>
 		<br/>
-		{{.paginate}}
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali-results">Results</a><br/>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali-standings">Standings</a><br/>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali-schedule">Schedule</a><br/>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali-team">Team</a><br/>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali-credit-score">Crédit Score</a><br/>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali-credit-goal">Crédit Goal</a><br/>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali-sms-alerte">SMS Alerte</a><br/>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali-sms-alerte-equipe">SMS Alerte Equipe</a><br/>
+		<br/>
+		{{.paginate}}<br/>
 		<a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
     </page>
 </pages>		
@@ -363,10 +384,12 @@ var menus = []entity.Menu{
 <pages descr="Results">
 	<page>
 		Results {{.date}}<br/>
+		<br/>
         {{.data}}
 		<br/>
 		{{.paginate}}
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali" key="0">Ecran Précédent</a>
+		<br/>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali" key="0">Ecran Précédent</a><br/>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>			
@@ -384,10 +407,12 @@ var menus = []entity.Menu{
 <pages descr="Standings">
 	<page>
 		Standings {{.date}}<br/>
+		<br/>
         {{.data}}
         <br/>
 		{{.paginate}}
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali" key="0">Ecran Précédent</a>
+		<br/>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali" key="0">Ecran Précédent</a><br/>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
@@ -405,10 +430,12 @@ var menus = []entity.Menu{
 <pages descr="Schedule">
 	<page>
 		Schedule {{.date}}<br/>
+		<br/>
         {{.data}}
-        <br />
+        <br/>
 		{{.paginate}}
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali" key="0">Ecran Précédent</a>
+		<br/>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali" key="0">Ecran Précédent</a><br/>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>	
@@ -426,10 +453,13 @@ var menus = []entity.Menu{
 <pages descr="Team">
 	<page>
 		Team {{.date}}<br/>
+		<br/>
         {{.data}}
-        <br />
+        <br/>
 		{{.paginate}}
+		<br/>
         <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali" key="0">Ecran Précédent</a>
+		<br/>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
@@ -447,10 +477,12 @@ var menus = []entity.Menu{
 <pages descr="Crédit Score">
 	<page>
 		Crédit Score {{.date}}<br/>
+		<br/>
         {{.data}}
-        <br />
+        <br/>
 		{{.paginate}}
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali" key="0">Ecran Précédent</a>
+		<br/>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali" key="0">Ecran Précédent</a><br/>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
@@ -468,9 +500,10 @@ var menus = []entity.Menu{
 <pages descr="Crédit Goal">
 	<page>
 		Crédit Goal {{.date}}<br/>
+		<br/>
         {{.data}}
-        <br />
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali">Prev</a>
+        <br/>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali">Prev</a><br/>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
@@ -488,9 +521,10 @@ var menus = []entity.Menu{
 <pages descr="SMS Alerte">
 	<page>
 		SMS Alerte {{.date}}<br/>
+		<br/>
         {{.data}}
-        <br />
-    	<a href="{{.url}}/{{.version}}/ussd/q?slug={{.slug}}" key="0">Ecran Précédent</a>
+        <br/>
+    	<a href="{{.url}}/{{.version}}/ussd/q?slug={{.slug}}" key="0">Ecran Précédent</a><br/>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
@@ -508,9 +542,10 @@ var menus = []entity.Menu{
 <pages descr="Crédit Goal">
 	<page>
 		SMS Alerte Equipe {{.date}}<br/>
+		<br/>
         {{.data}}
-        <br />
-        <a href="{{.url}}/{{.version}}/ussd/q?slug={{.slug}}" key="0">Ecran Précédent</a>
+        <br/>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug={{.slug}}" key="0">Ecran Précédent</a><br/>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
@@ -528,8 +563,9 @@ var menus = []entity.Menu{
 <pages descr="Prédiction">
 	<page>
 		Prédiction {{.date}}<br/>
+		<br/>
         {{.data}}
-		<br />
+		<br/>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
@@ -547,9 +583,10 @@ var menus = []entity.Menu{
 <pages descr="Safe of the Day">
 	<page>
 		Safe of the Day {{.date}}<br/>
+		<br/>
         {{.data}}
-		<br />
-        <a href="{{.url}}/{{.version}}/ussd/q?slug={{.slug}}" key="0">Ecran Précédent</a>
+		<br/>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug={{.slug}}" key="0">Ecran Précédent</a><br/>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
@@ -567,9 +604,10 @@ var menus = []entity.Menu{
 <pages descr="Daily combined bets">
 	<page>
 		Daily combined bets {{.date}}<br/>
+		<br/>
         {{.data}}
-		<br />
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=prediction&title=Prédiction">Prev</a>
+		<br/>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=prediction&title=Prédiction">Prev</a><br/>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
@@ -587,9 +625,10 @@ var menus = []entity.Menu{
 <pages descr="VIP Prono">
 	<page>
 		VIP Prono {{.date}}<br/>
+		<br/>
         {{.data}}
-		<br />
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=prediction&title=Prédiction">Prev</a>
+		<br/>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=prediction&title=Prédiction">Prev</a><br/>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		
@@ -607,11 +646,12 @@ var menus = []entity.Menu{
 <pages descr="SMS Alerte">
     <page>
         SMS Alerte {{.date}}<br/>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=kit-foot">Kit Foot</a>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe">Europe</a>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-afrique">Afrique</a>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-international">Foot International</a>
-        <br />
+		<br/>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=kit-foot">Kit Foot</a><br/>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe">Europe</a><br/>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-afrique">Afrique</a><br/>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-international">Foot International</a><br/>
+        <br/>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
     </page>
 </pages>		
@@ -629,9 +669,11 @@ var menus = []entity.Menu{
 <pages descr="Kit Foot">
     <page>
         Kit Foot {{.date}}<br/>
+		<br/>
 		{{.data}}
-        <br />
+        <br/>
 		{{.paginate}}
+		<br/>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
     </page>
 </pages>		
@@ -649,10 +691,12 @@ var menus = []entity.Menu{
 <pages descr="{{.title}}">
     <page>
         {{.title}} {{.date}}<br/>
+		<br/>
 		{{.data}}
-        <br />
+        <br/>
 		{{.paginate}}
-		<a href="{{.url}}/{{.version}}/ussd/q?slug=kit-foot" key="0">Ecran Précédent</a>
+		<br/>
+		<a href="{{.url}}/{{.version}}/ussd/q?slug=kit-foot" key="0">Ecran Précédent</a><br/>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
     </page>
 </pages>		
@@ -671,9 +715,10 @@ var menus = []entity.Menu{
     <page>
         {{.title}} {{.date}}<br/>
 		{{.data}}
-        <br />
+        <br/>
 		{{.paginate}}
-		<a href="{{.url}}/{{.version}}/ussd/q?slug=kit-foot" key="0">Ecran Précédent</a>
+		<br/>
+		<a href="{{.url}}/{{.version}}/ussd/q?slug=kit-foot" key="0">Ecran Précédent</a><br/>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
     </page>
 </pages>		
@@ -691,9 +736,11 @@ var menus = []entity.Menu{
 <pages descr="Foot Europe">
 	<page>
 		Foot Europe {{.date}}<br/>
+		<br/>
 		{{.data}}
-		<br />
+		<br/>
 		{{.paginate}}
+		<br/>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>			
@@ -711,9 +758,11 @@ var menus = []entity.Menu{
 <pages descr="Foot Afrique">
 	<page>
 		Foot Afrique {{.date}}<br/>
+		<br/>
         {{.data}}
-		<br />
+		<br/>
 		{{.paginate}}
+		<br/>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>
@@ -731,8 +780,9 @@ var menus = []entity.Menu{
 <pages descr="Foot International">
 	<page>
 		Foot International {{.date}}<br/>
+		<br/>
 		{{.data}}
-		<br />
+		<br/>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>			
@@ -750,8 +800,9 @@ var menus = []entity.Menu{
 <pages descr="SMS Alerte Equipe">
 	<page>
 		SMS Alerte Equipe {{.date}}<br/>
+		<br/>
         {{.data}}
-		<br />
+		<br/>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
 	</page>
 </pages>		

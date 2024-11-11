@@ -698,7 +698,7 @@ func (h *IncomingHandler) LiveMatchs(baseUrl string, page int) string {
 				API_VERSION + `/ussd/q/detail?slug=lm-live-match&amp;title=` +
 				s.GetFixtureNameQueryEscape() + `">` +
 				s.GetFixtureName() +
-				`</a>`
+				`</a><br/>`
 			liveMatchsData = append(liveMatchsData, row)
 		}
 		liveMatchsString = strings.Join(liveMatchsData, "\n")
@@ -723,7 +723,7 @@ func (h *IncomingHandler) Schedules(baseUrl string, page int) string {
 				API_VERSION +
 				`/ussd/q/detail?slug=lm-schedule&amp;title=` +
 				s.GetFixtureNameQueryEscape() + `">` +
-				s.GetFixtureName() + `</a>`
+				s.GetFixtureName() + `</a><br/>`
 			schedulesData = append(schedulesData, row)
 		}
 		schedulesString = strings.Join(schedulesData, "\n")
@@ -748,7 +748,7 @@ func (h *IncomingHandler) FlashNews(baseUrl string, page int) string {
 				API_VERSION + `/ussd/q/detail?slug=flash-news&amp;category=SMSALERTE&amp;title=` +
 				s.GetTitleQueryEscape() + `">` +
 				s.GetTitleLimited(20) +
-				`</a>`
+				`</a><br/>`
 			newsData = append(newsData, row)
 		}
 		newsString = strings.Join(newsData, "\n")
@@ -790,7 +790,7 @@ func (h *IncomingHandler) ChampTeam(baseUrl string, page int) string {
 				`/ussd/q/detail?slug=champ-mali&amp;title=` +
 				s.Team.GetNameQueryEscape() + `">` +
 				s.Team.GetName() +
-				`</a>`
+				`</a><br/>`
 			teamsData = append(teamsData, row)
 		}
 		teamsString = strings.Join(teamsData, "\n")
@@ -842,7 +842,7 @@ func (h *IncomingHandler) KitFoot(baseUrl string, page int) string {
 				s.GetIdToString() +
 				`&amp;title=` + s.GetNameQueryEscape() +
 				`">Alerte ` + s.GetNameWithoutAccents() +
-				`</a>`
+				`</a><br/>`
 			leaguesData = append(leaguesData, row)
 		}
 		leagueString = strings.Join(leaguesData, "\n")
@@ -869,7 +869,7 @@ func (h *IncomingHandler) KitFootByLeague(baseUrl string, leagueId, page int) st
 				s.Team.GetIdToString() + `&amp;title=` +
 				s.Team.GetNameQueryEscape() + `">` +
 				s.Team.GetName() +
-				`</a>`
+				`</a><br/>`
 			teamsData = append(teamsData, row)
 		}
 		teamsString = strings.Join(teamsData, "\n")
@@ -899,7 +899,7 @@ func (h *IncomingHandler) FootEurope(baseUrl string, page int) string {
 				`/ussd/q?slug=kit-foot-by-league&amp;league_id=` + s.GetIdToString() +
 				`&amp;title=` + s.GetNameQueryEscape() +
 				`">Alerte ` + s.GetNameWithoutAccents() +
-				`</a>`
+				`</a><br/>`
 			leaguesData = append(leaguesData, row)
 		}
 		leagueString = strings.Join(leaguesData, "\n")
@@ -925,7 +925,7 @@ func (h *IncomingHandler) FootAfrique(baseUrl string, page int) string {
 				`/ussd/q?slug=kit-foot-by-league&amp;league_id=` + s.GetIdToString() +
 				`&amp;title=` + s.GetNameQueryEscape() +
 				`">Alerte ` + s.GetNameWithoutAccents() +
-				`</a>`
+				`</a><br/>`
 			leaguesData = append(leaguesData, row)
 		}
 		leagueString = strings.Join(leaguesData, "\n")
@@ -951,7 +951,7 @@ func (h *IncomingHandler) FootInternational(baseUrl string, page int) string {
 				`/ussd/q?slug=kit-foot-by-league&amp;league_id=` + s.GetIdToString() +
 				`&amp;title=` + s.GetNameQueryEscape() +
 				`">Alerte ` + s.GetNameWithoutAccents() +
-				`</a>`
+				`</a><br/>`
 			leaguesData = append(leaguesData, row)
 		}
 		leagueString = strings.Join(leaguesData, "\n")
@@ -981,7 +981,7 @@ func (h *IncomingHandler) ChampionLeagues(baseUrl string, leagueId, page int) st
 				`/ussd/q/detail?slug=foot-europe-champion-league&amp;title=` +
 				s.GetFixtureNameQueryEscape() + `">` +
 				s.GetFixtureName() +
-				`</a>`
+				`</a><br/>`
 			fixturesData = append(fixturesData, row)
 		}
 		fixturesString = strings.Join(fixturesData, "\n")
