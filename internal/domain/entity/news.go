@@ -120,6 +120,10 @@ func (e *News) IsFootMercato() bool {
 	return e.Source == "FOOTMERCATO"
 }
 
+func (m *News) IsFilteredKeyword(v string) bool {
+	return v == "OL"
+}
+
 type NewsLeagues struct {
 	ID         int64   `gorm:"primaryKey" json:"id"`
 	NewsID     int64   `json:"news_id"`
