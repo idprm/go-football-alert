@@ -342,6 +342,7 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	// menus
 	menus := dcb.Group("menus")
 	menus.Get("/", dcbHandler.GetAllMenuPaginate)
+	menus.Post("/", dcbHandler.SaveMenu)
 
 	// schedules
 	schedules := dcb.Group("schedules")

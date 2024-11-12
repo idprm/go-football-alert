@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/gosimple/slug"
 	"github.com/idprm/go-football-alert/internal/domain/entity"
 	"github.com/idprm/go-football-alert/internal/domain/model"
 	"github.com/idprm/go-football-alert/internal/services"
@@ -168,6 +169,60 @@ func (h *DCBHandler) GetAllMenuPaginate(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(menus)
 }
 
+func (h *DCBHandler) SaveMenu(c *fiber.Ctx) error {
+	req := new(model.MenuRequest)
+
+	err := c.BodyParser(req)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusBadRequest,
+				Message:    err.Error(),
+			},
+		)
+	}
+
+	if !h.menuService.IsSlug(slug.Make(req.Name)) {
+		h.menuService.Save(
+			&entity.Menu{
+				Category:    req.Category,
+				Name:        req.Name,
+				Slug:        slug.Make(req.Name),
+				TemplateXML: req.TemplateXML,
+				IsConfirm:   false,
+				IsActive:    true,
+			},
+		)
+
+		return c.Status(fiber.StatusCreated).JSON(
+			&model.WebResponse{
+				Error:      false,
+				StatusCode: fiber.StatusCreated,
+				Message:    "created",
+			},
+		)
+	}
+
+	h.menuService.Update(
+		&entity.Menu{
+			Category:    req.Category,
+			Name:        req.Name,
+			TemplateXML: req.TemplateXML,
+			IsConfirm:   false,
+			IsActive:    true,
+		},
+	)
+
+	return c.Status(fiber.StatusOK).JSON(
+		&model.WebResponse{
+			Error:      false,
+			StatusCode: fiber.StatusOK,
+			Message:    "updated",
+		},
+	)
+}
+
 func (h *DCBHandler) GetAllUssdPaginate(c *fiber.Ctx) error {
 	req := new(entity.Pagination)
 
@@ -247,6 +302,68 @@ func (h *DCBHandler) GetAllServicePaginate(c *fiber.Ctx) error {
 		)
 	}
 	return c.Status(fiber.StatusOK).JSON(services)
+}
+
+func (h *DCBHandler) SaveService(c *fiber.Ctx) error {
+	req := new(model.ServiceRequest)
+
+	err := c.BodyParser(req)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusBadRequest,
+				Message:    err.Error(),
+			},
+		)
+	}
+
+	if !h.serviceService.IsService(req.Code) {
+		h.serviceService.Save(
+			&entity.Service{
+				Channel:    req.Channel,
+				Category:   req.Category,
+				Name:       req.Name,
+				Code:       req.Code,
+				Package:    req.Package,
+				Price:      req.Price,
+				Currency:   req.Currency,
+				RewardGoal: req.RewardGoal,
+				RenewalDay: req.RenewalDay,
+				FreeDay:    req.FreeDay,
+				UrlTelco:   req.UrlTelco,
+				UserTelco:  req.UserTelco,
+				PassTelco:  req.PassTelco,
+				UrlMT:      req.UrlMT,
+				UserMT:     req.UserMT,
+				PassMT:     req.PassMT,
+				ScSubMT:    req.ScSubMT,
+			},
+		)
+
+		return c.Status(fiber.StatusCreated).JSON(
+			&model.WebResponse{
+				Error:      false,
+				StatusCode: fiber.StatusCreated,
+				Message:    "created",
+			},
+		)
+	}
+
+	h.serviceService.Update(
+		&entity.Service{
+			Category: req.Category,
+			Name:     req.Name,
+		},
+	)
+
+	return c.Status(fiber.StatusOK).JSON(
+		&model.WebResponse{
+			Error:      false,
+			StatusCode: fiber.StatusOK,
+			Message:    "updated",
+		},
+	)
 }
 
 func (h *DCBHandler) GetAllContentPaginate(c *fiber.Ctx) error {

@@ -97,7 +97,7 @@ func (r *MenuRepository) Save(e *entity.Menu) (*entity.Menu, error) {
 }
 
 func (r *MenuRepository) Update(e *entity.Menu) (*entity.Menu, error) {
-	err := r.db.Where("id = ?", e.ID).Updates(&e).Error
+	err := r.db.Where("slug = ?", e.Slug).Updates(&e).Error
 	if err != nil {
 		return nil, err
 	}
