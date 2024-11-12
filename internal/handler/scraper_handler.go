@@ -141,7 +141,6 @@ func (h *ScraperHandler) Teams() {
 					h.teamService.UpdateByPrimaryId(
 						&entity.Team{
 							PrimaryID: int64(el.Team.ID),
-							Name:      el.Team.Name,
 							Slug:      slug.Make(el.Team.Name),
 							Code:      el.Team.Code,
 							Logo:      el.Team.Logo,

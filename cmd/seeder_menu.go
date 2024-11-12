@@ -17,10 +17,10 @@ var menus = []entity.Menu{
   <page>
     Orange Football Club, votre choix:<br/>
 	<br/>
-    <a href="{{.url}}/{{.version}}/ussd/q?slug=lm&title=Live+Match">Live Match</a><br/>
-    <a href="{{.url}}/{{.version}}/ussd/q?slug=flash-news&title=Flash+News">Flash News</a><br/>
+    <a href="{{.url}}/{{.version}}/ussd/q?slug=lm&title=Match+en+Direct">Match en Direct</a><br/>
+    <a href="{{.url}}/{{.version}}/ussd/q?slug=flash-news&title=Actu+Flash">Actu Flash</a><br/>
     <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali&title=Champ.+Mali">Champ. Mali</a><br/>
-    <a href="{{.url}}/{{.version}}/ussd/q?slug=sms-alerte&title=SMS+Alerte">SMS Alerte</a><br/>
+    <a href="{{.url}}/{{.version}}/ussd/q?slug=sms-alerte&title=SMS+Alerte">Alerte SMS</a><br/>
     <a href="{{.url}}/{{.version}}/ussd/q?slug=kit-foot&title=Kit+Foot">Kit Foot</a><br/>
     <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe&title=Foot+Europe">Foot Europe</a><br/>
     <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-afrique&title=Foot+Afrique">Foot Afrique</a><br/>
@@ -166,21 +166,21 @@ var menus = []entity.Menu{
 	},
 	{
 		Category:  "LIVEMATCH",
-		Name:      "Live match",
+		Name:      "Match en Direct",
 		Slug:      "lm",
 		IsConfirm: false,
 		IsActive:  true,
 		TemplateXML: `
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
-<pages descr="Live Match">
+<pages descr="Match en Direct">
     <page>
-        Live Match<br/>
+        Match en Direct<br/>
 		<br/>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=lm-live-match">Live Match</a><br/>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=lm-schedule">Schedule</a><br/>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=lm-lineup">Line Up</a><br/>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=lm-display">Display Live match</a><br/>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=lm-live-match">Match en Direct</a><br/>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=lm-schedule">Calendrier</a><br/>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=lm-lineup">Onze de depart</a><br/>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=lm-display">Statistiques</a><br/>
         <br/>
         <a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
     </page>
@@ -189,16 +189,16 @@ var menus = []entity.Menu{
 	},
 	{
 		Category:  "LIVEMATCH",
-		Name:      "Live match",
+		Name:      "Match en Direct",
 		Slug:      "lm-live-match",
 		IsConfirm: true,
 		IsActive:  true,
 		TemplateXML: `
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
-<pages descr="Live Match">
+<pages descr="Match en Direct">
 	<page>
-		Live Match<br/>
+		Match en Direct<br/>
 		<br/>
 		{{.data}}
 		<br/>
@@ -281,16 +281,16 @@ var menus = []entity.Menu{
 	},
 	{
 		Category:  "LIVEMATCH",
-		Name:      "Display Live match",
+		Name:      "Display Match en Direct",
 		Slug:      "lm-display-livematch",
 		IsConfirm: true,
 		IsActive:  true,
 		TemplateXML: `
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
-<pages descr="Display Live match">
+<pages descr="Display Match en Direct">
 	<page>
-	Display Live match<br/>
+	Display Match en Direct<br/>
 	<br/>
 	{{.paginate}}
 	<br/>
@@ -302,16 +302,16 @@ var menus = []entity.Menu{
 	},
 	{
 		Category:  "FLASHNEWS",
-		Name:      "Flash News",
+		Name:      "Actu Flash",
 		Slug:      "flash-news",
 		IsConfirm: true,
 		IsActive:  true,
 		TemplateXML: `
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
-<pages descr="Flash News">
+<pages descr="Actu Flash">
 	<page>
-		Flash News {{.date}}<br/>
+		Actu Flash {{.date}}<br/>
 		<br/>
 		{{.data}}
 		<br/>
@@ -324,16 +324,16 @@ var menus = []entity.Menu{
 	},
 	{
 		Category:  "CREDITGOAL",
-		Name:      "Crédit Goal",
+		Name:      "But Gagnant",
 		Slug:      "credit-goal",
 		IsConfirm: true,
 		IsActive:  true,
 		TemplateXML: `
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
-<pages descr="Crédit Goal">
+<pages descr="But Gagnant">
 	<page>
-		Crédit Goal {{.date}}<br/>
+		But Gagnant {{.date}}<br/>
 		<br/>
         {{.data}}
 		<br/>
@@ -357,14 +357,13 @@ var menus = []entity.Menu{
     <page>
         Champ. Mali {{.date}}<br/>
 		<br/>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali-results">Results</a><br/>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali-standings">Standings</a><br/>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali-schedule">Schedule</a><br/>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali-team">Team</a><br/>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali-results">Resultats</a><br/>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali-standings">Classement</a><br/>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali-schedule">Calendrier</a><br/>
         <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali-credit-score">Crédit Score</a><br/>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali-credit-goal">Crédit Goal</a><br/>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali-sms-alerte">SMS Alerte</a><br/>
-        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali-sms-alerte-equipe">SMS Alerte Equipe</a><br/>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali-credit-goal">But Gagnant</a><br/>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali-sms-alerte">Alerte SMS</a><br/>
+        <a href="{{.url}}/{{.version}}/ussd/q?slug=champ-mali-sms-alerte-equipe">Alerte SMS Equipe</a><br/>
 		<br/>
 		{{.paginate}}<br/>
 		<a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
@@ -374,16 +373,16 @@ var menus = []entity.Menu{
 	},
 	{
 		Category:  "SMSALERTE",
-		Name:      "Champ. Mali Results",
+		Name:      "Champ. Mali Resultats",
 		Slug:      "champ-mali-results",
 		IsConfirm: true,
 		IsActive:  true,
 		TemplateXML: `
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
-<pages descr="Results">
+<pages descr="Resultats">
 	<page>
-		Results {{.date}}<br/>
+		Resultats {{.date}}<br/>
 		<br/>
         {{.data}}
 		<br/>
@@ -397,16 +396,16 @@ var menus = []entity.Menu{
 	},
 	{
 		Category:  "SMSALERTE",
-		Name:      "Champ. Mali Standings",
+		Name:      "Champ. Mali Classement",
 		Slug:      "champ-mali-standings",
 		IsConfirm: true,
 		IsActive:  true,
 		TemplateXML: `
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
-<pages descr="Standings">
+<pages descr="Classement">
 	<page>
-		Standings {{.date}}<br/>
+		Classement {{.date}}<br/>
 		<br/>
         {{.data}}
         <br/>
@@ -427,9 +426,9 @@ var menus = []entity.Menu{
 		TemplateXML: `
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
-<pages descr="Schedule">
+<pages descr="Calendrier">
 	<page>
-		Schedule {{.date}}<br/>
+		Calendrier {{.date}}<br/>
 		<br/>
         {{.data}}
         <br/>
@@ -490,16 +489,16 @@ var menus = []entity.Menu{
 	},
 	{
 		Category:  "SMSALERTE",
-		Name:      "Champ. Mali Crédit Goal",
+		Name:      "Champ. Mali But Gagnant",
 		Slug:      "champ-mali-credit-goal",
 		IsConfirm: true,
 		IsActive:  true,
 		TemplateXML: `
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
-<pages descr="Crédit Goal">
+<pages descr="But Gagnant">
 	<page>
-		Crédit Goal {{.date}}<br/>
+		But Gagnant {{.date}}<br/>
 		<br/>
         {{.data}}
         <br/>
@@ -511,16 +510,16 @@ var menus = []entity.Menu{
 	},
 	{
 		Category:  "SMSALERTE",
-		Name:      "Champ. Mali SMS Alerte",
+		Name:      "Champ. Mali Alerte SMS",
 		Slug:      "champ-mali-sms-alerte",
 		IsConfirm: true,
 		IsActive:  true,
 		TemplateXML: `
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
-<pages descr="SMS Alerte">
+<pages descr="Alerte SMS">
 	<page>
-		SMS Alerte {{.date}}<br/>
+		Alerte SMS {{.date}}<br/>
 		<br/>
         {{.data}}
         <br/>
@@ -532,16 +531,16 @@ var menus = []entity.Menu{
 	},
 	{
 		Category:  "SMSALERTE",
-		Name:      "Champ. Mali SMS Alerte Equipe",
+		Name:      "Champ. Mali Alerte SMS Equipe",
 		Slug:      "champ-mali-sms-alerte-equipe",
 		IsConfirm: true,
 		IsActive:  true,
 		TemplateXML: `
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
-<pages descr="Crédit Goal">
+<pages descr="But Gagnant">
 	<page>
-		SMS Alerte Equipe {{.date}}<br/>
+		Alerte SMS Equipe {{.date}}<br/>
 		<br/>
         {{.data}}
         <br/>
@@ -636,16 +635,16 @@ var menus = []entity.Menu{
 	},
 	{
 		Category:  "SMSALERTE",
-		Name:      "SMS Alerte",
+		Name:      "Alerte SMS",
 		Slug:      "sms-alerte",
 		IsConfirm: false,
 		IsActive:  true,
 		TemplateXML: `
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
-<pages descr="SMS Alerte">
+<pages descr="Alerte SMS">
     <page>
-        SMS Alerte {{.date}}<br/>
+        Alerte SMS {{.date}}<br/>
 		<br/>
         <a href="{{.url}}/{{.version}}/ussd/q?slug=kit-foot">Kit Foot</a><br/>
         <a href="{{.url}}/{{.version}}/ussd/q?slug=foot-europe">Europe</a><br/>
@@ -790,16 +789,16 @@ var menus = []entity.Menu{
 	},
 	{
 		Category:  "SMSALERTE",
-		Name:      "SMS Alerte Equipe",
+		Name:      "Alerte SMS Equipe",
 		Slug:      "sms-alerte-equipe",
 		IsConfirm: true,
 		IsActive:  true,
 		TemplateXML: `
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
-<pages descr="SMS Alerte Equipe">
+<pages descr="Alerte SMS Equipe">
 	<page>
-		SMS Alerte Equipe {{.date}}<br/>
+		Alerte SMS Equipe {{.date}}<br/>
 		<br/>
         {{.data}}
 		<br/>

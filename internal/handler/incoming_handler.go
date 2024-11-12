@@ -395,6 +395,7 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 		}
 
 		if req.GetSlug() == "kit-foot-by-league" {
+			log.Println(req.GetLeagueId())
 			data = h.KitFootByLeague(c.BaseURL(), req.GetLeagueId(), req.GetPage()+1)
 		}
 
