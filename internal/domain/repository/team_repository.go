@@ -56,7 +56,7 @@ func (r *TeamRepository) CountByCode(code string) (int64, error) {
 
 func (r *TeamRepository) CountByPrimaryId(primaryId int) (int64, error) {
 	var count int64
-	err := r.db.Model(&entity.Team{}).Where("primary_id = ?", primaryId).Count(&count).Error
+	err := r.db.Model(&entity.Team{}).Where("primary_id = ? AND is_active = true", primaryId).Count(&count).Error
 	if err != nil {
 		return count, err
 	}
