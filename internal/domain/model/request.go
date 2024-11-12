@@ -399,44 +399,22 @@ func (m *UssdRequest) IsKitFootChamp() bool {
 }
 
 type MenuRequest struct {
-	Category    string `json:"category"`
-	Name        string `json:"name"`
-	TemplateXML string `json:"template_xml"`
+	Category    string `validate:"required" json:"category"`
+	Name        string `validate:"required" json:"name"`
+	TemplateXML string `validate:"required" json:"template_xml"`
 	IsActive    bool   `json:"is_active"`
 }
 
-// Channel    string  `gorm:"size:10;not null" json:"channel"`
-// Category   string  `gorm:"size:50;not null" json:"category"`
-// Name       string  `gorm:"size:50;not null" json:"name"`
-// Code       string  `gorm:"size:15;not null" json:"code"`
-// Package    string  `gorm:"size:50" json:"package"`
-// Price      float64 `gorm:"size:15" json:"price"`
-// Currency   string  `gorm:"size:10" json:"currency"`
-// RewardGoal float64 `gorm:"size:15" json:"reward_goal"`
-// RenewalDay int     `gorm:"size:2;default:0" json:"renewal_day"`
-// FreeDay    int     `gorm:"size:2;default:0" json:"free_day"`
-// UrlTelco   string  `gorm:"size:350;not null" json:"url_telco"`
-// UserTelco  string  `gorm:"size:100;not null" json:"user_telco"`
-// PassTelco  string  `gorm:"size:100;not null" json:"pass_telco"`
-// UrlMT      string  `gorm:"size:350;not null" json:"url_mt"`
-// UserMT     string  `gorm:"size:100;not null" json:"user_mt"`
-// PassMT     string  `gorm:"size:100;not null" json:"pass_mt"`
-// ScSubMT    string  `gorm:"size:15;not null" json:"sc_sub_mt"`
-// ScUnsubMT  string  `gorm:"size:15;not null" json:"sc_unsub_mt"`
-// ShortCode  string  `gorm:"size:15;not null" json:"short_code"`
-// UssdCode   string  `gorm:"size:15;not null" json:"ussd_code"`
-// IsActive   bool    `gorm:"type:boolean;default:false" json:"is_active"`
-
 type ServiceRequest struct {
-	Channel    string  `json:"channel"`
-	Category   string  `json:"category"`
-	Name       string  `json:"name"`
-	Code       string  `json:"code"`
-	Package    string  `json:"package"`
-	Price      float64 `json:"price"`
-	Currency   string  `json:"currency"`
-	RewardGoal float64 `json:"reward_goal"`
-	RenewalDay int     `json:"renewal_day"`
+	Channel    string  `validate:"required" json:"channel"`
+	Category   string  `validate:"required" json:"category"`
+	Name       string  `validate:"required" json:"name"`
+	Code       string  `validate:"required" json:"code"`
+	Package    string  `validate:"required" json:"package"`
+	Price      float64 `validate:"required" json:"price"`
+	Currency   string  `validate:"required" json:"currency"`
+	RewardGoal float64 `validate:"required" json:"reward_goal"`
+	RenewalDay int     `validate:"required" json:"renewal_day"`
 	FreeDay    int     `json:"free_day"`
 	UrlTelco   string  `json:"url_telco"`
 	UserTelco  string  `json:"user_telco"`

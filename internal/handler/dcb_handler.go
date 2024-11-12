@@ -183,6 +183,11 @@ func (h *DCBHandler) SaveMenu(c *fiber.Ctx) error {
 		)
 	}
 
+	errors := ValidateStruct(*req)
+	if errors != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(errors)
+	}
+
 	if !h.menuService.IsSlug(slug.Make(req.Name)) {
 		h.menuService.Save(
 			&entity.Menu{
@@ -318,6 +323,11 @@ func (h *DCBHandler) SaveService(c *fiber.Ctx) error {
 		)
 	}
 
+	errors := ValidateStruct(*req)
+	if errors != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(errors)
+	}
+
 	if !h.serviceService.IsService(req.Code) {
 		h.serviceService.Save(
 			&entity.Service{
@@ -338,6 +348,9 @@ func (h *DCBHandler) SaveService(c *fiber.Ctx) error {
 				UserMT:     req.UserMT,
 				PassMT:     req.PassMT,
 				ScSubMT:    req.ScSubMT,
+				ScUnsubMT:  req.ScUnsubMT,
+				ShortCode:  req.ShortCode,
+				UssdCode:   req.UssdCode,
 			},
 		)
 
@@ -352,8 +365,26 @@ func (h *DCBHandler) SaveService(c *fiber.Ctx) error {
 
 	h.serviceService.Update(
 		&entity.Service{
-			Category: req.Category,
-			Name:     req.Name,
+			Channel:    req.Channel,
+			Category:   req.Category,
+			Name:       req.Name,
+			Code:       req.Code,
+			Package:    req.Package,
+			Price:      req.Price,
+			Currency:   req.Currency,
+			RewardGoal: req.RewardGoal,
+			RenewalDay: req.RenewalDay,
+			FreeDay:    req.FreeDay,
+			UrlTelco:   req.UrlTelco,
+			UserTelco:  req.UserTelco,
+			PassTelco:  req.PassTelco,
+			UrlMT:      req.UrlMT,
+			UserMT:     req.UserMT,
+			PassMT:     req.PassMT,
+			ScSubMT:    req.ScSubMT,
+			ScUnsubMT:  req.ScUnsubMT,
+			ShortCode:  req.ShortCode,
+			UssdCode:   req.UssdCode,
 		},
 	)
 
