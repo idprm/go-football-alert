@@ -130,13 +130,17 @@ func (h *ScraperHandler) Teams() {
 						},
 					)
 
-					team, _ := h.teamService.GetByPrimaryId(el.Team.ID)
-					h.teamService.SaveLeagueTeam(
-						&entity.LeagueTeam{
-							LeagueID: l.ID,
-							TeamID:   team.GetId(),
-						},
-					)
+					if h.teamService.IsTeamByPrimaryId(el.Team.ID) {
+						team, _ := h.teamService.GetByPrimaryId(el.Team.ID)
+						h.teamService.SaveLeagueTeam(
+							&entity.LeagueTeam{
+								LeagueID: l.ID,
+								TeamID:   team.GetId(),
+								IsActive: true,
+							},
+						)
+					}
+
 				} else {
 					h.teamService.UpdateByPrimaryId(
 						&entity.Team{
@@ -154,9 +158,11 @@ func (h *ScraperHandler) Teams() {
 							&entity.LeagueTeam{
 								LeagueID: l.ID,
 								TeamID:   team.GetId(),
+								IsActive: team.IsActive,
 							},
 						)
 					}
+
 				}
 				log.Println(string(f))
 			}

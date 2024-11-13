@@ -316,6 +316,36 @@ var publisherScrapingNewsCmd = &cobra.Command{
 	},
 }
 
+var publisherScrapingMasterCmd = &cobra.Command{
+	Use:   "pub_scraping_master",
+	Short: "Publisher Scraping Master Service CLI",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		// connect db
+		db, err := connectDb()
+		if err != nil {
+			panic(err)
+		}
+
+		// DEBUG ON CONSOLE
+		db.Logger = loggerDb.Default.LogMode(loggerDb.Info)
+
+		/**
+		 * Looping schedule
+		 */
+		timeDuration := time.Duration(6)
+
+		for {
+
+			go func() {
+				scrapingTeams(db)
+			}()
+
+			time.Sleep(timeDuration * time.Hour)
+		}
+	},
+}
+
 var publisherScrapingFixturesCmd = &cobra.Command{
 	Use:   "pub_scraping_fixtures",
 	Short: "Publisher Scraping Fixture Service CLI",
@@ -339,7 +369,6 @@ var publisherScrapingFixturesCmd = &cobra.Command{
 
 			go func() {
 				scrapingFixtures(db)
-				scrapingTeams(db)
 			}()
 
 			time.Sleep(timeDuration * time.Minute)

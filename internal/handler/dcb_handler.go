@@ -424,6 +424,62 @@ func (h *DCBHandler) GetAllContentPaginate(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(contents)
 }
 
+func (h *DCBHandler) SaveContent(c *fiber.Ctx) error {
+	req := new(model.ContentRequest)
+
+	err := c.BodyParser(req)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusBadRequest,
+				Message:    err.Error(),
+			},
+		)
+	}
+
+	errors := ValidateStruct(*req)
+	if errors != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(errors)
+	}
+
+	if !h.contentService.IsContent(req.Name) {
+		h.contentService.Save(
+			&entity.Content{
+				Category: req.Category,
+				Name:     req.GetName(),
+				Channel:  req.Channel,
+				Value:    req.Value,
+			},
+		)
+
+		return c.Status(fiber.StatusCreated).JSON(
+			&model.WebResponse{
+				Error:      false,
+				StatusCode: fiber.StatusCreated,
+				Message:    "created",
+			},
+		)
+	}
+
+	h.contentService.Update(
+		&entity.Content{
+			Category: req.Category,
+			Name:     req.GetName(),
+			Channel:  req.Channel,
+			Value:    req.Value,
+		},
+	)
+
+	return c.Status(fiber.StatusOK).JSON(
+		&model.WebResponse{
+			Error:      false,
+			StatusCode: fiber.StatusOK,
+			Message:    "updated",
+		},
+	)
+}
+
 func (h *DCBHandler) GetAllSubscriptionPaginate(c *fiber.Ctx) error {
 	req := new(entity.Pagination)
 

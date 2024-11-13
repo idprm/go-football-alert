@@ -19,6 +19,7 @@ type ITeamRepository interface {
 	Count(string) (int64, error)
 	CountByCode(string) (int64, error)
 	CountByPrimaryId(int) (int64, error)
+	CountActiveByPrimaryId(int) (int64, error)
 	CountByName(string) (int64, error)
 	CountByLeagueTeam(*entity.LeagueTeam) (int64, error)
 	CountLeagueByTeam(int) (int64, error)
@@ -55,6 +56,15 @@ func (r *TeamRepository) CountByCode(code string) (int64, error) {
 }
 
 func (r *TeamRepository) CountByPrimaryId(primaryId int) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Team{}).Where("primary_id = ?", primaryId).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *TeamRepository) CountActiveByPrimaryId(primaryId int) (int64, error) {
 	var count int64
 	err := r.db.Model(&entity.Team{}).Where("primary_id = ? AND is_active = true", primaryId).Count(&count).Error
 	if err != nil {
@@ -102,7 +112,7 @@ func (r *TeamRepository) GetAllPaginate(p *entity.Pagination) (*entity.Paginatio
 
 func (r *TeamRepository) GetAllTeamUSSD(leagueId, page int) ([]*entity.LeagueTeam, error) {
 	var c []*entity.LeagueTeam
-	err := r.db.Where("league_id = ?", leagueId).Preload("League").Preload("Team").Order("id ASC").Offset((page - 1) * 7).Limit(7).Find(&c).Error
+	err := r.db.Where("league_id = ? AND is_active = true", leagueId).Preload("League").Preload("Team").Order("id ASC").Offset((page - 1) * 7).Limit(7).Find(&c).Error
 	if err != nil {
 		return nil, err
 	}

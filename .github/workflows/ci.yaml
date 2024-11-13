@@ -38,6 +38,8 @@ jobs:
             image: idprm/fb-alert-mt-service
           # - dockerfile: ./Dockerfile.postback_mo
           #   image: idprm/fb-alert-postback-mo-service
+          - dockerfile: ./Dockerfile.pub_scraping_master
+            image: idprm/fb-alert-pub-scraping-master-service
           - dockerfile: ./Dockerfile.pub_scraping_fixtures
             image: idprm/fb-alert-pub-scraping-fixtures-service
           - dockerfile: ./Dockerfile.pub_scraping_prediction

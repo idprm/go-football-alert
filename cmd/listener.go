@@ -351,10 +351,12 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	// services
 	services := dcb.Group("services")
 	services.Get("/", dcbHandler.GetAllServicePaginate)
+	services.Post("/", dcbHandler.SaveService)
 
 	// contents
 	contents := dcb.Group("contents")
 	contents.Get("/", dcbHandler.GetAllContentPaginate)
+	contents.Post("/", dcbHandler.SaveContent)
 
 	// subscriptions
 	subscriptions := dcb.Group("subscriptions")

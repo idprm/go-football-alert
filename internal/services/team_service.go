@@ -20,6 +20,7 @@ type ITeamService interface {
 	IsTeamByCode(string) bool
 	IsTeamByPrimaryId(int) bool
 	IsTeamByName(string) bool
+	IsTeamActiveByPrimaryId(int) bool
 	IsLeagueTeam(*entity.LeagueTeam) bool
 	IsLeagueByTeam(int) bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
@@ -48,6 +49,11 @@ func (s *TeamService) IsTeamByCode(code string) bool {
 
 func (s *TeamService) IsTeamByPrimaryId(primaryId int) bool {
 	count, _ := s.teamRepo.CountByPrimaryId(primaryId)
+	return count > 0
+}
+
+func (s *TeamService) IsTeamActiveByPrimaryId(primaryId int) bool {
+	count, _ := s.teamRepo.CountActiveByPrimaryId(primaryId)
 	return count > 0
 }
 

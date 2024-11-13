@@ -428,3 +428,14 @@ type ServiceRequest struct {
 	UssdCode   string  `json:"ussd_code"`
 	IsActive   bool    `json:"is_active"`
 }
+
+type ContentRequest struct {
+	Category string `validate:"required" json:"category"`
+	Channel  string `validate:"required" json:"channel"`
+	Name     string `validate:"required" json:"name"`
+	Value    string `validate:"required" json:"value"`
+}
+
+func (r *ContentRequest) GetName() string {
+	return strings.ToUpper(r.Name)
+}
