@@ -447,3 +447,17 @@ type ContentRequest struct {
 func (r *ContentRequest) GetName() string {
 	return strings.ToUpper(r.Name)
 }
+
+type LeagueRequest struct {
+	PrimaryID int64  `validate:"required" json:"primary_id"`
+	Name      string `json:"name"`
+	IsActive  bool   `json:"is_active"`
+	Keyword   string `json:"keyword"`
+}
+
+type TeamRequest struct {
+	PrimaryID int64  `validate:"required" json:"primary_id"`
+	Name      string `json:"name"`
+	IsActive  bool   `json:"is_active"`
+	Keyword   string `json:"keyword"`
+}

@@ -50,12 +50,50 @@ func (h *TeamHandler) GetBySlug(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
 }
 
-func (h *TeamHandler) Save(c *fiber.Ctx) error {
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
-}
-
 func (h *TeamHandler) Update(c *fiber.Ctx) error {
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
+	req := new(model.TeamRequest)
+
+	err := c.BodyParser(req)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusBadRequest,
+				Message:    err.Error(),
+			},
+		)
+	}
+
+	errors := ValidateStruct(*req)
+	if errors != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(errors)
+	}
+
+	if !h.teamService.IsTeamByPrimaryId(int(req.PrimaryID)) {
+		return c.Status(fiber.StatusNotFound).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusNotFound,
+				Message:    "not_found",
+			},
+		)
+	}
+
+	h.teamService.Save(
+		&entity.Team{
+			PrimaryID: req.PrimaryID,
+			Keyword:   req.Keyword,
+			IsActive:  req.IsActive,
+		},
+	)
+
+	return c.Status(fiber.StatusOK).JSON(
+		&model.WebResponse{
+			Error:      false,
+			StatusCode: fiber.StatusOK,
+			Message:    "updated",
+		},
+	)
 }
 
 func (h *TeamHandler) Delete(c *fiber.Ctx) error {
