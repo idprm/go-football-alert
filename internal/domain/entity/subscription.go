@@ -61,7 +61,7 @@ type Subscription struct {
 	IsPronostic          bool      `gorm:"type:boolean;column:is_prono" json:"is_prono,omitempty"`
 	IsRetry              bool      `gorm:"type:boolean;column:is_retry" json:"is_retry,omitempty"`
 	IsFree               bool      `gorm:"type:boolean;column:is_free" json:"is_free,omitempty"`
-	IsActive             bool      `gorm:"type:boolean;column:is_active" json:"is_active,omitempty"`
+	IsActive             bool      `gorm:"type:boolean;default:false;column:is_active" json:"is_active,omitempty"`
 	gorm.Model
 }
 
