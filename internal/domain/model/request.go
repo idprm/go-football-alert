@@ -405,6 +405,10 @@ type MenuRequest struct {
 	IsActive    bool   `json:"is_active"`
 }
 
+func (r *MenuRequest) GetName() string {
+	return strings.ToUpper(r.Name)
+}
+
 type ServiceRequest struct {
 	Channel    string  `validate:"required" json:"channel"`
 	Category   string  `validate:"required" json:"category"`
@@ -427,6 +431,10 @@ type ServiceRequest struct {
 	ShortCode  string  `json:"short_code"`
 	UssdCode   string  `json:"ussd_code"`
 	IsActive   bool    `json:"is_active"`
+}
+
+func (r *ServiceRequest) GetCode() string {
+	return strings.ToUpper(r.Code)
 }
 
 type ContentRequest struct {

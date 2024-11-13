@@ -15,7 +15,7 @@ type Content struct {
 	ID       int    `gorm:"primaryKey" json:"id"`
 	Category string `gorm:"size:20" json:"category"`
 	Channel  string `gorm:"size:15" json:"channel"`
-	Name     string `gorm:"size:50" json:"name"`
+	Name     string `gorm:"size:50;index:idx_content_name,unique" json:"name"`
 	Value    string `gorm:"size:250" json:"value"`
 }
 
@@ -32,7 +32,7 @@ func (e *Content) GetChannel() string {
 }
 
 func (e *Content) GetName() string {
-	return e.Name
+	return strings.ToUpper(e.Name)
 }
 
 func (e *Content) GetValue() string {

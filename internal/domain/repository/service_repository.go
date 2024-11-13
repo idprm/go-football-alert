@@ -113,7 +113,7 @@ func (r *ServiceRepository) Save(c *entity.Service) (*entity.Service, error) {
 }
 
 func (r *ServiceRepository) Update(c *entity.Service) (*entity.Service, error) {
-	err := r.db.Where("code = ?", c.Code).Updates(&c).Error
+	err := r.db.Where("code = ?", c.GetCode()).Updates(&c).Error
 	if err != nil {
 		return nil, err
 	}

@@ -13,7 +13,7 @@ type Menu struct {
 	ID          int    `gorm:"primaryKey" json:"id"`
 	Category    string `gorm:"size:50;not null" json:"category"`
 	Name        string `gorm:"size:45" json:"name"`
-	Slug        string `gorm:"size:45" json:"slug"`
+	Slug        string `gorm:"size:45;index:idx_menu_slug,unique" json:"slug"`
 	TemplateXML string `gorm:"type:text" json:"template_xml"`
 	IsConfirm   bool   `gorm:"type:boolean;default:false;column:is_confirm" json:"is_confirm"`
 	IsActive    bool   `gorm:"type:boolean;default:false;column:is_active" json:"is_active"`
@@ -28,7 +28,7 @@ func (e *Menu) GetCategory() string {
 }
 
 func (e *Menu) GetName() string {
-	return e.Name
+	return strings.ToUpper(e.Name)
 }
 
 func (e *Menu) GetSlug() string {

@@ -11,7 +11,7 @@ type Service struct {
 	Channel    string  `gorm:"size:10;not null" json:"channel"`
 	Category   string  `gorm:"size:50;not null" json:"category"`
 	Name       string  `gorm:"size:50;not null" json:"name"`
-	Code       string  `gorm:"size:15;not null" json:"code"`
+	Code       string  `gorm:"size:15;index:idx_service_code,unique;not null" json:"code"`
 	Package    string  `gorm:"size:50" json:"package"`
 	Price      float64 `gorm:"size:15" json:"price"`
 	Currency   string  `gorm:"size:10" json:"currency"`
@@ -48,7 +48,7 @@ func (e *Service) GetCategory() string {
 }
 
 func (e *Service) GetCode() string {
-	return e.Code
+	return strings.ToUpper(e.Code)
 }
 
 func (s *Service) GetPackage() string {

@@ -192,11 +192,11 @@ func (h *DCBHandler) SaveMenu(c *fiber.Ctx) error {
 		h.menuService.Save(
 			&entity.Menu{
 				Category:    req.Category,
-				Name:        req.Name,
-				Slug:        slug.Make(req.Name),
+				Name:        req.GetName(),
+				Slug:        slug.Make(req.GetName()),
 				TemplateXML: req.TemplateXML,
 				IsConfirm:   false,
-				IsActive:    true,
+				IsActive:    req.IsActive,
 			},
 		)
 
@@ -212,10 +212,9 @@ func (h *DCBHandler) SaveMenu(c *fiber.Ctx) error {
 	h.menuService.Update(
 		&entity.Menu{
 			Category:    req.Category,
-			Name:        req.Name,
+			Slug:        slug.Make(req.GetName()),
 			TemplateXML: req.TemplateXML,
-			IsConfirm:   false,
-			IsActive:    true,
+			IsActive:    req.IsActive,
 		},
 	)
 
@@ -334,7 +333,7 @@ func (h *DCBHandler) SaveService(c *fiber.Ctx) error {
 				Channel:    req.Channel,
 				Category:   req.Category,
 				Name:       req.Name,
-				Code:       req.Code,
+				Code:       req.GetCode(),
 				Package:    req.Package,
 				Price:      req.Price,
 				Currency:   req.Currency,
@@ -368,7 +367,7 @@ func (h *DCBHandler) SaveService(c *fiber.Ctx) error {
 			Channel:    req.Channel,
 			Category:   req.Category,
 			Name:       req.Name,
-			Code:       req.Code,
+			Code:       req.GetCode(),
 			Package:    req.Package,
 			Price:      req.Price,
 			Currency:   req.Currency,
