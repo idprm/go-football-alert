@@ -325,13 +325,18 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
 	}
 
-	// if is_confirm = true
 	if menu.IsConfirm {
 
 		var data string
 
 		if req.IsLmLiveMatch() {
-			data = h.LiveMatchs(c.BaseURL(), req.GetPage()+1)
+
+			if !h.IsActiveSubscriptionNonSMSAlerte(req.GetCategory(), req.GetMsisdn()) {
+				//data = h.LiveMatchs(c.BaseURL(), false, req.GetPage()+1)
+			} else {
+				data = h.LiveMatchs(c.BaseURL(), true, req.GetPage()+1)
+			}
+
 		}
 
 		if req.IsLmSchedule() {
@@ -339,6 +344,10 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 		}
 
 		if req.IsFlashNews() {
+			data = h.FlashNews(c.BaseURL(), req.GetPage()+1)
+		}
+
+		if req.IsSMSAlerte() {
 			data = h.FlashNews(c.BaseURL(), req.GetPage()+1)
 		}
 
@@ -395,7 +404,6 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 		}
 
 		if req.GetSlug() == "kit-foot-by-league" {
-			log.Println(req.GetLeagueId())
 			data = h.KitFootByLeague(c.BaseURL(), req.GetLeagueId(), req.GetPage()+1)
 		}
 
@@ -484,6 +492,38 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 
 	if !h.menuService.IsSlug(req.GetSlug()) {
 		return c.Status(fiber.StatusOK).SendString(h.PageNotFound(c.BaseURL()))
+	}
+
+	// check sub
+	if !h.subscriptionService.IsActiveSubscriptionByCategory(req.GetCategory(), req.GetMsisdn(), req.GetCode()) {
+		services, _ := h.serviceService.GetAllByCategory(req.GetCategory())
+
+		menu, _ := h.menuService.GetBySlug("package")
+		// package
+		var servicesData []string
+		for _, s := range services {
+			row := `<a href="` +
+				c.BaseURL() + `/` +
+				API_VERSION +
+				`/ussd/confirm?slug=` + req.GetSlug() +
+				`&code=` + s.Code +
+				`&category=` + req.GetCategory() +
+				`&package=` + s.GetPackage() + `">` +
+				s.GetName() + " (" + s.GetPriceToString() + ")" +
+				"</a>"
+			servicesData = append(servicesData, row)
+		}
+		servicesString := strings.Join(servicesData, "\n")
+
+		replacer := strings.NewReplacer(
+			"{{.url}}", c.BaseURL(),
+			"{{.version}}", API_VERSION,
+			"{{.title}}", "S'abonner",
+			"{{.data}}", servicesString,
+			"&", "&amp;",
+		)
+		replace := replacer.Replace(string(menu.GetTemplateXML()))
+		return c.Status(fiber.StatusOK).SendString(replace)
 	}
 
 	menu, err := h.menuService.GetBySlug("detail")
@@ -645,7 +685,7 @@ func (h *IncomingHandler) MsisdnNotFound(baseUrl string) string {
 	return replacer.Replace(menu.GetTemplateXML())
 }
 
-func (h *IncomingHandler) IsActiveSubscription(baseUrl, slug, category string) string {
+func (h *IncomingHandler) GetPackage(baseUrl, slug, category string) string {
 	services, err := h.serviceService.GetAllByCategory(category)
 	if err != nil {
 		return err.Error()
@@ -681,10 +721,15 @@ func (h *IncomingHandler) IsActiveSubscription(baseUrl, slug, category string) s
 	return replacer.Replace(string(menu.GetTemplateXML()))
 }
 
+func (h *IncomingHandler) IsActiveSubscriptionNonSMSAlerte(category, msisdn string) bool {
+	return h.subscriptionService.IsActiveSubscriptionByNonSMSAlerte(category, msisdn)
+}
+
 /**
 ** Menu service
 **/
-func (h *IncomingHandler) LiveMatchs(baseUrl string, page int) string {
+
+func (h *IncomingHandler) LiveMatchs(baseUrl string, isActive bool, page int) string {
 	livematchs, err := h.fixtureService.GetAllLiveMatchUSSD(page)
 	if err != nil {
 		log.Println(err.Error())
@@ -694,13 +739,26 @@ func (h *IncomingHandler) LiveMatchs(baseUrl string, page int) string {
 	var liveMatchsString string
 	if len(livematchs) > 0 {
 		for _, s := range livematchs {
-			row := `<a href="` +
-				baseUrl + `/` +
-				API_VERSION + `/ussd/q/detail?slug=lm-live-match&amp;title=` +
-				s.GetFixtureNameQueryEscape() + `">` +
-				s.GetFixtureName() +
-				`</a><br/>`
-			liveMatchsData = append(liveMatchsData, row)
+
+			if isActive {
+				row := `<a href="` +
+					baseUrl + `/` +
+					API_VERSION + `/ussd/q/detail?slug=lm-live-match&amp;title=` +
+					s.GetFixtureNameQueryEscape() + `">` +
+					s.GetFixtureName() +
+					`</a><br/>`
+
+				liveMatchsData = append(liveMatchsData, row)
+			} else {
+				row := `<a href="` +
+					baseUrl + `/` +
+					API_VERSION + `/ussd/buy/?slug=confirm&amp;title=` +
+					s.GetFixtureNameQueryEscape() + `">` +
+					s.GetFixtureName() +
+					`</a><br/>`
+
+				liveMatchsData = append(liveMatchsData, row)
+			}
 		}
 		liveMatchsString = strings.Join(liveMatchsData, "\n")
 	} else {
@@ -866,8 +924,9 @@ func (h *IncomingHandler) KitFootByLeague(baseUrl string, leagueId, page int) st
 			row := `<a href="` +
 				baseUrl + `/` +
 				API_VERSION +
-				`/ussd/q/detail?slug=kit-foot-by-team&amp;team_id=` +
-				s.Team.GetIdToString() + `&amp;title=` +
+				`/ussd/q/detail?slug=kit-foot-by-team&amp;category=SMSALERTE_EQUIPE&amp;team_id=` +
+				s.Team.GetIdToString() + `&amp;code=` +
+				s.Team.GetCode() + `&amp;title=` +
 				s.Team.GetNameQueryEscape() + `">` +
 				s.Team.GetName() +
 				`</a><br/>`
@@ -898,7 +957,7 @@ func (h *IncomingHandler) FootEurope(baseUrl string, page int) string {
 				baseUrl + `/` +
 				API_VERSION +
 				`/ussd/q?slug=kit-foot-by-league&amp;league_id=` + s.GetIdToString() +
-				`&amp;title=` + s.GetNameQueryEscape() +
+				`&amp;code=` + s.GetCode() + `&amp;title=` + s.GetNameQueryEscape() +
 				`">Alerte ` + s.GetNameWithoutAccents() +
 				`</a><br/>`
 			leaguesData = append(leaguesData, row)
@@ -924,7 +983,7 @@ func (h *IncomingHandler) FootAfrique(baseUrl string, page int) string {
 				baseUrl + `/` +
 				API_VERSION +
 				`/ussd/q?slug=kit-foot-by-league&amp;league_id=` + s.GetIdToString() +
-				`&amp;title=` + s.GetNameQueryEscape() +
+				`&amp;code=` + s.GetCode() + `&amp;title=` + s.GetNameQueryEscape() +
 				`">Alerte ` + s.GetNameWithoutAccents() +
 				`</a><br/>`
 			leaguesData = append(leaguesData, row)
@@ -950,7 +1009,7 @@ func (h *IncomingHandler) FootInternational(baseUrl string, page int) string {
 				baseUrl + `/` +
 				API_VERSION +
 				`/ussd/q?slug=kit-foot-by-league&amp;league_id=` + s.GetIdToString() +
-				`&amp;title=` + s.GetNameQueryEscape() +
+				`&amp;code=` + s.GetCode() + `&amp;title=` + s.GetNameQueryEscape() +
 				`">Alerte ` + s.GetNameWithoutAccents() +
 				`</a><br/>`
 			leaguesData = append(leaguesData, row)

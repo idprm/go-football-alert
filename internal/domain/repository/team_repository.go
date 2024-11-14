@@ -35,6 +35,7 @@ type ITeamRepository interface {
 	Delete(*entity.Team) error
 	GetLeagueByTeam(int) (*entity.LeagueTeam, error)
 	SaveLeagueTeam(*entity.LeagueTeam) (*entity.LeagueTeam, error)
+	UpdateLeagueTeam(*entity.LeagueTeam) (*entity.LeagueTeam, error)
 }
 
 func (r *TeamRepository) Count(slug string) (int64, error) {
@@ -198,6 +199,14 @@ func (r *TeamRepository) GetLeagueByTeam(teamId int) (*entity.LeagueTeam, error)
 
 func (r *TeamRepository) SaveLeagueTeam(c *entity.LeagueTeam) (*entity.LeagueTeam, error) {
 	err := r.db.Create(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
+func (r *TeamRepository) UpdateLeagueTeam(c *entity.LeagueTeam) (*entity.LeagueTeam, error) {
+	err := r.db.Where("league_id = ? AND team_id = ?", c.LeagueID, c.TeamID).Updates(&c).Error
 	if err != nil {
 		return nil, err
 	}

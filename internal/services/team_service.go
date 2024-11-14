@@ -35,6 +35,7 @@ type ITeamService interface {
 	Delete(*entity.Team) error
 	GetLeagueByTeam(int) (*entity.LeagueTeam, error)
 	SaveLeagueTeam(*entity.LeagueTeam) (*entity.LeagueTeam, error)
+	UpdateLeagueTeam(*entity.LeagueTeam) (*entity.LeagueTeam, error)
 }
 
 func (s *TeamService) IsTeam(slug string) bool {
@@ -118,4 +119,8 @@ func (s *TeamService) GetLeagueByTeam(teamId int) (*entity.LeagueTeam, error) {
 
 func (s *TeamService) SaveLeagueTeam(a *entity.LeagueTeam) (*entity.LeagueTeam, error) {
 	return s.teamRepo.SaveLeagueTeam(a)
+}
+
+func (s *TeamService) UpdateLeagueTeam(a *entity.LeagueTeam) (*entity.LeagueTeam, error) {
+	return s.teamRepo.UpdateLeagueTeam(a)
 }

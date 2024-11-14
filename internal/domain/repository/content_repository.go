@@ -61,7 +61,7 @@ func (r *ContentRepository) Save(c *entity.Content) (*entity.Content, error) {
 }
 
 func (r *ContentRepository) Update(c *entity.Content) (*entity.Content, error) {
-	err := r.db.Where("name = ?", c.Name).Updates(&c).Error
+	err := r.db.Where("name = ?", c.GetName()).Updates(&c).Error
 	if err != nil {
 		return nil, err
 	}

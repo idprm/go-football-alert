@@ -27,6 +27,8 @@ type UssdHandler struct {
 	transactionService  services.ITransactionService
 	historyService      services.IHistoryService
 	summaryService      services.ISummaryService
+	leagueService       services.ILeagueService
+	teamService         services.ITeamService
 	req                 *model.UssdRequest
 }
 
@@ -41,6 +43,8 @@ func NewUssdHandler(
 	transactionService services.ITransactionService,
 	historyService services.IHistoryService,
 	summaryService services.ISummaryService,
+	leagueService services.ILeagueService,
+	teamService services.ITeamService,
 	req *model.UssdRequest,
 ) *UssdHandler {
 	return &UssdHandler{
@@ -54,6 +58,8 @@ func NewUssdHandler(
 		transactionService:  transactionService,
 		historyService:      historyService,
 		summaryService:      summaryService,
+		leagueService:       leagueService,
+		teamService:         teamService,
 		req:                 req,
 	}
 }
@@ -70,12 +76,25 @@ func (h *UssdHandler) Registration() {
 	/**
 	 ** LiveMatch &  FlashNews & SMSAlerte
 	 **/
-	h.Subscription()
+
+	if h.req.IsCatSMSAlerteCompetition() || h.req.IsCatSMSAlerteEquipe() {
+		h.SubSMSAlerte()
+	}
+
 }
 
-func (h *UssdHandler) Subscription() {
+func (h *UssdHandler) SubSMSAlerte() {
 	trxId := utils.GenerateTrxId()
 
+	if h.req.IsCatSMSAlerteCompetition() {
+		if h.leagueService.IsLeagueByCode(h.req.GetCode()) {
+		}
+	}
+
+	if h.req.IsCatSMSAlerteEquipe() {
+		if h.teamService.IsTeamByCode(h.req.GetCode()) {
+		}
+	}
 	service, err := h.getServiceByCode(h.req.GetCode())
 	if err != nil {
 		log.Println(err.Error())

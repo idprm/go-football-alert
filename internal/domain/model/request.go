@@ -398,6 +398,13 @@ func (m *UssdRequest) IsKitFootChamp() bool {
 	return m.GetSlug() == "kit-foot-champ"
 }
 
+func (m *UssdRequest) IsCatSMSAlerteCompetition() bool {
+	return m.GetCategory() == "SMSALERTE_COMPETITION"
+}
+func (m *UssdRequest) IsCatSMSAlerteEquipe() bool {
+	return m.GetCategory() == "SMSALERTE_EQUIPE"
+}
+
 type MenuRequest struct {
 	Category    string `validate:"required" json:"category"`
 	Name        string `validate:"required" json:"name"`
