@@ -82,7 +82,7 @@ func (r *FixtureRepository) GetAllCurrent() ([]*entity.Fixture, error) {
 
 func (r *FixtureRepository) GetAllLiveMatchUSSD(page int) ([]*entity.Fixture, error) {
 	var c []*entity.Fixture
-	err := r.db.Where("DATE(fixture_date) BETWEEN DATE(NOW()) AND DATE(NOW() + INTERVAL 1 DAY)").Preload("Home").Preload("Away").Order("DATE(fixture_date) ASC").Offset((page - 1) * 5).Limit(5).Find(&c).Error
+	err := r.db.Where("DATE(fixture_date) BETWEEN DATE(NOW()) AND DATE(NOW() + INTERVAL 10 DAY)").Preload("Home").Preload("Away").Order("DATE(fixture_date) ASC").Offset((page - 1) * 5).Limit(5).Find(&c).Error
 	if err != nil {
 		return nil, err
 	}

@@ -384,8 +384,12 @@ func (m *UssdRequest) IsPrediction() bool {
 	return m.GetSlug() == "prediction"
 }
 
+func (m *UssdRequest) IsLiveMatch() bool {
+	return m.GetSlug() == "lm-live-match" || m.GetSlug() == "lm-schedule" || m.GetSlug() == "lm-lineup" || m.GetSlug() == "lm-display"
+}
+
 func (m *UssdRequest) IsSMSAlerte() bool {
-	return m.GetSlug() == "kit-foot-by-league" || m.GetSlug() == "kit-foot-by-team"
+	return m.GetSlug() == "kit-foot" || m.GetSlug() == "kit-foot-by-league" || m.GetSlug() == "kit-foot-by-team"
 }
 
 func (m *UssdRequest) IsSMSAlerteEquipe() bool {

@@ -330,13 +330,7 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 		var data string
 
 		if req.IsLmLiveMatch() {
-
-			if !h.IsActiveSubscriptionNonSMSAlerte(req.GetCategory(), req.GetMsisdn()) {
-				//data = h.LiveMatchs(c.BaseURL(), false, req.GetPage()+1)
-			} else {
-				data = h.LiveMatchs(c.BaseURL(), true, req.GetPage()+1)
-			}
-
+			data = h.LiveMatchs(c.BaseURL(), true, req.GetPage()+1)
 		}
 
 		if req.IsLmSchedule() {
@@ -416,7 +410,8 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 		}
 
 		if req.GetSlug() == "foot-international" {
-			data = h.FootInternational(c.BaseURL(), req.GetPage()+1)
+			// data = h.FootInternational(c.BaseURL(), req.GetPage()+1)
+			data = h.FootEurope(c.BaseURL(), req.GetPage()+1)
 		}
 
 		leagueId := strconv.Itoa(req.GetLeagueId())
@@ -494,9 +489,10 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).SendString(h.PageNotFound(c.BaseURL()))
 	}
 
-	if req.IsSMSAlerte() {
+	// LIVEMATCH OR FLASHNEWS
+	if req.IsLiveMatch() || req.IsFlashNews() {
 		// check sub
-		if !h.subscriptionService.IsActiveSubscriptionByCategory(req.GetCategory(), req.GetMsisdn(), req.GetUniqueCode()) {
+		if !h.subscriptionService.IsActiveSubscriptionByNonSMSAlerte(req.GetCategory(), req.GetMsisdn()) {
 			services, _ := h.serviceService.GetAllByCategory(req.GetCategory())
 
 			menu, _ := h.menuService.GetBySlug("package")
@@ -509,8 +505,7 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 					`/ussd/confirm?slug=` + req.GetSlug() +
 					`&code=` + s.Code +
 					`&category=` + req.GetCategory() +
-					`&package=` + s.GetPackage() +
-					`&unique_code=` + req.GetUniqueCode() + `">` +
+					`&package=` + s.GetPackage() + `">` +
 					s.GetName() + " (" + s.GetPriceToString() + ")" +
 					"</a>"
 				servicesData = append(servicesData, row)
@@ -529,9 +524,9 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 		}
 	}
 
-	if req.IsFlashNews() {
+	if req.IsSMSAlerte() {
 		// check sub
-		if !h.subscriptionService.IsActiveSubscriptionByNonSMSAlerte(req.GetCategory(), req.GetMsisdn()) {
+		if !h.subscriptionService.IsActiveSubscriptionByCategory(req.GetCategory(), req.GetMsisdn(), req.GetUniqueCode()) {
 			services, _ := h.serviceService.GetAllByCategory(req.GetCategory())
 
 			menu, _ := h.menuService.GetBySlug("package")
@@ -544,7 +539,8 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 					`/ussd/confirm?slug=` + req.GetSlug() +
 					`&code=` + s.Code +
 					`&category=` + req.GetCategory() +
-					`&package=` + s.GetPackage() + `">` +
+					`&package=` + s.GetPackage() +
+					`&unique_code=` + req.GetUniqueCode() + `">` +
 					s.GetName() + " (" + s.GetPriceToString() + ")" +
 					"</a>"
 				servicesData = append(servicesData, row)
