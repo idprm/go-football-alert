@@ -11,9 +11,9 @@ type Transaction struct {
 	Service      *Service `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"service,omitempty"`
 	Msisdn       string   `gorm:"size:15;not null" json:"msisdn"`
 	Code         string   `gorm:"size:25;not null" json:"code"`
-	Keyword      string   `gorm:"size:50" json:"keyword,omitempty"`
-	Amount       float64  `gorm:"size:10;default:0" json:"amount,omitempty"`
-	Discount     float64  `gorm:"size:10;default:0" json:"discount,omitempty"`
+	Keyword      string   `gorm:"size:50" json:"keyword"`
+	Amount       float64  `gorm:"size:10;default:0" json:"amount"`
+	Discount     float64  `gorm:"size:10;default:0" json:"discount"`
 	Status       string   `gorm:"size:25" json:"status,omitempty"`
 	StatusCode   string   `gorm:"size:85" json:"status_code,omitempty"`
 	StatusDetail string   `gorm:"size:85" json:"status_detail,omitempty"`

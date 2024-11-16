@@ -35,7 +35,7 @@ func (r *HistoryRepository) Count(serviceId int, msisdn string) (int64, error) {
 
 func (r *HistoryRepository) GetAllPaginate(p *entity.Pagination) (*entity.Pagination, error) {
 	var histories []*entity.History
-	err := r.db.Where("UPPER(msisdn) LIKE UPPER(?) OR UPPER(keyword) LIKE UPPER(?)", "%"+p.GetSearch()+"%", "%"+p.GetSearch()+"%").Scopes(Paginate(histories, p, r.db)).Find(&histories).Error
+	err := r.db.Where("UPPER(msisdn) LIKE UPPER(?) OR UPPER(keyword) LIKE UPPER(?)", "%"+p.GetSearch()+"%", "%"+p.GetSearch()+"%").Scopes(Paginate(histories, p, r.db)).Preload("Service").Find(&histories).Error
 	if err != nil {
 		return nil, err
 	}

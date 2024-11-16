@@ -81,6 +81,7 @@ func (h *SMSAlerteHandler) SMSAlerte() {
 			mt := &model.MTRequest{
 				Smsc:         service.ScSubMT,
 				Service:      service,
+				Keyword:      sub.GetLatestKeyword(),
 				Subscription: sub,
 				Content:      &entity.Content{Value: news.GetTitleWithoutAccents()},
 			}
