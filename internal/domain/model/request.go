@@ -400,8 +400,8 @@ func (m *UssdRequest) IsSMSFootInternational() bool {
 	return m.GetSlug() == "sms-foot-international"
 }
 
-func (m *UssdRequest) IsKitFoot() bool {
-	return m.GetSlug() == "kit-foot"
+func (m *UssdRequest) IsPronostic() bool {
+	return m.GetSlug() == "ticket-safe" || m.GetSlug() == "combine"
 }
 
 func (m *UssdRequest) IsKitFootChamp() bool {

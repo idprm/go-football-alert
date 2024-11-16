@@ -490,7 +490,7 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 	}
 
 	// LIVEMATCH OR FLASHNEWS
-	if req.IsLiveMatch() || req.IsFlashNews() {
+	if req.IsLiveMatch() || req.IsFlashNews() || req.IsPronostic() {
 		// check sub
 		if !h.subscriptionService.IsActiveSubscriptionByNonSMSAlerte(req.GetCategory(), req.GetMsisdn()) {
 			services, _ := h.serviceService.GetAllByCategory(req.GetCategory())
