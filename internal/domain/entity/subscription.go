@@ -42,18 +42,18 @@ type Subscription struct {
 	PredictionAt         time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"prediction_at,omitempty"`
 	CreditGoalAt         time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"credit_goal_at,omitempty"`
 	FirstSuccessAt       time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"first_success_at,omitempty"`
-	TotalSuccess         int       `gorm:"default:0" json:"total_success,omitempty"`
-	TotalFailed          int       `gorm:"default:0" json:"total_failed,omitempty"`
-	TotalAmount          float64   `gorm:"default:0" json:"total_amount,omitempty"`
-	TotalFirstpush       int       `gorm:"default:0" json:"total_firstpush,omitempty"`
-	TotalRenewal         int       `gorm:"default:0" json:"total_renewal,omitempty"`
-	TotalSub             int       `gorm:"default:0" json:"total_sub,omitempty"`
-	TotalUnsub           int       `gorm:"default:0" json:"total_unsub,omitempty"`
-	TotalAmountFirstpush float64   `gorm:"default:0" json:"total_amount_firstpush,omitempty"`
-	TotalAmountRenewal   float64   `gorm:"default:0" json:"total_amount_renewal,omitempty"`
+	TotalSuccess         int       `gorm:"default:0" json:"total_success"`
+	TotalFailed          int       `gorm:"default:0" json:"total_failed"`
+	TotalAmount          float64   `gorm:"default:0" json:"total_amount"`
+	TotalFirstpush       int       `gorm:"default:0" json:"total_firstpush"`
+	TotalRenewal         int       `gorm:"default:0" json:"total_renewal"`
+	TotalSub             int       `gorm:"default:0" json:"total_sub"`
+	TotalUnsub           int       `gorm:"default:0" json:"total_unsub"`
+	TotalAmountFirstpush float64   `gorm:"default:0" json:"total_amount_firstpush"`
+	TotalAmountRenewal   float64   `gorm:"default:0" json:"total_amount_renewal"`
 	BeforeBalance        float64   `gorm:"default:0" json:"before_balance,omitempty"`
 	AfterBalance         float64   `gorm:"default:0" json:"after_balance,omitempty"`
-	IpAddress            string    `gorm:"size:25" json:"ip_address,omitempty"`
+	IpAddress            string    `gorm:"size:25" json:"ip_address"`
 	IsFollowTeam         bool      `gorm:"type:boolean;column:is_follow_team" json:"is_follow_team,omitempty"`
 	IsFollowLeague       bool      `gorm:"type:boolean;column:is_follow_competition" json:"is_follow_competition,omitempty"`
 	IsPredictWin         bool      `gorm:"type:boolean;column:is_predict_win" json:"is_predict_win,omitempty"`

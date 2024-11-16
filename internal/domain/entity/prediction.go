@@ -33,7 +33,7 @@ type Prediction struct {
 	PercentHome   string    `json:"percent_home"`
 	PercentDraw   string    `json:"percent_draw"`
 	PercentAway   string    `json:"percent_away"`
-	gorm.Model    `json:"-"`
+	gorm.Model
 }
 
 func (e *Prediction) GetId() int64 {

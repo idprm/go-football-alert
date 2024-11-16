@@ -58,6 +58,10 @@ func (p *Processor) USSD(wg *sync.WaitGroup, message []byte) {
 	leagueService := services.NewLeagueService(leagueRepo)
 	teamRepo := repository.NewTeamRepository(p.db)
 	teamService := services.NewTeamService(teamRepo)
+	subscriptionFollowLeagueRepo := repository.NewSubscriptionFollowLeagueRepository(p.db)
+	subscriptionFollowLeagueService := services.NewSubscriptionFollowLeagueService(subscriptionFollowLeagueRepo)
+	subscriptionFollowTeamRepo := repository.NewSubscriptionFollowTeamRepository(p.db)
+	subscriptionFollowTeamService := services.NewSubscriptionFollowTeamService(subscriptionFollowTeamRepo)
 
 	var req *model.UssdRequest
 	json.Unmarshal([]byte(message), &req)
@@ -75,6 +79,8 @@ func (p *Processor) USSD(wg *sync.WaitGroup, message []byte) {
 		summaryService,
 		leagueService,
 		teamService,
+		subscriptionFollowLeagueService,
+		subscriptionFollowTeamService,
 		req,
 	)
 

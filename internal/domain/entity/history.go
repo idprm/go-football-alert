@@ -10,6 +10,7 @@ type History struct {
 	Service        *Service      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"service,omitempty"`
 	Msisdn         string        `gorm:"size:15;not null" json:"msisdn"`
 	Code           string        `gorm:"size:25;not null" json:"code"`
+	Channel        string        `gorm:"size:15" json:"channel,omitempty"`
 	Keyword        string        `json:"keyword"`
 	Subject        string        `json:"subject"`
 	Status         string        `json:"status"`

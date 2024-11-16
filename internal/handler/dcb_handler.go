@@ -20,6 +20,7 @@ type DCBHandler struct {
 	historyService      services.IHistoryService
 	mtService           services.IMTService
 	smsAlerteService    services.ISMSAlerteService
+	pronosticService    services.IPronosticService
 }
 
 func NewDCBHandler(
@@ -34,6 +35,7 @@ func NewDCBHandler(
 	historyService services.IHistoryService,
 	mtService services.IMTService,
 	smsAlerteService services.ISMSAlerteService,
+	pronosticService services.IPronosticService,
 ) *DCBHandler {
 	return &DCBHandler{
 		summaryService:      summaryService,
@@ -47,6 +49,7 @@ func NewDCBHandler(
 		historyService:      historyService,
 		mtService:           mtService,
 		smsAlerteService:    smsAlerteService,
+		pronosticService:    pronosticService,
 	}
 }
 
@@ -612,4 +615,87 @@ func (h *DCBHandler) GetAllSMSAlertePaginate(c *fiber.Ctx) error {
 		)
 	}
 	return c.Status(fiber.StatusOK).JSON(alerts)
+}
+
+func (h *DCBHandler) GetAllPronosticPaginate(c *fiber.Ctx) error {
+	req := new(entity.Pagination)
+
+	err := c.QueryParser(req)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusBadRequest,
+				Message:    err.Error(),
+			},
+		)
+	}
+
+	pronostics, err := h.pronosticService.GetAllPaginate(req)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusInternalServerError,
+				Message:    err.Error(),
+			},
+		)
+	}
+	return c.Status(fiber.StatusOK).JSON(pronostics)
+}
+
+func (h *DCBHandler) SavePronostic(c *fiber.Ctx) error {
+	req := new(model.PronosticRequest)
+
+	err := c.BodyParser(req)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusBadRequest,
+				Message:    err.Error(),
+			},
+		)
+	}
+
+	errors := ValidateStruct(*req)
+	if errors != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(errors)
+	}
+
+	if !h.pronosticService.IsPronosticByFixtureId(int(req.FixtureID)) {
+		h.pronosticService.Save(
+			&entity.Pronostic{
+				FixtureID: req.FixtureID,
+				Category:  req.Category,
+				Value:     req.Value,
+				PublishAt: req.PublishAt,
+			},
+		)
+
+		return c.Status(fiber.StatusCreated).JSON(
+			&model.WebResponse{
+				Error:      false,
+				StatusCode: fiber.StatusCreated,
+				Message:    "created",
+			},
+		)
+	}
+
+	h.pronosticService.Update(
+		&entity.Pronostic{
+			FixtureID: req.FixtureID,
+			Category:  req.Category,
+			Value:     req.Value,
+			PublishAt: req.PublishAt,
+		},
+	)
+
+	return c.Status(fiber.StatusOK).JSON(
+		&model.WebResponse{
+			Error:      false,
+			StatusCode: fiber.StatusOK,
+			Message:    "updated",
+		},
+	)
 }

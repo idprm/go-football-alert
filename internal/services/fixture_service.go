@@ -22,7 +22,7 @@ type IFixtureService interface {
 	IsFixtureByPrimaryId(int) bool
 	IsFixtureByDate(time.Time) bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
-	GetAll() ([]*entity.Fixture, error)
+	GetAllCurrent() ([]*entity.Fixture, error)
 	GetAllLiveMatchUSSD(int) ([]*entity.Fixture, error)
 	GetAllScheduleUSSD(int) ([]*entity.Fixture, error)
 	GetAllByLeagueIdUSSD(int, int) ([]*entity.Fixture, error)
@@ -53,8 +53,8 @@ func (s *FixtureService) GetAllPaginate(pagination *entity.Pagination) (*entity.
 	return s.fixtureRepo.GetAllPaginate(pagination)
 }
 
-func (s *FixtureService) GetAll() ([]*entity.Fixture, error) {
-	return s.fixtureRepo.GetAll()
+func (s *FixtureService) GetAllCurrent() ([]*entity.Fixture, error) {
+	return s.fixtureRepo.GetAllCurrent()
 }
 
 func (s *FixtureService) GetAllLiveMatchUSSD(page int) ([]*entity.Fixture, error) {

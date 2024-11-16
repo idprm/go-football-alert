@@ -87,7 +87,7 @@ func (r *NewsRepository) GetAllPaginate(p *entity.Pagination) (*entity.Paginatio
 
 func (r *NewsRepository) GetAllUSSD(page int) ([]*entity.News, error) {
 	var c []*entity.News
-	err := r.db.Where("DATE(publish_at) BETWEEN DATE(NOW() - INTERVAL 1 DAY) AND DATE(NOW())").Order("DATE(publish_at) DESC").Offset((page - 1) * 5).Limit(5).Find(&c).Error
+	err := r.db.Where("DATE(publish_at) BETWEEN DATE(NOW() - INTERVAL 2 DAY) AND DATE(NOW())").Order("DATE(publish_at) DESC").Offset((page - 1) * 5).Limit(5).Find(&c).Error
 	if err != nil {
 		return nil, err
 	}

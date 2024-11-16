@@ -85,6 +85,7 @@ var listenerCmd = &cobra.Command{
 			&entity.Betting{},
 			&entity.Summary{},
 			&entity.MT{},
+			&entity.Pronostic{},
 		)
 
 		/**
@@ -214,6 +215,9 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	smsAlerteRepo := repository.NewSMSAlerteRespository(db)
 	smsAlerteService := services.NewSMSAlerteService(smsAlerteRepo)
 
+	pronosticRepo := repository.NewPronosticRepository(db)
+	pronosticService := services.NewPronosticService(pronosticRepo)
+
 	h := handler.NewIncomingHandler(
 		rds,
 		rmq,
@@ -271,6 +275,7 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 		historyService,
 		mtService,
 		smsAlerteService,
+		pronosticService,
 	)
 
 	r.Get("/mo", h.MessageOriginated)
@@ -300,6 +305,7 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 
 	fixtures := v1.Group("fixtures")
 	fixtures.Get("/", fixtureHandler.GetAllPaginate)
+	fixtures.Get("/current", fixtureHandler.GetAllCurrent)
 	fixtures.Get("/:id", fixtureHandler.Get)
 	fixtures.Post("/", fixtureHandler.Save)
 	fixtures.Put("/:id", fixtureHandler.Update)
@@ -317,6 +323,11 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	news.Get("/:id", newsHandler.GetById)
 	news.Post("/", newsHandler.Save)
 	news.Put("/:id", newsHandler.Delete)
+
+	// pronostics
+	pronostics := v1.Group("pronostics")
+	pronostics.Get("/", dcbHandler.GetAllPronosticPaginate)
+	pronostics.Post("/", dcbHandler.SavePronostic)
 
 	// callback
 	ussd := v1.Group("ussd")

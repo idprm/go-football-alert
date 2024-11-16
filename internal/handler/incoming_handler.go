@@ -348,7 +348,7 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 		}
 
 		if req.IsSMSAlerte() {
-			data = h.FlashNews(c.BaseURL(), req.GetPage()+1)
+			data = h.SMSAlerte(c.BaseURL(), req.GetPage()+1)
 		}
 
 		if req.IsCreditGoal() {
@@ -494,36 +494,73 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).SendString(h.PageNotFound(c.BaseURL()))
 	}
 
-	// check sub
-	if !h.subscriptionService.IsActiveSubscriptionByCategory(req.GetCategory(), req.GetMsisdn(), req.GetCode()) {
-		services, _ := h.serviceService.GetAllByCategory(req.GetCategory())
+	if req.IsSMSAlerte() {
+		// check sub
+		if !h.subscriptionService.IsActiveSubscriptionByCategory(req.GetCategory(), req.GetMsisdn(), req.GetUniqueCode()) {
+			services, _ := h.serviceService.GetAllByCategory(req.GetCategory())
 
-		menu, _ := h.menuService.GetBySlug("package")
-		// package
-		var servicesData []string
-		for _, s := range services {
-			row := `<a href="` +
-				c.BaseURL() + `/` +
-				API_VERSION +
-				`/ussd/confirm?slug=` + req.GetSlug() +
-				`&code=` + s.Code +
-				`&category=` + req.GetCategory() +
-				`&package=` + s.GetPackage() + `">` +
-				s.GetName() + " (" + s.GetPriceToString() + ")" +
-				"</a>"
-			servicesData = append(servicesData, row)
+			menu, _ := h.menuService.GetBySlug("package")
+			// package
+			var servicesData []string
+			for _, s := range services {
+				row := `<a href="` +
+					c.BaseURL() + `/` +
+					API_VERSION +
+					`/ussd/confirm?slug=` + req.GetSlug() +
+					`&code=` + s.Code +
+					`&category=` + req.GetCategory() +
+					`&package=` + s.GetPackage() +
+					`&unique_code=` + req.GetUniqueCode() + `">` +
+					s.GetName() + " (" + s.GetPriceToString() + ")" +
+					"</a>"
+				servicesData = append(servicesData, row)
+			}
+			servicesString := strings.Join(servicesData, "\n")
+
+			replacer := strings.NewReplacer(
+				"{{.url}}", c.BaseURL(),
+				"{{.version}}", API_VERSION,
+				"{{.title}}", "S'abonner",
+				"{{.data}}", servicesString,
+				"&", "&amp;",
+			)
+			replace := replacer.Replace(string(menu.GetTemplateXML()))
+			return c.Status(fiber.StatusOK).SendString(replace)
 		}
-		servicesString := strings.Join(servicesData, "\n")
+	}
 
-		replacer := strings.NewReplacer(
-			"{{.url}}", c.BaseURL(),
-			"{{.version}}", API_VERSION,
-			"{{.title}}", "S'abonner",
-			"{{.data}}", servicesString,
-			"&", "&amp;",
-		)
-		replace := replacer.Replace(string(menu.GetTemplateXML()))
-		return c.Status(fiber.StatusOK).SendString(replace)
+	if req.IsFlashNews() {
+		// check sub
+		if !h.subscriptionService.IsActiveSubscriptionByNonSMSAlerte(req.GetCategory(), req.GetMsisdn()) {
+			services, _ := h.serviceService.GetAllByCategory(req.GetCategory())
+
+			menu, _ := h.menuService.GetBySlug("package")
+			// package
+			var servicesData []string
+			for _, s := range services {
+				row := `<a href="` +
+					c.BaseURL() + `/` +
+					API_VERSION +
+					`/ussd/confirm?slug=` + req.GetSlug() +
+					`&code=` + s.Code +
+					`&category=` + req.GetCategory() +
+					`&package=` + s.GetPackage() + `">` +
+					s.GetName() + " (" + s.GetPriceToString() + ")" +
+					"</a>"
+				servicesData = append(servicesData, row)
+			}
+			servicesString := strings.Join(servicesData, "\n")
+
+			replacer := strings.NewReplacer(
+				"{{.url}}", c.BaseURL(),
+				"{{.version}}", API_VERSION,
+				"{{.title}}", "S'abonner",
+				"{{.data}}", servicesString,
+				"&", "&amp;",
+			)
+			replace := replacer.Replace(string(menu.GetTemplateXML()))
+			return c.Status(fiber.StatusOK).SendString(replace)
+		}
 	}
 
 	menu, err := h.menuService.GetBySlug("detail")
@@ -588,6 +625,7 @@ func (h *IncomingHandler) Confirm(c *fiber.Ctx) error {
 		"{{.category}}", req.GetCategory(),
 		"{{.package}}", req.GetPackage(),
 		"{{.code}}", service.GetCode(),
+		"{{.unique_code}}", req.GetUniqueCode(),
 		"{{.price}}", service.GetPriceToString(),
 		"&", "&amp;",
 	)
@@ -804,7 +842,7 @@ func (h *IncomingHandler) FlashNews(baseUrl string, page int) string {
 		for _, s := range news {
 			row := `<a href="` +
 				baseUrl + `/` +
-				API_VERSION + `/ussd/q/detail?slug=flash-news&amp;category=SMSALERTE&amp;title=` +
+				API_VERSION + `/ussd/q/detail?slug=flash-news&amp;category=FLASHNEWS&amp;title=` +
 				s.GetTitleQueryEscape() + `">` +
 				s.GetTitleLimited(20) +
 				`</a><br/>`
@@ -925,7 +963,7 @@ func (h *IncomingHandler) KitFootByLeague(baseUrl string, leagueId, page int) st
 				baseUrl + `/` +
 				API_VERSION +
 				`/ussd/q/detail?slug=kit-foot-by-team&amp;category=SMSALERTE_EQUIPE&amp;team_id=` +
-				s.Team.GetIdToString() + `&amp;code=` +
+				s.Team.GetIdToString() + `&amp;unique_code=` +
 				s.Team.GetCode() + `&amp;title=` +
 				s.Team.GetNameQueryEscape() + `">` +
 				s.Team.GetName() +
@@ -957,7 +995,7 @@ func (h *IncomingHandler) FootEurope(baseUrl string, page int) string {
 				baseUrl + `/` +
 				API_VERSION +
 				`/ussd/q?slug=kit-foot-by-league&amp;league_id=` + s.GetIdToString() +
-				`&amp;code=` + s.GetCode() + `&amp;title=` + s.GetNameQueryEscape() +
+				`&amp;unique_code=` + s.GetCode() + `&amp;title=` + s.GetNameQueryEscape() +
 				`">Alerte ` + s.GetNameWithoutAccents() +
 				`</a><br/>`
 			leaguesData = append(leaguesData, row)
@@ -983,7 +1021,7 @@ func (h *IncomingHandler) FootAfrique(baseUrl string, page int) string {
 				baseUrl + `/` +
 				API_VERSION +
 				`/ussd/q?slug=kit-foot-by-league&amp;league_id=` + s.GetIdToString() +
-				`&amp;code=` + s.GetCode() + `&amp;title=` + s.GetNameQueryEscape() +
+				`&amp;unique_code=` + s.GetCode() + `&amp;title=` + s.GetNameQueryEscape() +
 				`">Alerte ` + s.GetNameWithoutAccents() +
 				`</a><br/>`
 			leaguesData = append(leaguesData, row)
@@ -1009,7 +1047,7 @@ func (h *IncomingHandler) FootInternational(baseUrl string, page int) string {
 				baseUrl + `/` +
 				API_VERSION +
 				`/ussd/q?slug=kit-foot-by-league&amp;league_id=` + s.GetIdToString() +
-				`&amp;code=` + s.GetCode() + `&amp;title=` + s.GetNameQueryEscape() +
+				`&amp;unique_code=` + s.GetCode() + `&amp;title=` + s.GetNameQueryEscape() +
 				`">Alerte ` + s.GetNameWithoutAccents() +
 				`</a><br/>`
 			leaguesData = append(leaguesData, row)

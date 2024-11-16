@@ -3,6 +3,7 @@ package model
 import (
 	"net/url"
 	"strings"
+	"time"
 	"unicode"
 
 	"github.com/idprm/go-football-alert/internal/domain/entity"
@@ -12,16 +13,17 @@ import (
 )
 
 type UssdRequest struct {
-	Slug     string `validate:"required" query:"slug" json:"slug,omitempty"`
-	Title    string `query:"title" json:"title,omitempty"`
-	Category string `query:"category" json:"category,omitempty"`
-	Package  string `query:"package" json:"package,omitempty"`
-	Code     string `query:"code" json:"code,omitempty"`
-	Action   string `query:"action" json:"action,omitempty"`
-	LeagueId int    `query:"league_id" json:"league_id,omitempty"`
-	TeamId   int    `query:"team_id" json:"team_id,omitempty"`
-	Msisdn   string `json:"msisdn,omitempty"`
-	Page     int    `query:"page" json:"page,omitempty"`
+	Slug       string `validate:"required" query:"slug" json:"slug,omitempty"`
+	Title      string `query:"title" json:"title,omitempty"`
+	Category   string `query:"category" json:"category,omitempty"`
+	Package    string `query:"package" json:"package,omitempty"`
+	Code       string `query:"code" json:"code,omitempty"`
+	UniqueCode string `query:"unique_code" json:"unique_code,omitempty"`
+	Action     string `query:"action" json:"action,omitempty"`
+	LeagueId   int    `query:"league_id" json:"league_id,omitempty"`
+	TeamId     int    `query:"team_id" json:"team_id,omitempty"`
+	Msisdn     string `json:"msisdn,omitempty"`
+	Page       int    `query:"page" json:"page,omitempty"`
 }
 
 func (m *UssdRequest) GetSlug() string {
@@ -52,6 +54,10 @@ func (m *UssdRequest) GetPackage() string {
 
 func (m *UssdRequest) GetCode() string {
 	return m.Code
+}
+
+func (m *UssdRequest) GetUniqueCode() string {
+	return m.UniqueCode
 }
 
 func (m *UssdRequest) GetAction() string {
@@ -379,7 +385,7 @@ func (m *UssdRequest) IsPrediction() bool {
 }
 
 func (m *UssdRequest) IsSMSAlerte() bool {
-	return m.GetSlug() == "sms-alerte"
+	return m.GetSlug() == "kit-foot-by-league" || m.GetSlug() == "kit-foot-by-team"
 }
 
 func (m *UssdRequest) IsSMSAlerteEquipe() bool {
@@ -401,8 +407,13 @@ func (m *UssdRequest) IsKitFootChamp() bool {
 func (m *UssdRequest) IsCatSMSAlerteCompetition() bool {
 	return m.GetCategory() == "SMSALERTE_COMPETITION"
 }
+
 func (m *UssdRequest) IsCatSMSAlerteEquipe() bool {
 	return m.GetCategory() == "SMSALERTE_EQUIPE"
+}
+
+func (m *UssdRequest) IsCatPronostic() bool {
+	return m.GetCategory() == "PRONOSTIC_COMBINED"
 }
 
 type MenuRequest struct {
@@ -467,4 +478,11 @@ type TeamRequest struct {
 	Name      string `json:"name"`
 	IsActive  bool   `json:"is_active"`
 	Keyword   string `json:"keyword"`
+}
+
+type PronosticRequest struct {
+	FixtureID int64     `validate:"required" json:"fixture_id"`
+	Category  string    `validate:"required" json:"category"`
+	Value     string    `validate:"required" json:"value"`
+	PublishAt time.Time `validate:"required" json:"publish_at"`
 }
