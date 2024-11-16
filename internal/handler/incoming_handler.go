@@ -507,7 +507,7 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 					`&category=` + req.GetCategory() +
 					`&package=` + s.GetPackage() + `">` +
 					s.GetName() + " (" + s.GetPriceToString() + ")" +
-					"</a>"
+					"</a><br/>"
 				servicesData = append(servicesData, row)
 			}
 			servicesString := strings.Join(servicesData, "\n")
@@ -542,7 +542,7 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 					`&package=` + s.GetPackage() +
 					`&unique_code=` + req.GetUniqueCode() + `">` +
 					s.GetName() + " (" + s.GetPriceToString() + ")" +
-					"</a>"
+					"</a><br/>"
 				servicesData = append(servicesData, row)
 			}
 			servicesString := strings.Join(servicesData, "\n")
@@ -740,7 +740,7 @@ func (h *IncomingHandler) GetPackage(baseUrl, slug, category string) string {
 			`&category=` + category +
 			`&package=` + s.GetPackage() + `">` +
 			s.GetName() + " (" + s.GetPriceToString() + ")" +
-			"</a>"
+			"</a><br/>"
 		servicesData = append(servicesData, row)
 	}
 	servicesString := strings.Join(servicesData, "\n")
