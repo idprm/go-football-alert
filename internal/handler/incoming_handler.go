@@ -1140,7 +1140,7 @@ func (h *IncomingHandler) FootAfrique(baseUrl string, page int) string {
 }
 
 func (h *IncomingHandler) FootInternational(baseUrl string, page int) string {
-	leagues, err := h.leagueService.GetAllWorldUSSD(page)
+	leagues, err := h.leagueService.GetAllInternationalUSSD(page)
 	if err != nil {
 		log.Println(err.Error())
 	}

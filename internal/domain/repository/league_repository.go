@@ -26,6 +26,7 @@ type ILeagueRepository interface {
 	GetAllEuropeUSSD(int) ([]*entity.League, error)
 	GetAllAfriqueUSSD(int) ([]*entity.League, error)
 	GetAllWorldUSSD(int) ([]*entity.League, error)
+	GetAllInternationalUSSD(int) ([]*entity.League, error)
 	Get(string) (*entity.League, error)
 	GetByCode(string) (*entity.League, error)
 	GetByPrimaryId(int) (*entity.League, error)
@@ -121,6 +122,15 @@ func (r *LeagueRepository) GetAllAfriqueUSSD(page int) ([]*entity.League, error)
 func (r *LeagueRepository) GetAllWorldUSSD(page int) ([]*entity.League, error) {
 	var c []*entity.League
 	err := r.db.Where("is_active = ?", true).Where("country IN('World')").Order("id ASC").Offset((page - 1) * 7).Limit(7).Find(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
+func (r *LeagueRepository) GetAllInternationalUSSD(page int) ([]*entity.League, error) {
+	var c []*entity.League
+	err := r.db.Where("is_active = ?", true).Where("primary_id IN(34, 30, 36, 5)").Order("id ASC").Offset((page - 1) * 7).Limit(7).Find(&c).Error
 	if err != nil {
 		return nil, err
 	}

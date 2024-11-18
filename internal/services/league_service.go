@@ -26,6 +26,7 @@ type ILeagueService interface {
 	GetAllEuropeUSSD(int) ([]*entity.League, error)
 	GetAllAfriqueUSSD(int) ([]*entity.League, error)
 	GetAllWorldUSSD(int) ([]*entity.League, error)
+	GetAllInternationalUSSD(int) ([]*entity.League, error)
 	Get(string) (*entity.League, error)
 	GetByCode(string) (*entity.League, error)
 	GetByPrimaryId(int) (*entity.League, error)
@@ -86,6 +87,10 @@ func (s *LeagueService) GetAllAfriqueUSSD(page int) ([]*entity.League, error) {
 
 func (s *LeagueService) GetAllWorldUSSD(page int) ([]*entity.League, error) {
 	return s.leagueRepo.GetAllWorldUSSD(page)
+}
+
+func (s *LeagueService) GetAllInternationalUSSD(page int) ([]*entity.League, error) {
+	return s.leagueRepo.GetAllInternationalUSSD(page)
 }
 
 func (s *LeagueService) GetByPrimaryId(primaryId int) (*entity.League, error) {
