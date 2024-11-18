@@ -177,83 +177,134 @@ func (h *UssdHandler) Firstpush(category string, service *entity.Service, code s
 		// charging if free day >= 1
 		t := telco.NewTelco(h.logger, service, subscription, trxId)
 
-		// respBal, err := t.QueryProfileAndBal()
-		// if err != nil {
-		// 	log.Println(err.Error())
-		// }
-
-		// var respBalance *model.QueryProfileAndBalResponse
-		// xml.Unmarshal(respBal, &respBalance)
-
-		// if respBalance.IsEnoughBalance(service) {
-		resp, err := t.DeductFee()
+		respBal, err := t.QueryProfileAndBal()
 		if err != nil {
 			log.Println(err.Error())
 		}
 
-		var respDeduct *model.DeductResponse
-		xml.Unmarshal(resp, &respDeduct)
+		var respBalance *model.QueryProfileAndBalResponse
+		xml.Unmarshal(respBal, &respBalance)
 
-		if respDeduct.IsSuccess() {
-			h.subscriptionService.Update(
-				&entity.Subscription{
-					ServiceID:            service.GetId(),
-					Msisdn:               h.req.GetMsisdn(),
-					Code:                 code,
-					LatestTrxId:          trxId,
-					LatestSubject:        SUBJECT_FIRSTPUSH,
-					LatestStatus:         STATUS_SUCCESS,
-					TotalAmount:          service.GetPrice(),
-					RenewalAt:            time.Now().AddDate(0, 0, service.GetRenewalDay()),
-					ChargeAt:             time.Now(),
-					TotalSuccess:         sub.TotalSuccess + 1,
-					IsRetry:              false,
-					TotalFirstpush:       sub.TotalFirstpush + 1,
-					TotalAmountFirstpush: service.GetPrice(),
-					LatestPayload:        string(resp),
-					LatestNote:           note,
-				},
-			)
+		if respBalance.IsEnoughBalance(service) {
+			resp, err := t.DeductFee()
+			if err != nil {
+				log.Println(err.Error())
+			}
 
-			// is_retry set to false
-			h.subscriptionService.UpdateNotRetry(sub)
+			var respDeduct *model.DeductResponse
+			xml.Unmarshal(resp, &respDeduct)
 
-			h.transactionService.Save(
-				&entity.Transaction{
-					TrxId:        trxId,
-					ServiceID:    service.GetId(),
-					Msisdn:       h.req.GetMsisdn(),
-					Code:         code,
-					Channel:      CHANNEL_USSD,
-					Keyword:      "",
-					Amount:       service.GetPrice(),
-					Status:       STATUS_SUCCESS,
-					StatusCode:   "",
-					StatusDetail: "",
-					Subject:      SUBJECT_FIRSTPUSH,
-					Payload:      string(resp),
-					Note:         note,
-				},
-			)
+			if respDeduct.IsSuccess() {
+				h.subscriptionService.Update(
+					&entity.Subscription{
+						ServiceID:            service.GetId(),
+						Msisdn:               h.req.GetMsisdn(),
+						Code:                 code,
+						LatestTrxId:          trxId,
+						LatestSubject:        SUBJECT_FIRSTPUSH,
+						LatestStatus:         STATUS_SUCCESS,
+						TotalAmount:          service.GetPrice(),
+						RenewalAt:            time.Now().AddDate(0, 0, service.GetRenewalDay()),
+						ChargeAt:             time.Now(),
+						TotalSuccess:         sub.TotalSuccess + 1,
+						IsRetry:              false,
+						TotalFirstpush:       sub.TotalFirstpush + 1,
+						TotalAmountFirstpush: service.GetPrice(),
+						LatestPayload:        string(resp),
+						LatestNote:           note,
+					},
+				)
 
-			h.historyService.Save(
-				&entity.History{
-					SubscriptionID: sub.GetId(),
-					ServiceID:      service.GetId(),
-					Msisdn:         h.req.GetMsisdn(),
-					Code:           code,
-					Channel:        CHANNEL_USSD,
-					Keyword:        "",
-					Subject:        SUBJECT_FIRSTPUSH,
-					Status:         STATUS_SUCCESS,
-				},
-			)
+				// is_retry set to false
+				h.subscriptionService.UpdateNotRetry(sub)
 
-			summary.SetTotalChargeSuccess(1)
-			summary.SetTotalRevenue(service.GetPrice())
-		}
+				h.transactionService.Save(
+					&entity.Transaction{
+						TrxId:        trxId,
+						ServiceID:    service.GetId(),
+						Msisdn:       h.req.GetMsisdn(),
+						Code:         code,
+						Channel:      CHANNEL_USSD,
+						Keyword:      "",
+						Amount:       service.GetPrice(),
+						Status:       STATUS_SUCCESS,
+						StatusCode:   "",
+						StatusDetail: "",
+						Subject:      SUBJECT_FIRSTPUSH,
+						Payload:      string(resp),
+						Note:         note,
+					},
+				)
 
-		if respDeduct.IsFailed() {
+				h.historyService.Save(
+					&entity.History{
+						SubscriptionID: sub.GetId(),
+						ServiceID:      service.GetId(),
+						Msisdn:         h.req.GetMsisdn(),
+						Code:           code,
+						Channel:        CHANNEL_USSD,
+						Keyword:        "",
+						Subject:        SUBJECT_FIRSTPUSH,
+						Status:         STATUS_SUCCESS,
+					},
+				)
+
+				summary.SetTotalChargeSuccess(1)
+				summary.SetTotalRevenue(service.GetPrice())
+			}
+
+			if respDeduct.IsFailed() {
+				h.subscriptionService.Update(
+					&entity.Subscription{
+						ServiceID:     service.GetId(),
+						Msisdn:        h.req.GetMsisdn(),
+						Code:          code,
+						LatestTrxId:   trxId,
+						LatestSubject: SUBJECT_FIRSTPUSH,
+						LatestStatus:  STATUS_FAILED,
+						RenewalAt:     time.Now().AddDate(0, 0, 1),
+						RetryAt:       time.Now(),
+						TotalFailed:   sub.TotalFailed + 1,
+						IsRetry:       true,
+						LatestPayload: string(resp),
+						LatestNote:    note,
+					},
+				)
+
+				h.transactionService.Save(
+					&entity.Transaction{
+						TrxId:        trxId,
+						ServiceID:    service.GetId(),
+						Msisdn:       h.req.GetMsisdn(),
+						Code:         code,
+						Channel:      CHANNEL_USSD,
+						Keyword:      "",
+						Status:       STATUS_FAILED,
+						StatusCode:   respDeduct.GetFaultCode(),
+						StatusDetail: respDeduct.GetFaultString(),
+						Subject:      SUBJECT_FIRSTPUSH,
+						Payload:      string(resp),
+						Note:         note,
+					},
+				)
+
+				h.historyService.Save(
+					&entity.History{
+						SubscriptionID: sub.GetId(),
+						ServiceID:      service.GetId(),
+						Msisdn:         h.req.GetMsisdn(),
+						Code:           code,
+						Channel:        CHANNEL_USSD,
+						Keyword:        "",
+						Subject:        SUBJECT_FIRSTPUSH,
+						Status:         STATUS_FAILED,
+					},
+				)
+
+				// setter summary
+				summary.SetTotalChargeFailed(1)
+			}
+		} else {
 			h.subscriptionService.Update(
 				&entity.Subscription{
 					ServiceID:     service.GetId(),
@@ -266,7 +317,7 @@ func (h *UssdHandler) Firstpush(category string, service *entity.Service, code s
 					RetryAt:       time.Now(),
 					TotalFailed:   sub.TotalFailed + 1,
 					IsRetry:       true,
-					LatestPayload: string(resp),
+					LatestPayload: string(respBal),
 					LatestNote:    note,
 				},
 			)
@@ -280,10 +331,10 @@ func (h *UssdHandler) Firstpush(category string, service *entity.Service, code s
 					Channel:      CHANNEL_USSD,
 					Keyword:      "",
 					Status:       STATUS_FAILED,
-					StatusCode:   respDeduct.GetFaultCode(),
-					StatusDetail: respDeduct.GetFaultString(),
+					StatusCode:   "",
+					StatusDetail: "INSUFF BALANCE",
 					Subject:      SUBJECT_FIRSTPUSH,
-					Payload:      string(resp),
+					Payload:      string(respBal),
 					Note:         note,
 				},
 			)
@@ -304,57 +355,6 @@ func (h *UssdHandler) Firstpush(category string, service *entity.Service, code s
 			// setter summary
 			summary.SetTotalChargeFailed(1)
 		}
-		// } else {
-		// 	h.subscriptionService.Update(
-		// 		&entity.Subscription{
-		// 			ServiceID:     service.GetId(),
-		// 			Msisdn:        h.req.GetMsisdn(),
-		// 			Code:          code,
-		// 			LatestTrxId:   trxId,
-		// 			LatestSubject: SUBJECT_FIRSTPUSH,
-		// 			LatestStatus:  STATUS_FAILED,
-		// 			RenewalAt:     time.Now().AddDate(0, 0, 1),
-		// 			RetryAt:       time.Now(),
-		// 			TotalFailed:   sub.TotalFailed + 1,
-		// 			IsRetry:       true,
-		// 			LatestPayload: string(respBal),
-		// 			LatestNote:    note,
-		// 		},
-		// 	)
-
-		// 	h.transactionService.Save(
-		// 		&entity.Transaction{
-		// 			TrxId:        trxId,
-		// 			ServiceID:    service.GetId(),
-		// 			Msisdn:       h.req.GetMsisdn(),
-		// 			Code:         code,
-		// 			Channel:      CHANNEL_USSD,
-		// 			Keyword:      "",
-		// 			Status:       STATUS_FAILED,
-		// 			StatusCode:   "",
-		// 			StatusDetail: "INSUFF BALANCE",
-		// 			Subject:      SUBJECT_FIRSTPUSH,
-		// 			Payload:      string(respBal),
-		// 			Note:         note,
-		// 		},
-		// 	)
-
-		// 	h.historyService.Save(
-		// 		&entity.History{
-		// 			SubscriptionID: sub.GetId(),
-		// 			ServiceID:      service.GetId(),
-		// 			Msisdn:         h.req.GetMsisdn(),
-		// 			Code:           code,
-		// 			Channel:        CHANNEL_USSD,
-		// 			Keyword:        "",
-		// 			Subject:        SUBJECT_FIRSTPUSH,
-		// 			Status:         STATUS_FAILED,
-		// 		},
-		// 	)
-
-		// 	// setter summary
-		// 	summary.SetTotalChargeFailed(1)
-		// }
 
 	}
 

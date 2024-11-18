@@ -81,6 +81,10 @@ func (e *Subscription) GetCode() string {
 	return e.Code
 }
 
+func (e *Subscription) GetChannel() string {
+	return e.Channel
+}
+
 func (s *Subscription) GetLatestTrxId() string {
 	return s.LatestTrxId
 }

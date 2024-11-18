@@ -67,7 +67,14 @@ type (
 )
 
 func (m *QueryProfileAndBalResponse) IsEnoughBalance(s *entity.Service) bool {
-	b, _ := strconv.Atoi(m.Body.Item.BalDtoList.BalDto[0].Balance)
+	var b int = 0
+	if len(m.Body.Item.BalDtoList.BalDto) > 0 {
+		for _, data := range m.Body.Item.BalDtoList.BalDto {
+			if data.AcctResName == "Principal" {
+				b, _ = strconv.Atoi(data.Balance)
+			}
+		}
+	}
 	return (b * -1) >= int(s.GetPrice())
 }
 
