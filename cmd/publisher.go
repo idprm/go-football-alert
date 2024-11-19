@@ -377,7 +377,7 @@ var publisherScrapingFixturesCmd = &cobra.Command{
 }
 
 var publisherScrapingLiveMatchesCmd = &cobra.Command{
-	Use:   "pub_scraping_livamatches",
+	Use:   "pub_scraping_livematches",
 	Short: "Publisher Scraping LiveMatches Service CLI",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
