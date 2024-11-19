@@ -23,11 +23,13 @@ type IFixtureRepository interface {
 	CountByFixtureDate(time.Time) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetAllCurrent() ([]*entity.Fixture, error)
+	GetAllLiveMatch() ([]*entity.Fixture, error)
 	GetAllLiveMatchUSSD(int) ([]*entity.Fixture, error)
 	GetAllScheduleUSSD(int) ([]*entity.Fixture, error)
 	GetAllByLeagueIdUSSD(int, int) ([]*entity.Fixture, error)
 	GetAllByFixtureDate(time.Time) ([]*entity.Fixture, error)
 	Get(int) (*entity.Fixture, error)
+	GetByPrimaryId(int) (*entity.Fixture, error)
 	Save(*entity.Fixture) (*entity.Fixture, error)
 	Update(*entity.Fixture) (*entity.Fixture, error)
 	UpdateByPrimaryId(*entity.Fixture) (*entity.Fixture, error)
@@ -80,9 +82,18 @@ func (r *FixtureRepository) GetAllCurrent() ([]*entity.Fixture, error) {
 	return c, nil
 }
 
+func (r *FixtureRepository) GetAllLiveMatch() ([]*entity.Fixture, error) {
+	var c []*entity.Fixture
+	err := r.db.Where("DATE(fixture_date) = DATE(NOW())").Order("DATE(fixture_date) ASC").Preload("Home").Preload("Away").Find(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
 func (r *FixtureRepository) GetAllLiveMatchUSSD(page int) ([]*entity.Fixture, error) {
 	var c []*entity.Fixture
-	err := r.db.Where("DATE(fixture_date) BETWEEN DATE(NOW()) AND DATE(NOW() + INTERVAL 10 DAY)").Preload("Home").Preload("Away").Order("DATE(fixture_date) ASC").Offset((page - 1) * 5).Limit(5).Find(&c).Error
+	err := r.db.Where("DATE(fixture_date) BETWEEN DATE(NOW())").Preload("Home").Preload("Away").Order("DATE(fixture_date) ASC").Offset((page - 1) * 5).Limit(5).Find(&c).Error
 	if err != nil {
 		return nil, err
 	}
@@ -119,6 +130,15 @@ func (r *FixtureRepository) GetAllByFixtureDate(fixDate time.Time) ([]*entity.Fi
 func (r *FixtureRepository) Get(id int) (*entity.Fixture, error) {
 	var c entity.Fixture
 	err := r.db.Where("id = ?", id).Preload("Home").Preload("Away").Take(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return &c, nil
+}
+
+func (r *FixtureRepository) GetByPrimaryId(primaryId int) (*entity.Fixture, error) {
+	var c entity.Fixture
+	err := r.db.Where("primary_id = ?", primaryId).Preload("Home").Preload("Away").Take(&c).Error
 	if err != nil {
 		return nil, err
 	}

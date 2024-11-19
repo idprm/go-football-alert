@@ -906,7 +906,7 @@ func (h *IncomingHandler) LiveMatchs(baseUrl string, isActive bool, page int) st
 		}
 		liveMatchsString = strings.Join(liveMatchsData, "\n")
 	} else {
-		liveMatchsString = "No data"
+		liveMatchsString = "Pas de match live, prochain a venir :"
 	}
 	return liveMatchsString
 }

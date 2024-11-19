@@ -139,6 +139,11 @@ type FixturesResponse struct {
 	TimeZone  string `json:"timezone"`
 	Date      string `json:"date"`
 	Timestamp int    `json:"timestamp"`
+	Status    struct {
+		Long    string `json:"long"`
+		Short   string `json:"short"`
+		Elapsed int    `json:"elapsed"`
+	} `json:"status"`
 }
 
 type TeamResponse struct {

@@ -23,11 +23,13 @@ type IFixtureService interface {
 	IsFixtureByDate(time.Time) bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetAllCurrent() ([]*entity.Fixture, error)
+	GetAllLiveMatch() ([]*entity.Fixture, error)
 	GetAllLiveMatchUSSD(int) ([]*entity.Fixture, error)
 	GetAllScheduleUSSD(int) ([]*entity.Fixture, error)
 	GetAllByLeagueIdUSSD(int, int) ([]*entity.Fixture, error)
 	GetAllByFixtureDate(time.Time) ([]*entity.Fixture, error)
 	Get(int) (*entity.Fixture, error)
+	GetByPrimaryId(int) (*entity.Fixture, error)
 	Save(*entity.Fixture) (*entity.Fixture, error)
 	Update(*entity.Fixture) (*entity.Fixture, error)
 	UpdateByPrimaryId(*entity.Fixture) (*entity.Fixture, error)
@@ -57,6 +59,10 @@ func (s *FixtureService) GetAllCurrent() ([]*entity.Fixture, error) {
 	return s.fixtureRepo.GetAllCurrent()
 }
 
+func (s *FixtureService) GetAllLiveMatch() ([]*entity.Fixture, error) {
+	return s.fixtureRepo.GetAllLiveMatch()
+}
+
 func (s *FixtureService) GetAllLiveMatchUSSD(page int) ([]*entity.Fixture, error) {
 	return s.fixtureRepo.GetAllLiveMatchUSSD(page)
 }
@@ -75,6 +81,10 @@ func (s *FixtureService) GetAllByFixtureDate(fixDate time.Time) ([]*entity.Fixtu
 
 func (s *FixtureService) Get(id int) (*entity.Fixture, error) {
 	return s.fixtureRepo.Get(id)
+}
+
+func (s *FixtureService) GetByPrimaryId(id int) (*entity.Fixture, error) {
+	return s.fixtureRepo.GetByPrimaryId(id)
 }
 
 func (s *FixtureService) Save(a *entity.Fixture) (*entity.Fixture, error) {

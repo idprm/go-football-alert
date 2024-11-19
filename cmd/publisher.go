@@ -376,6 +376,36 @@ var publisherScrapingFixturesCmd = &cobra.Command{
 	},
 }
 
+var publisherScrapingLiveMatchesCmd = &cobra.Command{
+	Use:   "pub_scraping_livamatches",
+	Short: "Publisher Scraping LiveMatches Service CLI",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		// connect db
+		db, err := connectDb()
+		if err != nil {
+			panic(err)
+		}
+
+		// DEBUG ON CONSOLE
+		db.Logger = loggerDb.Default.LogMode(loggerDb.Info)
+
+		/**
+		 * Looping schedule
+		 */
+		timeDuration := time.Duration(10)
+
+		for {
+
+			go func() {
+				scrapingLiveMatch(db)
+			}()
+
+			time.Sleep(timeDuration * time.Minute)
+		}
+	},
+}
+
 var publisherScrapingPredictionCmd = &cobra.Command{
 	Use:   "pub_scraping_prediction",
 	Short: "Publisher Scraping Prediction Service CLI",
@@ -544,6 +574,8 @@ func scrapingLeagues(db *gorm.DB) {
 	standingService := services.NewStandingService(standingRepo)
 	lineupRepo := repository.NewLineupRepository(db)
 	lineupService := services.NewLineupService(lineupRepo)
+	livematchRepo := repository.NewLiveMatchRepository(db)
+	livematchService := services.NewLiveMatchService(livematchRepo)
 	newsRepo := repository.NewNewsRepository(db)
 	newsService := services.NewNewsService(newsRepo)
 
@@ -555,6 +587,7 @@ func scrapingLeagues(db *gorm.DB) {
 		predictionService,
 		standingService,
 		lineupService,
+		livematchService,
 		newsService,
 	)
 
@@ -574,6 +607,8 @@ func scrapingTeams(db *gorm.DB) {
 	standingService := services.NewStandingService(standingRepo)
 	lineupRepo := repository.NewLineupRepository(db)
 	lineupService := services.NewLineupService(lineupRepo)
+	livematchRepo := repository.NewLiveMatchRepository(db)
+	livematchService := services.NewLiveMatchService(livematchRepo)
 	newsRepo := repository.NewNewsRepository(db)
 	newsService := services.NewNewsService(newsRepo)
 
@@ -585,8 +620,10 @@ func scrapingTeams(db *gorm.DB) {
 		predictionService,
 		standingService,
 		lineupService,
+		livematchService,
 		newsService,
 	)
+
 	h.Teams()
 }
 
@@ -603,6 +640,8 @@ func scrapingFixtures(db *gorm.DB) {
 	standingService := services.NewStandingService(standingRepo)
 	lineupRepo := repository.NewLineupRepository(db)
 	lineupService := services.NewLineupService(lineupRepo)
+	livematchRepo := repository.NewLiveMatchRepository(db)
+	livematchService := services.NewLiveMatchService(livematchRepo)
 	newsRepo := repository.NewNewsRepository(db)
 	newsService := services.NewNewsService(newsRepo)
 
@@ -614,10 +653,44 @@ func scrapingFixtures(db *gorm.DB) {
 		predictionService,
 		standingService,
 		lineupService,
+		livematchService,
 		newsService,
 	)
 
 	h.Fixtures()
+}
+
+func scrapingLiveMatch(db *gorm.DB) {
+	leagueRepo := repository.NewLeagueRepository(db)
+	leagueService := services.NewLeagueService(leagueRepo)
+	teamRepo := repository.NewTeamRepository(db)
+	teamService := services.NewTeamService(teamRepo)
+	fixtureRepo := repository.NewFixtureRepository(db)
+	fixtureService := services.NewFixtureService(fixtureRepo)
+	predictionRepo := repository.NewPredictionRepository(db)
+	predictionService := services.NewPredictionService(predictionRepo)
+	standingRepo := repository.NewStandingRepository(db)
+	standingService := services.NewStandingService(standingRepo)
+	lineupRepo := repository.NewLineupRepository(db)
+	lineupService := services.NewLineupService(lineupRepo)
+	livematchRepo := repository.NewLiveMatchRepository(db)
+	livematchService := services.NewLiveMatchService(livematchRepo)
+	newsRepo := repository.NewNewsRepository(db)
+	newsService := services.NewNewsService(newsRepo)
+
+	h := handler.NewScraperHandler(
+		rmqp.AMQP{},
+		leagueService,
+		teamService,
+		fixtureService,
+		predictionService,
+		standingService,
+		lineupService,
+		livematchService,
+		newsService,
+	)
+
+	h.LiveMatches()
 }
 
 func scrapingPredictions(db *gorm.DB) {
@@ -633,6 +706,8 @@ func scrapingPredictions(db *gorm.DB) {
 	standingService := services.NewStandingService(standingRepo)
 	lineupRepo := repository.NewLineupRepository(db)
 	lineupService := services.NewLineupService(lineupRepo)
+	livematchRepo := repository.NewLiveMatchRepository(db)
+	livematchService := services.NewLiveMatchService(livematchRepo)
 	newsRepo := repository.NewNewsRepository(db)
 	newsService := services.NewNewsService(newsRepo)
 
@@ -644,6 +719,7 @@ func scrapingPredictions(db *gorm.DB) {
 		predictionService,
 		standingService,
 		lineupService,
+		livematchService,
 		newsService,
 	)
 
@@ -663,6 +739,8 @@ func scrapingStandings(db *gorm.DB) {
 	standingService := services.NewStandingService(standingRepo)
 	lineupRepo := repository.NewLineupRepository(db)
 	lineupService := services.NewLineupService(lineupRepo)
+	livematchRepo := repository.NewLiveMatchRepository(db)
+	livematchService := services.NewLiveMatchService(livematchRepo)
 	newsRepo := repository.NewNewsRepository(db)
 	newsService := services.NewNewsService(newsRepo)
 
@@ -674,6 +752,7 @@ func scrapingStandings(db *gorm.DB) {
 		predictionService,
 		standingService,
 		lineupService,
+		livematchService,
 		newsService,
 	)
 
@@ -693,6 +772,8 @@ func scrapingLineups(db *gorm.DB) {
 	standingService := services.NewStandingService(standingRepo)
 	lineupRepo := repository.NewLineupRepository(db)
 	lineupService := services.NewLineupService(lineupRepo)
+	livematchRepo := repository.NewLiveMatchRepository(db)
+	livematchService := services.NewLiveMatchService(livematchRepo)
 	newsRepo := repository.NewNewsRepository(db)
 	newsService := services.NewNewsService(newsRepo)
 
@@ -704,6 +785,7 @@ func scrapingLineups(db *gorm.DB) {
 		predictionService,
 		standingService,
 		lineupService,
+		livematchService,
 		newsService,
 	)
 
@@ -723,6 +805,8 @@ func scrapingNews(db *gorm.DB, rmq rmqp.AMQP) {
 	standingService := services.NewStandingService(standingRepo)
 	lineupRepo := repository.NewLineupRepository(db)
 	lineupService := services.NewLineupService(lineupRepo)
+	livematchRepo := repository.NewLiveMatchRepository(db)
+	livematchService := services.NewLiveMatchService(livematchRepo)
 	newsRepo := repository.NewNewsRepository(db)
 	newsService := services.NewNewsService(newsRepo)
 
@@ -734,6 +818,7 @@ func scrapingNews(db *gorm.DB, rmq rmqp.AMQP) {
 		predictionService,
 		standingService,
 		lineupService,
+		livematchService,
 		newsService,
 	)
 

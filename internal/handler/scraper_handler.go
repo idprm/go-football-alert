@@ -34,6 +34,7 @@ type ScraperHandler struct {
 	predictionService services.IPredictionService
 	standingService   services.IStandingService
 	lineupService     services.ILineupService
+	livematchService  services.ILiveMatchService
 	newsService       services.INewsService
 }
 
@@ -45,6 +46,7 @@ func NewScraperHandler(
 	predictionService services.IPredictionService,
 	standingService services.IStandingService,
 	lineupService services.ILineupService,
+	livematchService services.ILiveMatchService,
 	newsService services.INewsService,
 ) *ScraperHandler {
 	return &ScraperHandler{
@@ -55,6 +57,7 @@ func NewScraperHandler(
 		predictionService: predictionService,
 		standingService:   standingService,
 		lineupService:     lineupService,
+		livematchService:  livematchService,
 		newsService:       newsService,
 	}
 }
@@ -236,6 +239,61 @@ func (h *ScraperHandler) Fixtures() {
 
 		}
 	}
+}
+
+func (h *ScraperHandler) LiveMatches() {
+	fb := apifb.NewApiFb()
+
+	leagues, err := h.leagueService.GetAllByActive()
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	if len(leagues) > 0 {
+		for _, l := range leagues {
+			f, err := fb.GetLiveMatch(int(l.PrimaryID))
+			if err != nil {
+				log.Println(err.Error())
+			}
+			log.Println(string(f))
+
+			var resp model.FixtureResult
+			json.Unmarshal(f, &resp)
+
+			for _, el := range resp.Response {
+
+				fixtureDate, _ := time.Parse(time.RFC3339, el.Fixtures.Date)
+
+				if h.fixtureService.IsFixtureByPrimaryId(el.Fixtures.ID) {
+
+					fixture, _ := h.fixtureService.GetByPrimaryId(el.Fixtures.ID)
+
+					if !h.livematchService.IsLiveMatch(el.Fixtures.ID) {
+						h.livematchService.Save(
+							&entity.LiveMatch{
+								FixtureID:   fixture.ID,
+								FixtureDate: fixtureDate,
+								Goal:        strconv.Itoa(el.Goals.Home) + ", " + strconv.Itoa(el.Goals.Away),
+								Elapsed:     el.Fixtures.Status.Elapsed,
+							},
+						)
+					} else {
+						h.livematchService.Update(
+							&entity.LiveMatch{
+								FixtureID:   fixture.ID,
+								FixtureDate: fixtureDate,
+								Goal:        strconv.Itoa(el.Goals.Home) + ", " + strconv.Itoa(el.Goals.Away),
+								Elapsed:     el.Fixtures.Status.Elapsed,
+							},
+						)
+					}
+				}
+
+			}
+
+		}
+	}
+
 }
 
 func (h *ScraperHandler) Predictions() {

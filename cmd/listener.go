@@ -65,6 +65,7 @@ var listenerCmd = &cobra.Command{
 			&entity.Team{},
 			&entity.LeagueTeam{},
 			&entity.Fixture{},
+			&entity.LiveMatch{},
 			&entity.Prediction{},
 			&entity.Lineup{},
 			&entity.Standing{},

@@ -71,6 +71,31 @@ func (h *FixtureHandler) GetAllCurrent(c *fiber.Ctx) error {
 	)
 }
 
+func (h *FixtureHandler) GetAllLiveMatch(c *fiber.Ctx) error {
+	fixtures, err := h.fixtureService.GetAllLiveMatch()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusInternalServerError,
+				Message:    err.Error(),
+			},
+		)
+	}
+
+	if len(fixtures) > 0 {
+		return c.Status(fiber.StatusOK).JSON(fixtures)
+	}
+
+	return c.Status(fiber.StatusNotFound).JSON(
+		&model.WebResponse{
+			Error:      true,
+			StatusCode: fiber.StatusNotFound,
+			Message:    "not_found",
+		},
+	)
+}
+
 func (h *FixtureHandler) Get(c *fiber.Ctx) error {
 
 	if !h.fixtureService.IsFixture(1) {
