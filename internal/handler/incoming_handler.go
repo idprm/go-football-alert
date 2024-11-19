@@ -97,6 +97,7 @@ type IncomingHandler struct {
 	leagueService       services.ILeagueService
 	teamService         services.ITeamService
 	fixtureService      services.IFixtureService
+	livematchService    services.ILiveMatchService
 	livescoreService    services.ILiveScoreService
 	predictionService   services.IPredictionService
 	newsService         services.INewsService
@@ -117,6 +118,7 @@ func NewIncomingHandler(
 	leagueService services.ILeagueService,
 	teamService services.ITeamService,
 	fixtureService services.IFixtureService,
+	livematchService services.ILiveMatchService,
 	livescoreService services.ILiveScoreService,
 	predictionService services.IPredictionService,
 	newsService services.INewsService,
@@ -136,6 +138,7 @@ func NewIncomingHandler(
 		leagueService:       leagueService,
 		teamService:         teamService,
 		fixtureService:      fixtureService,
+		livematchService:    livematchService,
 		livescoreService:    livescoreService,
 		predictionService:   predictionService,
 		newsService:         newsService,
@@ -330,7 +333,7 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 		var data string
 
 		if req.IsLmLiveMatch() {
-			data = h.LiveMatchs(c.BaseURL(), true, req.GetPage()+1)
+			data = h.LiveMatches(c.BaseURL(), true, req.GetPage()+1)
 		}
 
 		if req.IsLmSchedule() {
@@ -529,7 +532,7 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 			}
 
 			if req.IsLmLiveMatch() {
-				data = h.LiveMatchs(c.BaseURL(), true, req.GetPage()+1)
+				data = h.LiveMatches(c.BaseURL(), true, req.GetPage()+1)
 			}
 
 			if req.IsLmSchedule() {
@@ -873,8 +876,8 @@ func (h *IncomingHandler) IsActiveSubscriptionNonSMSAlerte(category, msisdn stri
 ** Menu service
 **/
 
-func (h *IncomingHandler) LiveMatchs(baseUrl string, isActive bool, page int) string {
-	livematchs, err := h.fixtureService.GetAllLiveMatchUSSD(page)
+func (h *IncomingHandler) LiveMatches(baseUrl string, isActive bool, page int) string {
+	livematchs, err := h.livematchService.GetAllLiveMatchUSSD(page)
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -888,8 +891,8 @@ func (h *IncomingHandler) LiveMatchs(baseUrl string, isActive bool, page int) st
 				row := `<a href="` +
 					baseUrl + `/` +
 					API_VERSION + `/ussd/q/detail?slug=lm-live-match&amp;title=` +
-					s.GetFixtureNameQueryEscape() + `">` +
-					s.GetFixtureName() +
+					s.GetLiveMatchNameQueryEscape() + `">` +
+					s.GetLiveMatchName() +
 					`</a><br/>`
 
 				liveMatchsData = append(liveMatchsData, row)
@@ -897,8 +900,8 @@ func (h *IncomingHandler) LiveMatchs(baseUrl string, isActive bool, page int) st
 				row := `<a href="` +
 					baseUrl + `/` +
 					API_VERSION + `/ussd/buy/?slug=confirm&amp;title=` +
-					s.GetFixtureNameQueryEscape() + `">` +
-					s.GetFixtureName() +
+					s.GetLiveMatchNameQueryEscape() + `">` +
+					s.GetLiveMatchName() +
 					`</a><br/>`
 
 				liveMatchsData = append(liveMatchsData, row)

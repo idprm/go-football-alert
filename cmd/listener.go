@@ -171,6 +171,9 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	fixtureRepo := repository.NewFixtureRepository(db)
 	fixtureService := services.NewFixtureService(fixtureRepo)
 
+	livematchRepo := repository.NewLiveMatchRepository(db)
+	livematchService := services.NewLiveMatchService(livematchRepo)
+
 	livescoreRepo := repository.NewLiveScoreRepository(db)
 	livescoreService := services.NewLiveScoreService(livescoreRepo)
 
@@ -228,6 +231,7 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 		leagueService,
 		teamService,
 		fixtureService,
+		livematchService,
 		livescoreService,
 		predictionService,
 		newsService,
