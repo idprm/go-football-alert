@@ -24,7 +24,8 @@ type IFixtureService interface {
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetAllCurrent() ([]*entity.Fixture, error)
 	GetAllLiveMatch() ([]*entity.Fixture, error)
-	GetAllLiveMatchUSSD(int) ([]*entity.Fixture, error)
+	GetAllLiveMatchTodayUSSD(int) ([]*entity.Fixture, error)
+	GetAllLiveMatchLaterUSSD(int) ([]*entity.Fixture, error)
 	GetAllScheduleUSSD(int) ([]*entity.Fixture, error)
 	GetAllByLeagueIdUSSD(int, int) ([]*entity.Fixture, error)
 	GetAllByFixtureDate(time.Time) ([]*entity.Fixture, error)
@@ -63,8 +64,12 @@ func (s *FixtureService) GetAllLiveMatch() ([]*entity.Fixture, error) {
 	return s.fixtureRepo.GetAllLiveMatch()
 }
 
-func (s *FixtureService) GetAllLiveMatchUSSD(page int) ([]*entity.Fixture, error) {
-	return s.fixtureRepo.GetAllLiveMatchUSSD(page)
+func (s *FixtureService) GetAllLiveMatchTodayUSSD(page int) ([]*entity.Fixture, error) {
+	return s.fixtureRepo.GetAllLiveMatchTodayUSSD(page)
+}
+
+func (s *FixtureService) GetAllLiveMatchLaterUSSD(page int) ([]*entity.Fixture, error) {
+	return s.fixtureRepo.GetAllLiveMatchLaterUSSD(page)
 }
 
 func (s *FixtureService) GetAllScheduleUSSD(page int) ([]*entity.Fixture, error) {

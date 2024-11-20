@@ -2,6 +2,7 @@ package entity
 
 import (
 	"net/url"
+	"strconv"
 	"time"
 
 	"gorm.io/gorm"
@@ -20,6 +21,7 @@ type Fixture struct {
 	AwayID      int64     `json:"away_id"`
 	Away        *Team     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"away,omitempty"`
 	Goal        string    `json:"goal"`
+	Elapsed     int       `json:"elapsed"`
 	IsDone      bool      `gorm:"type:boolean;default:false" json:"is_done"`
 	gorm.Model
 }
@@ -58,6 +60,23 @@ func (e *Fixture) GetFixtureDateToString() string {
 
 func (e *Fixture) GetFixtureDateAndTimeToString() string {
 	return e.FixtureDate.Format("2 Jan 06 15:04")
+}
+
+// Libya - Benin (0-0) 44"
+func (e *Fixture) GetLiveMatchName() string {
+	return e.Home.GetName() + " - " + e.Away.GetName() + " (" + e.GetGoal() + ") " + e.GetElapsed()
+}
+
+func (e *Fixture) GetLiveMatchNameQueryEscape() string {
+	return url.QueryEscape(e.GetLiveMatchName())
+}
+
+func (e *Fixture) GetGoal() string {
+	return e.Goal
+}
+
+func (e *Fixture) GetElapsed() string {
+	return strconv.Itoa(e.Elapsed) + `"`
 }
 
 func (e *Fixture) GetTimeStamp() int {

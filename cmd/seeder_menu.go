@@ -212,6 +212,28 @@ var menus = []entity.Menu{
 	},
 	{
 		Category:  "LIVEMATCH",
+		Name:      "Match en Direct",
+		Slug:      "lm-live-match-later",
+		IsConfirm: true,
+		IsActive:  true,
+		TemplateXML: `
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE pages SYSTEM "cellflash-1.3.dtd">
+<pages descr="Match en Direct">
+	<page>
+		Match en Direct<br/>
+		<br/>
+		{{.data}}
+		<br/>
+		{{.paginate}}
+		<br/>
+		<a href="{{.url}}/{{.version}}/ussd/" key="00">Accueil</a>
+	</page>
+</pages>		
+		`,
+	},
+	{
+		Category:  "LIVEMATCH",
 		Name:      "Schedule",
 		Slug:      "lm-schedule",
 		IsConfirm: true,

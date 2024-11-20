@@ -24,7 +24,8 @@ type IFixtureRepository interface {
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetAllCurrent() ([]*entity.Fixture, error)
 	GetAllLiveMatch() ([]*entity.Fixture, error)
-	GetAllLiveMatchUSSD(int) ([]*entity.Fixture, error)
+	GetAllLiveMatchTodayUSSD(int) ([]*entity.Fixture, error)
+	GetAllLiveMatchLaterUSSD(int) ([]*entity.Fixture, error)
 	GetAllScheduleUSSD(int) ([]*entity.Fixture, error)
 	GetAllByLeagueIdUSSD(int, int) ([]*entity.Fixture, error)
 	GetAllByFixtureDate(time.Time) ([]*entity.Fixture, error)
@@ -91,9 +92,18 @@ func (r *FixtureRepository) GetAllLiveMatch() ([]*entity.Fixture, error) {
 	return c, nil
 }
 
-func (r *FixtureRepository) GetAllLiveMatchUSSD(page int) ([]*entity.Fixture, error) {
+func (r *FixtureRepository) GetAllLiveMatchTodayUSSD(page int) ([]*entity.Fixture, error) {
 	var c []*entity.Fixture
-	err := r.db.Where("DATE(fixture_date) BETWEEN DATE(NOW())").Preload("Home").Preload("Away").Order("DATE(fixture_date) ASC").Offset((page - 1) * 5).Limit(5).Find(&c).Error
+	err := r.db.Where("DATE(fixture_date) = DATE(NOW())").Preload("Home").Preload("Away").Order("DATE(fixture_date) ASC").Offset((page - 1) * 5).Limit(5).Find(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
+func (r *FixtureRepository) GetAllLiveMatchLaterUSSD(page int) ([]*entity.Fixture, error) {
+	var c []*entity.Fixture
+	err := r.db.Where("DATE(fixture_date) > DATE(NOW())").Preload("Home").Preload("Away").Order("DATE(fixture_date) ASC").Offset((page - 1) * 5).Limit(5).Find(&c).Error
 	if err != nil {
 		return nil, err
 	}

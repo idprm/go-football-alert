@@ -332,8 +332,12 @@ func (m *CampaignUnSubRequest) SetIpAddress(v string) {
 /***
 **
 ***/
-func (m *UssdRequest) IsLmLiveMatch() bool {
+func (m *UssdRequest) IsLmLiveMatchToday() bool {
 	return m.GetSlug() == "lm-live-match"
+}
+
+func (m *UssdRequest) IsLmLiveMatchLater() bool {
+	return m.GetSlug() == "lm-live-match-later"
 }
 
 func (m *UssdRequest) IsLmSchedule() bool {

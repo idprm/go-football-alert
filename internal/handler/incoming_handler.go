@@ -332,8 +332,12 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 
 		var data string
 
-		if req.IsLmLiveMatch() {
-			data = h.LiveMatches(c.BaseURL(), true, req.GetPage()+1)
+		if req.IsLmLiveMatchToday() {
+			data = h.LiveMatchesToday(c.BaseURL(), true, req.GetPage()+1)
+		}
+
+		if req.IsLmLiveMatchLater() {
+			data = h.LiveMatchesLater(c.BaseURL(), true, req.GetPage()+1)
 		}
 
 		if req.IsLmSchedule() {
@@ -419,11 +423,19 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 
 		leagueId := strconv.Itoa(req.GetLeagueId())
 		teamId := strconv.Itoa(req.GetTeamId())
-		page := strconv.Itoa(req.GetPage() + 1)
+		var slug string
+		var page string
+		if req.IsLmLiveMatchToday() {
+			slug = "lm-live-match-later"
+			page = strconv.Itoa(req.GetPage() + 0)
+		} else {
+			slug = req.GetSlug()
+			page = strconv.Itoa(req.GetPage() + 1)
+		}
 
 		paginate := `<a href="` + c.BaseURL() +
 			`/` + API_VERSION +
-			`/ussd/q?slug=` + req.GetSlug() +
+			`/ussd/q?slug=` + slug +
 			`&amp;title=` + req.GetTitleQueryEscape() +
 			`&amp;league_id=` + leagueId +
 			`&amp;team_id=` + teamId +
@@ -531,8 +543,12 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 				return c.Status(fiber.StatusBadGateway).SendString(err.Error())
 			}
 
-			if req.IsLmLiveMatch() {
-				data = h.LiveMatches(c.BaseURL(), true, req.GetPage()+1)
+			if req.IsLmLiveMatchToday() {
+				data = h.LiveMatchesToday(c.BaseURL(), true, req.GetPage()+1)
+			}
+
+			if req.IsLmLiveMatchLater() {
+				data = h.LiveMatchesLater(c.BaseURL(), true, req.GetPage()+1)
 			}
 
 			if req.IsLmSchedule() {
@@ -876,8 +892,46 @@ func (h *IncomingHandler) IsActiveSubscriptionNonSMSAlerte(category, msisdn stri
 ** Menu service
 **/
 
-func (h *IncomingHandler) LiveMatches(baseUrl string, isActive bool, page int) string {
-	livematchs, err := h.livematchService.GetAllLiveMatchUSSD(page)
+func (h *IncomingHandler) LiveMatchesToday(baseUrl string, isActive bool, page int) string {
+	livematchs, err := h.fixtureService.GetAllLiveMatchTodayUSSD(page)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	var liveMatchsData []string
+	var liveMatchsString string
+	if len(livematchs) > 0 {
+		for _, s := range livematchs {
+
+			if isActive {
+				row := `<a href="` +
+					baseUrl + `/` +
+					API_VERSION + `/ussd/q/detail?slug=lm-live-match&amp;title=` +
+					s.GetLiveMatchNameQueryEscape() + `">` +
+					s.GetLiveMatchName() +
+					`</a><br/>`
+
+				liveMatchsData = append(liveMatchsData, row)
+			} else {
+				row := `<a href="` +
+					baseUrl + `/` +
+					API_VERSION + `/ussd/buy/?slug=confirm&amp;title=` +
+					s.GetLiveMatchNameQueryEscape() + `">` +
+					s.GetLiveMatchName() +
+					`</a><br/>`
+
+				liveMatchsData = append(liveMatchsData, row)
+			}
+		}
+		liveMatchsString = strings.Join(liveMatchsData, "\n")
+	} else {
+		liveMatchsString = "Pas de match live, prochain a venir :"
+	}
+	return liveMatchsString
+}
+
+func (h *IncomingHandler) LiveMatchesLater(baseUrl string, isActive bool, page int) string {
+	livematchs, err := h.fixtureService.GetAllLiveMatchLaterUSSD(page)
 	if err != nil {
 		log.Println(err.Error())
 	}

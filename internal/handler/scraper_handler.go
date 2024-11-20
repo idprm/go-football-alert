@@ -268,25 +268,12 @@ func (h *ScraperHandler) LiveMatches() {
 
 					fixture, _ := h.fixtureService.GetByPrimaryId(el.Fixtures.ID)
 
-					if !h.livematchService.IsLiveMatch(el.Fixtures.ID) {
-						h.livematchService.Save(
-							&entity.LiveMatch{
-								FixtureID:   fixture.ID,
-								FixtureDate: fixtureDate,
-								Goal:        strconv.Itoa(el.Goals.Home) + ", " + strconv.Itoa(el.Goals.Away),
-								Elapsed:     el.Fixtures.Status.Elapsed,
-							},
-						)
-					} else {
-						h.livematchService.Update(
-							&entity.LiveMatch{
-								FixtureID:   fixture.ID,
-								FixtureDate: fixtureDate,
-								Goal:        strconv.Itoa(el.Goals.Home) + ", " + strconv.Itoa(el.Goals.Away),
-								Elapsed:     el.Fixtures.Status.Elapsed,
-							},
-						)
-					}
+					h.fixtureService.Update(&entity.Fixture{
+						ID:          fixture.ID,
+						FixtureDate: fixtureDate,
+						Goal:        strconv.Itoa(el.Goals.Home) + " - " + strconv.Itoa(el.Goals.Away),
+						Elapsed:     el.Fixtures.Status.Elapsed,
+					})
 				}
 
 			}
