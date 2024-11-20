@@ -21,7 +21,7 @@ type Fixture struct {
 	AwayID      int64     `json:"away_id"`
 	Away        *Team     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"away,omitempty"`
 	Goal        string    `json:"goal"`
-	Elapsed     int       `json:"elapsed"`
+	Elapsed     int       `gorm:"size:5;default:0" json:"elapsed"`
 	IsDone      bool      `gorm:"type:boolean;default:false" json:"is_done"`
 	gorm.Model
 }
