@@ -945,8 +945,8 @@ func (h *IncomingHandler) LiveMatchesLater(baseUrl string, isActive bool, page i
 				row := `<a href="` +
 					baseUrl + `/` +
 					API_VERSION + `/ussd/q/detail?slug=lm-live-match&amp;title=` +
-					s.GetLiveMatchNameQueryEscape() + `">` +
-					s.GetLiveMatchName() +
+					s.GetFixtureNameQueryEscape() + `">` +
+					s.GetFixtureAndTimeName() +
 					`</a><br/>`
 
 				liveMatchsData = append(liveMatchsData, row)
@@ -954,8 +954,8 @@ func (h *IncomingHandler) LiveMatchesLater(baseUrl string, isActive bool, page i
 				row := `<a href="` +
 					baseUrl + `/` +
 					API_VERSION + `/ussd/buy/?slug=confirm&amp;title=` +
-					s.GetLiveMatchNameQueryEscape() + `">` +
-					s.GetLiveMatchName() +
+					s.GetFixtureNameQueryEscape() + `">` +
+					s.GetFixtureAndTimeName() +
 					`</a><br/>`
 
 				liveMatchsData = append(liveMatchsData, row)
