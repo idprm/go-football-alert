@@ -21,6 +21,7 @@ type IFixtureService interface {
 	IsFixture(int) bool
 	IsFixtureByPrimaryId(int) bool
 	IsFixtureByDate(time.Time) bool
+	IsFixtureByPastTime() bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetAllCurrent() ([]*entity.Fixture, error)
 	GetAllLiveMatch() ([]*entity.Fixture, error)
@@ -49,6 +50,11 @@ func (s *FixtureService) IsFixtureByPrimaryId(primaryId int) bool {
 
 func (s *FixtureService) IsFixtureByDate(fixDate time.Time) bool {
 	count, _ := s.fixtureRepo.CountByFixtureDate(fixDate)
+	return count > 0
+}
+
+func (s *FixtureService) IsFixtureByPastTime() bool {
+	count, _ := s.fixtureRepo.CountByFixturePastTime()
 	return count > 0
 }
 

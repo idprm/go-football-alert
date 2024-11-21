@@ -21,6 +21,7 @@ type IFixtureRepository interface {
 	Count(int) (int64, error)
 	CountByPrimaryId(int) (int64, error)
 	CountByFixtureDate(time.Time) (int64, error)
+	CountByFixturePastTime() (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetAllCurrent() ([]*entity.Fixture, error)
 	GetAllLiveMatch() ([]*entity.Fixture, error)
@@ -58,6 +59,15 @@ func (r *FixtureRepository) CountByPrimaryId(primaryId int) (int64, error) {
 func (r *FixtureRepository) CountByFixtureDate(fixDate time.Time) (int64, error) {
 	var count int64
 	err := r.db.Model(&entity.Fixture{}).Where("DATE(fixture_date) >= DATE(?)", fixDate).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *FixtureRepository) CountByFixturePastTime() (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Fixture{}).Where("fixture_date <= NOW()").Count(&count).Error
 	if err != nil {
 		return count, err
 	}
