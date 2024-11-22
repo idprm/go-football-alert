@@ -423,20 +423,23 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 
 		leagueId := strconv.Itoa(req.GetLeagueId())
 		teamId := strconv.Itoa(req.GetTeamId())
-		// var slug string
-		// var page string
-		// if req.IsLmLiveMatchToday() {
-		// 	slug = "lm-live-match-later"
-		// 	page = strconv.Itoa(req.GetPage() + 0)
-		// } else {
-		// 	slug = req.GetSlug()
-		// 	page = strconv.Itoa(req.GetPage() + 1)
-		// }
+
+		var title string
+		if req.IsLmLiveMatchToday() {
+			if h.fixtureService.IsLiveMatchTodayUSSD() {
+				title = "Match en Direct"
+			}
+			if h.fixtureService.IsLiveMatchLaterUSSD() {
+				title = "Pas de Direct, Prohaib Match"
+			}
+		} else {
+			title = req.GetTitleQueryEscape()
+		}
 
 		paginate := `<a href="` + c.BaseURL() +
 			`/` + API_VERSION +
 			`/ussd/q?slug=` + req.GetSlug() +
-			`&amp;title=` + req.GetTitleQueryEscape() +
+			`&amp;title=` + title +
 			`&amp;league_id=` + leagueId +
 			`&amp;team_id=` + teamId +
 			`&amp;page=` + strconv.Itoa(req.GetPage()+1) +

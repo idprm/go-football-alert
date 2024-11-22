@@ -22,6 +22,8 @@ type IFixtureRepository interface {
 	CountByPrimaryId(int) (int64, error)
 	CountByFixtureDate(time.Time) (int64, error)
 	CountByFixturePastTime() (int64, error)
+	CountLiveMatchTodayUSSD() (int64, error)
+	CountLiveMatchLaterUSSD() (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetAllCurrent() ([]*entity.Fixture, error)
 	GetAllLiveMatch() ([]*entity.Fixture, error)
@@ -74,6 +76,24 @@ func (r *FixtureRepository) CountByFixturePastTime() (int64, error) {
 	return count, nil
 }
 
+func (r *FixtureRepository) CountLiveMatchTodayUSSD() (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Fixture{}).Where("DATE(fixture_date) = DATE(NOW())").Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *FixtureRepository) CountLiveMatchLaterUSSD() (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Fixture{}).Where("DATE(fixture_date) > DATE(NOW())").Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
 func (r *FixtureRepository) GetAllPaginate(p *entity.Pagination) (*entity.Pagination, error) {
 	var fixtures []*entity.Fixture
 	err := r.db.Scopes(Paginate(fixtures, p, r.db)).Preload("Home").Preload("Away").Find(&fixtures).Error
@@ -113,7 +133,7 @@ func (r *FixtureRepository) GetAllLiveMatchTodayUSSD(page int) ([]*entity.Fixtur
 
 func (r *FixtureRepository) GetAllLiveMatchLaterUSSD(page int) ([]*entity.Fixture, error) {
 	var c []*entity.Fixture
-	err := r.db.Where("DATE(fixture_date) >= DATE(NOW())").Preload("Home").Preload("Away").Order("DATE(fixture_date) ASC").Offset((page - 1) * 5).Limit(5).Find(&c).Error
+	err := r.db.Where("DATE(fixture_date) > DATE(NOW())").Preload("Home").Preload("Away").Order("DATE(fixture_date) ASC").Offset((page - 1) * 5).Limit(5).Find(&c).Error
 	if err != nil {
 		return nil, err
 	}
