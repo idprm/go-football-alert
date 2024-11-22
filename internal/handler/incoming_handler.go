@@ -423,23 +423,23 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 
 		leagueId := strconv.Itoa(req.GetLeagueId())
 		teamId := strconv.Itoa(req.GetTeamId())
-		var slug string
-		var page string
-		if req.IsLmLiveMatchToday() {
-			slug = "lm-live-match-later"
-			page = strconv.Itoa(req.GetPage() + 0)
-		} else {
-			slug = req.GetSlug()
-			page = strconv.Itoa(req.GetPage() + 1)
-		}
+		// var slug string
+		// var page string
+		// if req.IsLmLiveMatchToday() {
+		// 	slug = "lm-live-match-later"
+		// 	page = strconv.Itoa(req.GetPage() + 0)
+		// } else {
+		// 	slug = req.GetSlug()
+		// 	page = strconv.Itoa(req.GetPage() + 1)
+		// }
 
 		paginate := `<a href="` + c.BaseURL() +
 			`/` + API_VERSION +
-			`/ussd/q?slug=` + slug +
+			`/ussd/q?slug=` + req.GetSlug() +
 			`&amp;title=` + req.GetTitleQueryEscape() +
 			`&amp;league_id=` + leagueId +
 			`&amp;team_id=` + teamId +
-			`&amp;page=` + page +
+			`&amp;page=` + strconv.Itoa(req.GetPage()+1) +
 			`">Suiv</a>`
 
 		replacer := strings.NewReplacer(
@@ -893,15 +893,21 @@ func (h *IncomingHandler) IsActiveSubscriptionNonSMSAlerte(category, msisdn stri
 **/
 
 func (h *IncomingHandler) LiveMatchesToday(baseUrl string, isActive bool, page int) string {
-	livematchs, err := h.fixtureService.GetAllLiveMatchTodayUSSD(page)
+	livematchesToday, err := h.fixtureService.GetAllLiveMatchTodayUSSD(page)
 	if err != nil {
 		log.Println(err.Error())
 	}
 
-	var liveMatchsData []string
+	livematchesLater, err := h.fixtureService.GetAllLiveMatchLaterUSSD(page)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
 	var liveMatchsString string
-	if len(livematchs) > 0 {
-		for _, s := range livematchs {
+
+	if len(livematchesToday) > 0 {
+		var liveMatchsTodayData []string
+		for _, s := range livematchesToday {
 
 			if isActive {
 				row := `<a href="` +
@@ -911,7 +917,7 @@ func (h *IncomingHandler) LiveMatchesToday(baseUrl string, isActive bool, page i
 					s.GetLiveMatchName() +
 					`</a><br/>`
 
-				liveMatchsData = append(liveMatchsData, row)
+				liveMatchsTodayData = append(liveMatchsTodayData, row)
 			} else {
 				row := `<a href="` +
 					baseUrl + `/` +
@@ -920,14 +926,43 @@ func (h *IncomingHandler) LiveMatchesToday(baseUrl string, isActive bool, page i
 					s.GetLiveMatchName() +
 					`</a><br/>`
 
-				liveMatchsData = append(liveMatchsData, row)
+				liveMatchsTodayData = append(liveMatchsTodayData, row)
 			}
 		}
-		liveMatchsString = strings.Join(liveMatchsData, "\n")
+		liveMatchsString = strings.Join(liveMatchsTodayData, "\n")
 	} else {
-		liveMatchsString = "Pas de match live, prochain a venir :"
+		var liveMatchesLaterData []string
+
+		if len(livematchesLater) > 0 {
+			for _, s := range livematchesLater {
+
+				if isActive {
+					row := `<a href="` +
+						baseUrl + `/` +
+						API_VERSION + `/ussd/q/detail?slug=lm-live-match&amp;title=` +
+						s.GetFixtureNameQueryEscape() + `">` +
+						s.GetFixtureAndTimeName() +
+						`</a><br/>`
+
+					liveMatchesLaterData = append(liveMatchesLaterData, row)
+				} else {
+					row := `<a href="` +
+						baseUrl + `/` +
+						API_VERSION + `/ussd/buy/?slug=confirm&amp;title=` +
+						s.GetFixtureNameQueryEscape() + `">` +
+						s.GetFixtureAndTimeName() +
+						`</a><br/>`
+
+					liveMatchesLaterData = append(liveMatchesLaterData, row)
+				}
+			}
+			liveMatchsString = strings.Join(liveMatchesLaterData, "\n")
+		} else {
+			liveMatchsString = "Pas de match live, prochain a venir :"
+		}
 	}
 	return liveMatchsString
+
 }
 
 func (h *IncomingHandler) LiveMatchesLater(baseUrl string, isActive bool, page int) string {
