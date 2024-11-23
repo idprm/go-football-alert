@@ -85,7 +85,7 @@ func (e *Fixture) GetGoal() string {
 }
 
 func (e *Fixture) GetElapsed() string {
-	if e.FixtureDate.After(time.Now().Add(90 * time.Minute)) {
+	if e.FixtureDate.After(time.Now().Add(90*time.Minute)) || e.Elapsed >= 90 {
 		return "(Fin)"
 	}
 	return strconv.Itoa(e.Elapsed) + `"`
