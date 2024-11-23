@@ -44,11 +44,11 @@ func (e *Fixture) GetDate() time.Time {
 }
 
 func (e *Fixture) GetFixtureName() string {
-	return e.Home.GetName() + " - " + e.Away.GetName() + " (" + e.GetFixtureDateToString() + ")"
+	return e.Home.GetName() + "-" + e.Away.GetName() + " (" + e.GetFixtureDateToString() + ")"
 }
 
 func (e *Fixture) GetFixtureAndTimeName() string {
-	return e.Home.GetName() + " - " + e.Away.GetName() + " (" + e.GetFixtureDateAndTimeToString() + ")"
+	return e.Home.GetName() + "-" + e.Away.GetName() + " (" + e.GetFixtureDateAndTimeToString() + ")"
 }
 
 func (e *Fixture) GetFixtureNameQueryEscape() string {
