@@ -3,6 +3,7 @@ package entity
 import (
 	"net/url"
 	"strconv"
+	"strings"
 	"time"
 
 	"gorm.io/gorm"
@@ -64,7 +65,7 @@ func (e *Fixture) GetFixtureDateAndTimeToString() string {
 
 // Libya - Benin (0-0) 44"
 func (e *Fixture) GetLiveMatchName() string {
-	return e.Home.GetName() + " - " + e.Away.GetName() + e.GetLiveMatchInfo()
+	return e.Home.GetName() + "-" + e.Away.GetName() + e.GetLiveMatchInfo()
 }
 
 func (e *Fixture) GetLiveMatchNameQueryEscape() string {
@@ -79,7 +80,8 @@ func (e *Fixture) GetLiveMatchInfo() string {
 }
 
 func (e *Fixture) GetGoal() string {
-	return e.Goal
+	replacer := strings.NewReplacer(" ", "")
+	return replacer.Replace(e.Goal)
 }
 
 func (e *Fixture) GetElapsed() string {
