@@ -72,7 +72,7 @@ func (e *Fixture) GetLiveMatchNameQueryEscape() string {
 }
 
 func (e *Fixture) GetLiveMatchInfo() string {
-	if e.FixtureDate.Before(time.Now()) {
+	if e.FixtureDate.After(time.Now()) {
 		return " (" + e.FixtureDate.Format("2 Jan 06 15:04") + ")"
 	}
 	return " (" + e.GetGoal() + ") " + e.GetElapsed()
