@@ -64,11 +64,18 @@ func (e *Fixture) GetFixtureDateAndTimeToString() string {
 
 // Libya - Benin (0-0) 44"
 func (e *Fixture) GetLiveMatchName() string {
-	return e.Home.GetName() + " - " + e.Away.GetName() + " (" + e.GetGoal() + ") " + e.GetElapsed()
+	return e.Home.GetName() + " - " + e.Away.GetName() + e.GetLiveMatchInfo()
 }
 
 func (e *Fixture) GetLiveMatchNameQueryEscape() string {
 	return url.QueryEscape(e.GetLiveMatchName())
+}
+
+func (e *Fixture) GetLiveMatchInfo() string {
+	if e.FixtureDate.Before(time.Now()) {
+		return " (" + e.FixtureDate.Format("2 Jan 06 15:04") + ")"
+	}
+	return " (" + e.GetGoal() + ") " + e.GetElapsed()
 }
 
 func (e *Fixture) GetGoal() string {
