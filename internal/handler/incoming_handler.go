@@ -467,10 +467,25 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 	teamId := strconv.Itoa(req.GetTeamId())
 	page := strconv.Itoa(req.GetPage() + 1)
 
+	var title string
+	if req.IsLmLiveMatchToday() {
+		livematchesToday, err := h.fixtureService.GetAllLiveMatchTodayUSSD(req.GetPage() + 1)
+		if err != nil {
+			log.Println(err.Error())
+		}
+		if len(livematchesToday) > 0 {
+			title = "Match en Direct"
+		} else {
+			title = "Pas de Direct, Prochain Match"
+		}
+	} else {
+		title = req.GetTitleQueryEscape()
+	}
+
 	paginate := `<a href="` + c.BaseURL() +
 		`/` + API_VERSION +
 		`/ussd/q?slug=` + req.GetSlug() +
-		`&amp;title=` + req.GetTitleQueryEscape() +
+		`&amp;title=` + title +
 		`&amp;league_id=` + leagueId +
 		`&amp;team_id=` + teamId +
 		`&amp;page=` + page +
