@@ -428,8 +428,7 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 		if req.IsLmLiveMatchToday() {
 			if h.fixtureService.IsLiveMatchTodayUSSD() {
 				title = "Match en Direct"
-			}
-			if h.fixtureService.IsLiveMatchLaterUSSD() {
+			} else {
 				title = "Pas de Direct, Prochain Match"
 			}
 		} else {
