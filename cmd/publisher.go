@@ -393,7 +393,7 @@ var publisherScrapingLiveMatchesCmd = &cobra.Command{
 		/**
 		 * Looping schedule
 		 */
-		timeDuration := time.Duration(1)
+		timeDuration := time.Duration(30)
 
 		for {
 
@@ -401,7 +401,7 @@ var publisherScrapingLiveMatchesCmd = &cobra.Command{
 				scrapingLiveMatch(db)
 			}()
 
-			time.Sleep(timeDuration * time.Minute)
+			time.Sleep(timeDuration * time.Second)
 		}
 	},
 }
