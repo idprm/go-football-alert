@@ -426,7 +426,11 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 
 		var title string
 		if req.IsLmLiveMatchToday() {
-			if h.fixtureService.IsLiveMatchTodayUSSD() {
+			livematchesToday, err := h.fixtureService.GetAllLiveMatchTodayUSSD(req.GetPage() + 1)
+			if err != nil {
+				log.Println(err.Error())
+			}
+			if len(livematchesToday) > 0 {
 				title = "Match en Direct"
 			} else {
 				title = "Pas de Direct, Prochain Match"
