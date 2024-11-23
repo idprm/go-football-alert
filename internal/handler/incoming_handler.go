@@ -476,6 +476,7 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 			`/` + API_VERSION +
 			`/ussd/q?slug=` + req.GetSlug() +
 			`&amp;title=` + title +
+			`&amp;category=` + req.GetCategory() +
 			`&amp;league_id=` + leagueId +
 			`&amp;team_id=` + teamId +
 			`&amp;page=` + strconv.Itoa(req.GetPage()+1) +
@@ -519,6 +520,7 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 		`/` + API_VERSION +
 		`/ussd/q?slug=` + req.GetSlug() +
 		`&amp;title=` + title +
+		`&amp;category=` + req.GetCategory() +
 		`&amp;league_id=` + leagueId +
 		`&amp;team_id=` + teamId +
 		`&amp;page=` + page +
