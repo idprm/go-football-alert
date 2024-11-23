@@ -323,13 +323,46 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).SendString(h.PageNotFound(c.BaseURL()))
 	}
 
+	// check sub
+	if req.IsLmLiveMatchToday() {
+		if !h.subscriptionService.IsActiveSubscriptionByNonSMSAlerte(req.GetCategory(), req.GetMsisdn()) {
+			services, _ := h.serviceService.GetAllByCategory(req.GetCategory())
+
+			menu, _ := h.menuService.GetBySlug("package")
+			// package
+			var servicesData []string
+			for _, s := range services {
+				row := `<a href="` +
+					c.BaseURL() + `/` +
+					API_VERSION +
+					`/ussd/confirm?slug=` + req.GetSlug() +
+					`&code=` + s.Code +
+					`&category=` + req.GetCategory() +
+					`&package=` + s.GetPackage() + `">` +
+					s.GetName() + " (" + s.GetPriceToString() + ")" +
+					"</a><br/>"
+				servicesData = append(servicesData, row)
+			}
+			servicesString := strings.Join(servicesData, "\n")
+
+			replacer := strings.NewReplacer(
+				"{{.url}}", c.BaseURL(),
+				"{{.version}}", API_VERSION,
+				"{{.title}}", "S'abonner",
+				"{{.data}}", servicesString,
+				"&", "&amp;",
+			)
+			replace := replacer.Replace(string(menu.GetTemplateXML()))
+			return c.Status(fiber.StatusOK).SendString(replace)
+		}
+	}
+
 	menu, err := h.menuService.GetBySlug(req.GetSlug())
 	if err != nil {
 		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
 	}
 
 	if menu.IsConfirm {
-
 		var data string
 
 		if req.IsLmLiveMatchToday() {
@@ -523,8 +556,8 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).SendString(h.PageNotFound(c.BaseURL()))
 	}
 
-	// LIVEMATCH OR FLASHNEWS
-	if req.IsLiveMatch() || req.IsFlashNews() || req.IsPronostic() {
+	// PRONOSTIC OR FLASHNEWS
+	if req.IsFlashNews() || req.IsPronostic() {
 		// check sub
 		if !h.subscriptionService.IsActiveSubscriptionByNonSMSAlerte(req.GetCategory(), req.GetMsisdn()) {
 			services, _ := h.serviceService.GetAllByCategory(req.GetCategory())
