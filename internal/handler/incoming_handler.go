@@ -430,7 +430,7 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 				title = "Match en Direct"
 			}
 			if h.fixtureService.IsLiveMatchLaterUSSD() {
-				title = "Pas de Direct, Prohaib Match"
+				title = "Pas de Direct, Prochain Match"
 			}
 		} else {
 			title = req.GetTitleQueryEscape()

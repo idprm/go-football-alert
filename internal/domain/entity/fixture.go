@@ -76,6 +76,9 @@ func (e *Fixture) GetGoal() string {
 }
 
 func (e *Fixture) GetElapsed() string {
+	if e.IsDone {
+		return "(Fin)"
+	}
 	return strconv.Itoa(e.Elapsed) + `"`
 }
 
