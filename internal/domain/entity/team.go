@@ -3,6 +3,12 @@ package entity
 import (
 	"net/url"
 	"strconv"
+	"unicode"
+
+	"golang.org/x/text/runes"
+	"golang.org/x/text/transform"
+	"golang.org/x/text/unicode/norm"
+	"gorm.io/gorm"
 )
 
 type Team struct {
@@ -16,6 +22,7 @@ type Team struct {
 	Country   string `json:"country"`
 	Keyword   string `json:"keyword"`
 	IsActive  bool   `gorm:"type:boolean;default:false;column:is_active" json:"is_active,omitempty"`
+	gorm.Model
 }
 
 func (e *Team) GetId() int64 {
@@ -28,6 +35,12 @@ func (e *Team) GetIdToString() string {
 
 func (e *Team) GetName() string {
 	return e.Name
+}
+
+func (e *Team) GetNameWithoutAccents() string {
+	t := transform.Chain(norm.NFD, runes.Remove(runes.In(unicode.Mn)), norm.NFC)
+	result, _, _ := transform.String(t, e.GetName())
+	return result
 }
 
 func (e *Team) GetNameQueryEscape() string {

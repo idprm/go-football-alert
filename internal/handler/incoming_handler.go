@@ -429,16 +429,16 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 			data = h.SMSAlerte(c.BaseURL(), req.GetPage()+1)
 		}
 
-		if req.GetSlug() == "sms-alerte-equipe" {
-			data = h.SMSAlerteEquipe(c.BaseURL(), req.GetPage()+1)
-		}
-
 		if req.GetSlug() == "kit-foot" {
 			data = h.KitFoot(c.BaseURL(), req.GetPage()+1)
 		}
 
 		if req.GetSlug() == "kit-foot-by-league" {
-			data = h.KitFootByLeague(c.BaseURL(), req.GetLeagueId(), req.GetPage()+1)
+			data = h.KitFootByTeam(c.BaseURL(), req.GetLeagueId(), req.GetPage()+1)
+		}
+
+		if req.GetSlug() == "top-team" {
+			data = h.TopTeam(c.BaseURL(), req.GetPage()+1)
 		}
 
 		if req.GetSlug() == "foot-europe" {
@@ -619,10 +619,6 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 				data = h.KitFoot(c.BaseURL(), req.GetPage()+1)
 			}
 
-			if req.GetSlug() == "kit-foot-by-league" {
-				data = h.KitFootByLeague(c.BaseURL(), req.GetLeagueId(), req.GetPage()+1)
-			}
-
 			if req.GetSlug() == "foot-europe" {
 				data = h.FootEurope(c.BaseURL(), req.GetPage()+1)
 			}
@@ -634,6 +630,14 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 			if req.GetSlug() == "foot-international" {
 				// data = h.FootInternational(c.BaseURL(), req.GetPage()+1)
 				data = h.FootEurope(c.BaseURL(), req.GetPage()+1)
+			}
+
+			if req.GetSlug() == "kit-foot-by-league" {
+				data = h.KitFootByTeam(c.BaseURL(), req.GetLeagueId(), req.GetPage()+1)
+			}
+
+			if req.GetSlug() == "kit-foot-by-team" {
+				data = h.KitFootByTeam(c.BaseURL(), req.GetLeagueId(), req.GetPage()+1)
 			}
 
 			leagueId := strconv.Itoa(req.GetLeagueId())
@@ -710,10 +714,6 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 
 			if req.GetSlug() == "sms-alerte" {
 				data = h.SMSAlerte(c.BaseURL(), req.GetPage()+1)
-			}
-
-			if req.GetSlug() == "sms-alerte-equipe" {
-				data = h.SMSAlerteEquipe(c.BaseURL(), req.GetPage()+1)
 			}
 
 			leagueId := strconv.Itoa(req.GetLeagueId())
@@ -1203,6 +1203,34 @@ func (h *IncomingHandler) KitFoot(baseUrl string, page int) string {
 	return leagueString
 }
 
+func (h *IncomingHandler) KitFootByTeam(baseUrl string, leagueId, page int) string {
+	teams, err := h.teamService.GetAllTeamUSSD(leagueId, page)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	var teamsData []string
+	var teamsString string
+	if len(teams) > 0 {
+		for _, s := range teams {
+			row := `<a href="` +
+				baseUrl + `/` +
+				API_VERSION +
+				`/ussd/q/detail?slug=kit-foot-by-team&amp;category=SMSALERTE_EQUIPE&amp;team_id=` +
+				s.Team.GetIdToString() + `&amp;unique_code=` +
+				s.Team.GetCode() + `&amp;title=` +
+				s.Team.GetNameQueryEscape() + `">` +
+				s.Team.GetName() +
+				`</a><br/>`
+			teamsData = append(teamsData, row)
+		}
+		teamsString = strings.Join(teamsData, "\n")
+	} else {
+		teamsString = "No data"
+	}
+	return teamsString
+}
+
 func (h *IncomingHandler) KitFootByLeague(baseUrl string, leagueId, page int) string {
 	teams, err := h.teamService.GetAllTeamUSSD(leagueId, page)
 	if err != nil {
@@ -1231,8 +1259,30 @@ func (h *IncomingHandler) KitFootByLeague(baseUrl string, leagueId, page int) st
 	return teamsString
 }
 
-func (h *IncomingHandler) KitFootByTeam(baseUrl string, teamId, page int) string {
-	return ""
+func (h *IncomingHandler) TopTeam(baseUrl string, page int) string {
+	teams, err := h.teamService.GetAllTopTeamUSSD(page)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	var teamsData []string
+	var teamString string
+	if len(teams) > 0 {
+		for _, s := range teams {
+			row := `<a href="` +
+				baseUrl + `/` +
+				API_VERSION +
+				`/ussd/detail?slug=kit-foot-by-team&amp;league_id=` + s.GetIdToString() +
+				`&amp;unique_code=` + s.GetCode() + `&amp;title=` + s.GetNameQueryEscape() +
+				`">` + s.GetNameWithoutAccents() +
+				`</a><br/>`
+			teamsData = append(teamsData, row)
+		}
+		teamString = strings.Join(teamsData, "\n")
+	} else {
+		teamString = "No data"
+	}
+	return teamString
 }
 
 func (h *IncomingHandler) FootEurope(baseUrl string, page int) string {
@@ -1311,10 +1361,6 @@ func (h *IncomingHandler) FootInternational(baseUrl string, page int) string {
 		leagueString = "No data"
 	}
 	return leagueString
-}
-
-func (h *IncomingHandler) SMSAlerteEquipe(baseUrl string, page int) string {
-	return ""
 }
 
 func (h *IncomingHandler) ChampionLeagues(baseUrl string, leagueId, page int) string {

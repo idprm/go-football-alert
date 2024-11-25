@@ -289,7 +289,7 @@ func (h *ScraperHandler) LiveMatches() {
 						&entity.Fixture{
 							ID:          fixture.ID,
 							FixtureDate: fixtureDate,
-							Goal:        strconv.Itoa(el.Goals.Home) + " - " + strconv.Itoa(el.Goals.Away),
+							Goal:        strconv.Itoa(el.Goals.Home) + "-" + strconv.Itoa(el.Goals.Away),
 							Elapsed:     el.Fixtures.Status.Elapsed,
 						},
 					)
