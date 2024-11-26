@@ -1070,7 +1070,7 @@ func (h *IncomingHandler) SMSAlerteCompetition(baseUrl string, page int) string 
 			row := `<a href="` +
 				baseUrl + `/` +
 				API_VERSION +
-				`/ussd/q/detail?slug=sms-alerte-competition&amp;category=SMSALERTE_COMPETITION&amp;league_id=` + s.GetIdToString() +
+				`/ussd/q/detail?slug=alerte-sms-competition&amp;category=SMSALERTE_COMPETITION&amp;league_id=` + s.GetIdToString() +
 				`&amp;unique_code=` + s.GetCode() + `&amp;title=` + s.GetNameQueryEscape() +
 				`">Alerte ` + s.GetNameWithoutAccents() +
 				`</a><br/>`
