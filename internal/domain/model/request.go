@@ -393,7 +393,7 @@ func (m *UssdRequest) IsLiveMatch() bool {
 }
 
 func (m *UssdRequest) IsSMSAlerte() bool {
-	return m.GetSlug() == "kit-foot" || m.GetSlug() == "kit-foot-by-league" || m.GetSlug() == "kit-foot-by-team"
+	return m.GetSlug() == "alerte-sms-competition" || m.GetSlug() == "kit-foot-by-league" || m.GetSlug() == "kit-foot-by-team"
 }
 
 func (m *UssdRequest) IsSMSAlerteEquipe() bool {

@@ -381,59 +381,11 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 			data = h.FlashNews(c.BaseURL(), req.GetPage()+1)
 		}
 
-		if req.IsSMSAlerte() {
-			data = h.SMSAlerte(c.BaseURL(), req.GetPage()+1)
-		}
-
-		if req.IsCreditGoal() {
-			data = h.CreditGoal(c.BaseURL(), req.GetPage()+1)
-		}
-
-		if req.IsChampResults() {
-			data = h.ChampResults(c.BaseURL(), req.GetPage()+1)
-		}
-
-		if req.IsChampStandings() {
-			data = h.ChampStandings(c.BaseURL(), req.GetPage()+1)
-		}
-
-		if req.IsChampSchedules() {
-			data = h.ChampSchedules(c.BaseURL(), req.GetPage()+1)
-		}
-
-		if req.IsChampTeam() {
-			data = h.ChampTeam(c.BaseURL(), req.GetPage()+1)
-		}
-
-		if req.IsChampCreditScore() {
-			data = h.ChampCreditScore(c.BaseURL(), req.GetPage()+1)
-		}
-
-		if req.IsChampCreditGoal() {
-			data = h.ChampCreditGoal(c.BaseURL(), req.GetPage()+1)
-		}
-
-		if req.GetSlug() == "champ-sms-alerte" {
-			data = h.ChampSMSAlerte(c.BaseURL(), req.GetPage()+1)
-		}
-
-		if req.GetSlug() == "champ-sms-alerte-equipe" {
-			data = h.ChampSMSAlerteEquipe(c.BaseURL(), req.GetPage()+1)
-		}
-
-		if req.IsPrediction() {
-			data = h.Prediction(c.BaseURL(), req.GetPage()+1)
-		}
-
-		if req.GetSlug() == "sms-alerte" {
-			data = h.SMSAlerte(c.BaseURL(), req.GetPage()+1)
-		}
-
-		if req.GetSlug() == "kit-foot" {
-			data = h.KitFoot(c.BaseURL(), req.GetPage()+1)
-		}
-
 		if req.GetSlug() == "kit-foot-by-league" {
+			data = h.KitFootByLeague(c.BaseURL(), req.GetLeagueId(), req.GetPage()+1)
+		}
+
+		if req.GetSlug() == "kit-foot-by-team" {
 			data = h.KitFootByTeam(c.BaseURL(), req.GetLeagueId(), req.GetPage()+1)
 		}
 
@@ -441,7 +393,11 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 			data = h.TopTeam(c.BaseURL(), req.GetPage()+1)
 		}
 
-		if req.GetSlug() == "foot-europe" {
+		if req.GetSlug() == "alerte-sms-competition" {
+			data = h.SMSAlerteCompetition(c.BaseURL(), req.GetPage()+1)
+		}
+
+		if req.GetSlug() == "alerte-sms-equipe" {
 			data = h.FootEurope(c.BaseURL(), req.GetPage()+1)
 		}
 
@@ -450,8 +406,7 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 		}
 
 		if req.GetSlug() == "foot-international" {
-			// data = h.FootInternational(c.BaseURL(), req.GetPage()+1)
-			data = h.FootEurope(c.BaseURL(), req.GetPage()+1)
+			data = h.FootInternational(c.BaseURL(), req.GetPage()+1)
 		}
 
 		leagueId := strconv.Itoa(req.GetLeagueId())
@@ -558,7 +513,7 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).SendString(h.PageNotFound(c.BaseURL()))
 	}
 
-	// PRONOSTIC OR FLASHNEWS
+	// checking PRONOSTIC OR FLASHNEWS
 	if req.IsFlashNews() || req.IsPronostic() {
 		// check sub
 		if !h.subscriptionService.IsActiveSubscriptionByNonSMSAlerte(req.GetCategory(), req.GetMsisdn()) {
@@ -615,10 +570,6 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 				data = h.FlashNews(c.BaseURL(), req.GetPage()+1)
 			}
 
-			if req.GetSlug() == "kit-foot" {
-				data = h.KitFoot(c.BaseURL(), req.GetPage()+1)
-			}
-
 			if req.GetSlug() == "foot-europe" {
 				data = h.FootEurope(c.BaseURL(), req.GetPage()+1)
 			}
@@ -630,14 +581,6 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 			if req.GetSlug() == "foot-international" {
 				// data = h.FootInternational(c.BaseURL(), req.GetPage()+1)
 				data = h.FootEurope(c.BaseURL(), req.GetPage()+1)
-			}
-
-			if req.GetSlug() == "kit-foot-by-league" {
-				data = h.KitFootByTeam(c.BaseURL(), req.GetLeagueId(), req.GetPage()+1)
-			}
-
-			if req.GetSlug() == "kit-foot-by-team" {
-				data = h.KitFootByTeam(c.BaseURL(), req.GetLeagueId(), req.GetPage()+1)
 			}
 
 			leagueId := strconv.Itoa(req.GetLeagueId())
@@ -664,9 +607,11 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 			)
 			replace := replacer.Replace(string(menu.GetTemplateXML()))
 			return c.Status(fiber.StatusOK).SendString(replace)
+
 		}
 	}
 
+	// checking ALERTE SMS
 	if req.IsSMSAlerte() {
 		// check sub
 		if !h.subscriptionService.IsActiveSubscriptionByCategory(req.GetCategory(), req.GetMsisdn(), req.GetUniqueCode()) {
@@ -708,12 +653,16 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 				return c.Status(fiber.StatusBadGateway).SendString(err.Error())
 			}
 
-			if req.IsSMSAlerte() {
-				data = h.SMSAlerte(c.BaseURL(), req.GetPage()+1)
+			if req.GetSlug() == "alerte-sms-competition" {
+				data = h.SMSAlerteCompetition(c.BaseURL(), req.GetPage()+1)
 			}
 
-			if req.GetSlug() == "sms-alerte" {
-				data = h.SMSAlerte(c.BaseURL(), req.GetPage()+1)
+			if req.GetSlug() == "kit-foot-by-league" {
+				data = h.KitFootByTeam(c.BaseURL(), req.GetLeagueId(), req.GetPage()+1)
+			}
+
+			if req.GetSlug() == "kit-foot-by-team" {
+				data = h.KitFootByTeam(c.BaseURL(), req.GetLeagueId(), req.GetPage()+1)
 			}
 
 			leagueId := strconv.Itoa(req.GetLeagueId())
@@ -1018,7 +967,6 @@ func (h *IncomingHandler) LiveMatchesToday(baseUrl string, isActive bool, page i
 		}
 	}
 	return liveMatchsString
-
 }
 
 func (h *IncomingHandler) LiveMatchesLater(baseUrl string, isActive bool, page int) string {
@@ -1109,75 +1057,8 @@ func (h *IncomingHandler) FlashNews(baseUrl string, page int) string {
 	return newsString
 }
 
-func (h *IncomingHandler) SMSAlerte(baseUrl string, page int) string {
-	return ""
-}
-
-func (h *IncomingHandler) ChampResults(baseUrl string, page int) string {
-	return ""
-}
-
-func (h *IncomingHandler) ChampStandings(baseUrl string, page int) string {
-	return ""
-}
-
-func (h *IncomingHandler) ChampSchedules(baseUrl string, page int) string {
-	return ""
-}
-
-func (h *IncomingHandler) ChampTeam(baseUrl string, page int) string {
-	teams, err := h.teamService.GetAllTeamUSSD(1, page)
-	if err != nil {
-		log.Println(err.Error())
-	}
-	var teamsData []string
-	var teamsString string
-
-	if len(teams) > 0 {
-		for _, s := range teams {
-			row := `<a href="` +
-				baseUrl + `/` +
-				API_VERSION +
-				`/ussd/q/detail?slug=champ-mali&amp;title=` +
-				s.Team.GetNameQueryEscape() + `">` +
-				s.Team.GetName() +
-				`</a><br/>`
-			teamsData = append(teamsData, row)
-		}
-		teamsString = strings.Join(teamsData, "\n")
-	} else {
-		teamsString = "No match"
-	}
-
-	return teamsString
-}
-
-func (h *IncomingHandler) ChampCreditScore(baseUrl string, page int) string {
-	return ""
-}
-
-func (h *IncomingHandler) ChampCreditGoal(baseUrl string, page int) string {
-	return ""
-}
-
-func (h *IncomingHandler) ChampSMSAlerte(baseUrl string, page int) string {
-	return ""
-}
-
-func (h *IncomingHandler) ChampSMSAlerteEquipe(baseUrl string, page int) string {
-	return ""
-}
-
-func (h *IncomingHandler) CreditGoal(baseUrl string, page int) string {
-	return ""
-}
-
-func (h *IncomingHandler) Prediction(baseUrl string, page int) string {
-	return ""
-}
-
-func (h *IncomingHandler) KitFoot(baseUrl string, page int) string {
-	leagues, err := h.leagueService.GetAllUSSD(page)
+func (h *IncomingHandler) SMSAlerteCompetition(baseUrl string, page int) string {
+	leagues, err := h.leagueService.GetAllEuropeUSSD(page)
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -1189,9 +1070,8 @@ func (h *IncomingHandler) KitFoot(baseUrl string, page int) string {
 			row := `<a href="` +
 				baseUrl + `/` +
 				API_VERSION +
-				`/ussd/buy?slug=confirm&amp;code=FC30&amp;league_id=` +
-				s.GetIdToString() +
-				`&amp;title=` + s.GetNameQueryEscape() +
+				`/ussd/q/detail?slug=sms-alerte-competition&amp;category=SMSALERTE_COMPETITION&amp;league_id=` + s.GetIdToString() +
+				`&amp;unique_code=` + s.GetCode() + `&amp;title=` + s.GetNameQueryEscape() +
 				`">Alerte ` + s.GetNameWithoutAccents() +
 				`</a><br/>`
 			leaguesData = append(leaguesData, row)
@@ -1244,7 +1124,7 @@ func (h *IncomingHandler) KitFootByLeague(baseUrl string, leagueId, page int) st
 			row := `<a href="` +
 				baseUrl + `/` +
 				API_VERSION +
-				`/ussd/q/detail?slug=kit-foot-by-team&amp;category=SMSALERTE_EQUIPE&amp;team_id=` +
+				`/ussd/q/detail?slug=kit-foot-by-league&amp;category=SMSALERTE_COMPETITION&amp;team_id=` +
 				s.Team.GetIdToString() + `&amp;unique_code=` +
 				s.Team.GetCode() + `&amp;title=` +
 				s.Team.GetNameQueryEscape() + `">` +
@@ -1272,7 +1152,7 @@ func (h *IncomingHandler) TopTeam(baseUrl string, page int) string {
 			row := `<a href="` +
 				baseUrl + `/` +
 				API_VERSION +
-				`/ussd/detail?slug=kit-foot-by-team&amp;league_id=` + s.GetIdToString() +
+				`/ussd/q/detail?slug=kit-foot-by-team&amp;category=SMSALERTE_EQUIPE&amp;team_id=` + s.GetIdToString() +
 				`&amp;unique_code=` + s.GetCode() + `&amp;title=` + s.GetNameQueryEscape() +
 				`">` + s.GetNameWithoutAccents() +
 				`</a><br/>`
@@ -1283,6 +1163,58 @@ func (h *IncomingHandler) TopTeam(baseUrl string, page int) string {
 		teamString = "No data"
 	}
 	return teamString
+}
+
+func (h *IncomingHandler) FootByLeague(baseUrl string, page int) string {
+	leagues, err := h.leagueService.GetAllEuropeUSSD(page)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	var leaguesData []string
+	var leagueString string
+	if len(leagues) > 0 {
+		for _, s := range leagues {
+			row := `<a href="` +
+				baseUrl + `/` +
+				API_VERSION +
+				`/ussd/q?slug=kit-foot-by-league&amp;category=SMSALERTE_COMPETITION&amp;league_id=` + s.GetIdToString() +
+				`&amp;unique_code=` + s.GetCode() + `&amp;title=` + s.GetNameQueryEscape() +
+				`">Alerte ` + s.GetNameWithoutAccents() +
+				`</a><br/>`
+			leaguesData = append(leaguesData, row)
+		}
+		leagueString = strings.Join(leaguesData, "\n")
+	} else {
+		leagueString = "No data"
+	}
+	return leagueString
+}
+
+func (h *IncomingHandler) FootByTeam(baseUrl string, page int) string {
+	leagues, err := h.leagueService.GetAllEuropeUSSD(page)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	var leaguesData []string
+	var leagueString string
+	if len(leagues) > 0 {
+		for _, s := range leagues {
+			row := `<a href="` +
+				baseUrl + `/` +
+				API_VERSION +
+				`/ussd/q?slug=kit-foot-by-league&amp;category=SMSALERTE_EQUIPE&amp;team_id=` + s.GetIdToString() +
+				`&amp;unique_code=` + s.GetCode() + `&amp;title=` + s.GetNameQueryEscape() +
+				`">Alerte ` + s.GetNameWithoutAccents() +
+				`</a><br/>`
+			leaguesData = append(leaguesData, row)
+		}
+		leagueString = strings.Join(leaguesData, "\n")
+	} else {
+		leagueString = "No data"
+	}
+	return leagueString
 }
 
 func (h *IncomingHandler) FootEurope(baseUrl string, page int) string {
