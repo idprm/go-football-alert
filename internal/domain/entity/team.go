@@ -21,6 +21,7 @@ type Team struct {
 	Founded   int    `json:"founded"`
 	Country   string `json:"country"`
 	Keyword   string `json:"keyword"`
+	Sort      int    `gorm:"size:3;default:0" json:"sort"`
 	IsActive  bool   `gorm:"type:boolean;default:false;column:is_active" json:"is_active,omitempty"`
 	gorm.Model
 }

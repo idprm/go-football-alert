@@ -27,6 +27,7 @@ type ILeagueRepository interface {
 	GetAllAfriqueUSSD(int) ([]*entity.League, error)
 	GetAllWorldUSSD(int) ([]*entity.League, error)
 	GetAllInternationalUSSD(int) ([]*entity.League, error)
+	GetAllTopLeagueUSSD(page int) ([]*entity.League, error)
 	Get(string) (*entity.League, error)
 	GetByCode(string) (*entity.League, error)
 	GetByPrimaryId(int) (*entity.League, error)
@@ -103,7 +104,7 @@ func (r *LeagueRepository) GetAllUSSD(page int) ([]*entity.League, error) {
 
 func (r *LeagueRepository) GetAllEuropeUSSD(page int) ([]*entity.League, error) {
 	var c []*entity.League
-	err := r.db.Where("is_active = ?", true).Where("country IN('England', 'Belgium', 'Portugal', 'France', 'Italy', 'Spain', 'Germany')").Order("id ASC").Offset((page - 1) * 7).Limit(7).Find(&c).Error
+	err := r.db.Where("is_active = ?", true).Where("country IN('England', 'Belgium', 'Portugal', 'France', 'Italy', 'Spain', 'Germany', 'World')").Order("id ASC").Offset((page - 1) * 7).Limit(7).Find(&c).Error
 	if err != nil {
 		return nil, err
 	}
@@ -122,6 +123,15 @@ func (r *LeagueRepository) GetAllAfriqueUSSD(page int) ([]*entity.League, error)
 func (r *LeagueRepository) GetAllWorldUSSD(page int) ([]*entity.League, error) {
 	var c []*entity.League
 	err := r.db.Where("is_active = ?", true).Where("country IN('World')").Order("id ASC").Offset((page - 1) * 7).Limit(7).Find(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
+func (r *LeagueRepository) GetAllTopLeagueUSSD(page int) ([]*entity.League, error) {
+	var c []*entity.League
+	err := r.db.Where("is_active = true AND primary_id IN (39, 94, 61, 135, 140, 78)").Order("sort ASC").Offset((page - 1) * 7).Limit(7).Find(&c).Error
 	if err != nil {
 		return nil, err
 	}

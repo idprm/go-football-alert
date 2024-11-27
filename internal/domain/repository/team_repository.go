@@ -123,7 +123,7 @@ func (r *TeamRepository) GetAllTeamUSSD(leagueId, page int) ([]*entity.LeagueTea
 
 func (r *TeamRepository) GetAllTopTeamUSSD(page int) ([]*entity.Team, error) {
 	var c []*entity.Team
-	err := r.db.Where("is_active = true AND code IN ('REA', 'MAC', 'BAY', 'LIV', 'BAR', 'PAR', 'CHE', 'INT', 'DOR', 'ARS', 'MUN','JUV', 'MAD', 'ROM', 'BAY', 'TOT', 'MIL', 'POR', 'MAR', 'NAP', 'WES')").Order("name ASC").Offset((page - 1) * 7).Limit(7).Find(&c).Error
+	err := r.db.Where("is_active = true AND code IN ('REA', 'MAC', 'BAY', 'LIV', 'BAR', 'PAR', 'CHE', 'INT', 'DOR', 'ARS', 'MUN','JUV', 'MAD', 'ROM', 'BAY', 'TOT', 'MIL', 'POR', 'MAR', 'NAP', 'WES')").Order("sort ASC").Offset((page - 1) * 7).Limit(7).Find(&c).Error
 	if err != nil {
 		return nil, err
 	}
