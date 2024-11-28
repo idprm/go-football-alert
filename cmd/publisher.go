@@ -339,6 +339,7 @@ var publisherScrapingMasterCmd = &cobra.Command{
 
 			go func() {
 				scrapingTeams(db)
+				scrapingStandings(db)
 			}()
 
 			time.Sleep(timeDuration * time.Hour)
