@@ -667,10 +667,7 @@ func (h *SMSHandler) AlreadySubAlerteCompetition(league *entity.League) {
 		log.Println(err)
 	}
 
-	// GET_CODE
-	code := service.GetCode() + league.GetCode()
-
-	sub, err := h.subscriptionService.Get(service.GetId(), h.req.GetMsisdn(), code)
+	sub, err := h.subscriptionService.Get(service.GetId(), h.req.GetMsisdn(), league.GetCode())
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -731,10 +728,7 @@ func (h *SMSHandler) AlreadySubAlerteEquipe(team *entity.Team) {
 		log.Println(err)
 	}
 
-	// GET_CODE
-	code := service.GetCode() + team.GetCode()
-
-	sub, err := h.subscriptionService.Get(service.GetId(), h.req.GetMsisdn(), code)
+	sub, err := h.subscriptionService.Get(service.GetId(), h.req.GetMsisdn(), team.GetCode())
 	if err != nil {
 		log.Println(err.Error())
 	}
