@@ -207,6 +207,13 @@ func (h *SMSHandler) Registration() {
 			}
 		}
 
+		if h.serviceService.IsService(h.req.GetStopKeyword()) {
+			service, _ := h.serviceService.Get(h.req.GetStopKeyword())
+			if h.IsActiveSubByNonSMSAlerte(service.GetCategory()) {
+				h.Unsub(service.GetCategory())
+			}
+		}
+
 		// Stop alive ussd
 		if h.req.IsStopAlive() {
 			if h.IsActiveSubByNonSMSAlerte(CATEGORY_LIVEMATCH) {
@@ -1447,7 +1454,7 @@ func (h *SMSHandler) Unsub(category string) {
 		log.Println(err.Error())
 	}
 
-	content, err := h.getContent(SMS_STOP)
+	content, err := h.getContentService(SMS_STOP, service)
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -1585,6 +1592,17 @@ func (h *SMSHandler) getContent(v string) (*entity.Content, error) {
 	return h.contentService.Get(v)
 }
 
+func (h *SMSHandler) getContentService(v string, service *entity.Service) (*entity.Content, error) {
+	// if data not exist in table contents
+	if !h.contentService.IsContent(v) {
+		return &entity.Content{
+			Category: "CATEGORY",
+			Channel:  "SMS",
+			Value:    "SAMPLE_TEXT",
+		}, nil
+	}
+	return h.contentService.GetService(v, service)
+}
 func (h *SMSHandler) getContentFollowCompetition(service *entity.Service, league *entity.League) (*entity.Content, error) {
 	if !h.contentService.IsContent(SMS_FOLLOW_COMPETITION_SUB) {
 		return &entity.Content{

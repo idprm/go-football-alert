@@ -132,6 +132,12 @@ func (e *Content) SetValueCreditGoal(home, away, score, credit, price, currency 
 	e.Value = replacer.Replace(e.Value)
 }
 
+func (e *Content) SetService(name string) {
+	replacer := strings.NewReplacer(
+		"{service}", url.QueryEscape(name))
+	e.Value = replacer.Replace(e.Value)
+}
+
 func (e *Content) SetValueOTP(pin string) {
 	replacer := strings.NewReplacer("{pin}", pin)
 	e.Value = replacer.Replace(e.Value)
