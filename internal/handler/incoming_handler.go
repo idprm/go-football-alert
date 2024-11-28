@@ -339,7 +339,7 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 					`&code=` + s.Code +
 					`&category=` + req.GetCategory() +
 					`&package=` + s.GetPackage() + `">` +
-					s.GetName() + " (" + s.GetPriceToString() + ")" +
+					s.GetCategory() + " " + s.GetPackagePriceToString() +
 					"</a><br/>"
 				servicesData = append(servicesData, row)
 			}
@@ -530,7 +530,7 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 					`&code=` + s.Code +
 					`&category=` + req.GetCategory() +
 					`&package=` + s.GetPackage() + `">` +
-					s.GetName() + " (" + s.GetPriceToString() + ")" +
+					s.GetCategory() + " " + s.GetPackagePriceToString() +
 					"</a><br/>"
 				servicesData = append(servicesData, row)
 			}
@@ -629,7 +629,7 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 					`&category=` + req.GetCategory() +
 					`&package=` + s.GetPackage() +
 					`&unique_code=` + req.GetUniqueCode() + `">` +
-					s.GetName() + " (" + s.GetPriceToString() + ")" +
+					s.GetCategory() + " " + s.GetPackagePriceToString() +
 					"</a><br/>"
 				servicesData = append(servicesData, row)
 			}
@@ -873,7 +873,7 @@ func (h *IncomingHandler) GetPackage(baseUrl, slug, category string) string {
 			`&code=` + s.Code +
 			`&category=` + category +
 			`&package=` + s.GetPackage() + `">` +
-			s.GetName() + " (" + s.GetPriceToString() + ")" +
+			s.GetCategory() + " " + s.GetPackagePriceToString() +
 			"</a><br/>"
 		servicesData = append(servicesData, row)
 	}

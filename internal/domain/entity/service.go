@@ -67,6 +67,10 @@ func (s *Service) GetPriceToString() string {
 	return strconv.FormatFloat(s.GetPrice(), 'f', 0, 64)
 }
 
+func (s *Service) GetPackagePriceToString() string {
+	return strconv.FormatFloat(s.GetPrice(), 'f', 0, 64) + " " + s.GetCurrency() + "/" + s.GetPackage()
+}
+
 func (s *Service) GetCurrency() string {
 	return s.Currency
 }
