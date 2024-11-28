@@ -545,69 +545,6 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 			)
 			replace := replacer.Replace(string(menu.GetTemplateXML()))
 			return c.Status(fiber.StatusOK).SendString(replace)
-		} else {
-
-			var data string
-
-			menu, err := h.menuService.GetBySlug(req.GetSlug())
-			if err != nil {
-				return c.Status(fiber.StatusBadGateway).SendString(err.Error())
-			}
-
-			if req.IsLmLiveMatchToday() {
-				data = h.LiveMatchesToday(c.BaseURL(), true, req.GetPage()+1)
-			}
-
-			if req.IsLmLiveMatchLater() {
-				data = h.LiveMatchesLater(c.BaseURL(), true, req.GetPage()+1)
-			}
-
-			if req.IsLmSchedule() {
-				data = h.Schedules(c.BaseURL(), req.GetPage()+1)
-			}
-
-			if req.IsFlashNews() {
-				data = h.FlashNews(c.BaseURL(), req.GetPage()+1)
-			}
-
-			if req.GetSlug() == "foot-europe" {
-				data = h.FootEurope(c.BaseURL(), req.GetPage()+1)
-			}
-
-			if req.GetSlug() == "foot-afrique" {
-				data = h.FootAfrique(c.BaseURL(), req.GetPage()+1)
-			}
-
-			if req.GetSlug() == "foot-international" {
-				// data = h.FootInternational(c.BaseURL(), req.GetPage()+1)
-				data = h.FootEurope(c.BaseURL(), req.GetPage()+1)
-			}
-
-			leagueId := strconv.Itoa(req.GetLeagueId())
-			teamId := strconv.Itoa(req.GetTeamId())
-			page := strconv.Itoa(req.GetPage() + 1)
-
-			paginate := `<a href="` + c.BaseURL() +
-				`/` + API_VERSION +
-				`/ussd/q?slug=` + req.GetSlug() +
-				`&amp;title=` + req.GetTitleQueryEscape() +
-				`&amp;league_id=` + leagueId +
-				`&amp;team_id=` + teamId +
-				`&amp;page=` + page +
-				`">Suiv</a>`
-
-			replacer := strings.NewReplacer(
-				"{{.url}}", c.BaseURL(),
-				"{{.version}}", API_VERSION,
-				"{{.date}}", utils.FormatFR(time.Now()),
-				"{{.data}}", data,
-				"{{.title}}", req.GetTitleWithoutAccents(),
-				"{{.paginate}}", paginate,
-				"&", "&amp;",
-			)
-			replace := replacer.Replace(string(menu.GetTemplateXML()))
-			return c.Status(fiber.StatusOK).SendString(replace)
-
 		}
 	}
 
