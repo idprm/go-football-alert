@@ -666,7 +666,7 @@ func (h *ScraperHandler) NewsFootMercato() {
 	xml.Unmarshal(n, &resp)
 
 	for _, el := range resp.Url.News {
-		d, _ := time.Parse(time.RFC1123, el.PubDate)
+		d, _ := time.Parse(time.RFC3339, el.PubDate)
 		if !h.newsService.IsNews(d, slug.Make(el.Title)) {
 			news := &entity.News{
 				Title:       el.Title,
@@ -708,9 +708,10 @@ func (h *ScraperHandler) NewsRmcSport() {
 		d, _ := time.Parse(time.RFC1123, el.PubDate)
 
 		replacer := strings.NewReplacer("<![CDATA[", "", "]]>", "")
+
 		title := strings.Trim(replacer.Replace(el.Title), " ")
 
-		if !h.newsService.IsNews(d, slug.Make(title)) {
+		if !h.newsService.IsNews(d, title) {
 			news := &entity.News{
 				Title:       title,
 				Slug:        slug.Make(title),
