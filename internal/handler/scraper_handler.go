@@ -666,7 +666,7 @@ func (h *ScraperHandler) NewsFootMercato() {
 	xml.Unmarshal(n, &resp)
 
 	for _, el := range resp.Url.News {
-		d, _ := time.Parse(time.RFC3339, el.PubDate)
+		d, _ := time.Parse(time.RFC1123, el.PubDate)
 		if !h.newsService.IsNews(d, slug.Make(el.Title)) {
 			news := &entity.News{
 				Title:       el.Title,
