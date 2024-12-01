@@ -44,6 +44,7 @@ var (
 	URL_MT            string = utils.GetEnv("URL_MT")
 	USER_MT           string = utils.GetEnv("USER_MT")
 	PASS_MT           string = utils.GetEnv("PASS_MT")
+	URL_MAXFOOT       string = utils.GetEnv("URL_MAXFOOT")
 )
 
 var (
