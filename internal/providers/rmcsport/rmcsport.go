@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	URL_BFMTV string = utils.GetEnv("URL_BFMTV")
+	URL_RMCSPORT string = utils.GetEnv("URL_RMCSPORT")
 )
 
 type RmcSport struct {
@@ -21,7 +21,7 @@ func NewRmcSport() *RmcSport {
 }
 
 func (p *RmcSport) GetNews() ([]byte, error) {
-	req, err := http.NewRequest("GET", URL_BFMTV, nil)
+	req, err := http.NewRequest("GET", URL_RMCSPORT, nil)
 	if err != nil {
 		return nil, errors.New(err.Error())
 	}
