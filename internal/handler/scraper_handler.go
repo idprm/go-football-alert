@@ -705,7 +705,7 @@ func (h *ScraperHandler) NewsRmcSport() {
 
 	for _, el := range resp.Channel.Item {
 
-		d, _ := time.Parse(time.RFC1123Z, el.PubDate)
+		d, _ := time.Parse(time.RFC1123, el.PubDate)
 
 		replacer := strings.NewReplacer("<![CDATA[", "", "]]>", "")
 		title := strings.Trim(replacer.Replace(el.Title), " ")
