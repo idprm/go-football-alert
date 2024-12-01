@@ -11,12 +11,8 @@ import (
 	"github.com/gosimple/slug"
 	"github.com/idprm/go-football-alert/internal/domain/entity"
 	"github.com/idprm/go-football-alert/internal/domain/model"
-	"github.com/idprm/go-football-alert/internal/providers/africatopsports"
 	"github.com/idprm/go-football-alert/internal/providers/apifb"
-	"github.com/idprm/go-football-alert/internal/providers/footmercato"
-	"github.com/idprm/go-football-alert/internal/providers/madeinfoot"
-	"github.com/idprm/go-football-alert/internal/providers/maxifoot"
-	"github.com/idprm/go-football-alert/internal/providers/rmcsport"
+	"github.com/idprm/go-football-alert/internal/providers/rss"
 	"github.com/idprm/go-football-alert/internal/services"
 	"github.com/wiliehidayat87/rmqp"
 )
@@ -537,8 +533,8 @@ func (h *ScraperHandler) Lineups() {
 }
 
 func (h *ScraperHandler) NewsMaxiFoot() {
-	mf := maxifoot.NewMaxifoot()
-	n, err := mf.GetNews()
+	mf := rss.NewNewsRSS()
+	n, err := mf.GetNews(URL_MAXFOOT)
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -575,8 +571,8 @@ func (h *ScraperHandler) NewsMaxiFoot() {
 }
 
 func (h *ScraperHandler) NewsMadeInFoot() {
-	mf := madeinfoot.NewMadeInFoot()
-	n, err := mf.GetNews()
+	mf := rss.NewNewsRSS()
+	n, err := mf.GetNews(URL_MADEINFOOT)
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -616,8 +612,8 @@ func (h *ScraperHandler) NewsMadeInFoot() {
 }
 
 func (h *ScraperHandler) NewsAfricaTopSports() {
-	m := africatopsports.NewAfricaTopSports()
-	n, err := m.GetNews()
+	m := rss.NewNewsRSS()
+	n, err := m.GetNews(URL_AFRICATOPSPORTS)
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -656,8 +652,8 @@ func (h *ScraperHandler) NewsAfricaTopSports() {
 }
 
 func (h *ScraperHandler) NewsFootMercato() {
-	m := footmercato.NewFootMercato()
-	n, err := m.GetNews()
+	m := rss.NewNewsRSS()
+	n, err := m.GetNews(URL_FOOTMERCATO)
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -693,9 +689,8 @@ func (h *ScraperHandler) NewsFootMercato() {
 }
 
 func (h *ScraperHandler) NewsRmcSport() {
-
-	m := rmcsport.NewRmcSport()
-	n, err := m.GetNews()
+	m := rss.NewNewsRSS()
+	n, err := m.GetNews(URL_RMCSPORT)
 	if err != nil {
 		log.Println(err.Error())
 	}

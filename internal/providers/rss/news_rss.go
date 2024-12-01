@@ -1,27 +1,22 @@
-package footmercato
+package rss
 
 import (
 	"errors"
 	"io"
 	"net/http"
 	"time"
-
-	"github.com/idprm/go-football-alert/internal/utils"
 )
 
-var (
-	URL_FOOTMERCATO string = utils.GetEnv("URL_FOOTMERCATO")
-)
-
-type FootMercato struct {
+type NewsRSS struct {
 }
 
-func NewFootMercato() *FootMercato {
-	return &FootMercato{}
+func NewNewsRSS() *NewsRSS {
+	return &NewsRSS{}
 }
 
-func (p *FootMercato) GetNews() ([]byte, error) {
-	req, err := http.NewRequest("GET", URL_FOOTMERCATO, nil)
+func (p *NewsRSS) GetNews(url string) ([]byte, error) {
+
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, errors.New(err.Error())
 	}
