@@ -1,29 +1,40 @@
 package handler
 
 import (
+	"encoding/json"
+	"log"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gosimple/slug"
 	"github.com/idprm/go-football-alert/internal/domain/entity"
 	"github.com/idprm/go-football-alert/internal/domain/model"
 	"github.com/idprm/go-football-alert/internal/services"
+	"github.com/idprm/go-football-alert/internal/utils"
+	"github.com/wiliehidayat87/rmqp"
 )
 
 type DCBHandler struct {
-	summaryService      services.ISummaryService
-	menuService         services.IMenuService
-	ussdService         services.IUssdService
-	scheduleService     services.IScheduleService
-	serviceService      services.IServiceService
-	contentService      services.IContentService
-	subscriptionService services.ISubscriptionService
-	transactionService  services.ITransactionService
-	historyService      services.IHistoryService
-	mtService           services.IMTService
-	smsAlerteService    services.ISMSAlerteService
-	pronosticService    services.IPronosticService
+	rmq                             rmqp.AMQP
+	summaryService                  services.ISummaryService
+	menuService                     services.IMenuService
+	ussdService                     services.IUssdService
+	scheduleService                 services.IScheduleService
+	serviceService                  services.IServiceService
+	contentService                  services.IContentService
+	subscriptionService             services.ISubscriptionService
+	subscriptionCreditGoalService   services.ISubscriptionCreditGoalService
+	subscriptionPredictWinService   services.ISubscriptionPredictWinService
+	subscriptionFollowLeagueService services.ISubscriptionFollowLeagueService
+	subscriptionFollowTeamService   services.ISubscriptionFollowTeamService
+	transactionService              services.ITransactionService
+	historyService                  services.IHistoryService
+	mtService                       services.IMTService
+	smsAlerteService                services.ISMSAlerteService
+	pronosticService                services.IPronosticService
 }
 
 func NewDCBHandler(
+	rmq rmqp.AMQP,
 	summaryService services.ISummaryService,
 	menuService services.IMenuService,
 	ussdService services.IUssdService,
@@ -31,6 +42,10 @@ func NewDCBHandler(
 	serviceService services.IServiceService,
 	contentService services.IContentService,
 	subscriptionService services.ISubscriptionService,
+	subscriptionCreditGoalService services.ISubscriptionCreditGoalService,
+	subscriptionPredictWinService services.ISubscriptionPredictWinService,
+	subscriptionFollowLeagueService services.ISubscriptionFollowLeagueService,
+	subscriptionFollowTeamService services.ISubscriptionFollowTeamService,
 	transactionService services.ITransactionService,
 	historyService services.IHistoryService,
 	mtService services.IMTService,
@@ -38,18 +53,23 @@ func NewDCBHandler(
 	pronosticService services.IPronosticService,
 ) *DCBHandler {
 	return &DCBHandler{
-		summaryService:      summaryService,
-		menuService:         menuService,
-		ussdService:         ussdService,
-		scheduleService:     scheduleService,
-		serviceService:      serviceService,
-		contentService:      contentService,
-		subscriptionService: subscriptionService,
-		transactionService:  transactionService,
-		historyService:      historyService,
-		mtService:           mtService,
-		smsAlerteService:    smsAlerteService,
-		pronosticService:    pronosticService,
+		rmq:                             rmq,
+		summaryService:                  summaryService,
+		menuService:                     menuService,
+		ussdService:                     ussdService,
+		scheduleService:                 scheduleService,
+		serviceService:                  serviceService,
+		contentService:                  contentService,
+		subscriptionService:             subscriptionService,
+		subscriptionCreditGoalService:   subscriptionCreditGoalService,
+		subscriptionPredictWinService:   subscriptionPredictWinService,
+		subscriptionFollowLeagueService: subscriptionFollowLeagueService,
+		subscriptionFollowTeamService:   subscriptionFollowTeamService,
+		transactionService:              transactionService,
+		historyService:                  historyService,
+		mtService:                       mtService,
+		smsAlerteService:                smsAlerteService,
+		pronosticService:                pronosticService,
 	}
 }
 
@@ -509,6 +529,66 @@ func (h *DCBHandler) GetAllSubscriptionPaginate(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(subs)
 }
 
+func (h *DCBHandler) Unsubscription(c *fiber.Ctx) error {
+	if h.subscriptionService.IsActiveSubscriptionBySubId(1) {
+		trxId := utils.GenerateTrxId()
+
+		sub, _ := h.subscriptionService.GetBySubId(1)
+
+		service, _ := h.serviceService.GetById(sub.GetServiceId())
+
+		content, err := h.getContentService(SMS_STOP, service)
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		if sub.IsFollowLeague {
+			h.subscriptionService.UpdateNotFollowLeague(sub)
+		}
+
+		if sub.IsFollowTeam {
+			h.subscriptionService.UpdateNotFollowTeam(sub)
+		}
+
+		h.subscriptionService.UpdateNotActive(sub)
+
+		mt := &model.MTRequest{
+			Smsc:         service.ScUnsubMT,
+			Keyword:      "STOP " + sub.GetLatestKeyword(),
+			Service:      service,
+			Subscription: sub,
+			Content:      content,
+		}
+		mt.SetTrxId(trxId)
+
+		jsonData, err := json.Marshal(mt)
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		h.rmq.IntegratePublish(
+			RMQ_MT_EXCHANGE,
+			RMQ_MT_QUEUE,
+			RMQ_DATA_TYPE, "", string(jsonData),
+		)
+
+		return c.Status(fiber.StatusOK).JSON(
+			&model.WebResponse{
+				Error:      false,
+				StatusCode: fiber.StatusOK,
+				Message:    "",
+			},
+		)
+	}
+	return c.Status(fiber.StatusNotFound).JSON(
+		&model.WebResponse{
+			Error:      true,
+			StatusCode: fiber.StatusNotFound,
+			Message:    "not_found",
+		},
+	)
+}
+
 func (h *DCBHandler) GetAllTransactionPaginate(c *fiber.Ctx) error {
 	req := new(entity.Pagination)
 
@@ -698,4 +778,16 @@ func (h *DCBHandler) SavePronostic(c *fiber.Ctx) error {
 			Message:    "updated",
 		},
 	)
+}
+
+func (h *DCBHandler) getContentService(v string, service *entity.Service) (*entity.Content, error) {
+	// if data not exist in table contents
+	if !h.contentService.IsContent(v) {
+		return &entity.Content{
+			Category: "CATEGORY",
+			Channel:  "SMS",
+			Value:    "SAMPLE_TEXT",
+		}, nil
+	}
+	return h.contentService.GetService(v, service)
 }

@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"encoding/json"
-	"log"
 	"time"
 
 	"github.com/idprm/go-football-alert/internal/domain/entity"
@@ -44,7 +43,7 @@ var publisherRenewalCmd = &cobra.Command{
 		/**
 		 * Looping schedule per 1 hour
 		 */
-		timeDuration := time.Duration(1)
+		timeDuration := time.Duration(20)
 
 		for {
 
@@ -52,7 +51,7 @@ var publisherRenewalCmd = &cobra.Command{
 				populateRenewal(db, rmq)
 			}()
 
-			time.Sleep(timeDuration * time.Hour)
+			time.Sleep(timeDuration * time.Minute)
 		}
 	},
 }
@@ -92,7 +91,7 @@ var publisherRetryCmd = &cobra.Command{
 		/**
 		 * Looping schedule per 4 hours
 		 */
-		timeDuration := time.Duration(4)
+		timeDuration := time.Duration(3)
 
 		for {
 
@@ -479,8 +478,6 @@ func populateRenewal(db *gorm.DB, rmq rmqp.AMQP) {
 
 		json, _ := json.Marshal(sub)
 
-		log.Println(json)
-
 		rmq.IntegratePublish(RMQ_RENEWAL_EXCHANGE, RMQ_RENEWAL_QUEUE, RMQ_DATA_TYPE, "", string(json))
 
 		time.Sleep(100 * time.Microsecond)
@@ -831,4 +828,6 @@ func scrapingNews(db *gorm.DB, rmq rmqp.AMQP) {
 	h.NewsAfricaTopSports()
 	// footmercato
 	h.NewsFootMercato()
+	// rmcsport
+	h.NewsRmcSport()
 }

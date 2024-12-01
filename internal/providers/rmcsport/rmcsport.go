@@ -1,4 +1,4 @@
-package maxifoot
+package rmcsport
 
 import (
 	"errors"
@@ -10,19 +10,18 @@ import (
 )
 
 var (
-	URL_MAXFOOT string = utils.GetEnv("URL_MAXFOOT")
+	URL_BFMTV string = utils.GetEnv("URL_BFMTV")
 )
 
-type Maxifoot struct {
+type RmcSport struct {
 }
 
-func NewMaxifoot() *Maxifoot {
-	return &Maxifoot{}
+func NewRmcSport() *RmcSport {
+	return &RmcSport{}
 }
 
-func (p *Maxifoot) GetNews() ([]byte, error) {
-
-	req, err := http.NewRequest("GET", URL_MAXFOOT, nil)
+func (p *RmcSport) GetNews() ([]byte, error) {
+	req, err := http.NewRequest("GET", URL_BFMTV, nil)
 	if err != nil {
 		return nil, errors.New(err.Error())
 	}

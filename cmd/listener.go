@@ -195,6 +195,12 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	subscriptionRepo := repository.NewSubscriptionRepository(db)
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
 
+	subscriptionCreditGoalRepo := repository.NewSubscriptionCreditGoalRepository(db)
+	subscriptionCreditGoalService := services.NewSubscriptionCreditGoalService(subscriptionCreditGoalRepo)
+
+	subscriptionPredictWinRepo := repository.NewSubscriptionPredictWinRepository(db)
+	subscriptionPredictWinService := services.NewSubscriptionPredictWinService(subscriptionPredictWinRepo)
+
 	subscriptionFollowLeagueRepo := repository.NewSubscriptionFollowLeagueRepository(db)
 	subscriptionFollowLeagueService := services.NewSubscriptionFollowLeagueService(subscriptionFollowLeagueRepo)
 
@@ -269,6 +275,7 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	)
 
 	dcbHandler := handler.NewDCBHandler(
+		rmq,
 		summaryService,
 		menuService,
 		ussdService,
@@ -276,6 +283,10 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 		serviceService,
 		contentService,
 		subscriptionService,
+		subscriptionCreditGoalService,
+		subscriptionPredictWinService,
+		subscriptionFollowLeagueService,
+		subscriptionFollowTeamService,
 		transactionService,
 		historyService,
 		mtService,
@@ -375,6 +386,7 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	// subscriptions
 	subscriptions := dcb.Group("subscriptions")
 	subscriptions.Get("/", dcbHandler.GetAllSubscriptionPaginate)
+	subscriptions.Post("/unsub", dcbHandler.Unsubscription)
 
 	// transactions
 	transactions := dcb.Group("transactions")

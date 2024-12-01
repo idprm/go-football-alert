@@ -266,3 +266,16 @@ type FootMercatoItem struct {
 	PubDate     string `xml:"publication_date"`
 	Keywords    string `xml:"keywords"`
 }
+
+type RmcSportRSSResponse struct {
+	Channel struct {
+		Item []MaxfootItem `xml:"item"`
+	} `xml:"channel"`
+}
+
+type RmcSportItem struct {
+	Title       string `xml:"title"`
+	Link        string `xml:"link"`
+	Description string `xml:"description"`
+	PubDate     string `xml:"pubDate"`
+}

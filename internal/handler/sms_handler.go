@@ -1597,6 +1597,7 @@ func (h *SMSHandler) getContentService(v string, service *entity.Service) (*enti
 	}
 	return h.contentService.GetService(v, service)
 }
+
 func (h *SMSHandler) getContentFollowCompetition(service *entity.Service, league *entity.League) (*entity.Content, error) {
 	if !h.contentService.IsContent(SMS_FOLLOW_COMPETITION_SUB) {
 		return &entity.Content{

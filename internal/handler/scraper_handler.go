@@ -5,6 +5,7 @@ import (
 	"encoding/xml"
 	"log"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gosimple/slug"
@@ -15,6 +16,7 @@ import (
 	"github.com/idprm/go-football-alert/internal/providers/footmercato"
 	"github.com/idprm/go-football-alert/internal/providers/madeinfoot"
 	"github.com/idprm/go-football-alert/internal/providers/maxifoot"
+	"github.com/idprm/go-football-alert/internal/providers/rmcsport"
 	"github.com/idprm/go-football-alert/internal/services"
 	"github.com/wiliehidayat87/rmqp"
 )
@@ -24,6 +26,7 @@ const (
 	SRC_MADEINFOOT      string = "MADEINFOOT"
 	SRC_AFRICATOPSPORTS string = "AFRICATOPSPORTS"
 	SRC_FOOTMERCATO     string = "FOOTMERCATO"
+	SRC_RMCSPORT        string = "RMCSPORT"
 )
 
 type ScraperHandler struct {
@@ -687,4 +690,47 @@ func (h *ScraperHandler) NewsFootMercato() {
 			)
 		}
 	}
+}
+
+func (h *ScraperHandler) NewsRmcSport() {
+
+	m := rmcsport.NewRmcSport()
+	n, err := m.GetNews()
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	var resp model.RmcSportRSSResponse
+	xml.Unmarshal(n, &resp)
+
+	for _, el := range resp.Channel.Item {
+
+		d, _ := time.Parse(time.RFC1123Z, el.PubDate)
+
+		replacer := strings.NewReplacer("<![CDATA[", "", "]]>", "")
+		title := strings.Trim(replacer.Replace(el.Title), " ")
+
+		if !h.newsService.IsNews(d, title) {
+			news := &entity.News{
+				Title:       title,
+				Slug:        slug.Make(title),
+				Description: el.Description,
+				Source:      SRC_RMCSPORT,
+				PublishAt:   d,
+			}
+			h.newsService.Save(news)
+			jsonData, err := json.Marshal(news)
+			if err != nil {
+				log.Println(err.Error())
+			}
+
+			h.rmq.IntegratePublish(
+				RMQ_NEWS_EXCHANGE,
+				RMQ_NEWS_QUEUE,
+				RMQ_DATA_TYPE, "", string(jsonData),
+			)
+		}
+
+	}
+
 }
