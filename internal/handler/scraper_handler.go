@@ -711,7 +711,7 @@ func (h *ScraperHandler) NewsRmcSport() {
 
 		title := strings.Trim(replacer.Replace(el.Title), " ")
 
-		if !h.newsService.IsNews(d, title) {
+		if !h.newsService.IsNews(d, slug.Make(title)) {
 			news := &entity.News{
 				Title:       title,
 				Slug:        slug.Make(title),
