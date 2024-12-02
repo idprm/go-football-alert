@@ -119,5 +119,46 @@ func (h *LeagueHandler) Update(c *fiber.Ctx) error {
 }
 
 func (h *LeagueHandler) Delete(c *fiber.Ctx) error {
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
+
+	req := new(model.LeagueRequest)
+
+	err := c.BodyParser(req)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusBadRequest,
+				Message:    err.Error(),
+			},
+		)
+	}
+
+	errors := ValidateStruct(*req)
+	if errors != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(errors)
+	}
+
+	if !h.leagueService.IsLeagueByPrimaryId(int(req.PrimaryID)) {
+		return c.Status(fiber.StatusNotFound).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusNotFound,
+				Message:    "not_found",
+			},
+		)
+	}
+
+	h.leagueService.Delete(
+		&entity.League{
+			PrimaryID: req.PrimaryID,
+		},
+	)
+
+	return c.Status(fiber.StatusOK).JSON(
+		&model.WebResponse{
+			Error:      false,
+			StatusCode: fiber.StatusOK,
+			Message:    "deleted",
+		},
+	)
 }

@@ -191,7 +191,7 @@ func (r *TeamRepository) UpdateByPrimaryId(c *entity.Team) (*entity.Team, error)
 }
 
 func (r *TeamRepository) Delete(c *entity.Team) error {
-	err := r.db.Delete(&c, c.ID).Error
+	err := r.db.Delete(&c, c.PrimaryID).Error
 	if err != nil {
 		return err
 	}

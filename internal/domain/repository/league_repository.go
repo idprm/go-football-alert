@@ -218,7 +218,7 @@ func (r *LeagueRepository) UpdateByPrimaryId(c *entity.League) (*entity.League, 
 }
 
 func (r *LeagueRepository) Delete(c *entity.League) error {
-	err := r.db.Delete(&c, c.ID).Error
+	err := r.db.Delete(&c, c.PrimaryID).Error
 	if err != nil {
 		return err
 	}
