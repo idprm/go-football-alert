@@ -311,13 +311,13 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	leagues.Get("/", leagueHandler.GetAllPaginate)
 	leagues.Get("/:slug", leagueHandler.GetBySlug)
 	leagues.Put("/", leagueHandler.Update)
-	leagues.Delete("/:id", leagueHandler.Delete)
+	leagues.Delete("/", leagueHandler.Delete)
 
 	teams := v1.Group("teams")
 	teams.Get("/", teamHandler.GetAllPaginate)
 	teams.Get("/:slug", teamHandler.GetBySlug)
 	teams.Put("/", teamHandler.Update)
-	teams.Delete("/:id", teamHandler.Delete)
+	teams.Delete("/", teamHandler.Delete)
 
 	fixtures := v1.Group("fixtures")
 	fixtures.Get("/", fixtureHandler.GetAllPaginate)
