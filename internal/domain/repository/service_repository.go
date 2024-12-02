@@ -60,7 +60,7 @@ func (r *ServiceRepository) CountByPackage(cat, pkg string) (int64, error) {
 
 func (r *ServiceRepository) GetAllPaginate(p *entity.Pagination) (*entity.Pagination, error) {
 	var services []*entity.Service
-	err := r.db.Where("UPPER(name) LIKE UPPER(?) OR UPPER(code) LIKE UPPER(?)", "%"+p.GetSearch()+"%", "%"+p.GetSearch()+"%").Scopes(Paginate(services, p, r.db)).Find(&services).Error
+	err := r.db.Where("UPPER(name) LIKE UPPER(?) OR UPPER(code) LIKE UPPER(?)", "%"+p.GetSearch()+"%", "%"+p.GetSearch()+"%").Scopes(PaginateServices(services, p, r.db)).Find(&services).Error
 	if err != nil {
 		return nil, err
 	}

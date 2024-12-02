@@ -35,7 +35,7 @@ func (r *ContentRepository) Count(name string) (int64, error) {
 
 func (r *ContentRepository) GetAllPaginate(p *entity.Pagination) (*entity.Pagination, error) {
 	var contents []*entity.Content
-	err := r.db.Where("UPPER(name) LIKE UPPER(?)", "%"+p.GetSearch()+"%").Scopes(Paginate(contents, p, r.db)).Find(&contents).Error
+	err := r.db.Where("UPPER(name) LIKE UPPER(?)", "%"+p.GetSearch()+"%").Scopes(PaginateContents(contents, p, r.db)).Find(&contents).Error
 	if err != nil {
 		return nil, err
 	}

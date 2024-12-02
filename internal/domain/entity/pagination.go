@@ -3,13 +3,13 @@ package entity
 import "time"
 
 type Pagination struct {
-	Limit      int         `json:"limit,omitempty" query:"limit"`
-	Page       int         `json:"page,omitempty" query:"page"`
-	Sort       string      `json:"sort,omitempty" query:"sort"`
-	Search     string      `json:"search,omitempty" query:"search"`
-	Date       string      `json:"date,omitempty" query:"date"`
-	TotalRows  int64       `json:"total_rows,omitempty"`
-	TotalPages int         `json:"total_pages,omitempty"`
+	Limit      int         `json:"limit" query:"limit"`
+	Page       int         `json:"page" query:"page"`
+	Sort       string      `json:"sort" query:"sort"`
+	Search     string      `json:"search" query:"search"`
+	Date       string      `json:"date" query:"date"`
+	TotalRows  int64       `json:"total_rows"`
+	TotalPages int         `json:"total_pages"`
 	Rows       interface{} `json:"rows"`
 }
 

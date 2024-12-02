@@ -53,7 +53,7 @@ func (r *MenuRepository) CountByKeyPress(keyPress string) (int64, error) {
 
 func (r *MenuRepository) GetAllPaginate(p *entity.Pagination) (*entity.Pagination, error) {
 	var menus []*entity.Menu
-	err := r.db.Where("UPPER(name) LIKE UPPER(?)", "%"+p.GetSearch()+"%").Scopes(Paginate(menus, p, r.db)).Find(&menus).Error
+	err := r.db.Where("UPPER(name) LIKE UPPER(?)", "%"+p.GetSearch()+"%").Scopes(PaginateMenus(menus, p, r.db)).Find(&menus).Error
 	if err != nil {
 		return nil, err
 	}

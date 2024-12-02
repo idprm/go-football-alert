@@ -104,7 +104,7 @@ func (r *TeamRepository) CountLeagueByTeam(teamId int) (int64, error) {
 
 func (r *TeamRepository) GetAllPaginate(p *entity.Pagination) (*entity.Pagination, error) {
 	var teams []*entity.Team
-	err := r.db.Where("is_active = true AND (UPPER(name) LIKE UPPER(?) OR UPPER(code) LIKE UPPER(?))", "%"+p.GetSearch()+"%", "%"+p.GetSearch()+"%").Scopes(PaginateIsActive(teams, p, r.db)).Find(&teams).Error
+	err := r.db.Where("is_active = true AND (UPPER(name) LIKE UPPER(?) OR UPPER(code) LIKE UPPER(?))", "%"+p.GetSearch()+"%", "%"+p.GetSearch()+"%").Scopes(PaginateTeams(teams, p, r.db)).Find(&teams).Error
 	if err != nil {
 		return nil, err
 	}

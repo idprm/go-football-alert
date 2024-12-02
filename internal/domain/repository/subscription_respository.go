@@ -120,7 +120,7 @@ func (r *SubscriptionRepository) CountTotalActiveSub() (int64, error) {
 
 func (r *SubscriptionRepository) GetAllPaginate(p *entity.Pagination) (*entity.Pagination, error) {
 	var subscriptions []*entity.Subscription
-	err := r.db.Where("UPPER(msisdn) LIKE UPPER(?) OR UPPER(latest_keyword) LIKE UPPER(?)", "%"+p.GetSearch()+"%", "%"+p.GetSearch()+"%").Scopes(Paginate(subscriptions, p, r.db)).Find(&subscriptions).Error
+	err := r.db.Where("UPPER(msisdn) LIKE UPPER(?) OR UPPER(latest_keyword) LIKE UPPER(?)", "%"+p.GetSearch()+"%", "%"+p.GetSearch()+"%").Scopes(PaginateSubscriptions(subscriptions, p, r.db)).Find(&subscriptions).Error
 	if err != nil {
 		return nil, err
 	}

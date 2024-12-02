@@ -35,7 +35,7 @@ func (r *TransactionRepository) Count(serviceId int, msisdn, code, date string) 
 
 func (r *TransactionRepository) GetAllPaginate(p *entity.Pagination) (*entity.Pagination, error) {
 	var transactions []*entity.Transaction
-	err := r.db.Where("UPPER(msisdn) LIKE UPPER(?) OR UPPER(keyword) LIKE UPPER(?)", "%"+p.GetSearch()+"%", "%"+p.GetSearch()+"%").Scopes(Paginate(transactions, p, r.db)).Preload("Service").Find(&transactions).Error
+	err := r.db.Where("UPPER(msisdn) LIKE UPPER(?) OR UPPER(keyword) LIKE UPPER(?)", "%"+p.GetSearch()+"%", "%"+p.GetSearch()+"%").Scopes(PaginateTransactions(transactions, p, r.db)).Preload("Service").Find(&transactions).Error
 	if err != nil {
 		return nil, err
 	}

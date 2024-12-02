@@ -77,7 +77,7 @@ func (r *NewsRepository) CountById(id int64) (int64, error) {
 
 func (r *NewsRepository) GetAllPaginate(p *entity.Pagination) (*entity.Pagination, error) {
 	var news []*entity.News
-	err := r.db.Where("UPPER(title) LIKE UPPER(?)", "%"+p.GetSearch()+"%").Scopes(Paginate(news, p, r.db)).Find(&news).Error
+	err := r.db.Where("UPPER(title) LIKE UPPER(?)", "%"+p.GetSearch()+"%").Scopes(PaginateNews(news, p, r.db)).Find(&news).Error
 	if err != nil {
 		return nil, err
 	}
