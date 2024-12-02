@@ -102,11 +102,10 @@ func (h *LeagueHandler) Update(c *fiber.Ctx) error {
 		)
 	}
 
-	h.leagueService.Save(
+	h.leagueService.UpdateByPrimaryId(
 		&entity.League{
 			PrimaryID: req.PrimaryID,
 			Keyword:   req.Keyword,
-			IsActive:  req.IsActive,
 		},
 	)
 

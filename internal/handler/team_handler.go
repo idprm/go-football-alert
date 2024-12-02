@@ -79,11 +79,10 @@ func (h *TeamHandler) Update(c *fiber.Ctx) error {
 		)
 	}
 
-	h.teamService.Save(
+	h.teamService.UpdateByPrimaryId(
 		&entity.Team{
 			PrimaryID: req.PrimaryID,
 			Keyword:   req.Keyword,
-			IsActive:  req.IsActive,
 		},
 	)
 
