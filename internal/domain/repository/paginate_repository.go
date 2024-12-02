@@ -126,7 +126,7 @@ func PaginateMenus(value interface{}, pagination *entity.Pagination, db *gorm.DB
 
 func PaginateNews(value interface{}, pagination *entity.Pagination, db *gorm.DB) func(db *gorm.DB) *gorm.DB {
 	var totalRows int64
-	db.Model(value).Where("UPPER(name) LIKE UPPER(?)", "%"+pagination.GetSearch()+"%").Count(&totalRows)
+	db.Model(value).Where("UPPER(title) LIKE UPPER(?)", "%"+pagination.GetSearch()+"%").Count(&totalRows)
 
 	pagination.TotalRows = totalRows
 	totalPages := int(math.Ceil(float64(totalRows) / float64(pagination.Limit)))
