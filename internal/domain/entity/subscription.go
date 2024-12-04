@@ -210,3 +210,11 @@ func (e *Subscription) IsFirstFreeDay() bool {
 func (e *Subscription) ISMSAlerte() bool {
 	return e.Category == CATEGORY_SMSALERTE_COMPETITION || e.Category == CATEGORY_SMSALERTE_EQUIPE
 }
+
+func (e *Subscription) IsCompetition() bool {
+	return e.Category == CATEGORY_SMSALERTE_COMPETITION
+}
+
+func (e *Subscription) IsEquipe() bool {
+	return e.Category == CATEGORY_SMSALERTE_EQUIPE
+}

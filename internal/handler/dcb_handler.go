@@ -3,6 +3,8 @@ package handler
 import (
 	"encoding/json"
 	"log"
+	"strconv"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gosimple/slug"
@@ -16,6 +18,8 @@ import (
 type DCBHandler struct {
 	rmq                             rmqp.AMQP
 	summaryService                  services.ISummaryService
+	leagueService                   services.ILeagueService
+	teamService                     services.ITeamService
 	menuService                     services.IMenuService
 	ussdService                     services.IUssdService
 	scheduleService                 services.IScheduleService
@@ -36,6 +40,8 @@ type DCBHandler struct {
 func NewDCBHandler(
 	rmq rmqp.AMQP,
 	summaryService services.ISummaryService,
+	leagueService services.ILeagueService,
+	teamService services.ITeamService,
 	menuService services.IMenuService,
 	ussdService services.IUssdService,
 	scheduleService services.IScheduleService,
@@ -55,6 +61,8 @@ func NewDCBHandler(
 	return &DCBHandler{
 		rmq:                             rmq,
 		summaryService:                  summaryService,
+		leagueService:                   leagueService,
+		teamService:                     teamService,
 		menuService:                     menuService,
 		ussdService:                     ussdService,
 		scheduleService:                 scheduleService,
@@ -530,53 +538,311 @@ func (h *DCBHandler) GetAllSubscriptionPaginate(c *fiber.Ctx) error {
 }
 
 func (h *DCBHandler) Unsubscription(c *fiber.Ctx) error {
-	if h.subscriptionService.IsActiveSubscriptionBySubId(1) {
+	subId, _ := strconv.Atoi(c.Params("id"))
+	if h.subscriptionService.IsActiveSubscriptionBySubId(int64(subId)) {
 		trxId := utils.GenerateTrxId()
 
-		sub, _ := h.subscriptionService.GetBySubId(1)
+		sub, _ := h.subscriptionService.GetBySubId(int64(subId))
 
-		service, _ := h.serviceService.GetById(sub.GetServiceId())
-
-		content, err := h.getContentService(SMS_STOP, service)
+		service, err := h.serviceService.GetById(sub.GetServiceId())
 		if err != nil {
-			log.Println(err.Error())
+			return c.Status(fiber.StatusInternalServerError).JSON(
+				&model.WebResponse{
+					Error:      false,
+					StatusCode: fiber.StatusInternalServerError,
+					Message:    err.Error(),
+				},
+			)
 		}
 
-		if sub.IsFollowLeague {
-			h.subscriptionService.UpdateNotFollowLeague(sub)
+		if sub.ISMSAlerte() {
+			// is_follow competition
+			if sub.IsCompetition() {
+				// check league code
+				if h.leagueService.IsLeagueByCode(sub.GetCode()) {
+					league, err := h.leagueService.GetByCode(sub.GetCode())
+					if err != nil {
+						log.Println(err.Error())
+					}
+					// unfollow league
+					if h.subscriptionFollowLeagueService.IsSub(sub.GetId(), league.GetId()) {
+						h.subscriptionFollowLeagueService.Update(
+							&entity.SubscriptionFollowLeague{
+								SubscriptionID: sub.GetId(),
+								LeagueID:       league.GetId(),
+								LatestKeyword:  "",
+							},
+						)
+
+						// disable
+						h.subscriptionFollowLeagueService.Disable(
+							&entity.SubscriptionFollowLeague{
+								SubscriptionID: sub.GetId(),
+								LeagueID:       league.GetId(),
+							},
+						)
+
+						content, err := h.getContentUnFollowCompetition(service, league)
+						if err != nil {
+							log.Println(err.Error())
+						}
+
+						sub.SetLatestTrxId(trxId)
+
+						summary := &entity.Summary{
+							ServiceID: sub.GetServiceId(),
+							CreatedAt: time.Now(),
+						}
+
+						// unsub sms-alerte
+						h.subscriptionService.Update(
+							&entity.Subscription{
+								ServiceID:     sub.GetServiceId(),
+								Msisdn:        sub.GetMsisdn(),
+								Code:          sub.GetCode(),
+								LatestTrxId:   sub.GetLatestTrxId(),
+								LatestSubject: SUBJECT_UNSUB,
+								LatestStatus:  STATUS_SUCCESS,
+								UnsubAt:       time.Now(),
+								TotalUnsub:    sub.TotalUnsub + 1,
+							},
+						)
+
+						h.historyService.Save(
+							&entity.History{
+								SubscriptionID: sub.GetId(),
+								ServiceID:      sub.GetServiceId(),
+								Msisdn:         sub.GetMsisdn(),
+								Code:           sub.GetCode(),
+								Subject:        SUBJECT_UNSUB,
+								Status:         STATUS_SUCCESS,
+							},
+						)
+
+						// setter summary
+						summary.SetTotalUnsub(1)
+						// save summary
+						h.summaryService.Save(summary)
+
+						s := &entity.Subscription{
+							ServiceID: sub.GetServiceId(),
+							Msisdn:    sub.GetMsisdn(),
+							Code:      sub.GetCode(),
+						}
+
+						// set false is_active
+						h.subscriptionService.UpdateNotActive(s)
+						// set false is_retry
+						h.subscriptionService.UpdateNotRetry(s)
+						// set false is_follow_league
+						h.subscriptionService.UpdateNotFollowLeague(sub)
+
+						mt := &model.MTRequest{
+							Smsc:         service.ScUnsubMT,
+							Keyword:      "STOP " + sub.GetCode(),
+							Service:      service,
+							Subscription: sub,
+							Content:      content,
+						}
+						mt.SetTrxId(trxId)
+
+						jsonData, err := json.Marshal(mt)
+						if err != nil {
+							log.Println(err.Error())
+						}
+
+						h.rmq.IntegratePublish(
+							RMQ_MT_EXCHANGE,
+							RMQ_MT_QUEUE,
+							RMQ_DATA_TYPE, "", string(jsonData),
+						)
+
+					}
+				}
+
+			}
+			// is_follow team
+			if sub.IsEquipe() {
+				// check team code
+				if h.teamService.IsTeamByCode(sub.GetCode()) {
+					team, err := h.teamService.GetByCode(sub.GetCode())
+					if err != nil {
+						log.Println(err.Error())
+					}
+					// unfollow team
+					if h.subscriptionFollowTeamService.IsSub(sub.GetId(), team.GetId()) {
+						h.subscriptionFollowTeamService.Disable(
+							&entity.SubscriptionFollowTeam{
+								SubscriptionID: sub.GetId(),
+								TeamID:         team.GetId(),
+							},
+						)
+					}
+
+					content, err := h.getContentUnFollowTeam(service, team)
+					if err != nil {
+						log.Println(err.Error())
+					}
+
+					sub.SetLatestTrxId(trxId)
+
+					summary := &entity.Summary{
+						ServiceID: sub.GetServiceId(),
+						CreatedAt: time.Now(),
+					}
+
+					// unsub sms-alerte
+					h.subscriptionService.Update(
+						&entity.Subscription{
+							ServiceID:     sub.GetServiceId(),
+							Msisdn:        sub.GetMsisdn(),
+							Code:          sub.GetCode(),
+							LatestTrxId:   sub.GetLatestTrxId(),
+							LatestSubject: SUBJECT_UNSUB,
+							LatestStatus:  STATUS_SUCCESS,
+							LatestKeyword: sub.GetLatestKeyword(),
+							UnsubAt:       time.Now(),
+							IpAddress:     sub.GetIpAddress(),
+							TotalUnsub:    sub.TotalUnsub + 1,
+						},
+					)
+
+					h.historyService.Save(
+						&entity.History{
+							SubscriptionID: sub.GetId(),
+							ServiceID:      sub.GetServiceId(),
+							Msisdn:         sub.GetMsisdn(),
+							Code:           sub.GetCode(),
+							Keyword:        sub.GetLatestKeyword(),
+							Subject:        SUBJECT_UNSUB,
+							Status:         STATUS_SUCCESS,
+							IpAddress:      sub.GetIpAddress(),
+						},
+					)
+
+					// setter summary
+					summary.SetTotalUnsub(1)
+					// save summary
+					h.summaryService.Save(summary)
+
+					s := &entity.Subscription{
+						ServiceID: sub.GetServiceId(),
+						Msisdn:    sub.GetMsisdn(),
+						Code:      sub.GetCode(),
+					}
+
+					// set false is_active
+					h.subscriptionService.UpdateNotActive(s)
+					// set false is_retry
+					h.subscriptionService.UpdateNotRetry(s)
+					// set false is_follow_team
+					h.subscriptionService.UpdateNotFollowTeam(sub)
+
+					mt := &model.MTRequest{
+						Smsc:         service.ScUnsubMT,
+						Keyword:      "STOP " + sub.GetCode(),
+						Service:      service,
+						Subscription: sub,
+						Content:      content,
+					}
+					mt.SetTrxId(trxId)
+
+					jsonData, err := json.Marshal(mt)
+					if err != nil {
+						log.Println(err.Error())
+					}
+
+					h.rmq.IntegratePublish(
+						RMQ_MT_EXCHANGE,
+						RMQ_MT_QUEUE,
+						RMQ_DATA_TYPE, "", string(jsonData),
+					)
+				}
+			}
+		} else {
+			content, err := h.getContentService("STOP", service)
+			if err != nil {
+				log.Println(err.Error())
+			}
+
+			sub.SetLatestTrxId(trxId)
+
+			summary := &entity.Summary{
+				ServiceID: sub.GetServiceId(),
+				CreatedAt: time.Now(),
+			}
+
+			// unsub sms-alerte
+			h.subscriptionService.Update(
+				&entity.Subscription{
+					ServiceID:     sub.GetServiceId(),
+					Msisdn:        sub.GetMsisdn(),
+					Code:          sub.GetCode(),
+					LatestTrxId:   sub.GetLatestTrxId(),
+					LatestSubject: SUBJECT_UNSUB,
+					LatestStatus:  STATUS_SUCCESS,
+					LatestKeyword: sub.GetLatestKeyword(),
+					UnsubAt:       time.Now(),
+					IpAddress:     sub.GetIpAddress(),
+					TotalUnsub:    sub.TotalUnsub + 1,
+				},
+			)
+
+			h.historyService.Save(
+				&entity.History{
+					SubscriptionID: sub.GetId(),
+					ServiceID:      sub.GetServiceId(),
+					Msisdn:         sub.GetMsisdn(),
+					Code:           sub.GetCode(),
+					Keyword:        sub.GetLatestKeyword(),
+					Subject:        SUBJECT_UNSUB,
+					Status:         STATUS_SUCCESS,
+					IpAddress:      sub.GetIpAddress(),
+				},
+			)
+
+			// setter summary
+			summary.SetTotalUnsub(1)
+			// save summary
+			h.summaryService.Save(summary)
+
+			s := &entity.Subscription{
+				ServiceID: sub.GetServiceId(),
+				Msisdn:    sub.GetMsisdn(),
+				Code:      sub.GetCode(),
+			}
+
+			// set false is_active
+			h.subscriptionService.UpdateNotActive(s)
+			// set false is_retry
+			h.subscriptionService.UpdateNotRetry(s)
+
+			mt := &model.MTRequest{
+				Smsc:         service.ScUnsubMT,
+				Keyword:      "STOP " + sub.GetCode(),
+				Service:      service,
+				Subscription: sub,
+				Content:      content,
+			}
+			mt.SetTrxId(trxId)
+
+			jsonData, err := json.Marshal(mt)
+			if err != nil {
+				log.Println(err.Error())
+			}
+
+			h.rmq.IntegratePublish(
+				RMQ_MT_EXCHANGE,
+				RMQ_MT_QUEUE,
+				RMQ_DATA_TYPE, "", string(jsonData),
+			)
 		}
-
-		if sub.IsFollowTeam {
-			h.subscriptionService.UpdateNotFollowTeam(sub)
-		}
-
-		h.subscriptionService.UpdateNotActive(sub)
-
-		mt := &model.MTRequest{
-			Smsc:         service.ScUnsubMT,
-			Keyword:      "STOP " + sub.GetLatestKeyword(),
-			Service:      service,
-			Subscription: sub,
-			Content:      content,
-		}
-		mt.SetTrxId(trxId)
-
-		jsonData, err := json.Marshal(mt)
-		if err != nil {
-			log.Println(err.Error())
-		}
-
-		h.rmq.IntegratePublish(
-			RMQ_MT_EXCHANGE,
-			RMQ_MT_QUEUE,
-			RMQ_DATA_TYPE, "", string(jsonData),
-		)
 
 		return c.Status(fiber.StatusOK).JSON(
 			&model.WebResponse{
 				Error:      false,
 				StatusCode: fiber.StatusOK,
-				Message:    "",
+				Message:    "unsub_success",
 			},
 		)
 	}
@@ -790,4 +1056,26 @@ func (h *DCBHandler) getContentService(v string, service *entity.Service) (*enti
 		}, nil
 	}
 	return h.contentService.GetService(v, service)
+}
+
+func (h *DCBHandler) getContentUnFollowCompetition(service *entity.Service, league *entity.League) (*entity.Content, error) {
+	if !h.contentService.IsContent(SMS_FOLLOW_COMPETITION_STOP) {
+		return &entity.Content{
+			Category: "CATEGORY",
+			Channel:  "SMS",
+			Value:    "SAMPLE_TEXT",
+		}, nil
+	}
+	return h.contentService.GetUnSubFollowCompetition(SMS_FOLLOW_COMPETITION_STOP, service, league)
+}
+
+func (h *DCBHandler) getContentUnFollowTeam(service *entity.Service, team *entity.Team) (*entity.Content, error) {
+	if !h.contentService.IsContent(SMS_FOLLOW_TEAM_STOP) {
+		return &entity.Content{
+			Category: "CATEGORY",
+			Channel:  "SMS",
+			Value:    "SAMPLE_TEXT",
+		}, nil
+	}
+	return h.contentService.GetUnSubFollowTeam(SMS_FOLLOW_TEAM_STOP, service, team)
 }
