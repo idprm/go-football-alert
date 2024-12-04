@@ -388,7 +388,7 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	// subscriptions
 	subscriptions := dcb.Group("subscriptions")
 	subscriptions.Get("/", dcbHandler.GetAllSubscriptionPaginate)
-	subscriptions.Put("/unsub/:id", dcbHandler.Unsubscription)
+	subscriptions.Put("/unsub/", dcbHandler.Unsubscription)
 
 	// transactions
 	transactions := dcb.Group("transactions")

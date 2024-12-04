@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"log"
-	"strconv"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -538,11 +537,29 @@ func (h *DCBHandler) GetAllSubscriptionPaginate(c *fiber.Ctx) error {
 }
 
 func (h *DCBHandler) Unsubscription(c *fiber.Ctx) error {
-	subId, _ := strconv.Atoi(c.Params("id"))
-	if h.subscriptionService.IsActiveSubscriptionBySubId(int64(subId)) {
+
+	req := new(model.UnsubRequest)
+
+	err := c.BodyParser(req)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusBadRequest,
+				Message:    err.Error(),
+			},
+		)
+	}
+
+	errors := ValidateStruct(*req)
+	if errors != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(errors)
+	}
+
+	if h.subscriptionService.IsActiveSubscriptionBySubId(int64(req.GetId())) {
 		trxId := utils.GenerateTrxId()
 
-		sub, _ := h.subscriptionService.GetBySubId(int64(subId))
+		sub, _ := h.subscriptionService.GetBySubId(int64(req.GetId()))
 
 		service, err := h.serviceService.GetById(sub.GetServiceId())
 		if err != nil {

@@ -279,3 +279,11 @@ type RmcSportItem struct {
 	Description string `xml:"description"`
 	PubDate     string `xml:"pubDate"`
 }
+
+type UnsubRequest struct {
+	ID int `validate:"required" json:"id"`
+}
+
+func (m *UnsubRequest) GetId() int {
+	return m.ID
+}
