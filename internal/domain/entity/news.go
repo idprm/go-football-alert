@@ -77,6 +77,7 @@ func (e *News) GetParseTitleLeft() string {
 	t := strings.TrimSpace(e.Title[:strings.IndexByte(e.Title, ':')])
 	replacer := strings.NewReplacer(
 		`Mercato`, "",
+		`OM`, "",
 	)
 	if len(strings.TrimSpace(replacer.Replace(t))) > 0 {
 		return strings.TrimSpace(replacer.Replace(t))
