@@ -1014,7 +1014,7 @@ func (h *IncomingHandler) SMSAlerteCompetition(baseUrl string, page int) string 
 				API_VERSION +
 				`/ussd/q/detail?slug=alerte-sms-competition&amp;category=SMSALERTE_COMPETITION&amp;league_id=` + s.GetIdToString() +
 				`&amp;unique_code=` + s.GetCode() + `&amp;title=` + s.GetNameQueryEscape() +
-				`">Alerte ` + s.GetNameWithoutAccents() +
+				`">` + s.GetNameWithoutAccents() +
 				`</a><br/>`
 			leaguesData = append(leaguesData, row)
 		}
