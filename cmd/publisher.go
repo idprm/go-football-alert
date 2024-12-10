@@ -827,7 +827,7 @@ func scrapingNews(db *gorm.DB, rmq rmqp.AMQP) {
 	// africatopsports
 	// h.NewsAfricaTopSports()
 	// footmercato
-	h.NewsFootMercato()
+	// h.NewsFootMercato()
 	// rmcsport
 	// h.NewsRmcSport()
 }

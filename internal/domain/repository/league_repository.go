@@ -114,7 +114,7 @@ func (r *LeagueRepository) GetAllUSSD(page int) ([]*entity.League, error) {
 
 func (r *LeagueRepository) GetAllEuropeUSSD(page int) ([]*entity.League, error) {
 	var c []*entity.League
-	err := r.db.Where("is_active = ?", true).Where("country IN('England', 'Belgium', 'Portugal', 'France', 'Italy', 'Spain', 'Germany', 'World')").Order("id ASC").Offset((page - 1) * 7).Limit(7).Find(&c).Error
+	err := r.db.Where("is_active = true AND sort <> 0").Where("country IN('England', 'Belgium', 'Portugal', 'France', 'Italy', 'Spain', 'Germany', 'World')").Order("sort ASC").Offset((page - 1) * 7).Limit(7).Find(&c).Error
 	if err != nil {
 		return nil, err
 	}

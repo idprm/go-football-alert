@@ -88,7 +88,6 @@ func (h *ScraperHandler) Leagues() {
 			h.leagueService.UpdateByPrimaryId(
 				&entity.League{
 					PrimaryID: int64(el.League.ID),
-					Name:      el.League.Name,
 					Slug:      slug.Make(el.League.Name),
 					Logo:      el.League.Logo,
 					Country:   el.Country.Name,
