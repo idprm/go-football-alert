@@ -306,26 +306,30 @@ func (p *Processor) Pronostic(wg *sync.WaitGroup, message []byte) {
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
 	transactionRepo := repository.NewTransactionRepository(p.db)
 	transactionService := services.NewTransactionService(transactionRepo)
-	predictionRepo := repository.NewPredictionRepository(p.db)
-	predictionService := services.NewPredictionService(predictionRepo)
+	pronosticRepo := repository.NewPronosticRepository(p.db)
+	pronosticService := services.NewPronosticService(pronosticRepo)
+	subPronosticRepo := repository.NewSubscriptionPronosticRepository(p.db)
+	subPronosticService := services.NewSubscriptionPronosticService(subPronosticRepo)
 
 	// parsing json to string
 	var sub *entity.Subscription
 	json.Unmarshal(message, &sub)
 
-	h := handler.NewPredictionHandler(
+	h := handler.NewPronosticHandler(
 		p.rmq,
+		p.rds,
 		p.logger,
-		sub,
 		serviceService,
 		contentService,
 		subscriptionService,
 		transactionService,
-		predictionService,
+		pronosticService,
+		subPronosticService,
+		sub,
 	)
 
 	// Send the prediction
-	h.Prediction()
+	h.Pronostic()
 
 	wg.Done()
 }
