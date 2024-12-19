@@ -340,6 +340,10 @@ func (m *UssdRequest) IsLmLiveMatchLater() bool {
 	return m.GetSlug() == "lm-live-match-later"
 }
 
+func (m *UssdRequest) IsLmStanding() bool {
+	return m.GetSlug() == "lm-standing"
+}
+
 func (m *UssdRequest) IsLmSchedule() bool {
 	return m.GetSlug() == "lm-schedule"
 }

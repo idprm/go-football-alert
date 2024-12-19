@@ -390,7 +390,7 @@ func (h *ScraperHandler) Predictions() {
 func (h *ScraperHandler) Standings() {
 	fb := apifb.NewApiFb()
 
-	leagues, err := h.leagueService.GetOnlyWorldByActive()
+	leagues, err := h.leagueService.GetAllUSSDByActive()
 	if err != nil {
 		log.Println(err.Error())
 	}

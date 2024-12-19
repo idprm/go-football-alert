@@ -104,6 +104,7 @@ type IncomingHandler struct {
 	fixtureService      services.IFixtureService
 	livematchService    services.ILiveMatchService
 	livescoreService    services.ILiveScoreService
+	standingService     services.IStandingService
 	predictionService   services.IPredictionService
 	newsService         services.INewsService
 	scheduleService     services.IScheduleService
@@ -125,6 +126,7 @@ func NewIncomingHandler(
 	fixtureService services.IFixtureService,
 	livematchService services.ILiveMatchService,
 	livescoreService services.ILiveScoreService,
+	standingService services.IStandingService,
 	predictionService services.IPredictionService,
 	newsService services.INewsService,
 	scheduleService services.IScheduleService,
@@ -145,6 +147,7 @@ func NewIncomingHandler(
 		fixtureService:      fixtureService,
 		livematchService:    livematchService,
 		livescoreService:    livescoreService,
+		standingService:     standingService,
 		predictionService:   predictionService,
 		newsService:         newsService,
 		scheduleService:     scheduleService,
@@ -376,6 +379,10 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 
 		if req.IsLmLiveMatchLater() {
 			data = h.LiveMatchesLater(c.BaseURL(), true, req.GetPage()+1)
+		}
+
+		if req.IsLmStanding() {
+
 		}
 
 		if req.IsLmSchedule() {
@@ -947,6 +954,10 @@ func (h *IncomingHandler) LiveMatchesLater(baseUrl string, isActive bool, page i
 		liveMatchsString = "Pas de match live, prochain a venir :"
 	}
 	return liveMatchsString
+}
+
+func (h *IncomingHandler) StandingByLeague(baseUrl string, page int) string {
+	return ""
 }
 
 func (h *IncomingHandler) Schedules(baseUrl string, page int) string {

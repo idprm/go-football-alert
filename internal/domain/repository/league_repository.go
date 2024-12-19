@@ -22,6 +22,7 @@ type ILeagueRepository interface {
 	CountByName(string) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetAllByActive() ([]*entity.League, error)
+	GetAllUSSDByActive() ([]*entity.League, error)
 	GetOnlyWorldByActive() ([]*entity.League, error)
 	GetAllUSSD(int) ([]*entity.League, error)
 	GetAllEuropeUSSD(int) ([]*entity.League, error)
@@ -88,6 +89,15 @@ func (r *LeagueRepository) GetAllPaginate(p *entity.Pagination) (*entity.Paginat
 func (r *LeagueRepository) GetAllByActive() ([]*entity.League, error) {
 	var c []*entity.League
 	err := r.db.Where(&entity.League{IsActive: true}).Find(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
+func (r *LeagueRepository) GetAllUSSDByActive() ([]*entity.League, error) {
+	var c []*entity.League
+	err := r.db.Where("is_active = true AND sort <> 0").Where("country IN('England', 'Belgium', 'Portugal', 'France', 'Italy', 'Spain', 'Germany', 'World')").Find(&c).Error
 	if err != nil {
 		return nil, err
 	}
