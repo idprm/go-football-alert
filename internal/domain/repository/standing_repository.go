@@ -19,6 +19,7 @@ type IStandingRepository interface {
 	Count(int) (int64, error)
 	CountByRank(int, int) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
+	GetAllTeamUSSD(int, int) ([]*entity.Standing, error)
 	Get(int) (*entity.Standing, error)
 	GetByRank(int, int) (*entity.Standing, error)
 	Save(*entity.Standing) (*entity.Standing, error)
@@ -53,6 +54,15 @@ func (r *StandingRepository) GetAllPaginate(p *entity.Pagination) (*entity.Pagin
 	}
 	p.Rows = standings
 	return p, nil
+}
+
+func (r *StandingRepository) GetAllTeamUSSD(leagueId, page int) ([]*entity.Standing, error) {
+	var c []*entity.Standing
+	err := r.db.Where("league_id = ?", leagueId).Preload("League").Preload("Team").Order("points DESC").Offset((page - 1) * 7).Limit(7).Find(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
 }
 
 func (r *StandingRepository) Get(id int) (*entity.Standing, error) {

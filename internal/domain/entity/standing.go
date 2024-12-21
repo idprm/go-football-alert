@@ -1,6 +1,8 @@
 package entity
 
 import (
+	"net/url"
+	"strconv"
 	"time"
 
 	"gorm.io/gorm"
@@ -28,21 +30,14 @@ type Standing struct {
 	gorm.Model  `json:"-"`
 }
 
-// Rank int `json:"rank"`
-// Team struct {
-// 	PrimaryID   int    `json:"id"`
-// 	Name        string `json:"name"`
-// 	Points      int    `json:"points"`
-// 	GoalsDiff   int    `json:"goalsDiff"`
-// 	Group       string `json:"group"`
-// 	Form        string `json:"form"`
-// 	Status      string `json:"status"`
-// 	Description string `json:"description"`
-// } `json:"team"`
-// All struct {
-// 	Played int `json:"played"`
-// 	Win    int `json:"win"`
-// 	Draw   int `json:"draw"`
-// 	Lose   int `json:"lose"`
-// } `json:"all"`
-// UpdateAt string `json:"update"`
+func (e *Standing) GetTitle() string {
+	return e.TeamName + " " + e.GetPoints()
+}
+
+func (e *Standing) GetTitleQueryEscape() string {
+	return url.QueryEscape(e.GetTitle())
+}
+
+func (e *Standing) GetPoints() string {
+	return "(" + strconv.Itoa(e.Points) + "Pts)"
+}

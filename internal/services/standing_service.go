@@ -19,6 +19,7 @@ type IStandingService interface {
 	IsStanding(int) bool
 	IsRank(int, int) bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
+	GetAllTeamUSSD(int, int) ([]*entity.Standing, error)
 	Get(int) (*entity.Standing, error)
 	GetByRank(int, int) (*entity.Standing, error)
 	Save(*entity.Standing) (*entity.Standing, error)
@@ -39,6 +40,10 @@ func (s *StandingService) IsRank(leagueId, rank int) bool {
 
 func (s *StandingService) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {
 	return s.standingRepo.GetAllPaginate(pagination)
+}
+
+func (s *StandingService) GetAllTeamUSSD(leagueId, page int) ([]*entity.Standing, error) {
+	return s.standingRepo.GetAllTeamUSSD(leagueId, page)
 }
 
 func (s *StandingService) Get(id int) (*entity.Standing, error) {

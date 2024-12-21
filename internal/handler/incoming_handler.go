@@ -382,7 +382,7 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 		}
 
 		if req.IsLmStanding() {
-
+			data = h.Standing(c.BaseURL(), req.GetPage()+1)
 		}
 
 		if req.IsLmSchedule() {
@@ -956,8 +956,54 @@ func (h *IncomingHandler) LiveMatchesLater(baseUrl string, isActive bool, page i
 	return liveMatchsString
 }
 
-func (h *IncomingHandler) StandingByLeague(baseUrl string, page int) string {
-	return ""
+func (h *IncomingHandler) Standing(baseUrl string, page int) string {
+	leagues, err := h.leagueService.GetAllUSSDByActive()
+	if err != nil {
+		log.Println(err.Error())
+	}
+	var leaguesData []string
+	var leagueString string
+	if len(leagues) > 0 {
+		for _, s := range leagues {
+			row := `<a href="` +
+				baseUrl + `/` +
+				API_VERSION +
+				`/ussd/q/detail?slug=lm-standing-league&amp;category=LIVEMATCH&amp;league_id=` + s.GetIdToString() +
+				`&amp;unique_code=` + s.GetCode() + `&amp;title=` + s.GetNameQueryEscape() +
+				`">` + s.GetNameWithoutAccents() +
+				`</a><br/>`
+			leaguesData = append(leaguesData, row)
+		}
+		leagueString = strings.Join(leaguesData, "\n")
+	} else {
+		leagueString = "No data"
+	}
+	return leagueString
+}
+
+func (h *IncomingHandler) StandingByLeague(baseUrl string, leagueId, page int) string {
+	standings, err := h.standingService.GetAllTeamUSSD(leagueId, page)
+	if err != nil {
+		log.Println(err.Error())
+	}
+	var standingsData []string
+	var standingsString string
+	if len(standings) > 0 {
+		for _, s := range standings {
+			row := `<a href="` +
+				baseUrl + `/` +
+				API_VERSION + `/ussd/q/detail?slug=lm-standing-league&amp;category=LIVEMATCH&amp;title=` +
+				s.GetTitleQueryEscape() + `">` +
+				s.GetTitle() +
+				`</a><br/>`
+
+			standingsData = append(standingsData, row)
+		}
+		standingsString = strings.Join(standingsData, "\n")
+	} else {
+		standingsString = "Il n'y en a pas"
+	}
+	return standingsString
 }
 
 func (h *IncomingHandler) Schedules(baseUrl string, page int) string {
