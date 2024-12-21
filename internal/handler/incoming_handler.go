@@ -972,7 +972,7 @@ func (h *IncomingHandler) Standing(baseUrl string, page int) string {
 			row := `<a href="` +
 				baseUrl + `/` +
 				API_VERSION +
-				`/ussd/q/detail?slug=lm-classement&amp;category=LIVEMATCH&amp;league_id=` + s.GetIdToString() +
+				`/ussd/q?slug=lm-classement&amp;category=LIVEMATCH&amp;league_id=` + s.GetIdToString() +
 				`&amp;unique_code=` + s.GetCode() + `&amp;title=` + s.GetNameQueryEscape() +
 				`">` + s.GetNameWithoutAccents() +
 				`</a><br/>`
@@ -996,7 +996,7 @@ func (h *IncomingHandler) Classement(baseUrl string, leagueId, page int) string 
 		for _, s := range standings {
 			row := `<a href="` +
 				baseUrl + `/` +
-				API_VERSION + `/ussd/q/detail?slug=lm-classement&amp;category=LIVEMATCH&amp;title=` +
+				API_VERSION + `/ussd/q?slug=lm-classement&amp;category=LIVEMATCH&amp;title=` +
 				s.GetTitleQueryEscape() + `">` +
 				s.GetTitle() +
 				`</a><br/>`
@@ -1004,8 +1004,6 @@ func (h *IncomingHandler) Classement(baseUrl string, leagueId, page int) string 
 			standingsData = append(standingsData, row)
 		}
 		standingsString = strings.Join(standingsData, "\n")
-	} else {
-		standingsString = "Il n'y en a pas"
 	}
 	return standingsString
 }
