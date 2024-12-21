@@ -344,6 +344,10 @@ func (m *UssdRequest) IsLmStanding() bool {
 	return m.GetSlug() == "lm-standing"
 }
 
+func (m *UssdRequest) IsLmClassement() bool {
+	return m.GetSlug() == "lm-classement"
+}
+
 func (m *UssdRequest) IsLmSchedule() bool {
 	return m.GetSlug() == "lm-schedule"
 }

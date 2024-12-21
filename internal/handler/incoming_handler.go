@@ -393,6 +393,10 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 			data = h.FlashNews(c.BaseURL(), req.GetPage()+1)
 		}
 
+		if req.IsLmClassement() {
+			data = h.Classement(c.BaseURL(), req.GetLeagueId(), req.GetPage()+1)
+		}
+
 		if req.GetSlug() == "kit-foot-by-league" {
 			data = h.KitFootByLeague(c.BaseURL(), req.GetLeagueId(), req.GetPage()+1)
 		}
@@ -968,7 +972,7 @@ func (h *IncomingHandler) Standing(baseUrl string, page int) string {
 			row := `<a href="` +
 				baseUrl + `/` +
 				API_VERSION +
-				`/ussd/q/detail?slug=lm-standing-league&amp;category=LIVEMATCH&amp;league_id=` + s.GetIdToString() +
+				`/ussd/q/detail?slug=lm-classement&amp;category=LIVEMATCH&amp;league_id=` + s.GetIdToString() +
 				`&amp;unique_code=` + s.GetCode() + `&amp;title=` + s.GetNameQueryEscape() +
 				`">` + s.GetNameWithoutAccents() +
 				`</a><br/>`
@@ -981,7 +985,7 @@ func (h *IncomingHandler) Standing(baseUrl string, page int) string {
 	return leagueString
 }
 
-func (h *IncomingHandler) StandingByLeague(baseUrl string, leagueId, page int) string {
+func (h *IncomingHandler) Classement(baseUrl string, leagueId, page int) string {
 	standings, err := h.standingService.GetAllTeamUSSD(leagueId, page)
 	if err != nil {
 		log.Println(err.Error())
@@ -992,7 +996,7 @@ func (h *IncomingHandler) StandingByLeague(baseUrl string, leagueId, page int) s
 		for _, s := range standings {
 			row := `<a href="` +
 				baseUrl + `/` +
-				API_VERSION + `/ussd/q/detail?slug=lm-standing-league&amp;category=LIVEMATCH&amp;title=` +
+				API_VERSION + `/ussd/q/detail?slug=lm-classement&amp;category=LIVEMATCH&amp;title=` +
 				s.GetTitleQueryEscape() + `">` +
 				s.GetTitle() +
 				`</a><br/>`
