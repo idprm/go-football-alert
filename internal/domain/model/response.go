@@ -8,13 +8,14 @@ type WebResponse struct {
 }
 
 type SummaryResponse struct {
-	Month        string      `json:"month"`
-	Year         int         `json:"year"`
-	TotalSub     int         `json:"total_sub"`
-	TotalUnsub   int         `json:"total_unsub"`
-	TotalRenewal int         `json:"total_renewal"`
-	TotalRevenue float64     `json:"total_revenue"`
-	Results      interface{} `json:"results"`
+	StartDate      string      `json:"start_date"`
+	EndDate        string      `json:"end_date"`
+	TotalActiveSub int         `json:"total_active_sub"`
+	TotalSub       int         `json:"total_sub"`
+	TotalUnsub     int         `json:"total_unsub"`
+	TotalRenewal   int         `json:"total_renewal"`
+	TotalRevenue   float64     `json:"total_revenue"`
+	Results        interface{} `json:"results"`
 }
 
 type ApiFbResponse struct {

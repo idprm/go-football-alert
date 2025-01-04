@@ -23,10 +23,11 @@ type ISummaryService interface {
 	IsSummary(int, time.Time) bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	Get(int, time.Time) (*entity.Summary, error)
-	GetSubByMonth(time.Time) (int, error)
-	GetUnsubByMonth(time.Time) (int, error)
-	GetRenewalByMonth(time.Time) (int, error)
-	GetRevenueByMonth(time.Time) (float64, error)
+	GetActiveSub(time.Time, time.Time) (int, error)
+	GetSub(time.Time, time.Time) (int, error)
+	GetUnSub(time.Time, time.Time) (int, error)
+	GetRenewal(time.Time, time.Time) (int, error)
+	GetRevenue(time.Time, time.Time) (float64, error)
 	Save(*entity.Summary) (*entity.Summary, error)
 	Update(*entity.Summary) (*entity.Summary, error)
 	UpdateRetry(*entity.Summary) (*entity.Summary, error)
@@ -46,20 +47,24 @@ func (s *SummaryService) Get(serviceId int, date time.Time) (*entity.Summary, er
 	return s.summaryRepo.Get(serviceId, date)
 }
 
-func (s *SummaryService) GetSubByMonth(date time.Time) (int, error) {
-	return s.summaryRepo.GetSubByMonth(date)
+func (s *SummaryService) GetActiveSub(start, end time.Time) (int, error) {
+	return s.summaryRepo.GetActiveSub(start, end)
 }
 
-func (s *SummaryService) GetUnsubByMonth(date time.Time) (int, error) {
-	return s.summaryRepo.GetUnsubByMonth(date)
+func (s *SummaryService) GetSub(start, end time.Time) (int, error) {
+	return s.summaryRepo.GetSub(start, end)
 }
 
-func (s *SummaryService) GetRenewalByMonth(date time.Time) (int, error) {
-	return s.summaryRepo.GetRenewalByMonth(date)
+func (s *SummaryService) GetUnSub(start, end time.Time) (int, error) {
+	return s.summaryRepo.GetUnSub(start, end)
 }
 
-func (s *SummaryService) GetRevenueByMonth(date time.Time) (float64, error) {
-	return s.summaryRepo.GetRevenueByMonth(date)
+func (s *SummaryService) GetRenewal(start, end time.Time) (int, error) {
+	return s.summaryRepo.GetRenewal(start, end)
+}
+
+func (s *SummaryService) GetRevenue(start, end time.Time) (float64, error) {
+	return s.summaryRepo.GetRevenue(start, end)
 }
 
 func (s *SummaryService) Save(a *entity.Summary) (*entity.Summary, error) {

@@ -21,10 +21,11 @@ type ISummaryRepository interface {
 	Count(int, time.Time) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	Get(int, time.Time) (*entity.Summary, error)
-	GetSubByMonth(time.Time) (int, error)
-	GetUnsubByMonth(time.Time) (int, error)
-	GetRenewalByMonth(time.Time) (int, error)
-	GetRevenueByMonth(time.Time) (float64, error)
+	GetActiveSub(time.Time, time.Time) (int, error)
+	GetSub(time.Time, time.Time) (int, error)
+	GetUnSub(time.Time, time.Time) (int, error)
+	GetRenewal(time.Time, time.Time) (int, error)
+	GetRevenue(time.Time, time.Time) (float64, error)
 	Save(*entity.Summary) (*entity.Summary, error)
 	Update(*entity.Summary) (*entity.Summary, error)
 	Delete(*entity.Summary) error
@@ -41,7 +42,7 @@ func (r *SummaryRepository) Count(serviceId int, date time.Time) (int64, error) 
 
 func (r *SummaryRepository) GetAllPaginate(p *entity.Pagination) (*entity.Pagination, error) {
 	var summaries []*entity.Summary
-	err := r.db.Where("MONTH(created_at) = MONTH(?) AND YEAR(created_at) = YEAR(?)", p.GetDate(), p.GetDate()).Scopes(Paginate(summaries, p, r.db)).Find(&summaries).Error
+	err := r.db.Where("DATE(created_at) = DATE(?) BETWEEN DATE(created_at) = DATE(?)", p.GetStartDate(), p.GetEndDate()).Scopes(Paginate(summaries, p, r.db)).Find(&summaries).Error
 	if err != nil {
 		return nil, err
 	}
@@ -58,36 +59,45 @@ func (r *SummaryRepository) Get(serviceId int, date time.Time) (*entity.Summary,
 	return &c, nil
 }
 
-func (r *SummaryRepository) GetSubByMonth(date time.Time) (int, error) {
+func (r *SummaryRepository) GetActiveSub(start, end time.Time) (int, error) {
 	var c entity.Summary
-	err := r.db.Table("summaries").Select("SUM(total_sub) as total_sub").Where("MONTH(created_at) = MONTH(?) AND YEAR(created_at) = YEAR(?)", date, date).Scan(&c).Error
+	err := r.db.Table("summaries").Select("SUM(total_active_sub) as total_active_sub").Where("DATE(created_at) = DATE(?) BETWEEN DATE(created_at) = DATE(?)", start, end).Scan(&c).Error
 	if err != nil {
 		return 0, err
 	}
 	return c.TotalSub, nil
 }
 
-func (r *SummaryRepository) GetUnsubByMonth(date time.Time) (int, error) {
+func (r *SummaryRepository) GetSub(start, end time.Time) (int, error) {
 	var c entity.Summary
-	err := r.db.Table("summaries").Select("SUM(total_unsub) as total_unsub").Where("MONTH(created_at) = MONTH(?) AND YEAR(created_at) = YEAR(?)", date, date).Scan(&c).Error
+	err := r.db.Table("summaries").Select("SUM(total_sub) as total_sub").Where("DATE(created_at) = DATE(?) BETWEEN DATE(created_at) = DATE(?)", start, end).Scan(&c).Error
+	if err != nil {
+		return 0, err
+	}
+	return c.TotalSub, nil
+}
+
+func (r *SummaryRepository) GetUnSub(start, end time.Time) (int, error) {
+	var c entity.Summary
+	err := r.db.Table("summaries").Select("SUM(total_unsub) as total_unsub").Where("DATE(created_at) = DATE(?) BETWEEN DATE(created_at) = DATE(?)", start, end).Scan(&c).Error
 	if err != nil {
 		return 0, err
 	}
 	return c.TotalUnsub, nil
 }
 
-func (r *SummaryRepository) GetRenewalByMonth(date time.Time) (int, error) {
+func (r *SummaryRepository) GetRenewal(start, end time.Time) (int, error) {
 	var c entity.Summary
-	err := r.db.Table("summaries").Select("SUM(total_renewal) as total_renewal").Where("MONTH(created_at) = MONTH(?) AND YEAR(created_at) = YEAR(?)", date, date).Scan(&c).Error
+	err := r.db.Table("summaries").Select("SUM(total_renewal) as total_renewal").Where("DATE(created_at) = DATE(?) AND DATE(created_at) = DATE(?)", start, end).Scan(&c).Error
 	if err != nil {
 		return 0, err
 	}
 	return c.TotalRenewal, nil
 }
 
-func (r *SummaryRepository) GetRevenueByMonth(date time.Time) (float64, error) {
+func (r *SummaryRepository) GetRevenue(start, end time.Time) (float64, error) {
 	var c entity.Summary
-	err := r.db.Table("summaries").Select("SUM(total_revenue) as total_revenue").Where("MONTH(created_at) = MONTH(?) AND YEAR(created_at) = YEAR(?)", date, date).Scan(&c).Error
+	err := r.db.Table("summaries").Select("SUM(total_revenue) as total_revenue").Where("DATE(created_at) = DATE(?) AND DATE(created_at) = DATE(?)", start, end).Scan(&c).Error
 	if err != nil {
 		return 0, err
 	}

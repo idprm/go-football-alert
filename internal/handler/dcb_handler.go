@@ -99,7 +99,7 @@ func (h *DCBHandler) GetAllSummaryPaginate(c *fiber.Ctx) error {
 			&model.WebResponse{
 				Error:      true,
 				StatusCode: fiber.StatusBadRequest,
-				Message:    "please set month of date",
+				Message:    "please set start_date and end_date",
 			},
 		)
 	}
@@ -115,7 +115,7 @@ func (h *DCBHandler) GetAllSummaryPaginate(c *fiber.Ctx) error {
 		)
 	}
 
-	totalSub, err := h.summaryService.GetSubByMonth(req.GetDate())
+	totalActiveSub, err := h.summaryService.GetActiveSub(req.GetStartDate(), req.GetEndDate())
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
 			&model.WebResponse{
@@ -126,7 +126,7 @@ func (h *DCBHandler) GetAllSummaryPaginate(c *fiber.Ctx) error {
 		)
 	}
 
-	totalUnsub, err := h.summaryService.GetUnsubByMonth(req.GetDate())
+	totalSub, err := h.summaryService.GetSub(req.GetStartDate(), req.GetEndDate())
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
 			&model.WebResponse{
@@ -137,7 +137,7 @@ func (h *DCBHandler) GetAllSummaryPaginate(c *fiber.Ctx) error {
 		)
 	}
 
-	totalRenewal, err := h.summaryService.GetRenewalByMonth(req.GetDate())
+	totalUnsub, err := h.summaryService.GetUnSub(req.GetStartDate(), req.GetEndDate())
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
 			&model.WebResponse{
@@ -148,7 +148,18 @@ func (h *DCBHandler) GetAllSummaryPaginate(c *fiber.Ctx) error {
 		)
 	}
 
-	totalRevenue, err := h.summaryService.GetRevenueByMonth(req.GetDate())
+	totalRenewal, err := h.summaryService.GetRenewal(req.GetStartDate(), req.GetEndDate())
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusInternalServerError,
+				Message:    err.Error(),
+			},
+		)
+	}
+
+	totalRevenue, err := h.summaryService.GetRevenue(req.GetStartDate(), req.GetEndDate())
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
 			&model.WebResponse{
@@ -161,13 +172,14 @@ func (h *DCBHandler) GetAllSummaryPaginate(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusOK).JSON(
 		&model.SummaryResponse{
-			Month:        req.GetDate().Month().String(),
-			Year:         req.GetDate().Year(),
-			TotalSub:     totalSub,
-			TotalUnsub:   totalUnsub,
-			TotalRenewal: totalRenewal,
-			TotalRevenue: totalRevenue,
-			Results:      summaries,
+			StartDate:      req.GetStartDate().String(),
+			EndDate:        req.GetEndDate().String(),
+			TotalActiveSub: totalActiveSub,
+			TotalSub:       totalSub,
+			TotalUnsub:     totalUnsub,
+			TotalRenewal:   totalRenewal,
+			TotalRevenue:   totalRevenue,
+			Results:        summaries,
 		},
 	)
 }

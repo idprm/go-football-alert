@@ -7,7 +7,8 @@ type Pagination struct {
 	Page       int         `json:"page" query:"page"`
 	Sort       string      `json:"sort" query:"sort"`
 	Search     string      `json:"search" query:"search"`
-	Date       string      `json:"date" query:"date"`
+	StartDate  string      `json:"start_date" query:"start_date"`
+	EndDate    string      `json:"end_date" query:"end_date"`
 	TotalRows  int64       `json:"total_rows"`
 	TotalPages int         `json:"total_pages"`
 	Rows       interface{} `json:"rows"`
@@ -42,13 +43,18 @@ func (p *Pagination) GetSearch() string {
 	return p.Search
 }
 
-func (p *Pagination) GetDate() time.Time {
-	date, _ := time.Parse("2006-01-02", p.Date)
+func (p *Pagination) GetStartDate() time.Time {
+	date, _ := time.Parse("2006-01-02", p.StartDate)
+	return date
+}
+
+func (p *Pagination) GetEndDate() time.Time {
+	date, _ := time.Parse("2006-01-02", p.EndDate)
 	return date
 }
 
 func (p *Pagination) IsDate() bool {
-	return p.Date != ""
+	return p.StartDate != "" && p.EndDate != ""
 }
 
 type PaginateUssd struct {
