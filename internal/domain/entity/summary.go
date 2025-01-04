@@ -9,7 +9,7 @@ type Summary struct {
 	TotalSub           int       `gorm:"size:10:default:0" json:"total_sub"`
 	TotalUnsub         int       `gorm:"size:10:default:0" json:"total_unsub"`
 	TotalRenewal       int       `gorm:"size:10:default:0" json:"total_renewal"`
-	TotalActiveSub     int       `gorm:"size:10:default:0" json:"total_active_sub,omitempty"`
+	TotalActiveSub     int       `gorm:"size:10:default:0" json:"total_active_sub"`
 	TotalChargeSuccess int       `gorm:"size:10:default:0" json:"total_charge_success"`
 	TotalChargeFailed  int       `gorm:"size:10:default:0" json:"total_charge_failed"`
 	TotalRevenue       float64   `gorm:"size:15:default:0" json:"total_revenue"`

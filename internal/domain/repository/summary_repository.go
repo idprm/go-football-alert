@@ -65,7 +65,7 @@ func (r *SummaryRepository) GetActiveSub(start, end time.Time) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	return c.TotalSub, nil
+	return c.TotalActiveSub, nil
 }
 
 func (r *SummaryRepository) GetSub(start, end time.Time) (int, error) {
