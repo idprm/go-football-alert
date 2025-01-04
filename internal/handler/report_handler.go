@@ -113,6 +113,34 @@ func (h *ReportHandler) TotalUnreg() {
 
 }
 
+func (h *ReportHandler) TotalRenewal() {
+
+	services, err := h.serviceService.GetAll()
+	if err != nil {
+		log.Println(err)
+	}
+
+	if len(services) > 0 {
+
+		for _, service := range services {
+			count, err := h.transactionService.CountRenewalByDay(service.GetId())
+			if err != nil {
+				log.Println(err)
+			}
+
+			summary := &entity.Summary{
+				ServiceID:    service.GetId(),
+				TotalRenewal: count,
+				CreatedAt:    time.Now(),
+			}
+
+			// summary save
+			h.summaryService.Save(summary)
+		}
+	}
+
+}
+
 func (h *ReportHandler) TotalRevenue() {
 
 	services, err := h.serviceService.GetAll()

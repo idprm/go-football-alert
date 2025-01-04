@@ -613,6 +613,7 @@ func populateReport(db *gorm.DB) {
 	// based trans
 	h.TotalReg()
 	h.TotalUnreg()
+	h.TotalRenewal()
 	h.TotalRevenue()
 	h.TotalSuccess()
 	h.TotalFailed()

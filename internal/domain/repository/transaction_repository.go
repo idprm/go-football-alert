@@ -24,6 +24,7 @@ type ITransactionRepository interface {
 	Delete(*entity.Transaction) error
 	CountSubByDay(int) (int64, error)
 	CountUnSubByDay(int) (int64, error)
+	CountRenewalByDay(int) (int64, error)
 	CountSuccessByDay(int) (int64, error)
 	CountFailedByDay(int) (int64, error)
 	TotalRevenueByDay(int) (float64, error)

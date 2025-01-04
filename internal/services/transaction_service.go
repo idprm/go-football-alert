@@ -26,6 +26,7 @@ type ITransactionService interface {
 	Delete(*entity.Transaction) error
 	CountSubByDay(int) (int, error)
 	CountUnSubByDay(int) (int, error)
+	CountRenewalByDay(int) (int, error)
 	CountSuccessByDay(int) (int, error)
 	CountFailedByDay(int) (int, error)
 	TotalRevenueByDay(int) (float64, error)
@@ -84,6 +85,14 @@ func (s *TransactionService) CountSubByDay(serviceId int) (int, error) {
 
 func (s *TransactionService) CountUnSubByDay(serviceId int) (int, error) {
 	r, err := s.transactionRepo.CountUnSubByDay(serviceId)
+	if err != nil {
+		return 0, err
+	}
+	return int(r), nil
+}
+
+func (s *TransactionService) CountRenewalByDay(serviceId int) (int, error) {
+	r, err := s.transactionRepo.CountRenewalByDay(serviceId)
 	if err != nil {
 		return 0, err
 	}
