@@ -42,7 +42,7 @@ func (r *SummaryRepository) Count(serviceId int, date time.Time) (int64, error) 
 
 func (r *SummaryRepository) GetAllPaginate(p *entity.Pagination) (*entity.Pagination, error) {
 	var summaries []*entity.Summary
-	err := r.db.Where("DATE(created_at) = DATE(?) BETWEEN DATE(created_at) = DATE(?)", p.GetStartDate(), p.GetEndDate()).Scopes(Paginate(summaries, p, r.db)).Find(&summaries).Error
+	err := r.db.Where("DATE(created_at) BETWEEN DATE(?) AND DATE(?)", p.GetStartDate(), p.GetEndDate()).Scopes(Paginate(summaries, p, r.db)).Find(&summaries).Error
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +61,7 @@ func (r *SummaryRepository) Get(serviceId int, date time.Time) (*entity.Summary,
 
 func (r *SummaryRepository) GetActiveSub(start, end time.Time) (int, error) {
 	var c entity.Summary
-	err := r.db.Table("summaries").Select("SUM(total_active_sub) as total_active_sub").Where("DATE(created_at) = DATE(?) BETWEEN DATE(created_at) = DATE(?)", start, end).Scan(&c).Error
+	err := r.db.Table("summaries").Select("SUM(total_active_sub) as total_active_sub").Where("DATE(created_at) BETWEEN DATE(?) AND DATE(?)", start, end).Scan(&c).Error
 	if err != nil {
 		return 0, err
 	}
@@ -70,7 +70,7 @@ func (r *SummaryRepository) GetActiveSub(start, end time.Time) (int, error) {
 
 func (r *SummaryRepository) GetSub(start, end time.Time) (int, error) {
 	var c entity.Summary
-	err := r.db.Table("summaries").Select("SUM(total_sub) as total_sub").Where("DATE(created_at) = DATE(?) BETWEEN DATE(created_at) = DATE(?)", start, end).Scan(&c).Error
+	err := r.db.Table("summaries").Select("SUM(total_sub) as total_sub").Where("DATE(created_at) BETWEEN DATE(?) AND DATE(?)", start, end).Scan(&c).Error
 	if err != nil {
 		return 0, err
 	}
@@ -79,7 +79,7 @@ func (r *SummaryRepository) GetSub(start, end time.Time) (int, error) {
 
 func (r *SummaryRepository) GetUnSub(start, end time.Time) (int, error) {
 	var c entity.Summary
-	err := r.db.Table("summaries").Select("SUM(total_unsub) as total_unsub").Where("DATE(created_at) = DATE(?) BETWEEN DATE(created_at) = DATE(?)", start, end).Scan(&c).Error
+	err := r.db.Table("summaries").Select("SUM(total_unsub) as total_unsub").Where("DATE(created_at) BETWEEN DATE(?) AND DATE(?)", start, end).Scan(&c).Error
 	if err != nil {
 		return 0, err
 	}
@@ -88,7 +88,7 @@ func (r *SummaryRepository) GetUnSub(start, end time.Time) (int, error) {
 
 func (r *SummaryRepository) GetRenewal(start, end time.Time) (int, error) {
 	var c entity.Summary
-	err := r.db.Table("summaries").Select("SUM(total_renewal) as total_renewal").Where("DATE(created_at) = DATE(?) AND DATE(created_at) = DATE(?)", start, end).Scan(&c).Error
+	err := r.db.Table("summaries").Select("SUM(total_renewal) as total_renewal").Where("DATE(created_at) BETWEEN DATE(?) AND DATE(?)", start, end).Scan(&c).Error
 	if err != nil {
 		return 0, err
 	}
@@ -97,7 +97,7 @@ func (r *SummaryRepository) GetRenewal(start, end time.Time) (int, error) {
 
 func (r *SummaryRepository) GetRevenue(start, end time.Time) (float64, error) {
 	var c entity.Summary
-	err := r.db.Table("summaries").Select("SUM(total_revenue) as total_revenue").Where("DATE(created_at) = DATE(?) AND DATE(created_at) = DATE(?)", start, end).Scan(&c).Error
+	err := r.db.Table("summaries").Select("SUM(total_revenue) as total_revenue").Where("DATE(created_at) BETWEEN DATE(?) AND DATE(?)", start, end).Scan(&c).Error
 	if err != nil {
 		return 0, err
 	}
