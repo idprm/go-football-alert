@@ -169,6 +169,7 @@ func init() {
 	rootCmd.AddCommand(publisherScrapingLiveMatchesCmd)
 	rootCmd.AddCommand(publisherScrapingPredictionCmd)
 	rootCmd.AddCommand(publisherScrapingNewsCmd)
+	rootCmd.AddCommand(publisherReportCmd)
 	rootCmd.AddCommand(publisherPronosticCmd)
 	rootCmd.AddCommand(publisherCreditGoalCmd)
 	rootCmd.AddCommand(publisherPredictWinCmd)

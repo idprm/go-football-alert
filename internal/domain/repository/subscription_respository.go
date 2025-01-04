@@ -44,6 +44,10 @@ type ISubscriptionRepository interface {
 	Follow() (*[]entity.Subscription, error)
 	Renewal() (*[]entity.Subscription, error)
 	Retry() (*[]entity.Subscription, error)
+	CountActiveSub(int) (int64, error)
+	CountSubByDay(int) (int64, error)
+	CountUnSubByDay(int) (int64, error)
+	TotalRevenueByDay(int) (float64, error)
 }
 
 func (r *SubscriptionRepository) Count(serviceId int, msisdn, code string) (int64, error) {
@@ -292,4 +296,40 @@ func (r *SubscriptionRepository) Retry() (*[]entity.Subscription, error) {
 		return nil, err
 	}
 	return &sub, nil
+}
+
+func (r *SubscriptionRepository) CountActiveSub(serviceId int) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Subscription{}).Where("service_id = ? AND is_active = true", serviceId).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *SubscriptionRepository) CountSubByDay(serviceId int) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Subscription{}).Where("service_id = ? AND DATE(created_at) = DATE(NOW())", serviceId).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *SubscriptionRepository) CountUnSubByDay(serviceId int) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Subscription{}).Where("service_id = ? AND DATE(unsub_at) = DATE(NOW())", serviceId).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *SubscriptionRepository) TotalRevenueByDay(serviceId int) (float64, error) {
+	var c entity.Subscription
+	err := r.db.Table("subscriptions").Select("SUM(total_amount) as total_amount").Where("service_id = ? AND DATE(updated_at) = DATE(NOW())", serviceId).Scan(&c).Error
+	if err != nil {
+		return 0, err
+	}
+	return c.TotalAmount, nil
 }

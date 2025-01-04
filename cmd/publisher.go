@@ -459,6 +459,37 @@ var publisherScrapingPredictionCmd = &cobra.Command{
 	},
 }
 
+var publisherReportCmd = &cobra.Command{
+	Use:   "pub_report",
+	Short: "Publisher Report Service CLI",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		// connect db
+		db, err := connectDb()
+		if err != nil {
+			panic(err)
+		}
+
+		// DEBUG ON CONSOLE
+		db.Logger = loggerDb.Default.LogMode(loggerDb.Info)
+
+		/**
+		 * Looping schedule
+		 */
+		timeDuration := time.Duration(1)
+
+		for {
+
+			go func() {
+				populateReport(db)
+			}()
+
+			time.Sleep(timeDuration * time.Minute)
+		}
+
+	},
+}
+
 func populateRenewal(db *gorm.DB, rmq rmqp.AMQP) {
 	subscriptionRepo := repository.NewSubscriptionRepository(db)
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
@@ -557,6 +588,27 @@ func populateCreditGoal(db *gorm.DB, rmq rmqp.AMQP) {
 
 		time.Sleep(100 * time.Microsecond)
 	}
+}
+
+func populateReport(db *gorm.DB) {
+	serviceRepo := repository.NewServiceRepository(db)
+	serviceService := services.NewServiceService(serviceRepo)
+	subscriptionRepo := repository.NewSubscriptionRepository(db)
+	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+
+	summaryRepo := repository.NewSummaryRepository(db)
+	summaryService := services.NewSummaryService(summaryRepo)
+
+	h := handler.NewReportHandler(
+		serviceService,
+		subscriptionService,
+		summaryService,
+	)
+
+	h.TotalActiveSub()
+	h.TotalReg()
+	h.TotalUnreg()
+	h.TotalRevenue()
 }
 
 func scrapingLeagues(db *gorm.DB) {

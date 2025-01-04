@@ -19,6 +19,7 @@ type IServiceService interface {
 	IsService(string) bool
 	IsServiceById(int) bool
 	IsServiceByPackage(string, string) bool
+	GetAll() ([]*entity.Service, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetAllByCategory(string) ([]*entity.Service, error)
 	Get(string) (*entity.Service, error)
@@ -42,6 +43,10 @@ func (s *ServiceService) IsServiceById(id int) bool {
 func (s *ServiceService) IsServiceByPackage(category, pkg string) bool {
 	count, _ := s.serviceRepo.CountByPackage(category, pkg)
 	return count > 0
+}
+
+func (s *ServiceService) GetAll() ([]*entity.Service, error) {
+	return s.serviceRepo.GetAll()
 }
 
 func (s *ServiceService) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {

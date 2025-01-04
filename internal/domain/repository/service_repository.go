@@ -21,6 +21,7 @@ type IServiceRepository interface {
 	Count(string) (int64, error)
 	CountById(int) (int64, error)
 	CountByPackage(string, string) (int64, error)
+	GetAll() ([]*entity.Service, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetAllByCategory(string) ([]*entity.Service, error)
 	Get(string) (*entity.Service, error)
@@ -56,6 +57,15 @@ func (r *ServiceRepository) CountByPackage(cat, pkg string) (int64, error) {
 		return count, err
 	}
 	return count, nil
+}
+
+func (r *ServiceRepository) GetAll() ([]*entity.Service, error) {
+	var services []*entity.Service
+	err := r.db.Where("is_active = true").Find(&services).Error
+	if err != nil {
+		return nil, err
+	}
+	return services, nil
 }
 
 func (r *ServiceRepository) GetAllPaginate(p *entity.Pagination) (*entity.Pagination, error) {
