@@ -2,6 +2,7 @@ package handler
 
 import (
 	"log"
+	"time"
 
 	"github.com/idprm/go-football-alert/internal/domain/entity"
 	"github.com/idprm/go-football-alert/internal/services"
@@ -43,6 +44,7 @@ func (h *ReportHandler) TotalActiveSub() {
 			summary := &entity.Summary{
 				ServiceID:      service.GetId(),
 				TotalActiveSub: count,
+				CreatedAt:      time.Now(),
 			}
 
 			// summary save
@@ -70,6 +72,7 @@ func (h *ReportHandler) TotalReg() {
 			summary := &entity.Summary{
 				ServiceID: service.GetId(),
 				TotalSub:  count,
+				CreatedAt: time.Now(),
 			}
 
 			// summary save
@@ -97,6 +100,7 @@ func (h *ReportHandler) TotalUnreg() {
 			summary := &entity.Summary{
 				ServiceID:  service.GetId(),
 				TotalUnsub: count,
+				CreatedAt:  time.Now(),
 			}
 
 			// summary save
@@ -124,10 +128,15 @@ func (h *ReportHandler) TotalRevenue() {
 			summary := &entity.Summary{
 				ServiceID:    service.GetId(),
 				TotalRevenue: count,
+				CreatedAt:    time.Now(),
 			}
 
 			// summary save
 			h.summaryService.Save(summary)
 		}
 	}
+}
+
+func (h *ReportHandler) TotalRenewal() {
+
 }
