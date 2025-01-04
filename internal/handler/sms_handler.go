@@ -272,11 +272,6 @@ func (h *SMSHandler) Firstpush(category string, service *entity.Service, code st
 		}
 	}
 
-	summary := &entity.Summary{
-		ServiceID: service.GetId(),
-		CreatedAt: time.Now(),
-	}
-
 	subscription := &entity.Subscription{
 		ServiceID:     service.GetId(),
 		Category:      service.GetCategory(),
@@ -426,9 +421,6 @@ func (h *SMSHandler) Firstpush(category string, service *entity.Service, code st
 						Status:         STATUS_SUCCESS,
 					},
 				)
-
-				summary.SetTotalChargeSuccess(1)
-				summary.SetTotalRevenue(service.GetPrice())
 			}
 
 			if respDeduct.IsFailed() {
@@ -479,8 +471,6 @@ func (h *SMSHandler) Firstpush(category string, service *entity.Service, code st
 					},
 				)
 
-				// setter summary
-				summary.SetTotalChargeFailed(1)
 			}
 		} else {
 			h.subscriptionService.Update(
@@ -529,16 +519,8 @@ func (h *SMSHandler) Firstpush(category string, service *entity.Service, code st
 					Status:         STATUS_FAILED,
 				},
 			)
-
-			// setter summary
-			summary.SetTotalChargeFailed(1)
 		}
 	}
-
-	// setter summary
-	summary.SetTotalSub(1)
-	// summary save
-	h.summaryService.Save(summary)
 
 	// count total sub
 	h.subscriptionService.Update(
@@ -1137,11 +1119,6 @@ func (h *SMSHandler) StopAlerteCompetition(category string, league *entity.Leagu
 
 		sub.SetLatestTrxId(trxId)
 
-		summary := &entity.Summary{
-			ServiceID: sub.GetServiceId(),
-			CreatedAt: time.Now(),
-		}
-
 		// unsub sms-alerte
 		h.subscriptionService.Update(
 			&entity.Subscription{
@@ -1170,11 +1147,6 @@ func (h *SMSHandler) StopAlerteCompetition(category string, league *entity.Leagu
 				IpAddress:      h.req.GetIpAddress(),
 			},
 		)
-
-		// setter summary
-		summary.SetTotalUnsub(1)
-		// save summary
-		h.summaryService.Save(summary)
 
 		s := &entity.Subscription{
 			ServiceID: sub.GetServiceId(),
@@ -1247,11 +1219,6 @@ func (h *SMSHandler) StopAlerteEquipe(category string, team *entity.Team) {
 		// 123
 		sub.SetLatestTrxId(trxId)
 
-		summary := &entity.Summary{
-			ServiceID: sub.GetServiceId(),
-			CreatedAt: time.Now(),
-		}
-
 		// unsub sms-alerte
 		h.subscriptionService.Update(
 			&entity.Subscription{
@@ -1281,11 +1248,6 @@ func (h *SMSHandler) StopAlerteEquipe(category string, team *entity.Team) {
 				IpAddress:      h.req.GetIpAddress(),
 			},
 		)
-
-		// setter summary
-		summary.SetTotalUnsub(1)
-		// save summary
-		h.summaryService.Save(summary)
 
 		s := &entity.Subscription{
 			ServiceID: sub.GetServiceId(),
@@ -1340,11 +1302,6 @@ func (h *SMSHandler) StopPronostic(category string) {
 
 	sub.SetLatestTrxId(trxId)
 
-	summary := &entity.Summary{
-		ServiceID: sub.GetServiceId(),
-		CreatedAt: time.Now(),
-	}
-
 	// unsub not sms-alerte
 	h.subscriptionService.Update(
 		&entity.Subscription{
@@ -1397,11 +1354,6 @@ func (h *SMSHandler) StopPronostic(category string) {
 			IpAddress:      h.req.GetIpAddress(),
 		},
 	)
-
-	// setter summary
-	summary.SetTotalUnsub(1)
-	// save summary
-	h.summaryService.Save(summary)
 
 	s := &entity.Subscription{
 		ServiceID: sub.GetServiceId(),
@@ -1455,11 +1407,6 @@ func (h *SMSHandler) Unsub(category string) {
 
 	sub.SetLatestTrxId(trxId)
 
-	summary := &entity.Summary{
-		ServiceID: sub.GetServiceId(),
-		CreatedAt: time.Now(),
-	}
-
 	// unsub not sms-alerte
 	h.subscriptionService.Update(
 		&entity.Subscription{
@@ -1512,11 +1459,6 @@ func (h *SMSHandler) Unsub(category string) {
 			IpAddress:      h.req.GetIpAddress(),
 		},
 	)
-
-	// setter summary
-	summary.SetTotalUnsub(1)
-	// save summary
-	h.summaryService.Save(summary)
 
 	s := &entity.Subscription{
 		ServiceID: sub.GetServiceId(),

@@ -606,11 +606,6 @@ func (h *DCBHandler) Unsubscription(c *fiber.Ctx) error {
 
 						sub.SetLatestTrxId(trxId)
 
-						summary := &entity.Summary{
-							ServiceID: sub.GetServiceId(),
-							CreatedAt: time.Now(),
-						}
-
 						// unsub sms-alerte
 						h.subscriptionService.Update(
 							&entity.Subscription{
@@ -635,11 +630,6 @@ func (h *DCBHandler) Unsubscription(c *fiber.Ctx) error {
 								Status:         STATUS_SUCCESS,
 							},
 						)
-
-						// setter summary
-						summary.SetTotalUnsub(1)
-						// save summary
-						h.summaryService.Save(summary)
 
 						s := &entity.Subscription{
 							ServiceID: sub.GetServiceId(),
@@ -703,11 +693,6 @@ func (h *DCBHandler) Unsubscription(c *fiber.Ctx) error {
 
 					sub.SetLatestTrxId(trxId)
 
-					summary := &entity.Summary{
-						ServiceID: sub.GetServiceId(),
-						CreatedAt: time.Now(),
-					}
-
 					// unsub sms-alerte
 					h.subscriptionService.Update(
 						&entity.Subscription{
@@ -736,11 +721,6 @@ func (h *DCBHandler) Unsubscription(c *fiber.Ctx) error {
 							IpAddress:      sub.GetIpAddress(),
 						},
 					)
-
-					// setter summary
-					summary.SetTotalUnsub(1)
-					// save summary
-					h.summaryService.Save(summary)
 
 					s := &entity.Subscription{
 						ServiceID: sub.GetServiceId(),
@@ -784,11 +764,6 @@ func (h *DCBHandler) Unsubscription(c *fiber.Ctx) error {
 
 			sub.SetLatestTrxId(trxId)
 
-			summary := &entity.Summary{
-				ServiceID: sub.GetServiceId(),
-				CreatedAt: time.Now(),
-			}
-
 			// unsub sms-alerte
 			h.subscriptionService.Update(
 				&entity.Subscription{
@@ -817,11 +792,6 @@ func (h *DCBHandler) Unsubscription(c *fiber.Ctx) error {
 					IpAddress:      sub.GetIpAddress(),
 				},
 			)
-
-			// setter summary
-			summary.SetTotalUnsub(1)
-			// save summary
-			h.summaryService.Save(summary)
 
 			s := &entity.Subscription{
 				ServiceID: sub.GetServiceId(),

@@ -57,11 +57,6 @@ func (h *CreditGoalHandler) CreditGoal() {
 
 		// trxId := utils.GenerateTrxId()
 
-		// summary := &entity.Summary{
-		// 	ServiceID: service.GetId(),
-		// 	CreatedAt: time.Now(),
-		// }
-
 		// h.subscriptionService.Update(
 		// 	&entity.Subscription{
 		// 		ServiceID:     service.GetId(),
@@ -86,12 +81,6 @@ func (h *CreditGoalHandler) CreditGoal() {
 		// 		CreatedAt:    time.Now(),
 		// 	},
 		// )
-
-		// // setter summary
-		// summary.SetTotalCreditGoal(1)
-
-		// // summary save
-		// h.summaryService.Save(summary)
 	}
 }
 

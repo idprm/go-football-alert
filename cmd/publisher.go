@@ -591,24 +591,31 @@ func populateCreditGoal(db *gorm.DB, rmq rmqp.AMQP) {
 }
 
 func populateReport(db *gorm.DB) {
+
 	serviceRepo := repository.NewServiceRepository(db)
 	serviceService := services.NewServiceService(serviceRepo)
 	subscriptionRepo := repository.NewSubscriptionRepository(db)
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
-
+	transactionRepo := repository.NewTransactionRepository(db)
+	transactionService := services.NewTransactionService(transactionRepo)
 	summaryRepo := repository.NewSummaryRepository(db)
 	summaryService := services.NewSummaryService(summaryRepo)
 
 	h := handler.NewReportHandler(
 		serviceService,
 		subscriptionService,
+		transactionService,
 		summaryService,
 	)
 
+	// based sub
 	h.TotalActiveSub()
+	// based trans
 	h.TotalReg()
 	h.TotalUnreg()
 	h.TotalRevenue()
+	h.TotalSuccess()
+	h.TotalFailed()
 }
 
 func scrapingLeagues(db *gorm.DB) {

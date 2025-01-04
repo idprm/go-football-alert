@@ -127,10 +127,6 @@ func (h *UssdHandler) Firstpush(category string, service *entity.Service, code s
 	trxId := utils.GenerateTrxId()
 
 	var note = ""
-	summary := &entity.Summary{
-		ServiceID: service.GetId(),
-		CreatedAt: time.Now(),
-	}
 
 	subscription := &entity.Subscription{
 		ServiceID:     service.GetId(),
@@ -248,9 +244,6 @@ func (h *UssdHandler) Firstpush(category string, service *entity.Service, code s
 						Status:         STATUS_SUCCESS,
 					},
 				)
-
-				summary.SetTotalChargeSuccess(1)
-				summary.SetTotalRevenue(service.GetPrice())
 			}
 
 			if respDeduct.IsFailed() {
@@ -300,9 +293,6 @@ func (h *UssdHandler) Firstpush(category string, service *entity.Service, code s
 						Status:         STATUS_FAILED,
 					},
 				)
-
-				// setter summary
-				summary.SetTotalChargeFailed(1)
 			}
 		} else {
 			h.subscriptionService.Update(
@@ -351,17 +341,9 @@ func (h *UssdHandler) Firstpush(category string, service *entity.Service, code s
 					Status:         STATUS_FAILED,
 				},
 			)
-
-			// setter summary
-			summary.SetTotalChargeFailed(1)
 		}
 
 	}
-
-	// setter summary
-	summary.SetTotalSub(1)
-	// summary save
-	h.summaryService.Save(summary)
 
 	// count total sub
 	h.subscriptionService.Update(

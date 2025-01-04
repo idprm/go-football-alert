@@ -72,11 +72,6 @@ func (h *RetryHandler) Firstpush() {
 			// smart billing set discount based on retry
 			service.SetPriceWithDiscount(0)
 
-			summary := &entity.Summary{
-				ServiceID: service.GetId(),
-				CreatedAt: time.Now(),
-			}
-
 			t := telco.NewTelco(h.logger, service, h.sub, trxId)
 
 			respBal, err := t.QueryProfileAndBal()
@@ -139,13 +134,8 @@ func (h *RetryHandler) Firstpush() {
 							Payload:      string(resp),
 						},
 					)
-
-					// setter summary
-					summary.SetTotalChargeSuccess(1)
-					summary.SetTotalRevenue(service.GetPrice())
 				}
-				// summary save
-				h.summaryService.UpdateRetry(summary)
+
 			}
 		}
 	}
@@ -169,11 +159,6 @@ func (h *RetryHandler) Dailypush() {
 			}
 			// smart billing set discount based on retry
 			service.SetPriceWithDiscount(0)
-
-			summary := &entity.Summary{
-				ServiceID: service.GetId(),
-				CreatedAt: time.Now(),
-			}
 
 			t := telco.NewTelco(h.logger, service, h.sub, trxId)
 			respBal, err := t.QueryProfileAndBal()
@@ -238,13 +223,8 @@ func (h *RetryHandler) Dailypush() {
 						},
 					)
 
-					// setter summary
-					summary.SetTotalChargeSuccess(1)
-					summary.SetTotalRevenue(service.GetPrice())
 				}
 
-				// summary save
-				h.summaryService.UpdateRetry(summary)
 			}
 		}
 	}

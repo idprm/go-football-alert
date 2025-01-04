@@ -11,17 +11,20 @@ import (
 type ReportHandler struct {
 	serviceService      services.IServiceService
 	subscriptionService services.ISubscriptionService
+	transactionService  services.ITransactionService
 	summaryService      services.ISummaryService
 }
 
 func NewReportHandler(
 	serviceService services.IServiceService,
 	subscriptionService services.ISubscriptionService,
+	transactionService services.ITransactionService,
 	summaryService services.ISummaryService,
 ) *ReportHandler {
 	return &ReportHandler{
 		serviceService:      serviceService,
 		subscriptionService: subscriptionService,
+		transactionService:  transactionService,
 		summaryService:      summaryService,
 	}
 }
@@ -64,7 +67,7 @@ func (h *ReportHandler) TotalReg() {
 	if len(services) > 0 {
 
 		for _, service := range services {
-			count, err := h.subscriptionService.CountSubByDay(service.GetId())
+			count, err := h.transactionService.CountSubByDay(service.GetId())
 			if err != nil {
 				log.Println(err)
 			}
@@ -92,7 +95,7 @@ func (h *ReportHandler) TotalUnreg() {
 	if len(services) > 0 {
 
 		for _, service := range services {
-			count, err := h.subscriptionService.CountUnSubByDay(service.GetId())
+			count, err := h.transactionService.CountUnSubByDay(service.GetId())
 			if err != nil {
 				log.Println(err)
 			}
@@ -120,7 +123,7 @@ func (h *ReportHandler) TotalRevenue() {
 	if len(services) > 0 {
 
 		for _, service := range services {
-			count, err := h.subscriptionService.TotalRevenueByDay(service.GetId())
+			count, err := h.transactionService.TotalRevenueByDay(service.GetId())
 			if err != nil {
 				log.Println(err)
 			}
@@ -137,6 +140,54 @@ func (h *ReportHandler) TotalRevenue() {
 	}
 }
 
-func (h *ReportHandler) TotalRenewal() {
+func (h *ReportHandler) TotalSuccess() {
+	services, err := h.serviceService.GetAll()
+	if err != nil {
+		log.Println(err)
+	}
 
+	if len(services) > 0 {
+
+		for _, service := range services {
+			count, err := h.transactionService.CountFailedByDay(service.GetId())
+			if err != nil {
+				log.Println(err)
+			}
+
+			summary := &entity.Summary{
+				ServiceID:          service.GetId(),
+				TotalChargeSuccess: count,
+				CreatedAt:          time.Now(),
+			}
+
+			// summary save
+			h.summaryService.Save(summary)
+		}
+	}
+}
+
+func (h *ReportHandler) TotalFailed() {
+	services, err := h.serviceService.GetAll()
+	if err != nil {
+		log.Println(err)
+	}
+
+	if len(services) > 0 {
+
+		for _, service := range services {
+			count, err := h.transactionService.CountFailedByDay(service.GetId())
+			if err != nil {
+				log.Println(err)
+			}
+
+			summary := &entity.Summary{
+				ServiceID:         service.GetId(),
+				TotalChargeFailed: count,
+				CreatedAt:         time.Now(),
+			}
+
+			// summary save
+			h.summaryService.Save(summary)
+		}
+	}
 }

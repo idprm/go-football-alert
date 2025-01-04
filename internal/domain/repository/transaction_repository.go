@@ -22,6 +22,11 @@ type ITransactionRepository interface {
 	Save(*entity.Transaction) error
 	Update(*entity.Transaction) error
 	Delete(*entity.Transaction) error
+	CountSubByDay(int) (int64, error)
+	CountUnSubByDay(int) (int64, error)
+	CountSuccessByDay(int) (int64, error)
+	CountFailedByDay(int) (int64, error)
+	TotalRevenueByDay(int) (float64, error)
 }
 
 func (r *TransactionRepository) Count(serviceId int, msisdn, code, date string) (int64, error) {
@@ -74,4 +79,58 @@ func (r *TransactionRepository) Delete(c *entity.Transaction) error {
 		return err
 	}
 	return nil
+}
+
+func (r *TransactionRepository) CountSubByDay(serviceId int) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Transaction{}).Where("service_id = ? AND DATE(created_at) = DATE(NOW()) AND subject = 'FREE'", serviceId).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *TransactionRepository) CountUnSubByDay(serviceId int) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Transaction{}).Where("service_id = ? AND DATE(created_at) = DATE(NOW()) AND subject = 'UNSUB'", serviceId).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *TransactionRepository) CountRenewalByDay(serviceId int) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Transaction{}).Where("service_id = ? AND DATE(created_at) = DATE(NOW()) AND subject = 'RENEWAL'", serviceId).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *TransactionRepository) CountSuccessByDay(serviceId int) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Transaction{}).Where("service_id = ? AND DATE(created_at) = DATE(NOW()) AND status = 'SUCCESS'", serviceId).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *TransactionRepository) CountFailedByDay(serviceId int) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Transaction{}).Where("service_id = ? AND DATE(created_at) = DATE(NOW()) AND status = 'FAILED'", serviceId).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *TransactionRepository) TotalRevenueByDay(serviceId int) (float64, error) {
+	var c entity.Transaction
+	err := r.db.Table("transactions").Select("SUM(amount) as amount").Where("service_id = ? AND DATE(created_at) = DATE(NOW())", serviceId).Scan(&c).Error
+	if err != nil {
+		return 0, err
+	}
+	return c.Amount, nil
 }

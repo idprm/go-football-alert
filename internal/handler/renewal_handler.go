@@ -70,11 +70,6 @@ func (h *RenewalHandler) Dailypush() {
 				log.Println(err.Error())
 			}
 
-			summary := &entity.Summary{
-				ServiceID: service.GetId(),
-				CreatedAt: time.Now(),
-			}
-
 			t := telco.NewTelco(h.logger, service, h.sub, trxId)
 
 			respBal, err := t.QueryProfileAndBal()
@@ -138,9 +133,6 @@ func (h *RenewalHandler) Dailypush() {
 							Payload:      string(respDFee),
 						},
 					)
-					// setter summary
-					summary.SetTotalChargeSuccess(1)
-					summary.SetTotalRevenue(service.GetPrice())
 				}
 
 				if respDeduct.IsFailed() {
@@ -178,9 +170,6 @@ func (h *RenewalHandler) Dailypush() {
 							Payload:      string(respDFee),
 						},
 					)
-
-					// setter summary
-					summary.SetTotalChargeFailed(1)
 				}
 			} else {
 				h.subscriptionService.Update(
@@ -216,14 +205,8 @@ func (h *RenewalHandler) Dailypush() {
 					},
 				)
 
-				// setter summary
-				summary.SetTotalChargeFailed(1)
 			}
 
-			// setter renewal
-			summary.SetTotalRenewal(1)
-			// summary save
-			h.summaryService.Save(summary)
 		}
 	}
 }

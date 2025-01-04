@@ -48,9 +48,6 @@ type ISubscriptionService interface {
 	Renewal() *[]entity.Subscription
 	Retry() *[]entity.Subscription
 	CountActiveSub(int) (int, error)
-	CountSubByDay(int) (int, error)
-	CountUnSubByDay(int) (int, error)
-	TotalRevenueByDay(int) (float64, error)
 }
 
 func (s *SubscriptionService) IsSubscription(serviceId int, msisdn, code string) bool {
@@ -195,24 +192,4 @@ func (s *SubscriptionService) CountActiveSub(serviceId int) (int, error) {
 		return 0, err
 	}
 	return int(r), nil
-}
-
-func (s *SubscriptionService) CountSubByDay(serviceId int) (int, error) {
-	r, err := s.subscriptionRepo.CountSubByDay(serviceId)
-	if err != nil {
-		return 0, err
-	}
-	return int(r), nil
-}
-
-func (s *SubscriptionService) CountUnSubByDay(serviceId int) (int, error) {
-	r, err := s.subscriptionRepo.CountUnSubByDay(serviceId)
-	if err != nil {
-		return 0, err
-	}
-	return int(r), nil
-}
-
-func (s *SubscriptionService) TotalRevenueByDay(serviceId int) (float64, error) {
-	return s.subscriptionRepo.TotalRevenueByDay(serviceId)
 }
