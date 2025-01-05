@@ -21,7 +21,7 @@ type ISummaryRepository interface {
 	Count(int, time.Time) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	Get(int, time.Time) (*entity.Summary, error)
-	GetActiveSub(time.Time, time.Time) (int, error)
+	GetActiveSub() (int, error)
 	GetSub(time.Time, time.Time) (int, error)
 	GetUnSub(time.Time, time.Time) (int, error)
 	GetRenewal(time.Time, time.Time) (int, error)
@@ -59,9 +59,9 @@ func (r *SummaryRepository) Get(serviceId int, date time.Time) (*entity.Summary,
 	return &c, nil
 }
 
-func (r *SummaryRepository) GetActiveSub(start, end time.Time) (int, error) {
+func (r *SummaryRepository) GetActiveSub() (int, error) {
 	var c entity.Summary
-	err := r.db.Table("summaries").Select("SUM(total_active_sub) as total_active_sub").Where("DATE(created_at) BETWEEN DATE(?) AND DATE(?)", start, end).Scan(&c).Error
+	err := r.db.Table("summaries").Select("total_active_sub").Where("DATE(created_at) = DATE(NOW())").Scan(&c).Error
 	if err != nil {
 		return 0, err
 	}

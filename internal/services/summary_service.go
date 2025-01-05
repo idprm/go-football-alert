@@ -23,7 +23,7 @@ type ISummaryService interface {
 	IsSummary(int, time.Time) bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	Get(int, time.Time) (*entity.Summary, error)
-	GetActiveSub(time.Time, time.Time) (int, error)
+	GetActiveSub() (int, error)
 	GetSub(time.Time, time.Time) (int, error)
 	GetUnSub(time.Time, time.Time) (int, error)
 	GetRenewal(time.Time, time.Time) (int, error)
@@ -47,8 +47,8 @@ func (s *SummaryService) Get(serviceId int, date time.Time) (*entity.Summary, er
 	return s.summaryRepo.Get(serviceId, date)
 }
 
-func (s *SummaryService) GetActiveSub(start, end time.Time) (int, error) {
-	return s.summaryRepo.GetActiveSub(start, end)
+func (s *SummaryService) GetActiveSub() (int, error) {
+	return s.summaryRepo.GetActiveSub()
 }
 
 func (s *SummaryService) GetSub(start, end time.Time) (int, error) {

@@ -115,7 +115,7 @@ func (h *DCBHandler) GetAllSummaryPaginate(c *fiber.Ctx) error {
 		)
 	}
 
-	totalActiveSub, err := h.summaryService.GetActiveSub(req.GetStartDate(), req.GetEndDate())
+	totalActiveSub, err := h.summaryService.GetActiveSub()
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
 			&model.WebResponse{
