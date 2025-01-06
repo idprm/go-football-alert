@@ -126,3 +126,9 @@ User Get SMS MT
 32. #101#36#8#7 : Bundesligua
 33. #101#36#8#8 : Champ Portugal
 34. #101#36#8#9 : Saudi League
+
+
+
+please confirm,
+REMINDER_48H : Votre abonnement au service (Service_Name) arrive à échéance dans 48h et sera renouvelé automatiquement
+SUCCESS_CHARGE : Votre abonnement au service (Service_Name) a été renouvelé avec succés

@@ -880,6 +880,67 @@ var consumerPredictWinCmd = &cobra.Command{
 	},
 }
 
+var consumerReminderCmd = &cobra.Command{
+	Use:   "reminder",
+	Short: "Consumer Reminder Service CLI",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+
+		/**
+		 * connect rabbitmq
+		 */
+		rmq, err := connectRabbitMq()
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * SETUP LOG
+		 */
+		logger := logger.NewLogger()
+
+		/**
+		 * SETUP CHANNEL
+		 */
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_REMINDER_48H_EXCHANGE, true, RMQ_REMINDER_48H_QUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_MT_EXCHANGE, true, RMQ_MT_QUEUE)
+
+		messagesData, errSub := rmq.Subscribe(1, false, RMQ_REMINDER_48H_QUEUE, RMQ_REMINDER_48H_EXCHANGE, RMQ_REMINDER_48H_QUEUE)
+		if errSub != nil {
+			panic(errSub)
+		}
+
+		// Initial sync waiting group
+		var wg sync.WaitGroup
+
+		// Loop forever listening incoming data
+		forever := make(chan bool)
+
+		p := NewProcessor(&gorm.DB{}, &redis.Client{}, rmq, logger)
+
+		// Set into goroutine this listener
+		go func() {
+
+			// Loop every incoming data
+			for d := range messagesData {
+
+				wg.Add(1)
+				p.Reminder(&wg, d.Body)
+				wg.Wait()
+
+				// Manual consume queue
+				d.Ack(false)
+
+			}
+
+		}()
+
+		fmt.Println("[*] Waiting for data...")
+
+		<-forever
+	},
+}
+
 var consumerPostbackMOCmd = &cobra.Command{
 	Use:   "postback_mo",
 	Short: "Consumer Postback MO Service CLI",

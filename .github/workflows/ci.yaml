@@ -34,6 +34,8 @@ jobs:
             image: idprm/fb-alert-renewal-service
           - dockerfile: ./Dockerfile.retry
             image: idprm/fb-alert-retry-service
+          - dockerfile: ./Dockerfile.reminder
+            image: idprm/fb-alert-reminder-service
           - dockerfile: ./Dockerfile.mt
             image: idprm/fb-alert-mt-service
           # - dockerfile: ./Dockerfile.postback_mo
@@ -60,6 +62,8 @@ jobs:
             image: idprm/fb-alert-pub-renewal-service
           - dockerfile: ./Dockerfile.pub_retry
             image: idprm/fb-alert-pub-retry-service
+          - dockerfile: ./Dockerfile.pub_reminder
+            image: idprm/fb-alert-pub-reminder-service
 
     permissions:
       contents: read

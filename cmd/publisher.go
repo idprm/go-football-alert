@@ -104,6 +104,54 @@ var publisherRetryCmd = &cobra.Command{
 	},
 }
 
+var publisherReminderCmd = &cobra.Command{
+	Use:   "pub_reminder",
+	Short: "Reminder CLI",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		/**
+		 * connect mysql
+		 */
+		db, err := connectDb()
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * connect rabbitmq
+		 */
+		rmq, err := connectRabbitMq()
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * SETUP CHANNEL
+		 */
+		rmq.SetUpChannel(
+			RMQ_EXCHANGE_TYPE,
+			true,
+			RMQ_REMINDER_48H_EXCHANGE,
+			true,
+			RMQ_REMINDER_48H_QUEUE,
+		)
+
+		/**
+		 * Looping schedule per 2 minutes
+		 */
+		timeDuration := time.Duration(3)
+
+		for {
+
+			go func() {
+				populateReminder(db, rmq)
+			}()
+
+			time.Sleep(timeDuration * time.Minute)
+		}
+	},
+}
+
 var publisherPronosticCmd = &cobra.Command{
 	Use:   "pub_pronostic",
 	Short: "Publisher Pronostic CLI",
@@ -585,6 +633,31 @@ func populateCreditGoal(db *gorm.DB, rmq rmqp.AMQP) {
 		json, _ := json.Marshal(sub)
 
 		rmq.IntegratePublish(RMQ_CREDIT_GOAL_EXCHANGE, RMQ_CREDIT_GOAL_QUEUE, RMQ_DATA_TYPE, "", string(json))
+
+		time.Sleep(100 * time.Microsecond)
+	}
+}
+
+func populateReminder(db *gorm.DB, rmq rmqp.AMQP) {
+	subscriptionRepo := repository.NewSubscriptionRepository(db)
+	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+
+	subs := subscriptionService.Retry()
+
+	for _, s := range *subs {
+		var sub entity.Subscription
+
+		sub.ID = s.ID
+		sub.ServiceID = s.ServiceID
+		sub.Msisdn = s.Msisdn
+		sub.Code = s.Code
+		sub.LatestKeyword = s.LatestKeyword
+		sub.LatestSubject = s.LatestSubject
+		sub.CreatedAt = s.CreatedAt
+
+		json, _ := json.Marshal(sub)
+
+		rmq.IntegratePublish(RMQ_REMINDER_48H_EXCHANGE, RMQ_REMINDER_48H_QUEUE, RMQ_DATA_TYPE, "", string(json))
 
 		time.Sleep(100 * time.Microsecond)
 	}
