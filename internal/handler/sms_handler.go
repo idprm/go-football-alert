@@ -125,6 +125,8 @@ const (
 	SMS_PRONOSTIC_VIP_ALREADY_SUB        string = "PRONOSTIC_VIP_ALREADY_SUB"
 	SMS_PRONOSTIC_STOP                   string = "PRONOSTIC_STOP"
 	SMS_CONFIRMATION                     string = "CONFIRMATION"
+	SMS_SUCCESS_CHARGING                 string = "SUCCESS_CHARGING"
+	SMS_REMINDER_48H                     string = "REMINDER_48H"
 	SMS_INFO                             string = "INFO"
 	SMS_STOP                             string = "STOP"
 )

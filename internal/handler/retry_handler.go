@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"encoding/xml"
 	"log"
 	"time"
@@ -223,9 +224,45 @@ func (h *RetryHandler) Dailypush() {
 						},
 					)
 
+					content, err := h.getContentService(SMS_SUCCESS_CHARGING, service)
+					if err != nil {
+						log.Println(err.Error())
+					}
+
+					mt := &model.MTRequest{
+						Smsc:         service.ScSubMT,
+						Service:      service,
+						Keyword:      sub.GetLatestKeyword(),
+						Subscription: sub,
+						Content:      content,
+					}
+					mt.SetTrxId(trxId)
+
+					jsonData, err := json.Marshal(mt)
+					if err != nil {
+						log.Println(err.Error())
+					}
+
+					h.rmq.IntegratePublish(
+						RMQ_MT_EXCHANGE,
+						RMQ_MT_QUEUE,
+						RMQ_DATA_TYPE, "", string(jsonData),
+					)
 				}
 
 			}
 		}
 	}
+}
+
+func (h *RetryHandler) getContentService(name string, service *entity.Service) (*entity.Content, error) {
+	// if data not exist in table contents
+	if !h.contentService.IsContent(name) {
+		return &entity.Content{
+			Category: "CATEGORY",
+			Channel:  "SMS",
+			Value:    "SAMPLE_TEXT",
+		}, nil
+	}
+	return h.contentService.GetService(name, service)
 }

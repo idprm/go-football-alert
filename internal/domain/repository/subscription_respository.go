@@ -44,6 +44,7 @@ type ISubscriptionRepository interface {
 	Follow() (*[]entity.Subscription, error)
 	Renewal() (*[]entity.Subscription, error)
 	Retry() (*[]entity.Subscription, error)
+	Reminder() (*[]entity.Subscription, error)
 	CountActiveSub(int) (int64, error)
 }
 
@@ -289,6 +290,16 @@ func (r *SubscriptionRepository) Renewal() (*[]entity.Subscription, error) {
 func (r *SubscriptionRepository) Retry() (*[]entity.Subscription, error) {
 	var sub []entity.Subscription
 	err := r.db.Where("is_active = true AND is_retry = true AND (UNIX_TIMESTAMP(NOW() + INTERVAL 1 DAY) - UNIX_TIMESTAMP(renewal_at)) / 3600 > 0").Order("DATE(created_at) DESC").Find(&sub).Error
+	if err != nil {
+		return nil, err
+	}
+	return &sub, nil
+}
+
+// SELECT (UNIX_TIMESTAMP("2017-06-10 18:30:10")-UNIX_TIMESTAMP("2017-06-10 18:40:10"))/3600 hour_diff
+func (r *SubscriptionRepository) Reminder() (*[]entity.Subscription, error) {
+	var sub []entity.Subscription
+	err := r.db.Where("is_active = true AND (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(renewal_at)) / 3600 > 0").Order("DATE(created_at) DESC").Find(&sub).Error
 	if err != nil {
 		return nil, err
 	}

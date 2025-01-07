@@ -123,7 +123,7 @@ func (s *ContentService) GetService(name string, service *entity.Service) (*enti
 	if err != nil {
 		return nil, err
 	}
-	c.SetService(service.GetName())
+	c.SetValueService(service.GetName())
 	return c, nil
 }
 

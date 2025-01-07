@@ -47,6 +47,7 @@ type ISubscriptionService interface {
 	Follow() *[]entity.Subscription
 	Renewal() *[]entity.Subscription
 	Retry() *[]entity.Subscription
+	Reminder() *[]entity.Subscription
 	CountActiveSub(int) (int, error)
 }
 
@@ -180,6 +181,14 @@ func (s *SubscriptionService) Renewal() *[]entity.Subscription {
 
 func (s *SubscriptionService) Retry() *[]entity.Subscription {
 	subs, err := s.subscriptionRepo.Retry()
+	if err != nil {
+		log.Println(err)
+	}
+	return subs
+}
+
+func (s *SubscriptionService) Reminder() *[]entity.Subscription {
+	subs, err := s.subscriptionRepo.Reminder()
 	if err != nil {
 		log.Println(err)
 	}

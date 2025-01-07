@@ -501,6 +501,33 @@ func (p *Processor) Retry(wg *sync.WaitGroup, message []byte) {
 
 func (p *Processor) Reminder(wg *sync.WaitGroup, message []byte) {
 
+	/**
+	 * load repo
+	 */
+	serviceRepo := repository.NewServiceRepository(p.db)
+	serviceService := services.NewServiceService(serviceRepo)
+	contentRepo := repository.NewContentRepository(p.db)
+	contentService := services.NewContentService(contentRepo)
+	subscriptionRepo := repository.NewSubscriptionRepository(p.db)
+	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+	transactionRepo := repository.NewTransactionRepository(p.db)
+	transactionService := services.NewTransactionService(transactionRepo)
+
+	var sub *entity.Subscription
+	json.Unmarshal(message, &sub)
+
+	h := handler.NewReminderHandler(
+		p.rmq,
+		p.logger,
+		sub,
+		serviceService,
+		contentService,
+		subscriptionService,
+		transactionService,
+	)
+
+	h.Remindpush()
+
 	wg.Done()
 }
 
