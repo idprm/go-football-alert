@@ -296,10 +296,10 @@ func (r *SubscriptionRepository) Retry() (*[]entity.Subscription, error) {
 	return &sub, nil
 }
 
-// SELECT (UNIX_TIMESTAMP("2017-06-10 18:30:10")-UNIX_TIMESTAMP("2017-06-10 18:40:10"))/3600 hour_diff
+// SELECT (renewal_at = NOW() + INTERVAL 48 HOUR)
 func (r *SubscriptionRepository) Reminder() (*[]entity.Subscription, error) {
 	var sub []entity.Subscription
-	err := r.db.Where("is_active = true AND (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(renewal_at)) / 3600 > 0").Order("DATE(created_at) DESC").Find(&sub).Error
+	err := r.db.Where("is_active = true AND renewal_at = NOW() + INTERVAL 48 HOUR").Order("DATE(created_at) DESC").Find(&sub).Error
 	if err != nil {
 		return nil, err
 	}

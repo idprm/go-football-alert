@@ -137,9 +137,9 @@ var publisherReminderCmd = &cobra.Command{
 		)
 
 		/**
-		 * Looping schedule per 2 minutes
+		 * Looping schedule per 1 hour
 		 */
-		timeDuration := time.Duration(3)
+		timeDuration := time.Duration(1)
 
 		for {
 
@@ -147,7 +147,7 @@ var publisherReminderCmd = &cobra.Command{
 				populateReminder(db, rmq)
 			}()
 
-			time.Sleep(timeDuration * time.Minute)
+			time.Sleep(timeDuration * time.Hour)
 		}
 	},
 }
@@ -642,7 +642,7 @@ func populateReminder(db *gorm.DB, rmq rmqp.AMQP) {
 	subscriptionRepo := repository.NewSubscriptionRepository(db)
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
 
-	subs := subscriptionService.Retry()
+	subs := subscriptionService.Reminder()
 
 	for _, s := range *subs {
 		var sub entity.Subscription
