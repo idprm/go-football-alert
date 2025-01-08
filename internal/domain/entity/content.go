@@ -134,7 +134,7 @@ func (e *Content) SetValueCreditGoal(home, away, score, credit, price, currency 
 
 func (e *Content) SetValueService(name string) {
 	replacer := strings.NewReplacer(
-		"{service}", url.QueryEscape(name))
+		"{service}", name)
 	e.Value = replacer.Replace(e.Value)
 }
 
