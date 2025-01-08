@@ -169,6 +169,10 @@ func (m *MORequest) IsStop() bool {
 	return index[0] == "STOP" && (strings.Contains(m.GetSMS(), "STOP"))
 }
 
+func (m *MORequest) IsLive() bool {
+	return m.GetSMS() == "LIVE"
+}
+
 func (m *MORequest) IsProno() bool {
 	return m.GetSMS() == "PRONO"
 }

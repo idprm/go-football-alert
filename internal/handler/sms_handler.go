@@ -139,7 +139,14 @@ func (h *SMSHandler) Registration() {
 	l := h.logger.Init("sms", true)
 	l.WithFields(logrus.Fields{"request": h.req}).Info("SMS")
 
-	if h.leagueService.IsLeagueByName(h.req.GetSMS()) {
+	if h.req.IsLive() {
+		// Pronostic Safe Sub
+		if !h.IsActiveSubByCategory(CATEGORY_LIVEMATCH, "") {
+			h.SubLivematch()
+		} else {
+			// h.AlreadySubLiveMatch()
+		}
+	} else if h.leagueService.IsLeagueByName(h.req.GetSMS()) {
 		league, err := h.leagueService.GetByName(h.req.GetSMS())
 		if err != nil {
 			log.Println(err.Error())
@@ -760,6 +767,23 @@ func (h *SMSHandler) AlreadySubAlerteEquipe(team *entity.Team) {
 	)
 }
 
+func (h *SMSHandler) SubLivematch() {
+	service, err := h.getServiceLiveMatchDaily()
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	content, err := h.getContentLiveMatch(service)
+	if err != nil {
+		log.Println(err)
+	}
+
+	// GET_CODE
+	code := service.GetCode()
+
+	h.Firstpush(CATEGORY_LIVEMATCH, service, code, content)
+}
+
 func (h *SMSHandler) SubSafe() {
 	service, err := h.getServicePronosticSafeDaily()
 	if err != nil {
@@ -809,6 +833,45 @@ func (h *SMSHandler) SubVIP() {
 	code := service.GetCode()
 
 	h.Firstpush(CATEGORY_PRONOSTIC_VIP, service, code, content)
+}
+
+func (h *SMSHandler) AlreadySubLiveMatch() {
+	trxId := utils.GenerateTrxId()
+
+	service, err := h.getServiceLiveMatchDaily()
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	content, err := h.getContent(SMS_LIVE_MATCH_ALREADY_SUB)
+	if err != nil {
+		log.Println(err)
+	}
+
+	sub, err := h.subscriptionService.Get(service.GetId(), h.req.GetMsisdn(), service.GetCode())
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	mt := &model.MTRequest{
+		Smsc:         h.req.GetTo(),
+		Keyword:      h.req.GetSMS(),
+		Service:      service,
+		Subscription: sub,
+		Content:      content,
+	}
+	mt.SetTrxId(trxId)
+
+	jsonData, err := json.Marshal(mt)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	h.rmq.IntegratePublish(
+		RMQ_MT_EXCHANGE,
+		RMQ_MT_QUEUE,
+		RMQ_DATA_TYPE, "", string(jsonData),
+	)
 }
 
 func (h *SMSHandler) AlreadySubSafe() {
@@ -1506,6 +1569,10 @@ func (h *SMSHandler) getServiceSMSAlerteEquipeDaily() (*entity.Service, error) {
 	return h.serviceService.Get("SAE1")
 }
 
+func (h *SMSHandler) getServiceLiveMatchDaily() (*entity.Service, error) {
+	return h.serviceService.Get("LM1")
+}
+
 func (h *SMSHandler) getServicePronosticSafeDaily() (*entity.Service, error) {
 	return h.serviceService.Get("PS1")
 }
@@ -1617,6 +1684,18 @@ func (h *SMSHandler) getContentSMSAlerteUnvalid(v string, service *entity.Servic
 		}, nil
 	}
 	return h.contentService.GetSMSAlerteUnvalid(v, service)
+}
+
+func (h *SMSHandler) getContentLiveMatch(service *entity.Service) (*entity.Content, error) {
+	// if data not exist in table contents
+	if !h.contentService.IsContent(SMS_LIVE_MATCH_SUB) {
+		return &entity.Content{
+			Category: "CATEGORY",
+			Channel:  "SMS",
+			Value:    "SAMPLE_TEXT",
+		}, nil
+	}
+	return h.contentService.GetLiveMatch(SMS_LIVE_MATCH_SUB, service)
 }
 
 /**

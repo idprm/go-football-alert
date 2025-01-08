@@ -71,8 +71,10 @@ func NewUssdHandler(
 }
 
 const (
-	SMS_LIVE_MATCH_SUB string = "LIVE_MATCH_SUB"
-	SMS_FLASH_NEWS_SUB string = "FLASH_NEWS_SUB"
+	SMS_LIVE_MATCH_SUB         string = "LIVE_MATCH_SUB"
+	SMS_LIVE_MATCH_ALREADY_SUB string = "LIVE_MATCH_ALREADY_SUB"
+	SMS_FLASH_NEWS_SUB         string = "FLASH_NEWS_SUB"
+	SMS_FLASH_NEWS_ALREADY_SUB string = "FLASH_NEWS_ALREADY_SUB"
 )
 
 func (h *UssdHandler) Registration() {
