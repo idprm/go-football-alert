@@ -427,6 +427,10 @@ func (p *Processor) Renewal(wg *sync.WaitGroup, message []byte) {
 	transactionService := services.NewTransactionService(transactionRepo)
 	summaryRepo := repository.NewSummaryRepository(p.db)
 	summaryService := services.NewSummaryService(summaryRepo)
+	leagueRepo := repository.NewLeagueRepository(p.db)
+	leagueService := services.NewLeagueService(leagueRepo)
+	teamRepo := repository.NewTeamRepository(p.db)
+	teamService := services.NewTeamService(teamRepo)
 
 	// parsing json to string
 	var sub *entity.Subscription
@@ -443,6 +447,8 @@ func (p *Processor) Renewal(wg *sync.WaitGroup, message []byte) {
 		subscriptionFollowTeamService,
 		transactionService,
 		summaryService,
+		leagueService,
+		teamService,
 	)
 
 	// Dailypush MT API
@@ -461,14 +467,14 @@ func (p *Processor) Retry(wg *sync.WaitGroup, message []byte) {
 	contentService := services.NewContentService(contentRepo)
 	subscriptionRepo := repository.NewSubscriptionRepository(p.db)
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
-	subscriptionFollowLeagueRepo := repository.NewSubscriptionFollowLeagueRepository(p.db)
-	subscriptionFollowLeagueService := services.NewSubscriptionFollowLeagueService(subscriptionFollowLeagueRepo)
-	subscriptionFollowTeamRepo := repository.NewSubscriptionFollowTeamRepository(p.db)
-	subscriptionFollowTeamService := services.NewSubscriptionFollowTeamService(subscriptionFollowTeamRepo)
 	transactionRepo := repository.NewTransactionRepository(p.db)
 	transactionService := services.NewTransactionService(transactionRepo)
 	summaryRepo := repository.NewSummaryRepository(p.db)
 	summaryService := services.NewSummaryService(summaryRepo)
+	leagueRepo := repository.NewLeagueRepository(p.db)
+	leagueService := services.NewLeagueService(leagueRepo)
+	teamRepo := repository.NewTeamRepository(p.db)
+	teamService := services.NewTeamService(teamRepo)
 
 	// parsing json to string
 	var sub *entity.Subscription
@@ -481,10 +487,10 @@ func (p *Processor) Retry(wg *sync.WaitGroup, message []byte) {
 		serviceService,
 		contentService,
 		subscriptionService,
-		subscriptionFollowLeagueService,
-		subscriptionFollowTeamService,
 		transactionService,
 		summaryService,
+		leagueService,
+		teamService,
 	)
 	if sub.IsFirstpush() {
 		if sub.IsRetryAtToday() {

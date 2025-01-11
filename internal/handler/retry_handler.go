@@ -16,16 +16,16 @@ import (
 )
 
 type RetryHandler struct {
-	rmq                             rmqp.AMQP
-	logger                          *logger.Logger
-	sub                             *entity.Subscription
-	serviceService                  services.IServiceService
-	contentService                  services.IContentService
-	subscriptionService             services.ISubscriptionService
-	subscriptionFollowLeagueService services.ISubscriptionFollowLeagueService
-	subscriptionFollowTeamService   services.ISubscriptionFollowTeamService
-	transactionService              services.ITransactionService
-	summaryService                  services.ISummaryService
+	rmq                 rmqp.AMQP
+	logger              *logger.Logger
+	sub                 *entity.Subscription
+	serviceService      services.IServiceService
+	contentService      services.IContentService
+	subscriptionService services.ISubscriptionService
+	transactionService  services.ITransactionService
+	summaryService      services.ISummaryService
+	leagueService       services.ILeagueService
+	teamService         services.ITeamService
 }
 
 func NewRetryHandler(
@@ -35,22 +35,22 @@ func NewRetryHandler(
 	serviceService services.IServiceService,
 	contentService services.IContentService,
 	subscriptionService services.ISubscriptionService,
-	subscriptionFollowLeagueService services.ISubscriptionFollowLeagueService,
-	subscriptionFollowTeamService services.ISubscriptionFollowTeamService,
 	transactionService services.ITransactionService,
 	summaryService services.ISummaryService,
+	leagueService services.ILeagueService,
+	teamService services.ITeamService,
 ) *RetryHandler {
 	return &RetryHandler{
-		rmq:                             rmq,
-		logger:                          logger,
-		sub:                             sub,
-		serviceService:                  serviceService,
-		contentService:                  contentService,
-		subscriptionService:             subscriptionService,
-		subscriptionFollowLeagueService: subscriptionFollowLeagueService,
-		subscriptionFollowTeamService:   subscriptionFollowTeamService,
-		transactionService:              transactionService,
-		summaryService:                  summaryService,
+		rmq:                 rmq,
+		logger:              logger,
+		sub:                 sub,
+		serviceService:      serviceService,
+		contentService:      contentService,
+		subscriptionService: subscriptionService,
+		transactionService:  transactionService,
+		summaryService:      summaryService,
+		leagueService:       leagueService,
+		teamService:         teamService,
 	}
 }
 
@@ -224,9 +224,35 @@ func (h *RetryHandler) Dailypush() {
 						},
 					)
 
-					content, err := h.getContentService(SMS_SUCCESS_CHARGING, service)
-					if err != nil {
-						log.Println(err.Error())
+					var content *entity.Content
+
+					if service.IsSmsAlerteCompetition() {
+						if h.leagueService.IsLeagueByCode(h.sub.GetCode()) {
+							league, err := h.leagueService.GetByCode(h.sub.GetCode())
+							if err != nil {
+								log.Println(err.Error())
+							}
+							content, err = h.getContentSmsAlerteService(league.GetName(), service)
+							if err != nil {
+								log.Println(err.Error())
+							}
+						}
+					} else if service.IsSmsAlerteEquipe() {
+						if h.teamService.IsTeamByCode(h.sub.GetCode()) {
+							team, err := h.teamService.GetByCode(h.sub.GetCode())
+							if err != nil {
+								log.Println(err.Error())
+							}
+							content, err = h.getContentSmsAlerteService(team.GetName(), service)
+							if err != nil {
+								log.Println(err.Error())
+							}
+						}
+					} else {
+						content, err = h.getContentService(SMS_SUCCESS_CHARGING, service)
+						if err != nil {
+							log.Println(err.Error())
+						}
 					}
 
 					mt := &model.MTRequest{
@@ -265,4 +291,16 @@ func (h *RetryHandler) getContentService(name string, service *entity.Service) (
 		}, nil
 	}
 	return h.contentService.GetService(name, service)
+}
+
+func (h *RetryHandler) getContentSmsAlerteService(teamOrLeague string, service *entity.Service) (*entity.Content, error) {
+	// if data not exist in table contents
+	if !h.contentService.IsContent(SMS_SUCCESS_CHARGING_SMS_ALERTE) {
+		return &entity.Content{
+			Category: "CATEGORY",
+			Channel:  "SMS",
+			Value:    "SAMPLE_TEXT",
+		}, nil
+	}
+	return h.contentService.GetSMSAlerte(SMS_SUCCESS_CHARGING_SMS_ALERTE, teamOrLeague, service)
 }

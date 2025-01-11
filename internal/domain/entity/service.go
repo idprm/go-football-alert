@@ -114,3 +114,11 @@ func (e *Service) SetUrlMT(smsc, username, password, from, to, content string) {
 func (s *Service) SetPriceWithDiscount(discountPercentage int) {
 	s.Price = s.GetPrice() - (s.GetPrice() * float64(discountPercentage) / 100)
 }
+
+func (s *Service) IsSmsAlerteCompetition() bool {
+	return s.GetCategory() == "SMSALERTE_COMPETITION"
+}
+
+func (s *Service) IsSmsAlerteEquipe() bool {
+	return s.GetCategory() == "SMSALERTE_EQUIPE"
+}

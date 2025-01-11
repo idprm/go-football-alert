@@ -126,6 +126,7 @@ const (
 	SMS_PRONOSTIC_STOP                   string = "PRONOSTIC_STOP"
 	SMS_CONFIRMATION                     string = "CONFIRMATION"
 	SMS_SUCCESS_CHARGING                 string = "SUCCESS_CHARGING"
+	SMS_SUCCESS_CHARGING_SMS_ALERTE      string = "SUCCESS_CHARGING_SMS_ALERTE"
 	SMS_REMINDER_48H                     string = "REMINDER_48H"
 	SMS_INFO                             string = "INFO"
 	SMS_STOP                             string = "STOP"

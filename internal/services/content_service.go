@@ -31,6 +31,7 @@ type IContentService interface {
 	GetPronostic(string, *entity.Service) (*entity.Content, error)
 	GetSMSAlerteUnvalid(string, *entity.Service) (*entity.Content, error)
 	GetService(string, *entity.Service) (*entity.Content, error)
+	GetSMSAlerte(string, string, *entity.Service) (*entity.Content, error)
 	Get(string) (*entity.Content, error)
 	Save(*entity.Content) (*entity.Content, error)
 	Update(*entity.Content) (*entity.Content, error)
@@ -124,6 +125,15 @@ func (s *ContentService) GetService(name string, service *entity.Service) (*enti
 		return nil, err
 	}
 	c.SetValueService(service.GetName())
+	return c, nil
+}
+
+func (s *ContentService) GetSMSAlerte(name, teamOrLeague string, service *entity.Service) (*entity.Content, error) {
+	c, err := s.contentRepo.Get(name)
+	if err != nil {
+		return nil, err
+	}
+	c.SetValueSMSAlerte(teamOrLeague, service.GetName())
 	return c, nil
 }
 

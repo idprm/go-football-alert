@@ -138,6 +138,14 @@ func (e *Content) SetValueService(name string) {
 	e.Value = replacer.Replace(e.Value)
 }
 
+func (e *Content) SetValueSMSAlerte(teamOrLeague, name string) {
+	replacer := strings.NewReplacer(
+		"{team/league}", teamOrLeague,
+		"{service}", name,
+	)
+	e.Value = replacer.Replace(e.Value)
+}
+
 func (e *Content) SetValueOTP(pin string) {
 	replacer := strings.NewReplacer("{pin}", pin)
 	e.Value = replacer.Replace(e.Value)
