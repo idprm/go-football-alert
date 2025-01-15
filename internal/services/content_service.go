@@ -79,7 +79,7 @@ func (s *ContentService) GetFollowTeam(name string, service *entity.Service, tea
 	if err != nil {
 		return nil, err
 	}
-	c.SetValueSubFollowTeam(team.GetName(), strconv.Itoa(time.Now().Day()), utils.FormatFROnlyMonth(time.Now()), service.GetPriceToString(), service.GetCurrency())
+	c.SetValueSubFollowTeam(team.GetName(), strconv.Itoa(time.Now().Day()), utils.FormatFROnlyMonth(time.Now()), service.GetPriceToString(), service.GetCurrency(), service.GetRenewalDay())
 	return c, nil
 }
 

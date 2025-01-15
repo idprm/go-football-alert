@@ -347,7 +347,7 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 					`&code=` + s.Code +
 					`&category=` + req.GetCategory() +
 					`&package=` + s.GetPackage() + `">` +
-					s.GetCategory() + " " + s.GetPackagePriceToString() +
+					s.GetName() + " " + s.GetPackagePriceToString() +
 					"</a><br/>"
 				servicesData = append(servicesData, row)
 			}
