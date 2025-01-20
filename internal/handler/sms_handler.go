@@ -193,6 +193,13 @@ func (h *SMSHandler) Registration() {
 			h.AlreadySubVIP()
 		}
 	} else if h.req.IsStop() {
+		// Stop alive ussd
+		if h.req.IsStopAlive() {
+			if h.IsActiveSubByNonSMSAlerte(CATEGORY_LIVEMATCH) {
+				h.Unsub(CATEGORY_LIVEMATCH)
+			}
+		}
+
 		if h.leagueService.IsLeagueByName(h.req.GetStopKeyword()) {
 			// Stop SMS Alerte Competition
 			league, err := h.leagueService.GetByName(h.req.GetStopKeyword())
@@ -221,13 +228,6 @@ func (h *SMSHandler) Registration() {
 			service, _ := h.serviceService.Get(h.req.GetStopKeyword())
 			if h.IsActiveSubByNonSMSAlerte(service.GetCategory()) {
 				h.Unsub(service.GetCategory())
-			}
-		}
-
-		// Stop alive ussd
-		if h.req.IsStopAlive() {
-			if h.IsActiveSubByNonSMSAlerte(CATEGORY_LIVEMATCH) {
-				h.Unsub(CATEGORY_LIVEMATCH)
 			}
 		}
 
