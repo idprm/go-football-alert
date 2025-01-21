@@ -124,7 +124,7 @@ func (s *ContentService) GetService(name string, service *entity.Service) (*enti
 	if err != nil {
 		return nil, err
 	}
-	c.SetValueService(service.GetName())
+	c.SetValueService(service.GetName(), service.GetPackage(), service.GetPriceToString(), service.GetCurrency(), service.GetRenewalDay())
 	return c, nil
 }
 

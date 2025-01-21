@@ -133,9 +133,14 @@ func (e *Content) SetValueCreditGoal(home, away, score, credit, price, currency 
 	e.Value = replacer.Replace(e.Value)
 }
 
-func (e *Content) SetValueService(name string) {
+func (e *Content) SetValueService(name, pkge, price, currency string, duration int) {
 	replacer := strings.NewReplacer(
-		"{service}", name)
+		"{service}", name,
+		"{package}", pkge,
+		"{price}", price,
+		"{currency}", currency,
+		"{duration}", strconv.Itoa(duration),
+	)
 	e.Value = replacer.Replace(e.Value)
 }
 
