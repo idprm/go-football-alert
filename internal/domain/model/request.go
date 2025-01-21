@@ -3,7 +3,6 @@ package model
 import (
 	"net/url"
 	"strings"
-	"time"
 	"unicode"
 
 	"github.com/idprm/go-football-alert/internal/domain/entity"
@@ -501,8 +500,8 @@ type TeamRequest struct {
 }
 
 type PronosticRequest struct {
-	Category string    `validate:"required" json:"category"`
-	Value    string    `validate:"required" json:"value"`
-	StartAt  time.Time `validate:"required" json:"start_at"`
-	ExpireAt time.Time `validate:"required" json:"expire_at"`
+	Category string `validate:"required" json:"category"`
+	Value    string `validate:"required" json:"value"`
+	StartAt  string `validate:"required" json:"start_at"`
+	ExpireAt string `validate:"required" json:"expire_at"`
 }

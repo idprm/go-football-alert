@@ -1008,13 +1008,23 @@ func (h *DCBHandler) SavePronostic(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(errors)
 	}
 
-	if !h.pronosticService.IsPronosticByStartAt(req.StartAt) {
+	startAt, err := time.Parse("2006-01-02T15:04:05-0700", req.StartAt)
+	if err != nil {
+		return c.Status(fiber.StatusBadGateway).JSON(err)
+	}
+
+	expireAt, err := time.Parse("2006-01-02T15:04:05-0700", req.ExpireAt)
+	if err != nil {
+		return c.Status(fiber.StatusBadGateway).JSON(err)
+	}
+
+	if !h.pronosticService.IsPronosticByStartAt(startAt) {
 		h.pronosticService.Save(
 			&entity.Pronostic{
 				Category: req.Category,
 				Value:    req.Value,
-				StartAt:  req.StartAt,
-				ExpireAt: req.ExpireAt,
+				StartAt:  startAt,
+				ExpireAt: expireAt,
 			},
 		)
 
@@ -1031,8 +1041,8 @@ func (h *DCBHandler) SavePronostic(c *fiber.Ctx) error {
 		&entity.Pronostic{
 			Category: req.Category,
 			Value:    req.Value,
-			StartAt:  req.StartAt,
-			ExpireAt: req.ExpireAt,
+			StartAt:  startAt,
+			ExpireAt: expireAt,
 		},
 	)
 
