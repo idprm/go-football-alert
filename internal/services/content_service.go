@@ -52,7 +52,7 @@ func (s *ContentService) GetLiveMatch(name string, service *entity.Service) (*en
 	if err != nil {
 		return nil, err
 	}
-	c.SetValueLiveMatch(strconv.Itoa(time.Now().Day()), utils.FormatFROnlyMonth(time.Now()), service.GetPriceToString(), service.GetCurrency())
+	c.SetValueLiveMatch(strconv.Itoa(time.Now().Day()), utils.FormatFROnlyMonth(time.Now()), service.GetPriceToString(), service.GetCurrency(), service.GetPackage())
 	return c, nil
 }
 
@@ -61,7 +61,7 @@ func (s *ContentService) GetFlashNews(name string, service *entity.Service) (*en
 	if err != nil {
 		return nil, err
 	}
-	c.SetValueFlashNews(strconv.Itoa(time.Now().Day()), utils.FormatFROnlyMonth(time.Now()), service.GetPriceToString(), service.GetCurrency())
+	c.SetValueFlashNews(strconv.Itoa(time.Now().Day()), utils.FormatFROnlyMonth(time.Now()), service.GetPriceToString(), service.GetCurrency(), service.GetPackage())
 	return c, nil
 }
 
@@ -70,7 +70,7 @@ func (s *ContentService) GetFollowCompetition(name string, service *entity.Servi
 	if err != nil {
 		return nil, err
 	}
-	c.SetValueSubFollowCompetition(league.GetName(), strconv.Itoa(time.Now().Day()), utils.FormatFROnlyMonth(time.Now()), service.GetPriceToString(), service.GetCurrency())
+	c.SetValueSubFollowCompetition(league.GetName(), strconv.Itoa(time.Now().Day()), utils.FormatFROnlyMonth(time.Now()), service.GetPriceToString(), service.GetCurrency(), service.GetPackage())
 	return c, nil
 }
 
@@ -79,7 +79,7 @@ func (s *ContentService) GetFollowTeam(name string, service *entity.Service, tea
 	if err != nil {
 		return nil, err
 	}
-	c.SetValueSubFollowTeam(team.GetName(), strconv.Itoa(time.Now().Day()), utils.FormatFROnlyMonth(time.Now()), service.GetPriceToString(), service.GetCurrency(), service.GetRenewalDay())
+	c.SetValueSubFollowTeam(team.GetName(), strconv.Itoa(time.Now().Day()), utils.FormatFROnlyMonth(time.Now()), service.GetPriceToString(), service.GetCurrency(), service.GetPackage(), service.GetRenewalDay())
 	return c, nil
 }
 
@@ -106,7 +106,7 @@ func (s *ContentService) GetPronostic(name string, service *entity.Service) (*en
 	if err != nil {
 		return nil, err
 	}
-	c.SetValuePronostic(service.ScSubMT, service.GetPriceToString(), service.GetCurrency(), service.GetRenewalDay())
+	c.SetValuePronostic(service.ScSubMT, service.GetPriceToString(), service.GetCurrency(), service.GetPackage(), service.GetRenewalDay())
 	return c, nil
 }
 

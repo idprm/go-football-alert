@@ -41,31 +41,37 @@ func (e *Content) GetValue() string {
 	return result
 }
 
-func (e *Content) SetValueLiveMatch(day, month, price, currency string) {
+func (e *Content) SetValueLiveMatch(day, month, price, currency, packg string) {
 	replacer := strings.NewReplacer(
 		"{day}", day,
 		"{month}", month,
 		"{price}", price,
-		"{currency}", url.QueryEscape(currency))
+		"{currency}", url.QueryEscape(currency),
+		"{package}", packg,
+	)
 	e.Value = replacer.Replace(e.Value)
 }
 
-func (e *Content) SetValueFlashNews(day, month, price, currency string) {
+func (e *Content) SetValueFlashNews(day, month, price, currency, packg string) {
 	replacer := strings.NewReplacer(
 		"{day}", day,
 		"{month}", month,
 		"{price}", price,
-		"{currency}", url.QueryEscape(currency))
+		"{currency}", url.QueryEscape(currency),
+		"{package}", packg,
+	)
 	e.Value = replacer.Replace(e.Value)
 }
 
-func (e *Content) SetValueSubFollowCompetition(league, day, month, price, currency string) {
+func (e *Content) SetValueSubFollowCompetition(league, day, month, price, currency, packg string) {
 	replacer := strings.NewReplacer(
 		"{league}", league,
 		"{day}", day,
 		"{month}", month,
 		"{price}", price,
-		"{currency}", url.QueryEscape(currency))
+		"{currency}", url.QueryEscape(currency),
+		"{package}", packg,
+	)
 	e.Value = replacer.Replace(e.Value)
 }
 
@@ -76,14 +82,16 @@ func (e *Content) SetValueUnSubFollowCompetition(league string) {
 	e.Value = replacer.Replace(e.Value)
 }
 
-func (e *Content) SetValueSubFollowTeam(team, day, month, price, currency string, duration int) {
+func (e *Content) SetValueSubFollowTeam(team, day, month, price, currency, packg string, duration int) {
 	replacer := strings.NewReplacer(
 		"{team}", team,
 		"{day}", day,
 		"{month}", month,
 		"{price}", price,
 		"{currency}", url.QueryEscape(currency),
-		"{duration}", strconv.Itoa(duration))
+		"{package}", packg,
+		"{duration}", strconv.Itoa(duration),
+	)
 	e.Value = replacer.Replace(e.Value)
 }
 
@@ -94,11 +102,12 @@ func (e *Content) SetValueUnSubFollowTeam(team string) {
 	e.Value = replacer.Replace(e.Value)
 }
 
-func (e *Content) SetValuePronostic(sc string, price string, currency string, duration int) {
+func (e *Content) SetValuePronostic(sc string, price string, currency, packg string, duration int) {
 	replacer := strings.NewReplacer(
 		"{sc}", sc,
 		"{price}", price,
 		"{currency}", url.QueryEscape(currency),
+		"{package}", packg,
 		"{duration}", strconv.Itoa(duration))
 	e.Value = replacer.Replace(e.Value)
 }
