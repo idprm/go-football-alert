@@ -1,6 +1,8 @@
 package services
 
 import (
+	"time"
+
 	"github.com/idprm/go-football-alert/internal/domain/entity"
 	"github.com/idprm/go-football-alert/internal/domain/repository"
 )
@@ -16,32 +18,32 @@ func NewPronosticService(pronosticRepo repository.IPronosticRepository) *Pronost
 }
 
 type IPronosticService interface {
-	IsPronosticByFixtureId(int) bool
+	IsPronosticByStartAt(time.Time) bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	Get(int) (*entity.Pronostic, error)
-	Save(*entity.Pronostic) (*entity.Pronostic, error)
-	Update(*entity.Pronostic) (*entity.Pronostic, error)
+	Save(*entity.Pronostic) error
+	Update(*entity.Pronostic) error
 	Delete(*entity.Pronostic) error
 }
 
-func (s *PronosticService) IsPronosticByFixtureId(fixtureId int) bool {
-	count, _ := s.pronosticRepo.Count(fixtureId)
+func (s *PronosticService) IsPronosticByStartAt(startAt time.Time) bool {
+	count, _ := s.pronosticRepo.CountByStartAt(startAt)
 	return count > 0
 }
 
-func (s *PronosticService) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {
-	return s.pronosticRepo.GetAllPaginate(pagination)
+func (s *PronosticService) GetAllPaginate(p *entity.Pagination) (*entity.Pagination, error) {
+	return s.pronosticRepo.GetAllPaginate(p)
 }
 
-func (s *PronosticService) Get(fixtureId int) (*entity.Pronostic, error) {
-	return s.pronosticRepo.Get(fixtureId)
+func (s *PronosticService) Get(id int) (*entity.Pronostic, error) {
+	return s.pronosticRepo.Get(id)
 }
 
-func (s *PronosticService) Save(a *entity.Pronostic) (*entity.Pronostic, error) {
+func (s *PronosticService) Save(a *entity.Pronostic) error {
 	return s.pronosticRepo.Save(a)
 }
 
-func (s *PronosticService) Update(a *entity.Pronostic) (*entity.Pronostic, error) {
+func (s *PronosticService) Update(a *entity.Pronostic) error {
 	return s.pronosticRepo.Update(a)
 }
 

@@ -1008,13 +1008,13 @@ func (h *DCBHandler) SavePronostic(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(errors)
 	}
 
-	if !h.pronosticService.IsPronosticByFixtureId(int(req.FixtureID)) {
+	if !h.pronosticService.IsPronosticByStartAt(req.StartAt) {
 		h.pronosticService.Save(
 			&entity.Pronostic{
-				FixtureID: req.FixtureID,
-				Category:  req.Category,
-				Value:     req.Value,
-				PublishAt: req.PublishAt,
+				Category: req.Category,
+				Value:    req.Value,
+				StartAt:  req.StartAt,
+				ExpireAt: req.ExpireAt,
 			},
 		)
 
@@ -1029,10 +1029,10 @@ func (h *DCBHandler) SavePronostic(c *fiber.Ctx) error {
 
 	h.pronosticService.Update(
 		&entity.Pronostic{
-			FixtureID: req.FixtureID,
-			Category:  req.Category,
-			Value:     req.Value,
-			PublishAt: req.PublishAt,
+			Category: req.Category,
+			Value:    req.Value,
+			StartAt:  req.StartAt,
+			ExpireAt: req.ExpireAt,
 		},
 	)
 

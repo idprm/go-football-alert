@@ -501,8 +501,8 @@ type TeamRequest struct {
 }
 
 type PronosticRequest struct {
-	FixtureID int64     `validate:"required" json:"fixture_id"`
-	Category  string    `validate:"required" json:"category"`
-	Value     string    `validate:"required" json:"value"`
-	PublishAt time.Time `validate:"required" json:"publish_at"`
+	Category string    `validate:"required" json:"category"`
+	Value    string    `validate:"required" json:"value"`
+	StartAt  time.Time `validate:"required" json:"start_at"`
+	ExpireAt time.Time `validate:"required" json:"expire_at"`
 }

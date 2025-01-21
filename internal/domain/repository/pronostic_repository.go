@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"time"
+
 	"github.com/idprm/go-football-alert/internal/domain/entity"
 	"gorm.io/gorm"
 )
@@ -16,17 +18,17 @@ func NewPronosticRepository(db *gorm.DB) *PronosticRepository {
 }
 
 type IPronosticRepository interface {
-	Count(int) (int64, error)
+	CountByStartAt(time.Time) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	Get(int) (*entity.Pronostic, error)
-	Save(*entity.Pronostic) (*entity.Pronostic, error)
-	Update(*entity.Pronostic) (*entity.Pronostic, error)
+	Save(*entity.Pronostic) error
+	Update(*entity.Pronostic) error
 	Delete(*entity.Pronostic) error
 }
 
-func (r *PronosticRepository) Count(fixtureId int) (int64, error) {
+func (r *PronosticRepository) CountByStartAt(startAt time.Time) (int64, error) {
 	var count int64
-	err := r.db.Model(&entity.Pronostic{}).Where("fixture_id = ?", fixtureId).Count(&count).Error
+	err := r.db.Model(&entity.Pronostic{}).Where("start_at = ?", startAt).Count(&count).Error
 	if err != nil {
 		return count, err
 	}
@@ -43,29 +45,29 @@ func (r *PronosticRepository) GetAllPaginate(pagination *entity.Pagination) (*en
 	return pagination, nil
 }
 
-func (r *PronosticRepository) Get(fixtureId int) (*entity.Pronostic, error) {
+func (r *PronosticRepository) Get(id int) (*entity.Pronostic, error) {
 	var c entity.Pronostic
-	err := r.db.Where("fixture_id = ?", fixtureId).Take(&c).Error
+	err := r.db.Where("id = ?", id).Take(&c).Error
 	if err != nil {
 		return nil, err
 	}
 	return &c, nil
 }
 
-func (r *PronosticRepository) Save(c *entity.Pronostic) (*entity.Pronostic, error) {
+func (r *PronosticRepository) Save(c *entity.Pronostic) error {
 	err := r.db.Create(&c).Error
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return c, nil
+	return nil
 }
 
-func (r *PronosticRepository) Update(c *entity.Pronostic) (*entity.Pronostic, error) {
-	err := r.db.Where("fixture_id = ?", c.FixtureID).Updates(&c).Error
+func (r *PronosticRepository) Update(c *entity.Pronostic) error {
+	err := r.db.Where("id = ?", c.ID).Updates(&c).Error
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return c, nil
+	return nil
 }
 
 func (r *PronosticRepository) Delete(c *entity.Pronostic) error {
