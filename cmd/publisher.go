@@ -411,7 +411,7 @@ var publisherScrapingFixturesCmd = &cobra.Command{
 		/**
 		 * Looping schedule
 		 */
-		timeDuration := time.Duration(2)
+		timeDuration := time.Duration(6)
 
 		for {
 
@@ -419,7 +419,7 @@ var publisherScrapingFixturesCmd = &cobra.Command{
 				scrapingFixtures(db)
 			}()
 
-			time.Sleep(timeDuration * time.Minute)
+			time.Sleep(timeDuration * time.Hour)
 		}
 	},
 }
@@ -441,7 +441,7 @@ var publisherScrapingLiveMatchesCmd = &cobra.Command{
 		/**
 		 * Looping schedule
 		 */
-		timeDuration := time.Duration(30)
+		timeDuration := time.Duration(1)
 
 		for {
 
@@ -449,7 +449,7 @@ var publisherScrapingLiveMatchesCmd = &cobra.Command{
 				scrapingLiveMatch(db)
 			}()
 
-			time.Sleep(timeDuration * time.Second)
+			time.Sleep(timeDuration * time.Minute)
 		}
 	},
 }
