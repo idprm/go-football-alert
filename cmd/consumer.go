@@ -704,8 +704,8 @@ var consumerSMSAlerteCmd = &cobra.Command{
 	},
 }
 
-var consumerPronosticCmd = &cobra.Command{
-	Use:   "pronostic",
+var consumerSMSPronoCmd = &cobra.Command{
+	Use:   "sms_prono",
 	Short: "Consumer Pronostic Service CLI",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -744,10 +744,10 @@ var consumerPronosticCmd = &cobra.Command{
 		/**
 		 * SETUP CHANNEL
 		 */
-		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_PRONOSTIC_EXCHANGE, true, RMQ_PRONOSTIC_QUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_SMS_PRONO_EXCHANGE, true, RMQ_SMS_PRONO_QUEUE)
 		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_MT_EXCHANGE, true, RMQ_MT_QUEUE)
 
-		messagesData, errSub := rmq.Subscribe(1, false, RMQ_PRONOSTIC_QUEUE, RMQ_PRONOSTIC_EXCHANGE, RMQ_PRONOSTIC_QUEUE)
+		messagesData, errSub := rmq.Subscribe(1, false, RMQ_SMS_PRONO_QUEUE, RMQ_SMS_PRONO_EXCHANGE, RMQ_SMS_PRONO_QUEUE)
 		if errSub != nil {
 			panic(errSub)
 		}
@@ -767,7 +767,7 @@ var consumerPronosticCmd = &cobra.Command{
 			for d := range messagesData {
 
 				wg.Add(1)
-				p.Pronostic(&wg, d.Body)
+				p.SMSProno(&wg, d.Body)
 				wg.Wait()
 
 				// Manual consume queue

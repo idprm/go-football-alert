@@ -1072,7 +1072,7 @@ func (h *DCBHandler) getContentUnFollowCompetition(service *entity.Service, leag
 		return &entity.Content{
 			Category: "CATEGORY",
 			Channel:  "SMS",
-			Value:    "SAMPLE_TEXT",
+			Value:    "SAMPLE_TvEXT",
 		}, nil
 	}
 	return h.contentService.GetUnSubFollowCompetition(SMS_FOLLOW_COMPETITION_STOP, service, league)
@@ -1087,4 +1087,29 @@ func (h *DCBHandler) getContentUnFollowTeam(service *entity.Service, team *entit
 		}, nil
 	}
 	return h.contentService.GetUnSubFollowTeam(SMS_FOLLOW_TEAM_STOP, service, team)
+}
+
+func (h *DCBHandler) SMSAlerteTeam(teamId int64) {
+	// valid in team
+	subs := h.subscriptionService.GetByCategory("")
+
+	if len(*subs) > 0 {
+		for _, s := range *subs {
+
+			// limit
+			if h.subscriptionFollowTeamService.IsLimit(s.SubscriptionID, teamId) {
+				jsonData, err := json.Marshal(&entity.SMSAlerte{SubscriptionID: s.SubscriptionID, NewsID: h.news.GetId()})
+				if err != nil {
+					log.Println(err.Error())
+				}
+
+				h.rmq.IntegratePublish(
+					RMQ_SMS_ALERTE_EXCHANGE,
+					RMQ_SMS_ALERTE_QUEUE,
+					RMQ_DATA_TYPE, "", string(jsonData),
+				)
+			}
+
+		}
+	}
 }

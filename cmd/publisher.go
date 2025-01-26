@@ -152,62 +152,6 @@ var publisherReminderCmd = &cobra.Command{
 	},
 }
 
-var publisherPronosticCmd = &cobra.Command{
-	Use:   "pub_pronostic",
-	Short: "Publisher Pronostic CLI",
-	Long:  ``,
-	Run: func(cmd *cobra.Command, args []string) {
-		/**
-		 * connect mysql
-		 */
-		db, err := connectDb()
-		if err != nil {
-			panic(err)
-		}
-
-		/**
-		 * connect rabbitmq
-		 */
-		rmq, err := connectRabbitMq()
-		if err != nil {
-			panic(err)
-		}
-
-		/**
-		 * SETUP CHANNEL
-		 */
-		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_PRONOSTIC_EXCHANGE, true, RMQ_PRONOSTIC_QUEUE)
-
-		/**
-		 * Looping schedule
-		 */
-		timeDuration := time.Duration(1)
-
-		for {
-			timeNow := time.Now().Format("15:04")
-
-			scheduleRepo := repository.NewScheduleRepository(db)
-			scheduleService := services.NewScheduleService(scheduleRepo)
-
-			if scheduleService.IsUnlocked(ACT_PRONOSTIC, timeNow) {
-
-				scheduleService.UpdateLocked(
-					&entity.Schedule{
-						Name: ACT_PRONOSTIC,
-					},
-				)
-
-				go func() {
-					populatePredictWin(db, rmq)
-				}()
-			}
-
-			time.Sleep(timeDuration * time.Minute)
-
-		}
-	},
-}
-
 var publisherCreditGoalCmd = &cobra.Command{
 	Use:   "pub_credit_goal",
 	Short: "Publisher Credit CLI",

@@ -20,7 +20,7 @@ func NewPronosticRepository(db *gorm.DB) *PronosticRepository {
 type IPronosticRepository interface {
 	CountByStartAt(time.Time) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
-	Get(int) (*entity.Pronostic, error)
+	GetById(int64) (*entity.Pronostic, error)
 	Save(*entity.Pronostic) error
 	Update(*entity.Pronostic) error
 	Delete(*entity.Pronostic) error
@@ -45,7 +45,7 @@ func (r *PronosticRepository) GetAllPaginate(pagination *entity.Pagination) (*en
 	return pagination, nil
 }
 
-func (r *PronosticRepository) Get(id int) (*entity.Pronostic, error) {
+func (r *PronosticRepository) GetById(id int64) (*entity.Pronostic, error) {
 	var c entity.Pronostic
 	err := r.db.Where("id = ?", id).Take(&c).Error
 	if err != nil {

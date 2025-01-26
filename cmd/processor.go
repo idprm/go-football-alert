@@ -294,42 +294,35 @@ func (p *Processor) SMSAlerte(wg *sync.WaitGroup, message []byte) {
 	wg.Done()
 }
 
-func (p *Processor) Pronostic(wg *sync.WaitGroup, message []byte) {
+func (p *Processor) SMSProno(wg *sync.WaitGroup, message []byte) {
 	/**
 	 * load repo
 	 */
 	serviceRepo := repository.NewServiceRepository(p.db)
 	serviceService := services.NewServiceService(serviceRepo)
-	contentRepo := repository.NewContentRepository(p.db)
-	contentService := services.NewContentService(contentRepo)
 	subscriptionRepo := repository.NewSubscriptionRepository(p.db)
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
-	transactionRepo := repository.NewTransactionRepository(p.db)
-	transactionService := services.NewTransactionService(transactionRepo)
+	smsPronoRepo := repository.NewSMSPronoRespository(p.db)
+	smsPronoService := services.NewSMSPronoService(smsPronoRepo)
 	pronosticRepo := repository.NewPronosticRepository(p.db)
 	pronosticService := services.NewPronosticService(pronosticRepo)
-	subPronosticRepo := repository.NewSubscriptionPronosticRepository(p.db)
-	subPronosticService := services.NewSubscriptionPronosticService(subPronosticRepo)
 
 	// parsing json to string
-	var sub *entity.Subscription
-	json.Unmarshal(message, &sub)
+	var smsProno *entity.SMSProno
+	json.Unmarshal(message, &smsProno)
 
-	h := handler.NewPronosticHandler(
+	h := handler.NewSMSPronoHandler(
 		p.rmq,
-		p.rds,
 		p.logger,
 		serviceService,
-		contentService,
 		subscriptionService,
-		transactionService,
 		pronosticService,
-		subPronosticService,
-		sub,
+		smsPronoService,
+		smsProno,
 	)
 
-	// Send the prediction
-	h.Pronostic()
+	// Send the pronostic
+	h.SMSProno()
 
 	wg.Done()
 }

@@ -51,8 +51,8 @@ const (
 	RMQ_NEWS_QUEUE            string = "Q_NEWS"
 	RMQ_SMS_ALERTE_EXCHANGE   string = "E_SMS_ALERTE"
 	RMQ_SMS_ALERTE_QUEUE      string = "Q_SMS_ALERTE"
-	RMQ_PRONOSTIC_EXCHANGE    string = "E_PRONOSTIC"
-	RMQ_PRONOSTIC_QUEUE       string = "Q_PRONOSTIC"
+	RMQ_SMS_PRONO_EXCHANGE    string = "E_SMS_PRONO"
+	RMQ_SMS_PRONO_QUEUE       string = "Q_SMS_PRONO"
 	RMQ_PREDICT_WIN_EXCHANGE  string = "E_PREDICT_WIN"
 	RMQ_PREDICT_WIN_QUEUE     string = "Q_PREDICT_WIN"
 	RMQ_CREDIT_GOAL_EXCHANGE  string = "E_CREDIT_GOAL"
@@ -157,7 +157,7 @@ func init() {
 	rootCmd.AddCommand(consumerMOCmd)
 	rootCmd.AddCommand(consumerNewsCmd)
 	rootCmd.AddCommand(consumerSMSAlerteCmd)
-	rootCmd.AddCommand(consumerPronosticCmd)
+	rootCmd.AddCommand(consumerSMSPronoCmd)
 	rootCmd.AddCommand(consumerCreditGoalCmd)
 	rootCmd.AddCommand(consumerPredictWinCmd)
 	rootCmd.AddCommand(consumerReminderCmd)
@@ -175,7 +175,6 @@ func init() {
 	rootCmd.AddCommand(publisherScrapingPredictionCmd)
 	rootCmd.AddCommand(publisherScrapingNewsCmd)
 	rootCmd.AddCommand(publisherReportCmd)
-	rootCmd.AddCommand(publisherPronosticCmd)
 	rootCmd.AddCommand(publisherCreditGoalCmd)
 	rootCmd.AddCommand(publisherPredictWinCmd)
 	rootCmd.AddCommand(publisherReminderCmd)

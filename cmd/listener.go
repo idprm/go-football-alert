@@ -87,6 +87,7 @@ var listenerCmd = &cobra.Command{
 			&entity.Summary{},
 			&entity.MT{},
 			&entity.Pronostic{},
+			&entity.SMSProno{},
 		)
 
 		/**
