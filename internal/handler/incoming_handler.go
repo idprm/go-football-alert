@@ -641,6 +641,8 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 						"{{.url}}", c.BaseURL(),
 						"{{.version}}", API_VERSION,
 						"{{.service}}", service.GetName(),
+						"{{.code}}", service.GetCode(),
+						"{{.title}}", service.GetName(),
 						"&", "&amp;",
 					)
 					replace := replacer.Replace(string(menu.GetTemplateXML()))
@@ -664,6 +666,8 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 						"{{.url}}", c.BaseURL(),
 						"{{.version}}", API_VERSION,
 						"{{.service}}", service.GetName(),
+						"{{.code}}", service.GetCode(),
+						"{{.title}}", service.GetName(),
 						"&", "&amp;",
 					)
 					replace := replacer.Replace(string(menu.GetTemplateXML()))
@@ -686,6 +690,8 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 						"{{.url}}", c.BaseURL(),
 						"{{.version}}", API_VERSION,
 						"{{.service}}", service.GetName(),
+						"{{.code}}", service.GetCode(),
+						"{{.title}}", service.GetName(),
 						"&", "&amp;",
 					)
 					replace := replacer.Replace(string(menu.GetTemplateXML()))
@@ -874,17 +880,17 @@ func (h *IncomingHandler) Stop(c *fiber.Ctx) error {
 
 	// check if msisdn not found
 	if !req.IsMsisdn() {
-		return c.Status(fiber.StatusOK).SendString(h.MsisdnNotFound(c.BaseURL()))
+		return c.Status(fiber.StatusNotFound).SendString(h.MsisdnNotFound(c.BaseURL()))
 	}
 
 	// if menu or page not found
 	if !h.menuService.IsSlug(req.GetSlug()) {
-		return c.Status(fiber.StatusOK).SendString(h.PageNotFound(c.BaseURL()))
+		return c.Status(fiber.StatusNotFound).SendString(h.PageNotFound(c.BaseURL()))
 	}
 
 	// if service unavailable
 	if !h.serviceService.IsService(req.GetCode()) {
-		return c.Status(fiber.StatusOK).SendString(h.PageNotFound(c.BaseURL()))
+		return c.Status(fiber.StatusNotFound).SendString(h.PageNotFound(c.BaseURL()))
 	}
 
 	menu, err := h.menuService.GetBySlug("success-stop")
