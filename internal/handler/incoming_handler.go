@@ -635,6 +635,8 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 					sub, _ := h.subscriptionService.GetByCategory(req.GetCategory(), req.GetMsisdn(), req.GetUniqueCode())
 					service, _ := h.serviceService.GetById(sub.GetServiceId())
 
+					menu, _ := h.menuService.GetBySlug("already-sub")
+
 					replacer := strings.NewReplacer(
 						"{{.url}}", c.BaseURL(),
 						"{{.version}}", API_VERSION,
@@ -656,6 +658,8 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 					sub, _ := h.subscriptionService.GetByCategory(req.GetCategory(), req.GetMsisdn(), req.GetUniqueCode())
 					service, _ := h.serviceService.GetById(sub.GetServiceId())
 
+					menu, _ := h.menuService.GetBySlug("already-sub")
+
 					replacer := strings.NewReplacer(
 						"{{.url}}", c.BaseURL(),
 						"{{.version}}", API_VERSION,
@@ -675,6 +679,8 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 
 					sub, _ := h.subscriptionService.GetByCategory(req.GetCategory(), req.GetMsisdn(), req.GetUniqueCode())
 					service, _ := h.serviceService.GetById(sub.GetServiceId())
+
+					menu, _ := h.menuService.GetBySlug("already-sub")
 
 					replacer := strings.NewReplacer(
 						"{{.url}}", c.BaseURL(),
