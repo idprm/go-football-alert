@@ -580,6 +580,8 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 				"{{.url}}", c.BaseURL(),
 				"{{.version}}", API_VERSION,
 				"{{.service}}", service.GetName(),
+				"{{.code}}", service.GetCode(),
+				"{{.title}}", service.GetName(),
 				"&", "&amp;",
 			)
 			replace := replacer.Replace(string(menu.GetTemplateXML()))
@@ -699,28 +701,6 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 
 				} else {
 					data = h.KitFootByTeam(c.BaseURL(), req.GetLeagueId(), req.GetPage()+1)
-				}
-			}
-
-			if req.GetSlug() == "ticket-safe" {
-				if h.subscriptionService.IsActiveSubscriptionByCategory(req.GetCategory(), req.GetMsisdn(), req.GetUniqueCode()) {
-
-					sub, _ := h.subscriptionService.GetByCategory(req.GetCategory(), req.GetMsisdn(), req.GetUniqueCode())
-					service, _ := h.serviceService.GetById(sub.GetServiceId())
-
-					menu, _ := h.menuService.GetBySlug("already-sub")
-
-					replacer := strings.NewReplacer(
-						"{{.url}}", c.BaseURL(),
-						"{{.version}}", API_VERSION,
-						"{{.service}}", service.GetName(),
-						"{{.code}}", service.GetCode(),
-						"{{.title}}", service.GetName(),
-						"&", "&amp;",
-					)
-					replace := replacer.Replace(string(menu.GetTemplateXML()))
-					return c.Status(fiber.StatusOK).SendString(replace)
-
 				}
 			}
 
