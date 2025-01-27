@@ -83,6 +83,10 @@ func (m *UssdRequest) SetMsisdn(v string) {
 	m.Msisdn = v
 }
 
+func (m *UssdRequest) SetAction(v string) {
+	m.Action = v
+}
+
 func (m *UssdRequest) IsMsisdn() bool {
 	return m.GetMsisdn() != ""
 }
@@ -101,6 +105,14 @@ func (m *UssdRequest) IsCatSMSAlerte() bool {
 
 func (m *UssdRequest) IsCatSMSProno() bool {
 	return m.GetCategory() == "PRONO"
+}
+
+func (m *UssdRequest) IsREG() bool {
+	return strings.ToUpper(m.GetAction()) == "REG"
+}
+
+func (m *UssdRequest) IsSTOP() bool {
+	return strings.ToUpper(m.GetAction()) == "STOP"
 }
 
 type SMSRequest struct {

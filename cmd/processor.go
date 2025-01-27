@@ -84,7 +84,13 @@ func (p *Processor) USSD(wg *sync.WaitGroup, message []byte) {
 		req,
 	)
 
-	h.Registration()
+	if req.IsREG() {
+		h.Registration()
+	}
+
+	if req.IsSTOP() {
+		h.UnRegistration()
+	}
 
 	wg.Done()
 }

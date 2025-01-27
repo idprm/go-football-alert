@@ -124,6 +124,50 @@ func (h *UssdHandler) Registration() {
 
 }
 
+func (h *UssdHandler) UnRegistration() {
+	l := h.logger.Init("ussd", true)
+	l.WithFields(logrus.Fields{"request": h.req}).Info("USSD")
+
+	/**
+	 ** LiveMatch & FlashNews & SMSAlerte
+	 **/
+	if h.req.IsCatLiveMatch() {
+		if h.IsActiveSubByNonSMSAlerte(CATEGORY_LIVEMATCH) {
+			h.StopNonSMSAlerte(CATEGORY_LIVEMATCH)
+		}
+	}
+
+	if h.req.IsCatFlashNews() {
+		if !h.IsActiveSubByNonSMSAlerte(CATEGORY_FLASHNEWS) {
+			h.StopNonSMSAlerte(CATEGORY_FLASHNEWS)
+		}
+	}
+
+	if h.req.IsCatSMSAlerteCompetition() {
+		if h.leagueService.IsLeagueByCode(h.req.GetUniqueCode()) {
+			league, err := h.leagueService.GetByCode(h.req.GetUniqueCode())
+			if err != nil {
+				log.Println(err.Error())
+			}
+			if h.IsActiveSubByCategory(CATEGORY_SMSALERTE_COMPETITION, league.GetCode()) {
+				h.StopAlerteCompetition(league)
+			}
+		}
+	}
+
+	if h.req.IsCatSMSAlerteEquipe() {
+		if h.teamService.IsTeamByCode(h.req.GetUniqueCode()) {
+			team, err := h.teamService.GetByCode(h.req.GetUniqueCode())
+			if err != nil {
+				log.Println(err.Error())
+			}
+			if h.IsActiveSubByCategory(CATEGORY_SMSALERTE_EQUIPE, team.GetCode()) {
+				h.StopAlerteEquipe(team)
+			}
+		}
+	}
+}
+
 /**
 ** SUB ON USSD
 **/

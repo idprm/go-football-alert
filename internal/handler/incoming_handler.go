@@ -329,6 +329,11 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 	// set msisdn
 	req.SetMsisdn(c.Get("User-MSISDN"))
 
+	// check if msisdn not found
+	if !req.IsMsisdn() {
+		return c.Status(fiber.StatusOK).SendString(h.MsisdnNotFound(c.BaseURL()))
+	}
+
 	// if menu or page not found
 	if !h.menuService.IsSlug(req.GetSlug()) {
 		return c.Status(fiber.StatusOK).SendString(h.PageNotFound(c.BaseURL()))
@@ -574,7 +579,6 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 			replacer := strings.NewReplacer(
 				"{{.url}}", c.BaseURL(),
 				"{{.version}}", API_VERSION,
-				"{{.title}}", "S'abonner",
 				"{{.service}}", service.GetName(),
 				"&", "&amp;",
 			)
@@ -626,15 +630,64 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 			}
 
 			if req.GetSlug() == "alerte-sms-competition" {
-				data = h.SMSAlerteCompetition(c.BaseURL(), req.GetPage()+1)
+				if h.subscriptionService.IsActiveSubscriptionByCategory(req.GetCategory(), req.GetMsisdn(), req.GetUniqueCode()) {
+
+					sub, _ := h.subscriptionService.GetByCategory(req.GetCategory(), req.GetMsisdn(), req.GetUniqueCode())
+					service, _ := h.serviceService.GetById(sub.GetServiceId())
+
+					replacer := strings.NewReplacer(
+						"{{.url}}", c.BaseURL(),
+						"{{.version}}", API_VERSION,
+						"{{.service}}", service.GetName(),
+						"&", "&amp;",
+					)
+					replace := replacer.Replace(string(menu.GetTemplateXML()))
+					return c.Status(fiber.StatusOK).SendString(replace)
+
+				} else {
+					data = h.SMSAlerteCompetition(c.BaseURL(), req.GetPage()+1)
+				}
+
 			}
 
 			if req.GetSlug() == "kit-foot-by-league" {
-				data = h.KitFootByTeam(c.BaseURL(), req.GetLeagueId(), req.GetPage()+1)
+				if h.subscriptionService.IsActiveSubscriptionByCategory(req.GetCategory(), req.GetMsisdn(), req.GetUniqueCode()) {
+
+					sub, _ := h.subscriptionService.GetByCategory(req.GetCategory(), req.GetMsisdn(), req.GetUniqueCode())
+					service, _ := h.serviceService.GetById(sub.GetServiceId())
+
+					replacer := strings.NewReplacer(
+						"{{.url}}", c.BaseURL(),
+						"{{.version}}", API_VERSION,
+						"{{.service}}", service.GetName(),
+						"&", "&amp;",
+					)
+					replace := replacer.Replace(string(menu.GetTemplateXML()))
+					return c.Status(fiber.StatusOK).SendString(replace)
+
+				} else {
+					data = h.KitFootByTeam(c.BaseURL(), req.GetLeagueId(), req.GetPage()+1)
+				}
 			}
 
 			if req.GetSlug() == "kit-foot-by-team" {
-				data = h.KitFootByTeam(c.BaseURL(), req.GetLeagueId(), req.GetPage()+1)
+				if h.subscriptionService.IsActiveSubscriptionByCategory(req.GetCategory(), req.GetMsisdn(), req.GetUniqueCode()) {
+
+					sub, _ := h.subscriptionService.GetByCategory(req.GetCategory(), req.GetMsisdn(), req.GetUniqueCode())
+					service, _ := h.serviceService.GetById(sub.GetServiceId())
+
+					replacer := strings.NewReplacer(
+						"{{.url}}", c.BaseURL(),
+						"{{.version}}", API_VERSION,
+						"{{.service}}", service.GetName(),
+						"&", "&amp;",
+					)
+					replace := replacer.Replace(string(menu.GetTemplateXML()))
+					return c.Status(fiber.StatusOK).SendString(replace)
+
+				} else {
+					data = h.KitFootByTeam(c.BaseURL(), req.GetLeagueId(), req.GetPage()+1)
+				}
 			}
 
 			leagueId := strconv.Itoa(req.GetLeagueId())
@@ -748,6 +801,7 @@ func (h *IncomingHandler) Buy(c *fiber.Ctx) error {
 
 	// setter msisdn
 	req.SetMsisdn(c.Get("User-MSISDN"))
+	req.SetAction("REG")
 
 	// check if msisdn not found
 	if !req.IsMsisdn() {
@@ -810,6 +864,7 @@ func (h *IncomingHandler) Stop(c *fiber.Ctx) error {
 
 	// setter msisdn
 	req.SetMsisdn(c.Get("User-MSISDN"))
+	req.SetAction("STOP")
 
 	// check if msisdn not found
 	if !req.IsMsisdn() {
