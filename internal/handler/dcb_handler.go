@@ -1019,16 +1019,16 @@ func (h *DCBHandler) SavePronostic(c *fiber.Ctx) error {
 	}
 
 	if !h.pronosticService.IsPronosticByStartAt(startAt) {
-		h.pronosticService.Save(
-			&entity.Pronostic{
-				Category: req.Category,
-				Value:    req.Value,
-				StartAt:  startAt,
-				ExpireAt: expireAt,
-			},
-		)
+		prono := &entity.Pronostic{
+			Category: req.Category,
+			Value:    req.Value,
+			StartAt:  startAt,
+			ExpireAt: expireAt,
+		}
 
-		h.SMSPronostic(pronoId)
+		h.pronosticService.Save(prono)
+
+		h.SMSPronostic(prono.GetId())
 
 		return c.Status(fiber.StatusCreated).JSON(
 			&model.WebResponse{
@@ -1093,21 +1093,20 @@ func (h *DCBHandler) getContentUnFollowTeam(service *entity.Service, team *entit
 
 func (h *DCBHandler) SMSPronostic(pronoId int64) {
 	// valid in team
-	subs := h.subscriptionService.GetByCategory("")
+	subs := h.subscriptionService.Prono()
 
 	if len(*subs) > 0 {
 		for _, s := range *subs {
-			jsonData, err := json.Marshal(&entity.SMSProno{SubscriptionID: s.SubscriptionID, PronosticID: pronoId})
+			jsonData, err := json.Marshal(&entity.SMSProno{SubscriptionID: s.ID, PronosticID: pronoId})
 			if err != nil {
 				log.Println(err.Error())
 			}
 
 			h.rmq.IntegratePublish(
 				RMQ_SMS_PRONO_EXCHANGE,
-				RMQ_SMS_ALERTE_QUEUE,
+				RMQ_SMS_PRONO_QUEUE,
 				RMQ_DATA_TYPE, "", string(jsonData),
 			)
-
 		}
 	}
 }

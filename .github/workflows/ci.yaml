@@ -24,8 +24,8 @@ jobs:
             image: idprm/fb-alert-news-service
           - dockerfile: ./Dockerfile.sms_alerte
             image: idprm/fb-alert-sms-alerte-service
-          # - dockerfile: ./Dockerfile.pronostic
-          #   image: idprm/fb-alert-pronostic-service
+          - dockerfile: ./Dockerfile.sms_prono
+            image: idprm/fb-alert-sms-prono-service
           # - dockerfile: ./Dockerfile.credit_goal
           #   image: idprm/fb-alert-credit-goal-service
           # - dockerfile: ./Dockerfile.predict_win

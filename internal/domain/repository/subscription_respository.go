@@ -42,6 +42,7 @@ type ISubscriptionRepository interface {
 	CreditGoal() (*[]entity.Subscription, error)
 	PredictWin() (*[]entity.Subscription, error)
 	Follow() (*[]entity.Subscription, error)
+	Prono() (*[]entity.Subscription, error)
 	Renewal() (*[]entity.Subscription, error)
 	Retry() (*[]entity.Subscription, error)
 	Reminder() (*[]entity.Subscription, error)
@@ -269,6 +270,16 @@ func (r *SubscriptionRepository) CreditGoal() (*[]entity.Subscription, error) {
 func (r *SubscriptionRepository) PredictWin() (*[]entity.Subscription, error) {
 	var sub []entity.Subscription
 	err := r.db.Where(&entity.Subscription{IsPredictWin: true, IsActive: true}).Find(&sub).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &sub, nil
+}
+
+func (r *SubscriptionRepository) Prono() (*[]entity.Subscription, error) {
+	var sub []entity.Subscription
+	err := r.db.Where("(category = 'PRONOSTIC_SAFE' OR category = 'PRONOSTIC_COMBINED' OR category = 'PRONOSTIC_VIP') AND is_retry = false AND is_active = true").Find(&sub).Error
 	if err != nil {
 		return nil, err
 	}

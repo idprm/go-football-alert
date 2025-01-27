@@ -564,6 +564,22 @@ func (h *IncomingHandler) Detail(c *fiber.Ctx) error {
 			)
 			replace := replacer.Replace(string(menu.GetTemplateXML()))
 			return c.Status(fiber.StatusOK).SendString(replace)
+		} else {
+			// unsub
+			sub, _ := h.subscriptionService.GetByNonSMSAlerte(req.GetCategory(), req.GetMsisdn())
+			service, _ := h.serviceService.GetById(sub.GetServiceId())
+
+			menu, _ := h.menuService.GetBySlug("already-sub")
+
+			replacer := strings.NewReplacer(
+				"{{.url}}", c.BaseURL(),
+				"{{.version}}", API_VERSION,
+				"{{.title}}", "S'abonner",
+				"{{.service}}", service.GetName(),
+				"&", "&amp;",
+			)
+			replace := replacer.Replace(string(menu.GetTemplateXML()))
+			return c.Status(fiber.StatusOK).SendString(replace)
 		}
 	}
 

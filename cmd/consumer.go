@@ -706,7 +706,7 @@ var consumerSMSAlerteCmd = &cobra.Command{
 
 var consumerSMSPronoCmd = &cobra.Command{
 	Use:   "sms_prono",
-	Short: "Consumer Pronostic Service CLI",
+	Short: "Consumer SMS Prono Service CLI",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		/**

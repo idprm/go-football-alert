@@ -7,7 +7,7 @@ import (
 )
 
 type Pronostic struct {
-	ID       int       `gorm:"primaryKey" json:"id"`
+	ID       int64     `gorm:"primaryKey" json:"id"`
 	Category string    `gorm:"size:30" json:"category"`
 	Value    string    `gorm:"size:250" json:"value"`
 	StartAt  time.Time `gorm:"type:TIMESTAMP;null;default:null" json:"start_at"`
@@ -15,6 +15,10 @@ type Pronostic struct {
 	IsSent   bool      `gorm:"type:boolean;default:false;column:is_sent" json:"is_sent"`
 	IsActive bool      `gorm:"type:boolean;default:false;column:is_active" json:"is_active"`
 	gorm.Model
+}
+
+func (e *Pronostic) GetId() int64 {
+	return e.ID
 }
 
 func (e *Pronostic) GetCategory() string {

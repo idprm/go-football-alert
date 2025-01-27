@@ -99,6 +99,10 @@ func (m *UssdRequest) IsCatSMSAlerte() bool {
 	return m.GetCategory() == "SMSALERTE"
 }
 
+func (m *UssdRequest) IsCatSMSProno() bool {
+	return m.GetCategory() == "PRONO"
+}
+
 type SMSRequest struct {
 	Smsc     string `query:"smsc,omitempty"`
 	Username string `query:"username,omitempty"`

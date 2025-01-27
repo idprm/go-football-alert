@@ -45,6 +45,7 @@ type ISubscriptionService interface {
 	PredictWin() *[]entity.Subscription
 	CreditGoal() *[]entity.Subscription
 	Follow() *[]entity.Subscription
+	Prono() *[]entity.Subscription
 	Renewal() *[]entity.Subscription
 	Retry() *[]entity.Subscription
 	Reminder() *[]entity.Subscription
@@ -165,6 +166,14 @@ func (s *SubscriptionService) PredictWin() *[]entity.Subscription {
 
 func (s *SubscriptionService) Follow() *[]entity.Subscription {
 	subs, err := s.subscriptionRepo.Follow()
+	if err != nil {
+		log.Println(err)
+	}
+	return subs
+}
+
+func (s *SubscriptionService) Prono() *[]entity.Subscription {
+	subs, err := s.subscriptionRepo.Prono()
 	if err != nil {
 		log.Println(err)
 	}

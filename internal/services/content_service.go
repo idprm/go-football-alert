@@ -13,7 +13,9 @@ type ContentService struct {
 	contentRepo repository.IContentRepository
 }
 
-func NewContentService(contentRepo repository.IContentRepository) *ContentService {
+func NewContentService(
+	contentRepo repository.IContentRepository,
+) *ContentService {
 	return &ContentService{
 		contentRepo: contentRepo,
 	}
