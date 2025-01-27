@@ -89,7 +89,6 @@ func (h *UssdHandler) Registration() {
 		if !h.IsActiveSubByNonSMSAlerte(CATEGORY_LIVEMATCH) {
 			h.SubLiveMatch()
 		}
-
 	}
 
 	if h.req.IsCatFlashNews() {
@@ -241,9 +240,9 @@ func (h *UssdHandler) SubAlerteEquipe(team *entity.Team) {
 }
 
 /**
-** UNSUB ON USSD
+** STOP ON USSD
 **/
-func (h *UssdHandler) Unsub(category string) {
+func (h *UssdHandler) StopNonSMSAlerte(category string) {
 	trxId := utils.GenerateTrxId()
 
 	sub, err := h.subscriptionService.GetByNonSMSAlerte(category, h.req.GetMsisdn())
@@ -349,7 +348,7 @@ func (h *UssdHandler) Unsub(category string) {
 
 }
 
-func (h *UssdHandler) UnsubAlerteCompetition(league *entity.League) {
+func (h *UssdHandler) StopAlerteCompetition(league *entity.League) {
 	trxId := utils.GenerateTrxId()
 
 	sub, err := h.subscriptionService.GetByCategory(CATEGORY_SMSALERTE_COMPETITION, h.req.GetMsisdn(), league.GetCode())
@@ -448,7 +447,7 @@ func (h *UssdHandler) UnsubAlerteCompetition(league *entity.League) {
 	}
 }
 
-func (h *UssdHandler) UnsubAlerteEquipe(team *entity.Team) {
+func (h *UssdHandler) StopAlerteEquipe(team *entity.Team) {
 
 	trxId := utils.GenerateTrxId()
 
