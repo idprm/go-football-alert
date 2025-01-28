@@ -21,6 +21,7 @@ type ISubscriptionRepository interface {
 	CountActiveByCategory(string, string, string) (int64, error)
 	CountActiveByNonSMSAlerte(string, string) (int64, error)
 	CountActiveBySubId(int64) (int64, error)
+	CountActiveAllByMsisdn(string) (int64, error)
 	CountRenewal(int, string, string) (int64, error)
 	CountRetry(int, string, string) (int64, error)
 	CountTotalActiveSub() (int64, error)
@@ -28,6 +29,7 @@ type ISubscriptionRepository interface {
 	GetByCategory(string, string, string) (*entity.Subscription, error)
 	GetByNonSMSAlerte(string, string) (*entity.Subscription, error)
 	GetBySubId(int64) (*entity.Subscription, error)
+	GetActiveAllByMsisdn(string) (*[]entity.Subscription, error)
 	Get(int, string, string) (*entity.Subscription, error)
 	Save(*entity.Subscription) (*entity.Subscription, error)
 	Update(*entity.Subscription) (*entity.Subscription, error)
@@ -94,6 +96,15 @@ func (r *SubscriptionRepository) CountActiveBySubId(subId int64) (int64, error) 
 	return count, nil
 }
 
+func (r *SubscriptionRepository) CountActiveAllByMsisdn(msisdn string) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Subscription{}).Where("msisdn = ? AND is_active = true", msisdn).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
 func (r *SubscriptionRepository) CountRenewal(serviceId int, msisdn, code string) (int64, error) {
 	var count int64
 	err := r.db.Model(&entity.Subscription{}).Where("service_id = ? AND msisdn = ? AND code = ?", serviceId, msisdn, code).Where("is_active = true AND (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(renewal_at)) / 3600 > 0").Count(&count).Error
@@ -152,6 +163,15 @@ func (r *SubscriptionRepository) GetByNonSMSAlerte(category, msisdn string) (*en
 func (r *SubscriptionRepository) GetBySubId(subId int64) (*entity.Subscription, error) {
 	var c entity.Subscription
 	err := r.db.Where("id = ?", subId).Take(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return &c, nil
+}
+
+func (r *SubscriptionRepository) GetActiveAllByMsisdn(msisdn string) (*[]entity.Subscription, error) {
+	var c []entity.Subscription
+	err := r.db.Where("msisdn = ? AND is_active = true", msisdn).Preload("Service").Find(&c).Error
 	if err != nil {
 		return nil, err
 	}

@@ -433,6 +433,14 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 			data = h.FootInternational(c.BaseURL(), req.GetPage()+1)
 		}
 
+		if req.IsMySubscription() {
+			data = h.MySubscription(c.BaseURL(), req.GetMsisdn(), req.GetPage()+1)
+		}
+
+		if req.IsUnSubscription() {
+			data = h.UnSubscription(c.BaseURL(), req.GetMsisdn(), req.GetPage()+1)
+		}
+
 		leagueId := strconv.Itoa(req.GetLeagueId())
 		teamId := strconv.Itoa(req.GetTeamId())
 
@@ -1471,6 +1479,60 @@ func (h *IncomingHandler) ChampionLeagues(baseUrl string, leagueId, page int) st
 	}
 
 	return fixturesString
+}
+
+func (h *IncomingHandler) MySubscription(baseUrl, msisdn string, page int) string {
+	subs, err := h.subscriptionService.GetActiveAllByMsisdn(msisdn)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	var servicesData []string
+	var servicesString string
+	if len(*subs) > 0 {
+		for _, s := range *subs {
+			row := `<a href="` +
+				baseUrl + `/` +
+				API_VERSION +
+				`/ussd/q/detail?slug=my-subscription&amp;sub_id=` +
+				s.GetIdToString() + `&amp;title=` +
+				s.Service.GetName() + `">` +
+				s.Service.GetName() +
+				`</a><br/>`
+			servicesData = append(servicesData, row)
+		}
+		servicesString = strings.Join(servicesData, "\n")
+	} else {
+		servicesString = "Vous n'etes pas encore abonne"
+	}
+	return servicesString
+}
+
+func (h *IncomingHandler) UnSubscription(baseUrl, msisdn string, page int) string {
+	subs, err := h.subscriptionService.GetActiveAllByMsisdn(msisdn)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	var servicesData []string
+	var servicesString string
+	if len(*subs) > 0 {
+		for _, s := range *subs {
+			row := `<a href="` +
+				baseUrl + `/` +
+				API_VERSION +
+				`/ussd/q/detail?slug=unsubscription&amp;sub_id=` +
+				s.GetIdToString() + `&amp;title=` +
+				s.Service.GetName() + `">` +
+				s.Service.GetName() +
+				`</a><br/>`
+			servicesData = append(servicesData, row)
+		}
+		servicesString = strings.Join(servicesData, "\n")
+	} else {
+		servicesString = "Vous n'etes pas encore abonne"
+	}
+	return servicesString
 }
 
 func (h *IncomingHandler) TestBalance(c *fiber.Ctx) error {

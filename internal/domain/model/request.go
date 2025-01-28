@@ -439,6 +439,14 @@ func (m *UssdRequest) IsKitFootChamp() bool {
 	return m.GetSlug() == "kit-foot-champ"
 }
 
+func (m *UssdRequest) IsMySubscription() bool {
+	return m.GetSlug() == "my-subscription"
+}
+
+func (m *UssdRequest) IsUnSubscription() bool {
+	return m.GetSlug() == "unsubscription"
+}
+
 func (m *UssdRequest) IsCatSMSAlerteCompetition() bool {
 	return m.GetCategory() == "SMSALERTE_COMPETITION"
 }

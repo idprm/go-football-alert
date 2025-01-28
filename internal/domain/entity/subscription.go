@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"strconv"
 	"strings"
 	"time"
 
@@ -67,6 +68,10 @@ type Subscription struct {
 
 func (e *Subscription) GetId() int64 {
 	return e.ID
+}
+
+func (e *Subscription) GetIdToString() string {
+	return strconv.Itoa(int(e.ID))
 }
 
 func (e *Subscription) GetServiceId() int {

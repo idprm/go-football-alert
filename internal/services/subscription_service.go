@@ -25,6 +25,7 @@ type ISubscriptionService interface {
 	IsActiveSubscriptionByCategory(string, string, string) bool
 	IsActiveSubscriptionByNonSMSAlerte(string, string) bool
 	IsActiveSubscriptionBySubId(int64) bool
+	IsActiveAllByMsisdn(string) bool
 	IsRenewal(int, string, string) bool
 	IsRetry(int, string, string) bool
 	GetTotalActiveSubscription() int
@@ -32,6 +33,7 @@ type ISubscriptionService interface {
 	GetByCategory(string, string, string) (*entity.Subscription, error)
 	GetByNonSMSAlerte(string, string) (*entity.Subscription, error)
 	GetBySubId(int64) (*entity.Subscription, error)
+	GetActiveAllByMsisdn(string) (*[]entity.Subscription, error)
 	Get(int, string, string) (*entity.Subscription, error)
 	Save(*entity.Subscription) (*entity.Subscription, error)
 	Update(*entity.Subscription) (*entity.Subscription, error)
@@ -77,6 +79,11 @@ func (s *SubscriptionService) IsActiveSubscriptionBySubId(subId int64) bool {
 	return count > 0
 }
 
+func (s *SubscriptionService) IsActiveAllByMsisdn(msisdn string) bool {
+	count, _ := s.subscriptionRepo.CountActiveAllByMsisdn(msisdn)
+	return count > 0
+}
+
 func (s *SubscriptionService) IsRenewal(serviceId int, msisdn, code string) bool {
 	count, _ := s.subscriptionRepo.CountRenewal(serviceId, msisdn, code)
 	return count > 0
@@ -106,6 +113,10 @@ func (s *SubscriptionService) GetByNonSMSAlerte(category, msisdn string) (*entit
 
 func (s *SubscriptionService) GetBySubId(subId int64) (*entity.Subscription, error) {
 	return s.subscriptionRepo.GetBySubId(subId)
+}
+
+func (s *SubscriptionService) GetActiveAllByMsisdn(msisdn string) (*[]entity.Subscription, error) {
+	return s.subscriptionRepo.GetActiveAllByMsisdn(msisdn)
 }
 
 func (s *SubscriptionService) Get(serviceId int, msisdn, code string) (*entity.Subscription, error) {
