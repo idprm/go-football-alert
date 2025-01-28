@@ -461,7 +461,7 @@ func (m *UssdRequest) IsCatSMSAlerteEquipe() bool {
 }
 
 func (m *UssdRequest) IsCatPronostic() bool {
-	return m.GetCategory() == "PRONOSTIC_COMBINED"
+	return m.GetCategory() == "PRONOSTIC"
 }
 
 type MenuRequest struct {

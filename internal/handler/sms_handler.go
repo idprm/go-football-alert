@@ -83,7 +83,7 @@ const (
 	CATEGORY_FLASHNEWS             string = "FLASHNEWS"
 	CATEGORY_SMSALERTE_COMPETITION string = "SMSALERTE_COMPETITION"
 	CATEGORY_SMSALERTE_EQUIPE      string = "SMSALERTE_EQUIPE"
-	CATEGORY_PRONOSTIC_SAFE        string = "PRONOSTIC_SAFE"
+	CATEGORY_PRONOSTIC             string = "PRONOSTIC"
 	CATEGORY_PRONOSTIC_COMBINED    string = "PRONOSTIC_COMBINED"
 	CATEGORY_PRONOSTIC_VIP         string = "PRONOSTIC_VIP"
 	CATEGORY_CREDIT_GOAL           string = "CREDIT_GOAL"
@@ -173,7 +173,7 @@ func (h *SMSHandler) Registration() {
 		h.Info()
 	} else if h.req.IsProno() {
 		// Pronostic Safe Sub
-		if !h.IsActiveSubByCategory(CATEGORY_PRONOSTIC_SAFE, "") {
+		if !h.IsActiveSubByCategory(CATEGORY_PRONOSTIC, "") {
 			h.SubSafe()
 		} else {
 			h.AlreadySubSafe()
@@ -240,8 +240,8 @@ func (h *SMSHandler) Registration() {
 
 		// Stop prono (safe)
 		if h.req.IsStopProno() {
-			if h.IsActiveSubByNonSMSAlerte(CATEGORY_PRONOSTIC_SAFE) {
-				h.StopPronostic(CATEGORY_PRONOSTIC_SAFE)
+			if h.IsActiveSubByNonSMSAlerte(CATEGORY_PRONOSTIC) {
+				h.StopPronostic(CATEGORY_PRONOSTIC)
 			}
 
 		}
@@ -799,7 +799,7 @@ func (h *SMSHandler) SubSafe() {
 	// GET_CODE
 	code := service.GetCode()
 
-	h.Firstpush(CATEGORY_PRONOSTIC_SAFE, service, code, content)
+	h.Firstpush(CATEGORY_PRONOSTIC, service, code, content)
 }
 
 func (h *SMSHandler) SubCombined() {

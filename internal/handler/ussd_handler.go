@@ -97,6 +97,12 @@ func (h *UssdHandler) Registration() {
 		}
 	}
 
+	if h.req.IsCatPronostic() {
+		if !h.IsActiveSubByNonSMSAlerte(CATEGORY_PRONOSTIC) {
+			h.SubFlashNews()
+		}
+	}
+
 	if h.req.IsCatSMSAlerteCompetition() {
 		if h.leagueService.IsLeagueByCode(h.req.GetUniqueCode()) {
 			league, err := h.leagueService.GetByCode(h.req.GetUniqueCode())
@@ -140,6 +146,12 @@ func (h *UssdHandler) UnRegistration() {
 	if h.req.IsCatFlashNews() {
 		if !h.IsActiveSubByNonSMSAlerte(CATEGORY_FLASHNEWS) {
 			h.StopNonSMSAlerte(CATEGORY_FLASHNEWS)
+		}
+	}
+
+	if h.req.IsPronostic() {
+		if !h.IsActiveSubByNonSMSAlerte(CATEGORY_PRONOSTIC) {
+			h.StopNonSMSAlerte(CATEGORY_PRONOSTIC)
 		}
 	}
 
@@ -197,6 +209,20 @@ func (h *UssdHandler) SubFlashNews() {
 	}
 
 	h.Firstpush(CATEGORY_FLASHNEWS, service, service.GetCode(), content)
+}
+
+func (h *UssdHandler) SubPronostic() {
+	service, err := h.getServiceByCode(h.req.GetCode())
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	content, err := h.getContentPronostic(SMS_PRONOSTIC_SAFE_SUB, service)
+	if err != nil {
+		log.Println(err)
+	}
+
+	h.Firstpush(CATEGORY_PRONOSTIC, service, service.GetCode(), content)
 }
 
 func (h *UssdHandler) SubAlerteCompetition(league *entity.League) {
@@ -916,6 +942,17 @@ func (h *UssdHandler) getContentFollowTeam(service *entity.Service, team *entity
 		}, nil
 	}
 	return h.contentService.GetFollowTeam(SMS_FOLLOW_TEAM_SUB, service, team)
+}
+
+func (h *UssdHandler) getContentPronostic(v string, service *entity.Service) (*entity.Content, error) {
+	if !h.contentService.IsContent(v) {
+		return &entity.Content{
+			Category: "CATEGORY",
+			Channel:  "SMS",
+			Value:    "SAMPLE_TEXT",
+		}, nil
+	}
+	return h.contentService.GetPronostic(v, service)
 }
 
 func (h *UssdHandler) getContentUnFollowCompetition(service *entity.Service, league *entity.League) (*entity.Content, error) {
