@@ -29,7 +29,7 @@ type ISubscriptionRepository interface {
 	GetByCategory(string, string, string) (*entity.Subscription, error)
 	GetByNonSMSAlerte(string, string) (*entity.Subscription, error)
 	GetBySubId(int64) (*entity.Subscription, error)
-	GetActiveAllByMsisdn(string) (*[]entity.Subscription, error)
+	GetActiveAllByMsisdnUSSD(string, int) (*[]entity.Subscription, error)
 	Get(int, string, string) (*entity.Subscription, error)
 	Save(*entity.Subscription) (*entity.Subscription, error)
 	Update(*entity.Subscription) (*entity.Subscription, error)
@@ -169,9 +169,9 @@ func (r *SubscriptionRepository) GetBySubId(subId int64) (*entity.Subscription, 
 	return &c, nil
 }
 
-func (r *SubscriptionRepository) GetActiveAllByMsisdn(msisdn string) (*[]entity.Subscription, error) {
+func (r *SubscriptionRepository) GetActiveAllByMsisdnUSSD(msisdn string, page int) (*[]entity.Subscription, error) {
 	var c []entity.Subscription
-	err := r.db.Where("msisdn = ? AND is_active = true", msisdn).Preload("Service").Find(&c).Error
+	err := r.db.Where("msisdn = ? AND is_active = true", msisdn).Preload("Service").Order("id ASC").Offset((page - 5) * 7).Limit(5).Find(&c).Error
 	if err != nil {
 		return nil, err
 	}

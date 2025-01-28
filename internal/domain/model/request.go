@@ -19,6 +19,7 @@ type UssdRequest struct {
 	Code       string `query:"code" json:"code,omitempty"`
 	UniqueCode string `query:"unique_code" json:"unique_code,omitempty"`
 	Action     string `query:"action" json:"action,omitempty"`
+	SubId      int    `query:"sub_id" json:"sub_id,omitempty"`
 	LeagueId   int    `query:"league_id" json:"league_id,omitempty"`
 	TeamId     int    `query:"team_id" json:"team_id,omitempty"`
 	Msisdn     string `json:"msisdn,omitempty"`
@@ -73,6 +74,10 @@ func (m *UssdRequest) GetTeamId() int {
 
 func (m *UssdRequest) GetMsisdn() string {
 	return m.Msisdn
+}
+
+func (m *UssdRequest) GetSubId() int {
+	return m.SubId
 }
 
 func (m *UssdRequest) GetPage() int {

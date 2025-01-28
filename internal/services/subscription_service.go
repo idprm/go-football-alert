@@ -33,7 +33,7 @@ type ISubscriptionService interface {
 	GetByCategory(string, string, string) (*entity.Subscription, error)
 	GetByNonSMSAlerte(string, string) (*entity.Subscription, error)
 	GetBySubId(int64) (*entity.Subscription, error)
-	GetActiveAllByMsisdn(string) (*[]entity.Subscription, error)
+	GetActiveAllByMsisdnUSSD(string, int) (*[]entity.Subscription, error)
 	Get(int, string, string) (*entity.Subscription, error)
 	Save(*entity.Subscription) (*entity.Subscription, error)
 	Update(*entity.Subscription) (*entity.Subscription, error)
@@ -115,8 +115,8 @@ func (s *SubscriptionService) GetBySubId(subId int64) (*entity.Subscription, err
 	return s.subscriptionRepo.GetBySubId(subId)
 }
 
-func (s *SubscriptionService) GetActiveAllByMsisdn(msisdn string) (*[]entity.Subscription, error) {
-	return s.subscriptionRepo.GetActiveAllByMsisdn(msisdn)
+func (s *SubscriptionService) GetActiveAllByMsisdnUSSD(msisdn string, page int) (*[]entity.Subscription, error) {
+	return s.subscriptionRepo.GetActiveAllByMsisdnUSSD(msisdn, page)
 }
 
 func (s *SubscriptionService) Get(serviceId int, msisdn, code string) (*entity.Subscription, error) {

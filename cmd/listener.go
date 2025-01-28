@@ -360,6 +360,7 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	ussd.Get("/q", h.Menu)
 	ussd.Get("/q/:name", h.Detail)
 	ussd.Get("/confirm", h.Confirm)
+	ussd.Get("/confirm-stop", h.ConfirmStop)
 	ussd.Get("/buy", h.Buy)
 	ussd.Get("/stop", h.Stop)
 

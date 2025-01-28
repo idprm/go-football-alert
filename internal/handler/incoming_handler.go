@@ -340,7 +340,7 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 	}
 
 	// check sub
-	if req.IsLmLiveMatchToday() {
+	if req.IsLmLiveMatchToday() || req.IsPronostic() {
 		if !h.subscriptionService.IsActiveSubscriptionByNonSMSAlerte(req.GetCategory(), req.GetMsisdn()) {
 			services, _ := h.serviceService.GetAllByCategory(req.GetCategory())
 
@@ -435,10 +435,6 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 
 		if req.IsMySubscription() {
 			data = h.MySubscription(c.BaseURL(), req.GetMsisdn(), req.GetPage()+1)
-		}
-
-		if req.IsUnSubscription() {
-			data = h.UnSubscription(c.BaseURL(), req.GetMsisdn(), req.GetPage()+1)
 		}
 
 		leagueId := strconv.Itoa(req.GetLeagueId())
@@ -804,6 +800,58 @@ func (h *IncomingHandler) Confirm(c *fiber.Ctx) error {
 		"{{.code}}", service.GetCode(),
 		"{{.unique_code}}", req.GetUniqueCode(),
 		"{{.price}}", service.GetPriceToString(),
+		"&", "&amp;",
+	)
+
+	replace := replacer.Replace(menu.GetTemplateXML())
+	return c.Status(fiber.StatusOK).SendString(replace)
+}
+
+func (h *IncomingHandler) ConfirmStop(c *fiber.Ctx) error {
+	c.Set("Content-type", "text/xml; charset=iso-8859-1")
+	req := new(model.UssdRequest)
+
+	err := c.QueryParser(req)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).SendString(err.Error())
+	}
+
+	// setter msisdn
+	req.SetMsisdn(c.Get("User-MSISDN"))
+
+	// check if msisdn not found
+	if !req.IsMsisdn() {
+		return c.Status(fiber.StatusOK).SendString(h.MsisdnNotFound(c.BaseURL()))
+	}
+
+	// if menu or page not found
+	if !h.menuService.IsSlug(req.GetSlug()) {
+		return c.Status(fiber.StatusOK).SendString(h.PageNotFound(c.BaseURL()))
+	}
+
+	// if service unavailable
+	if !h.serviceService.IsService(req.GetCode()) {
+		return c.Status(fiber.StatusOK).SendString(h.PageNotFound(c.BaseURL()))
+	}
+
+	service, err := h.serviceService.Get(req.GetCode())
+	if err != nil {
+		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
+	}
+
+	menu, err := h.menuService.GetBySlug("confirm-stop")
+	if err != nil {
+		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
+	}
+
+	replacer := strings.NewReplacer(
+		"{{.url}}", c.BaseURL(),
+		"{{.version}}", API_VERSION,
+		"{{.slug}}", req.GetSlug(),
+		"{{.title}}", service.GetName(),
+		"{{.code}}", service.GetCode(),
+		"{{.unique_code}}", req.GetUniqueCode(),
+		"{{.sub_id}}", strconv.Itoa(req.GetSubId()),
 		"&", "&amp;",
 	)
 
@@ -1482,7 +1530,7 @@ func (h *IncomingHandler) ChampionLeagues(baseUrl string, leagueId, page int) st
 }
 
 func (h *IncomingHandler) MySubscription(baseUrl, msisdn string, page int) string {
-	subs, err := h.subscriptionService.GetActiveAllByMsisdn(msisdn)
+	subs, err := h.subscriptionService.GetActiveAllByMsisdnUSSD(msisdn, page)
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -1496,7 +1544,8 @@ func (h *IncomingHandler) MySubscription(baseUrl, msisdn string, page int) strin
 				row = `<a href="` +
 					baseUrl + `/` +
 					API_VERSION +
-					`/ussd/q/detail?slug=my-subscription&amp;sub_id=` +
+					`/ussd/confirm-stop?slug=confirm-stop&amp;code=` +
+					s.Code + `&amp;category=` + s.Category + `&amp;sub_id=` +
 					s.GetIdToString() + `&amp;title=` +
 					s.Service.GetNameQueryEscape() + "+" + s.GetCode() + `">` +
 					s.Service.GetName() + " " + s.GetCode() +
@@ -1505,47 +1554,8 @@ func (h *IncomingHandler) MySubscription(baseUrl, msisdn string, page int) strin
 				row = `<a href="` +
 					baseUrl + `/` +
 					API_VERSION +
-					`/ussd/q/detail?slug=my-subscription&amp;sub_id=` +
-					s.GetIdToString() + `&amp;title=` +
-					s.Service.GetNameQueryEscape() + `">` +
-					s.Service.GetName() +
-					`</a><br/>`
-			}
-
-			servicesData = append(servicesData, row)
-		}
-		servicesString = strings.Join(servicesData, "\n")
-	} else {
-		servicesString = "Vous n'etes pas encore abonne"
-	}
-	return servicesString
-}
-
-func (h *IncomingHandler) UnSubscription(baseUrl, msisdn string, page int) string {
-	subs, err := h.subscriptionService.GetActiveAllByMsisdn(msisdn)
-	if err != nil {
-		log.Println(err.Error())
-	}
-
-	var servicesData []string
-	var servicesString string
-	if len(*subs) > 0 {
-		for _, s := range *subs {
-			var row string
-			if s.ISMSAlerte() {
-				row = `<a href="` +
-					baseUrl + `/` +
-					API_VERSION +
-					`/ussd/q/detail?slug=unsubscription&amp;sub_id=` +
-					s.GetIdToString() + `&amp;title=` +
-					s.Service.GetNameQueryEscape() + "+" + s.GetCode() + `">` +
-					s.Service.GetName() + " " + s.GetCode() +
-					`</a><br/>`
-			} else {
-				row = `<a href="` +
-					baseUrl + `/` +
-					API_VERSION +
-					`/ussd/q/detail?slug=unsubscription&amp;sub_id=` +
+					`/ussd/confirm-stop?slug=confirm-stop&amp;code=` +
+					s.Code + `&amp;category=` + s.Category + `&amp;sub_id=` +
 					s.GetIdToString() + `&amp;title=` +
 					s.Service.GetNameQueryEscape() + `">` +
 					s.Service.GetName() +
