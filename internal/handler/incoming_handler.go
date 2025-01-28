@@ -425,16 +425,16 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 			data = h.FootEurope(c.BaseURL(), req.GetPage()+1)
 		}
 
+		if req.IsMySubscription() {
+			data = h.MySubscription(c.BaseURL(), req.GetMsisdn(), req.GetPage()+1)
+		}
+
 		if req.GetSlug() == "foot-afrique" {
 			data = h.FootAfrique(c.BaseURL(), req.GetPage()+1)
 		}
 
 		if req.GetSlug() == "foot-international" {
 			data = h.FootInternational(c.BaseURL(), req.GetPage()+1)
-		}
-
-		if req.IsMySubscription() {
-			data = h.MySubscription(c.BaseURL(), req.GetMsisdn(), req.GetPage()+1)
 		}
 
 		leagueId := strconv.Itoa(req.GetLeagueId())
@@ -849,6 +849,7 @@ func (h *IncomingHandler) ConfirmStop(c *fiber.Ctx) error {
 		"{{.version}}", API_VERSION,
 		"{{.slug}}", req.GetSlug(),
 		"{{.title}}", service.GetName(),
+		"{{.category}}", req.GetCategory(),
 		"{{.code}}", service.GetCode(),
 		"{{.unique_code}}", req.GetUniqueCode(),
 		"{{.sub_id}}", strconv.Itoa(req.GetSubId()),

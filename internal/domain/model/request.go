@@ -437,7 +437,7 @@ func (m *UssdRequest) IsSMSFootInternational() bool {
 }
 
 func (m *UssdRequest) IsPronostic() bool {
-	return m.GetSlug() == "ticket-safe" || m.GetSlug() == "combine"
+	return m.GetSlug() == "pronostic" || m.GetSlug() == "ticket-safe" || m.GetSlug() == "combine"
 }
 
 func (m *UssdRequest) IsKitFootChamp() bool {
