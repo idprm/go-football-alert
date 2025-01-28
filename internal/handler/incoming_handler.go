@@ -1491,14 +1491,27 @@ func (h *IncomingHandler) MySubscription(baseUrl, msisdn string, page int) strin
 	var servicesString string
 	if len(*subs) > 0 {
 		for _, s := range *subs {
-			row := `<a href="` +
-				baseUrl + `/` +
-				API_VERSION +
-				`/ussd/q/detail?slug=my-subscription&amp;sub_id=` +
-				s.GetIdToString() + `&amp;title=` +
-				s.Service.GetName() + `">` +
-				s.Service.GetName() +
-				`</a><br/>`
+			var row string
+			if s.ISMSAlerte() {
+				row = `<a href="` +
+					baseUrl + `/` +
+					API_VERSION +
+					`/ussd/q/detail?slug=my-subscription&amp;sub_id=` +
+					s.GetIdToString() + `&amp;title=` +
+					s.Service.GetNameQueryEscape() + "+" + s.GetCode() + `">` +
+					s.Service.GetName() + " " + s.GetCode() +
+					`</a><br/>`
+			} else {
+				row = `<a href="` +
+					baseUrl + `/` +
+					API_VERSION +
+					`/ussd/q/detail?slug=my-subscription&amp;sub_id=` +
+					s.GetIdToString() + `&amp;title=` +
+					s.Service.GetNameQueryEscape() + `">` +
+					s.Service.GetName() +
+					`</a><br/>`
+			}
+
 			servicesData = append(servicesData, row)
 		}
 		servicesString = strings.Join(servicesData, "\n")
@@ -1518,14 +1531,27 @@ func (h *IncomingHandler) UnSubscription(baseUrl, msisdn string, page int) strin
 	var servicesString string
 	if len(*subs) > 0 {
 		for _, s := range *subs {
-			row := `<a href="` +
-				baseUrl + `/` +
-				API_VERSION +
-				`/ussd/q/detail?slug=unsubscription&amp;sub_id=` +
-				s.GetIdToString() + `&amp;title=` +
-				s.Service.GetName() + `">` +
-				s.Service.GetName() +
-				`</a><br/>`
+			var row string
+			if s.ISMSAlerte() {
+				row = `<a href="` +
+					baseUrl + `/` +
+					API_VERSION +
+					`/ussd/q/detail?slug=unsubscription&amp;sub_id=` +
+					s.GetIdToString() + `&amp;title=` +
+					s.Service.GetNameQueryEscape() + "+" + s.GetCode() + `">` +
+					s.Service.GetName() + " " + s.GetCode() +
+					`</a><br/>`
+			} else {
+				row = `<a href="` +
+					baseUrl + `/` +
+					API_VERSION +
+					`/ussd/q/detail?slug=unsubscription&amp;sub_id=` +
+					s.GetIdToString() + `&amp;title=` +
+					s.Service.GetNameQueryEscape() + `">` +
+					s.Service.GetName() +
+					`</a><br/>`
+			}
+
 			servicesData = append(servicesData, row)
 		}
 		servicesString = strings.Join(servicesData, "\n")
