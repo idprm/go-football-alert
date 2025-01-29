@@ -153,10 +153,14 @@ func (e *Content) SetValueService(name, pkge, price, currency string, duration i
 	e.Value = replacer.Replace(e.Value)
 }
 
-func (e *Content) SetValueSMSAlerte(teamOrLeague, name string) {
+func (e *Content) SetValueSMSAlerte(teamOrLeague, name, pkge, price, currency string, duration int) {
 	replacer := strings.NewReplacer(
 		"{team/league}", teamOrLeague,
 		"{service}", name,
+		"{package}", pkge,
+		"{price}", price,
+		"{currency}", currency,
+		"{duration}", strconv.Itoa(duration),
 	)
 	e.Value = replacer.Replace(e.Value)
 }

@@ -135,7 +135,7 @@ func (s *ContentService) GetSMSAlerte(name, teamOrLeague string, service *entity
 	if err != nil {
 		return nil, err
 	}
-	c.SetValueSMSAlerte(teamOrLeague, service.GetName())
+	c.SetValueSMSAlerte(teamOrLeague, service.GetName(), service.GetPackage(), service.GetPriceToString(), service.GetCurrency(), service.GetRenewalDay())
 	return c, nil
 }
 
