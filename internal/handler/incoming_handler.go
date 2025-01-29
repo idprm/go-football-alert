@@ -821,17 +821,17 @@ func (h *IncomingHandler) ConfirmStop(c *fiber.Ctx) error {
 
 	// check if msisdn not found
 	if !req.IsMsisdn() {
-		return c.Status(fiber.StatusOK).SendString(h.MsisdnNotFound(c.BaseURL()))
+		return c.Status(fiber.StatusNotFound).SendString(h.MsisdnNotFound(c.BaseURL()))
 	}
 
 	// if menu or page not found
 	if !h.menuService.IsSlug(req.GetSlug()) {
-		return c.Status(fiber.StatusOK).SendString(h.PageNotFound(c.BaseURL()))
+		return c.Status(fiber.StatusNotFound).SendString(h.PageNotFound(c.BaseURL()))
 	}
 
 	// if service unavailable
 	if !h.serviceService.IsService(req.GetCode()) {
-		return c.Status(fiber.StatusOK).SendString(h.PageNotFound(c.BaseURL()))
+		return c.Status(fiber.StatusNotFound).SendString(h.PageNotFound(c.BaseURL()))
 	}
 
 	service, err := h.serviceService.Get(req.GetCode())
@@ -1546,7 +1546,7 @@ func (h *IncomingHandler) MySubscription(baseUrl, msisdn string, page int) strin
 					baseUrl + `/` +
 					API_VERSION +
 					`/ussd/confirm-stop?slug=confirm-stop&amp;code=` +
-					s.Code + `&amp;category=` + s.Category + `&amp;sub_id=` +
+					s.Service.GetCode() + `&amp;category=` + s.Category + `&amp;sub_id=` +
 					s.GetIdToString() + `&amp;title=` +
 					s.Service.GetNameQueryEscape() + "+" + s.GetCode() + `">` +
 					s.Service.GetName() + " " + s.GetCode() +
@@ -1556,7 +1556,7 @@ func (h *IncomingHandler) MySubscription(baseUrl, msisdn string, page int) strin
 					baseUrl + `/` +
 					API_VERSION +
 					`/ussd/confirm-stop?slug=confirm-stop&amp;code=` +
-					s.Code + `&amp;category=` + s.Category + `&amp;sub_id=` +
+					s.Service.GetCode() + `&amp;category=` + s.Category + `&amp;sub_id=` +
 					s.GetIdToString() + `&amp;title=` +
 					s.Service.GetNameQueryEscape() + `">` +
 					s.Service.GetName() +
