@@ -27,7 +27,9 @@ type ISubscriptionRepository interface {
 	CountTotalActiveSub() (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetByCategory(string, string, string) (*entity.Subscription, error)
+	GetActiveByCategory(string, string, string) (*entity.Subscription, error)
 	GetByNonSMSAlerte(string, string) (*entity.Subscription, error)
+	GetActiveByNonSMSAlerte(string, string) (*entity.Subscription, error)
 	GetBySubId(int64) (*entity.Subscription, error)
 	GetActiveAllByMsisdnUSSD(string, int) (*[]entity.Subscription, error)
 	Get(int, string, string) (*entity.Subscription, error)
@@ -151,9 +153,27 @@ func (r *SubscriptionRepository) GetByCategory(category, msisdn, code string) (*
 	return &c, nil
 }
 
+func (r *SubscriptionRepository) GetActiveByCategory(category, msisdn, code string) (*entity.Subscription, error) {
+	var c entity.Subscription
+	err := r.db.Where("category = ? AND msisdn = ? AND code = ? AND is_active = true", category, msisdn, code).Take(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return &c, nil
+}
+
 func (r *SubscriptionRepository) GetByNonSMSAlerte(category, msisdn string) (*entity.Subscription, error) {
 	var c entity.Subscription
 	err := r.db.Where("category = ? AND msisdn = ?", category, msisdn).Take(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return &c, nil
+}
+
+func (r *SubscriptionRepository) GetActiveByNonSMSAlerte(category, msisdn string) (*entity.Subscription, error) {
+	var c entity.Subscription
+	err := r.db.Where("category = ? AND msisdn = ? AND is_active = true", category, msisdn).Take(&c).Error
 	if err != nil {
 		return nil, err
 	}

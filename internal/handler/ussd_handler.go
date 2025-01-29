@@ -313,339 +313,351 @@ func (h *UssdHandler) SubAlerteEquipe(team *entity.Team) {
 ** STOP ON USSD
 **/
 func (h *UssdHandler) StopNonSMSAlerte(category string) {
-	trxId := utils.GenerateTrxId()
 
-	sub, err := h.subscriptionService.GetByNonSMSAlerte(category, h.req.GetMsisdn())
-	if err != nil {
-		log.Println(err.Error())
+	if h.subscriptionService.IsActiveSubscriptionByNonSMSAlerte(category, h.req.GetMsisdn()) {
+
+		trxId := utils.GenerateTrxId()
+
+		sub, err := h.subscriptionService.GetByNonSMSAlerte(category, h.req.GetMsisdn())
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		service, err := h.serviceService.GetById(sub.GetServiceId())
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		content, err := h.getContentService(SMS_STOP, service)
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		sub.SetLatestTrxId(trxId)
+
+		// unsub not sms-alerte
+		h.subscriptionService.Update(
+			&entity.Subscription{
+				ServiceID:     sub.GetServiceId(),
+				Msisdn:        sub.GetMsisdn(),
+				Code:          service.GetCode(),
+				LatestTrxId:   sub.GetLatestTrxId(),
+				LatestSubject: SUBJECT_UNSUB,
+				LatestStatus:  STATUS_SUCCESS,
+				LatestKeyword: SMS_STOP + " " + service.GetCode(),
+				UnsubAt:       time.Now(),
+				IpAddress:     "",
+			},
+		)
+
+		h.subscriptionService.Update(
+			&entity.Subscription{
+				ServiceID:  sub.GetServiceId(),
+				Msisdn:     sub.GetMsisdn(),
+				Code:       service.GetCode(),
+				TotalUnsub: sub.TotalUnsub + 1,
+			},
+		)
+
+		h.transactionService.Save(
+			&entity.Transaction{
+				TrxId:        sub.GetLatestTrxId(),
+				ServiceID:    sub.GetServiceId(),
+				Msisdn:       h.req.GetMsisdn(),
+				Code:         service.GetCode(),
+				Keyword:      SMS_STOP + " " + service.GetCode(),
+				Status:       STATUS_SUCCESS,
+				StatusCode:   "",
+				StatusDetail: "",
+				Subject:      SUBJECT_UNSUB,
+				IpAddress:    "",
+				Payload:      "",
+			},
+		)
+
+		h.historyService.Save(
+			&entity.History{
+				SubscriptionID: sub.GetId(),
+				ServiceID:      sub.GetServiceId(),
+				Msisdn:         sub.GetMsisdn(),
+				Code:           SMS_STOP + " " + service.GetCode(),
+				Keyword:        service.GetCode(),
+				Subject:        SUBJECT_UNSUB,
+				Status:         STATUS_SUCCESS,
+				IpAddress:      "",
+			},
+		)
+
+		s := &entity.Subscription{
+			ServiceID: sub.GetServiceId(),
+			Msisdn:    sub.GetMsisdn(),
+			Code:      sub.GetCode(),
+		}
+
+		// set false is_active
+		h.subscriptionService.UpdateNotActive(s)
+		// set false is_retry
+		h.subscriptionService.UpdateNotRetry(s)
+
+		mt := &model.MTRequest{
+			Smsc:         service.ScSubMT,
+			Keyword:      service.GetCode(),
+			Service:      service,
+			Subscription: sub,
+			Content:      content,
+		}
+		mt.SetTrxId(trxId)
+
+		jsonData, err := json.Marshal(mt)
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		h.rmq.IntegratePublish(
+			RMQ_MT_EXCHANGE,
+			RMQ_MT_QUEUE,
+			RMQ_DATA_TYPE, "", string(jsonData),
+		)
 	}
-
-	service, err := h.serviceService.GetById(sub.GetServiceId())
-	if err != nil {
-		log.Println(err.Error())
-	}
-
-	content, err := h.getContentService(SMS_STOP, service)
-	if err != nil {
-		log.Println(err.Error())
-	}
-
-	sub.SetLatestTrxId(trxId)
-
-	// unsub not sms-alerte
-	h.subscriptionService.Update(
-		&entity.Subscription{
-			ServiceID:     sub.GetServiceId(),
-			Msisdn:        sub.GetMsisdn(),
-			Code:          service.GetCode(),
-			LatestTrxId:   sub.GetLatestTrxId(),
-			LatestSubject: SUBJECT_UNSUB,
-			LatestStatus:  STATUS_SUCCESS,
-			LatestKeyword: SMS_STOP + " " + service.GetCode(),
-			UnsubAt:       time.Now(),
-			IpAddress:     "",
-		},
-	)
-
-	h.subscriptionService.Update(
-		&entity.Subscription{
-			ServiceID:  sub.GetServiceId(),
-			Msisdn:     sub.GetMsisdn(),
-			Code:       service.GetCode(),
-			TotalUnsub: sub.TotalUnsub + 1,
-		},
-	)
-
-	h.transactionService.Save(
-		&entity.Transaction{
-			TrxId:        sub.GetLatestTrxId(),
-			ServiceID:    sub.GetServiceId(),
-			Msisdn:       h.req.GetMsisdn(),
-			Code:         service.GetCode(),
-			Keyword:      SMS_STOP + " " + service.GetCode(),
-			Status:       STATUS_SUCCESS,
-			StatusCode:   "",
-			StatusDetail: "",
-			Subject:      SUBJECT_UNSUB,
-			IpAddress:    "",
-			Payload:      "",
-		},
-	)
-
-	h.historyService.Save(
-		&entity.History{
-			SubscriptionID: sub.GetId(),
-			ServiceID:      sub.GetServiceId(),
-			Msisdn:         sub.GetMsisdn(),
-			Code:           SMS_STOP + " " + service.GetCode(),
-			Keyword:        service.GetCode(),
-			Subject:        SUBJECT_UNSUB,
-			Status:         STATUS_SUCCESS,
-			IpAddress:      "",
-		},
-	)
-
-	s := &entity.Subscription{
-		ServiceID: sub.GetServiceId(),
-		Msisdn:    sub.GetMsisdn(),
-		Code:      sub.GetCode(),
-	}
-
-	// set false is_active
-	h.subscriptionService.UpdateNotActive(s)
-	// set false is_retry
-	h.subscriptionService.UpdateNotRetry(s)
-
-	mt := &model.MTRequest{
-		Smsc:         service.ScSubMT,
-		Keyword:      service.GetCode(),
-		Service:      service,
-		Subscription: sub,
-		Content:      content,
-	}
-	mt.SetTrxId(trxId)
-
-	jsonData, err := json.Marshal(mt)
-	if err != nil {
-		log.Println(err.Error())
-	}
-
-	h.rmq.IntegratePublish(
-		RMQ_MT_EXCHANGE,
-		RMQ_MT_QUEUE,
-		RMQ_DATA_TYPE, "", string(jsonData),
-	)
 
 }
 
 func (h *UssdHandler) StopAlerteCompetition(league *entity.League) {
-	trxId := utils.GenerateTrxId()
 
-	sub, err := h.subscriptionService.GetByCategory(CATEGORY_SMSALERTE_COMPETITION, h.req.GetMsisdn(), league.GetCode())
-	if err != nil {
-		log.Println(err.Error())
+	if h.subscriptionService.IsActiveSubscriptionByCategory(CATEGORY_SMSALERTE_COMPETITION, h.req.GetMsisdn(), league.GetCode()) {
+
+		trxId := utils.GenerateTrxId()
+
+		sub, err := h.subscriptionService.GetActiveByCategory(CATEGORY_SMSALERTE_COMPETITION, h.req.GetMsisdn(), league.GetCode())
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		// unfollow league
+		if h.subscriptionFollowLeagueService.IsSub(sub.GetId(), league.GetId()) {
+			h.subscriptionFollowLeagueService.Update(
+				&entity.SubscriptionFollowLeague{
+					SubscriptionID: sub.GetId(),
+					LeagueID:       league.GetId(),
+				},
+			)
+
+			// disable
+			h.subscriptionFollowLeagueService.Disable(
+				&entity.SubscriptionFollowLeague{
+					SubscriptionID: sub.GetId(),
+					LeagueID:       league.GetId(),
+				},
+			)
+
+			service, err := h.serviceService.GetById(sub.GetServiceId())
+			if err != nil {
+				log.Println(err.Error())
+			}
+
+			content, err := h.getContentUnFollowCompetition(service, league)
+			if err != nil {
+				log.Println(err.Error())
+			}
+
+			sub.SetLatestTrxId(trxId)
+
+			// unsub sms-alerte
+			h.subscriptionService.Update(
+				&entity.Subscription{
+					ServiceID:     sub.GetServiceId(),
+					Msisdn:        sub.GetMsisdn(),
+					Code:          sub.GetCode(),
+					LatestTrxId:   sub.GetLatestTrxId(),
+					LatestSubject: SUBJECT_UNSUB,
+					LatestStatus:  STATUS_SUCCESS,
+					LatestKeyword: SMS_STOP + " " + league.GetCode(),
+					UnsubAt:       time.Now(),
+					IpAddress:     "-",
+					TotalUnsub:    sub.TotalUnsub + 1,
+				},
+			)
+
+			h.transactionService.Save(
+				&entity.Transaction{
+					TrxId:        sub.GetLatestTrxId(),
+					ServiceID:    sub.GetServiceId(),
+					Msisdn:       h.req.GetMsisdn(),
+					Code:         service.GetCode(),
+					Keyword:      SMS_STOP + " " + league.GetCode(),
+					Status:       STATUS_SUCCESS,
+					StatusCode:   "",
+					StatusDetail: "",
+					Subject:      SUBJECT_UNSUB,
+					IpAddress:    "",
+					Payload:      "",
+				},
+			)
+
+			h.historyService.Save(
+				&entity.History{
+					SubscriptionID: sub.GetId(),
+					ServiceID:      sub.GetServiceId(),
+					Msisdn:         sub.GetMsisdn(),
+					Code:           sub.GetCode(),
+					Keyword:        SMS_STOP + " " + league.GetCode(),
+					Subject:        SUBJECT_UNSUB,
+					Status:         STATUS_SUCCESS,
+					IpAddress:      "-",
+				},
+			)
+
+			s := &entity.Subscription{
+				ServiceID: sub.GetServiceId(),
+				Msisdn:    sub.GetMsisdn(),
+				Code:      sub.GetCode(),
+			}
+
+			// set false is_active
+			h.subscriptionService.UpdateNotActive(s)
+			// set false is_retry
+			h.subscriptionService.UpdateNotRetry(s)
+
+			mt := &model.MTRequest{
+				Smsc:         service.ScUnsubMT,
+				Keyword:      SMS_STOP,
+				Service:      service,
+				Subscription: sub,
+				Content:      content,
+			}
+			mt.SetTrxId(trxId)
+
+			jsonData, err := json.Marshal(mt)
+			if err != nil {
+				log.Println(err.Error())
+			}
+
+			h.rmq.IntegratePublish(
+				RMQ_MT_EXCHANGE,
+				RMQ_MT_QUEUE,
+				RMQ_DATA_TYPE, "", string(jsonData),
+			)
+		}
 	}
 
-	// unfollow league
-	if h.subscriptionFollowLeagueService.IsSub(sub.GetId(), league.GetId()) {
-		h.subscriptionFollowLeagueService.Update(
-			&entity.SubscriptionFollowLeague{
-				SubscriptionID: sub.GetId(),
-				LeagueID:       league.GetId(),
-			},
-		)
-
-		// disable
-		h.subscriptionFollowLeagueService.Disable(
-			&entity.SubscriptionFollowLeague{
-				SubscriptionID: sub.GetId(),
-				LeagueID:       league.GetId(),
-			},
-		)
-
-		service, err := h.serviceService.GetById(sub.GetServiceId())
-		if err != nil {
-			log.Println(err.Error())
-		}
-
-		content, err := h.getContentUnFollowCompetition(service, league)
-		if err != nil {
-			log.Println(err.Error())
-		}
-
-		sub.SetLatestTrxId(trxId)
-
-		// unsub sms-alerte
-		h.subscriptionService.Update(
-			&entity.Subscription{
-				ServiceID:     sub.GetServiceId(),
-				Msisdn:        sub.GetMsisdn(),
-				Code:          sub.GetCode(),
-				LatestTrxId:   sub.GetLatestTrxId(),
-				LatestSubject: SUBJECT_UNSUB,
-				LatestStatus:  STATUS_SUCCESS,
-				LatestKeyword: SMS_STOP + " " + league.GetCode(),
-				UnsubAt:       time.Now(),
-				IpAddress:     "-",
-				TotalUnsub:    sub.TotalUnsub + 1,
-			},
-		)
-
-		h.transactionService.Save(
-			&entity.Transaction{
-				TrxId:        sub.GetLatestTrxId(),
-				ServiceID:    sub.GetServiceId(),
-				Msisdn:       h.req.GetMsisdn(),
-				Code:         service.GetCode(),
-				Keyword:      SMS_STOP + " " + league.GetCode(),
-				Status:       STATUS_SUCCESS,
-				StatusCode:   "",
-				StatusDetail: "",
-				Subject:      SUBJECT_UNSUB,
-				IpAddress:    "",
-				Payload:      "",
-			},
-		)
-
-		h.historyService.Save(
-			&entity.History{
-				SubscriptionID: sub.GetId(),
-				ServiceID:      sub.GetServiceId(),
-				Msisdn:         sub.GetMsisdn(),
-				Code:           sub.GetCode(),
-				Keyword:        SMS_STOP + " " + league.GetCode(),
-				Subject:        SUBJECT_UNSUB,
-				Status:         STATUS_SUCCESS,
-				IpAddress:      "-",
-			},
-		)
-
-		s := &entity.Subscription{
-			ServiceID: sub.GetServiceId(),
-			Msisdn:    sub.GetMsisdn(),
-			Code:      sub.GetCode(),
-		}
-
-		// set false is_active
-		h.subscriptionService.UpdateNotActive(s)
-		// set false is_retry
-		h.subscriptionService.UpdateNotRetry(s)
-
-		mt := &model.MTRequest{
-			Smsc:         service.ScUnsubMT,
-			Keyword:      SMS_STOP,
-			Service:      service,
-			Subscription: sub,
-			Content:      content,
-		}
-		mt.SetTrxId(trxId)
-
-		jsonData, err := json.Marshal(mt)
-		if err != nil {
-			log.Println(err.Error())
-		}
-
-		h.rmq.IntegratePublish(
-			RMQ_MT_EXCHANGE,
-			RMQ_MT_QUEUE,
-			RMQ_DATA_TYPE, "", string(jsonData),
-		)
-	}
 }
 
 func (h *UssdHandler) StopAlerteEquipe(team *entity.Team) {
 
-	trxId := utils.GenerateTrxId()
+	if h.subscriptionService.IsActiveSubscriptionByCategory(CATEGORY_SMSALERTE_EQUIPE, h.req.GetMsisdn(), team.GetCode()) {
+		trxId := utils.GenerateTrxId()
 
-	sub, err := h.subscriptionService.GetByCategory(CATEGORY_SMSALERTE_EQUIPE, h.req.GetMsisdn(), team.GetCode())
-	if err != nil {
-		log.Println(err.Error())
+		sub, err := h.subscriptionService.GetActiveByCategory(CATEGORY_SMSALERTE_EQUIPE, h.req.GetMsisdn(), team.GetCode())
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		// unfollow team
+		if h.subscriptionFollowTeamService.IsSub(sub.GetId(), team.GetId()) {
+			h.subscriptionFollowTeamService.Update(
+				&entity.SubscriptionFollowTeam{
+					SubscriptionID: sub.GetId(),
+					TeamID:         team.GetId(),
+					LatestKeyword:  SMS_STOP,
+				},
+			)
+
+			h.subscriptionFollowTeamService.Disable(
+				&entity.SubscriptionFollowTeam{
+					SubscriptionID: sub.GetId(),
+					TeamID:         team.GetId(),
+				},
+			)
+
+			service, err := h.serviceService.GetById(sub.GetServiceId())
+			if err != nil {
+				log.Println(err.Error())
+			}
+
+			content, err := h.getContentUnFollowTeam(service, team)
+			if err != nil {
+				log.Println(err.Error())
+			}
+			// 123
+			sub.SetLatestTrxId(trxId)
+
+			// unsub sms-alerte
+			h.subscriptionService.Update(
+				&entity.Subscription{
+					ServiceID:     sub.GetServiceId(),
+					Msisdn:        sub.GetMsisdn(),
+					Code:          sub.GetCode(),
+					LatestTrxId:   sub.GetLatestTrxId(),
+					LatestSubject: SUBJECT_UNSUB,
+					LatestStatus:  STATUS_SUCCESS,
+					LatestKeyword: SMS_STOP + " " + team.GetCode(),
+					LatestNote:    "",
+					UnsubAt:       time.Now(),
+					TotalUnsub:    sub.TotalUnsub + 1,
+				},
+			)
+
+			h.transactionService.Save(
+				&entity.Transaction{
+					TrxId:        sub.GetLatestTrxId(),
+					ServiceID:    sub.GetServiceId(),
+					Msisdn:       h.req.GetMsisdn(),
+					Code:         service.GetCode(),
+					Keyword:      SMS_STOP + " " + team.GetCode(),
+					Status:       STATUS_SUCCESS,
+					StatusCode:   "",
+					StatusDetail: "",
+					Subject:      SUBJECT_UNSUB,
+					IpAddress:    "",
+					Payload:      "",
+				},
+			)
+
+			h.historyService.Save(
+				&entity.History{
+					SubscriptionID: sub.GetId(),
+					ServiceID:      sub.GetServiceId(),
+					Code:           sub.GetCode(),
+					Msisdn:         sub.GetMsisdn(),
+					Keyword:        SMS_STOP + " " + team.GetCode(),
+					Subject:        SUBJECT_UNSUB,
+					Status:         STATUS_SUCCESS,
+				},
+			)
+
+			s := &entity.Subscription{
+				ServiceID: sub.GetServiceId(),
+				Msisdn:    sub.GetMsisdn(),
+				Code:      sub.GetCode(),
+			}
+
+			// set false is_active
+			h.subscriptionService.UpdateNotActive(s)
+			// set false is_retry
+			h.subscriptionService.UpdateNotRetry(s)
+
+			mt := &model.MTRequest{
+				Smsc:         service.ScUnsubMT,
+				Keyword:      SMS_STOP,
+				Service:      service,
+				Subscription: sub,
+				Content:      content,
+			}
+			mt.SetTrxId(trxId)
+
+			jsonData, err := json.Marshal(mt)
+			if err != nil {
+				log.Println(err.Error())
+			}
+
+			h.rmq.IntegratePublish(
+				RMQ_MT_EXCHANGE,
+				RMQ_MT_QUEUE,
+				RMQ_DATA_TYPE, "", string(jsonData),
+			)
+		}
 	}
 
-	// unfollow team
-	if h.subscriptionFollowTeamService.IsSub(sub.GetId(), team.GetId()) {
-		h.subscriptionFollowTeamService.Update(
-			&entity.SubscriptionFollowTeam{
-				SubscriptionID: sub.GetId(),
-				TeamID:         team.GetId(),
-				LatestKeyword:  SMS_STOP,
-			},
-		)
-
-		h.subscriptionFollowTeamService.Disable(
-			&entity.SubscriptionFollowTeam{
-				SubscriptionID: sub.GetId(),
-				TeamID:         team.GetId(),
-			},
-		)
-
-		service, err := h.serviceService.GetById(sub.GetServiceId())
-		if err != nil {
-			log.Println(err.Error())
-		}
-
-		content, err := h.getContentUnFollowTeam(service, team)
-		if err != nil {
-			log.Println(err.Error())
-		}
-		// 123
-		sub.SetLatestTrxId(trxId)
-
-		// unsub sms-alerte
-		h.subscriptionService.Update(
-			&entity.Subscription{
-				ServiceID:     sub.GetServiceId(),
-				Msisdn:        sub.GetMsisdn(),
-				Code:          sub.GetCode(),
-				LatestTrxId:   sub.GetLatestTrxId(),
-				LatestSubject: SUBJECT_UNSUB,
-				LatestStatus:  STATUS_SUCCESS,
-				LatestKeyword: SMS_STOP + " " + team.GetCode(),
-				LatestNote:    "",
-				UnsubAt:       time.Now(),
-				TotalUnsub:    sub.TotalUnsub + 1,
-			},
-		)
-
-		h.transactionService.Save(
-			&entity.Transaction{
-				TrxId:        sub.GetLatestTrxId(),
-				ServiceID:    sub.GetServiceId(),
-				Msisdn:       h.req.GetMsisdn(),
-				Code:         service.GetCode(),
-				Keyword:      SMS_STOP + " " + team.GetCode(),
-				Status:       STATUS_SUCCESS,
-				StatusCode:   "",
-				StatusDetail: "",
-				Subject:      SUBJECT_UNSUB,
-				IpAddress:    "",
-				Payload:      "",
-			},
-		)
-
-		h.historyService.Save(
-			&entity.History{
-				SubscriptionID: sub.GetId(),
-				ServiceID:      sub.GetServiceId(),
-				Code:           sub.GetCode(),
-				Msisdn:         sub.GetMsisdn(),
-				Keyword:        SMS_STOP + " " + team.GetCode(),
-				Subject:        SUBJECT_UNSUB,
-				Status:         STATUS_SUCCESS,
-			},
-		)
-
-		s := &entity.Subscription{
-			ServiceID: sub.GetServiceId(),
-			Msisdn:    sub.GetMsisdn(),
-			Code:      sub.GetCode(),
-		}
-
-		// set false is_active
-		h.subscriptionService.UpdateNotActive(s)
-		// set false is_retry
-		h.subscriptionService.UpdateNotRetry(s)
-
-		mt := &model.MTRequest{
-			Smsc:         service.ScUnsubMT,
-			Keyword:      SMS_STOP,
-			Service:      service,
-			Subscription: sub,
-			Content:      content,
-		}
-		mt.SetTrxId(trxId)
-
-		jsonData, err := json.Marshal(mt)
-		if err != nil {
-			log.Println(err.Error())
-		}
-
-		h.rmq.IntegratePublish(
-			RMQ_MT_EXCHANGE,
-			RMQ_MT_QUEUE,
-			RMQ_DATA_TYPE, "", string(jsonData),
-		)
-	}
 }
 
 func (h *UssdHandler) Firstpush(category string, service *entity.Service, code string, content *entity.Content) {

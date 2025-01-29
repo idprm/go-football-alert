@@ -31,6 +31,8 @@ type ISubscriptionService interface {
 	GetTotalActiveSubscription() int
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetByCategory(string, string, string) (*entity.Subscription, error)
+	GetActiveByCategory(string, string, string) (*entity.Subscription, error)
+	GetActiveByNonSMSAlerte(string, string) (*entity.Subscription, error)
 	GetByNonSMSAlerte(string, string) (*entity.Subscription, error)
 	GetBySubId(int64) (*entity.Subscription, error)
 	GetActiveAllByMsisdnUSSD(string, int) (*[]entity.Subscription, error)
@@ -107,8 +109,16 @@ func (s *SubscriptionService) GetByCategory(category, msisdn, code string) (*ent
 	return s.subscriptionRepo.GetByCategory(category, msisdn, code)
 }
 
+func (s *SubscriptionService) GetActiveByCategory(category, msisdn, code string) (*entity.Subscription, error) {
+	return s.subscriptionRepo.GetActiveByCategory(category, msisdn, code)
+}
+
 func (s *SubscriptionService) GetByNonSMSAlerte(category, msisdn string) (*entity.Subscription, error) {
 	return s.subscriptionRepo.GetByNonSMSAlerte(category, msisdn)
+}
+
+func (s *SubscriptionService) GetActiveByNonSMSAlerte(category, msisdn string) (*entity.Subscription, error) {
+	return s.subscriptionRepo.GetActiveByNonSMSAlerte(category, msisdn)
 }
 
 func (s *SubscriptionService) GetBySubId(subId int64) (*entity.Subscription, error) {
