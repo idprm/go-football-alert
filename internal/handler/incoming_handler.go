@@ -426,7 +426,7 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 		}
 
 		if req.IsMySubscription() {
-			data = h.MySubscription(c.BaseURL(), req.GetMsisdn(), req.GetPage()+1)
+			data = h.MySubscription(c.BaseURL(), req.GetMsisdn(), req.GetUniqueCode(), req.GetPage()+1)
 		}
 
 		if req.GetSlug() == "foot-afrique" {
@@ -848,7 +848,7 @@ func (h *IncomingHandler) ConfirmStop(c *fiber.Ctx) error {
 		"{{.url}}", c.BaseURL(),
 		"{{.version}}", API_VERSION,
 		"{{.slug}}", req.GetSlug(),
-		"{{.title}}", service.GetName(),
+		"{{.title}}", req.GetTitle(),
 		"{{.category}}", req.GetCategory(),
 		"{{.code}}", service.GetCode(),
 		"{{.unique_code}}", req.GetUniqueCode(),
@@ -1530,7 +1530,7 @@ func (h *IncomingHandler) ChampionLeagues(baseUrl string, leagueId, page int) st
 	return fixturesString
 }
 
-func (h *IncomingHandler) MySubscription(baseUrl, msisdn string, page int) string {
+func (h *IncomingHandler) MySubscription(baseUrl, msisdn, uniqueCode string, page int) string {
 	subs, err := h.subscriptionService.GetActiveAllByMsisdnUSSD(msisdn, page)
 	if err != nil {
 		log.Println(err.Error())
@@ -1546,7 +1546,8 @@ func (h *IncomingHandler) MySubscription(baseUrl, msisdn string, page int) strin
 					baseUrl + `/` +
 					API_VERSION +
 					`/ussd/confirm-stop?slug=confirm-stop&amp;code=` +
-					s.Service.GetCode() + `&amp;category=` + s.Category + `&amp;sub_id=` +
+					s.Service.GetCode() + `&amp;unique_code=` + uniqueCode +
+					`&amp;category=` + s.Category + `&amp;sub_id=` +
 					s.GetIdToString() + `&amp;title=` +
 					s.Service.GetNameQueryEscape() + "+" + s.GetCode() + `">` +
 					s.Service.GetName() + " " + s.GetCode() +
@@ -1556,7 +1557,8 @@ func (h *IncomingHandler) MySubscription(baseUrl, msisdn string, page int) strin
 					baseUrl + `/` +
 					API_VERSION +
 					`/ussd/confirm-stop?slug=confirm-stop&amp;code=` +
-					s.Service.GetCode() + `&amp;category=` + s.Category + `&amp;sub_id=` +
+					s.Service.GetCode() + `&amp;unique_code=` + uniqueCode +
+					`&amp;category=` + s.Category + `&amp;sub_id=` +
 					s.GetIdToString() + `&amp;title=` +
 					s.Service.GetNameQueryEscape() + `">` +
 					s.Service.GetName() +
