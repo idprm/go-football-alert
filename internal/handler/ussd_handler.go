@@ -144,13 +144,13 @@ func (h *UssdHandler) UnRegistration() {
 	}
 
 	if h.req.IsCatFlashNews() {
-		if !h.IsActiveSubByNonSMSAlerte(CATEGORY_FLASHNEWS) {
+		if h.IsActiveSubByNonSMSAlerte(CATEGORY_FLASHNEWS) {
 			h.StopNonSMSAlerte(CATEGORY_FLASHNEWS)
 		}
 	}
 
-	if h.req.IsPronostic() {
-		if !h.IsActiveSubByNonSMSAlerte(CATEGORY_PRONOSTIC) {
+	if h.req.IsCatPronostic() {
+		if h.IsActiveSubByNonSMSAlerte(CATEGORY_PRONOSTIC) {
 			h.StopNonSMSAlerte(CATEGORY_PRONOSTIC)
 		}
 	}

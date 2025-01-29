@@ -109,7 +109,7 @@ func (m *UssdRequest) IsCatSMSAlerte() bool {
 }
 
 func (m *UssdRequest) IsCatSMSProno() bool {
-	return m.GetCategory() == "PRONO"
+	return m.GetCategory() == "PRONOSTIC"
 }
 
 func (m *UssdRequest) IsREG() bool {
