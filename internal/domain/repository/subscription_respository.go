@@ -171,7 +171,7 @@ func (r *SubscriptionRepository) GetBySubId(subId int64) (*entity.Subscription, 
 
 func (r *SubscriptionRepository) GetActiveAllByMsisdnUSSD(msisdn string, page int) (*[]entity.Subscription, error) {
 	var c []entity.Subscription
-	err := r.db.Where("msisdn = ? AND is_active = true", msisdn).Preload("Service").Order("id ASC").Offset((page - 5) * 7).Limit(5).Find(&c).Error
+	err := r.db.Where("msisdn = ? AND is_active = true", msisdn).Preload("Service").Order("id ASC").Offset((page - 1) * 5).Limit(5).Find(&c).Error
 	if err != nil {
 		return nil, err
 	}
