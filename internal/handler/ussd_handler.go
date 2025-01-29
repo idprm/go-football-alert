@@ -318,7 +318,7 @@ func (h *UssdHandler) StopNonSMSAlerte(category string) {
 
 		trxId := utils.GenerateTrxId()
 
-		sub, err := h.subscriptionService.GetByNonSMSAlerte(category, h.req.GetMsisdn())
+		sub, err := h.subscriptionService.GetActiveByNonSMSAlerte(category, h.req.GetMsisdn())
 		if err != nil {
 			log.Println(err.Error())
 		}
@@ -401,7 +401,7 @@ func (h *UssdHandler) StopNonSMSAlerte(category string) {
 
 		mt := &model.MTRequest{
 			Smsc:         service.ScSubMT,
-			Keyword:      service.GetCode(),
+			Keyword:      SMS_STOP + " " + service.GetCode(),
 			Service:      service,
 			Subscription: sub,
 			Content:      content,
@@ -520,7 +520,7 @@ func (h *UssdHandler) StopAlerteCompetition(league *entity.League) {
 
 			mt := &model.MTRequest{
 				Smsc:         service.ScUnsubMT,
-				Keyword:      SMS_STOP,
+				Keyword:      SMS_STOP + " " + league.GetCode(),
 				Service:      service,
 				Subscription: sub,
 				Content:      content,
@@ -638,7 +638,7 @@ func (h *UssdHandler) StopAlerteEquipe(team *entity.Team) {
 
 			mt := &model.MTRequest{
 				Smsc:         service.ScUnsubMT,
-				Keyword:      SMS_STOP,
+				Keyword:      SMS_STOP + " " + team.GetCode(),
 				Service:      service,
 				Subscription: sub,
 				Content:      content,
