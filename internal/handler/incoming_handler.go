@@ -447,7 +447,7 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 				log.Println(err.Error())
 			}
 			if len(livematchesToday) > 0 {
-				title = "Match en Direct"
+				title = "Foot en Direct"
 			} else {
 				title = "Pas de Direct, Prochain Match"
 			}
@@ -491,7 +491,7 @@ func (h *IncomingHandler) Menu(c *fiber.Ctx) error {
 			log.Println(err.Error())
 		}
 		if len(livematchesToday) > 0 {
-			title = "Match en Direct"
+			title = "Foot en Direct"
 		} else {
 			title = "Pas de Direct, Prochain Match"
 		}
