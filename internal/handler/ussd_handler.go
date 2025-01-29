@@ -99,7 +99,7 @@ func (h *UssdHandler) Registration() {
 
 	if h.req.IsCatPronostic() {
 		if !h.IsActiveSubByNonSMSAlerte(CATEGORY_PRONOSTIC) {
-			h.SubFlashNews()
+			h.SubPronostic()
 		}
 	}
 
