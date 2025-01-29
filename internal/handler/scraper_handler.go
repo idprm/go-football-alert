@@ -194,60 +194,64 @@ func (h *ScraperHandler) Fixtures() {
 
 			for _, el := range resp.Response {
 
-				home, err := h.teamService.GetByPrimaryId(el.Teams.Home.ID)
-				if err != nil {
-					log.Println(err.Error())
-				}
+				// validation
+				if h.teamService.IsTeamByPrimaryId(el.Teams.Home.ID) && h.teamService.IsTeamByPrimaryId(el.Teams.Away.ID) {
 
-				away, err := h.teamService.GetByPrimaryId(el.Teams.Away.ID)
-				if err != nil {
-					log.Println(err.Error())
-				}
-
-				fixtureDate, _ := time.Parse(time.RFC3339, el.Fixtures.Date)
-
-				if !h.fixtureService.IsFixtureByPrimaryId(el.Fixtures.ID) {
-					h.fixtureService.Save(
-						&entity.Fixture{
-							PrimaryID:   int64(el.Fixtures.ID),
-							Timezone:    el.Fixtures.TimeZone,
-							FixtureDate: fixtureDate,
-							TimeStamp:   el.Fixtures.Timestamp,
-							LeagueID:    l.ID,
-							HomeID:      home.ID,
-							AwayID:      away.ID,
-							Goal:        strconv.Itoa(el.Goals.Home) + "-" + strconv.Itoa(el.Goals.Away),
-						},
-					)
-					if h.fixtureService.IsFixtureByPastTime() {
-						h.fixtureService.UpdateByPrimaryId(
-							&entity.Fixture{
-								PrimaryID: int64(el.Fixtures.ID),
-								IsDone:    true,
-							},
-						)
+					home, err := h.teamService.GetByPrimaryId(el.Teams.Home.ID)
+					if err != nil {
+						log.Println(err.Error())
 					}
-				} else {
-					h.fixtureService.UpdateByPrimaryId(
-						&entity.Fixture{
-							PrimaryID:   int64(el.Fixtures.ID),
-							Timezone:    el.Fixtures.TimeZone,
-							FixtureDate: fixtureDate,
-							TimeStamp:   el.Fixtures.Timestamp,
-							LeagueID:    l.ID,
-							HomeID:      home.ID,
-							AwayID:      away.ID,
-							Goal:        strconv.Itoa(el.Goals.Home) + "-" + strconv.Itoa(el.Goals.Away),
-						},
-					)
 
-					if h.fixtureService.IsFixtureByPastTime() {
-						h.fixtureService.UpdateByPrimaryId(
+					away, err := h.teamService.GetByPrimaryId(el.Teams.Away.ID)
+					if err != nil {
+						log.Println(err.Error())
+					}
+
+					fixtureDate, _ := time.Parse(time.RFC3339, el.Fixtures.Date)
+
+					if !h.fixtureService.IsFixtureByPrimaryId(el.Fixtures.ID) {
+						h.fixtureService.Save(
 							&entity.Fixture{
-								PrimaryID: int64(el.Fixtures.ID),
-								IsDone:    true,
+								PrimaryID:   int64(el.Fixtures.ID),
+								Timezone:    el.Fixtures.TimeZone,
+								FixtureDate: fixtureDate,
+								TimeStamp:   el.Fixtures.Timestamp,
+								LeagueID:    l.ID,
+								HomeID:      home.ID,
+								AwayID:      away.ID,
+								Goal:        strconv.Itoa(el.Goals.Home) + "-" + strconv.Itoa(el.Goals.Away),
 							},
 						)
+						if h.fixtureService.IsFixtureByPastTime() {
+							h.fixtureService.UpdateByPrimaryId(
+								&entity.Fixture{
+									PrimaryID: int64(el.Fixtures.ID),
+									IsDone:    true,
+								},
+							)
+						}
+					} else {
+						h.fixtureService.UpdateByPrimaryId(
+							&entity.Fixture{
+								PrimaryID:   int64(el.Fixtures.ID),
+								Timezone:    el.Fixtures.TimeZone,
+								FixtureDate: fixtureDate,
+								TimeStamp:   el.Fixtures.Timestamp,
+								LeagueID:    l.ID,
+								HomeID:      home.ID,
+								AwayID:      away.ID,
+								Goal:        strconv.Itoa(el.Goals.Home) + "-" + strconv.Itoa(el.Goals.Away),
+							},
+						)
+
+						if h.fixtureService.IsFixtureByPastTime() {
+							h.fixtureService.UpdateByPrimaryId(
+								&entity.Fixture{
+									PrimaryID: int64(el.Fixtures.ID),
+									IsDone:    true,
+								},
+							)
+						}
 					}
 				}
 			}

@@ -1201,6 +1201,22 @@ func (h *SMSHandler) StopAlerteCompetition(category string, league *entity.Leagu
 			},
 		)
 
+		h.transactionService.Save(
+			&entity.Transaction{
+				TrxId:        sub.GetLatestTrxId(),
+				ServiceID:    sub.GetServiceId(),
+				Msisdn:       h.req.GetMsisdn(),
+				Code:         service.GetCode(),
+				Keyword:      h.req.GetSMS(),
+				Status:       STATUS_SUCCESS,
+				StatusCode:   "",
+				StatusDetail: "",
+				Subject:      SUBJECT_UNSUB,
+				IpAddress:    h.req.GetIpAddress(),
+				Payload:      "",
+			},
+		)
+
 		h.historyService.Save(
 			&entity.History{
 				SubscriptionID: sub.GetId(),
@@ -1299,6 +1315,22 @@ func (h *SMSHandler) StopAlerteEquipe(category string, team *entity.Team) {
 				UnsubAt:       time.Now(),
 				IpAddress:     h.req.GetIpAddress(),
 				TotalUnsub:    sub.TotalUnsub + 1,
+			},
+		)
+
+		h.transactionService.Save(
+			&entity.Transaction{
+				TrxId:        sub.GetLatestTrxId(),
+				ServiceID:    sub.GetServiceId(),
+				Msisdn:       h.req.GetMsisdn(),
+				Code:         service.GetCode(),
+				Keyword:      h.req.GetSMS(),
+				Status:       STATUS_SUCCESS,
+				StatusCode:   "",
+				StatusDetail: "",
+				Subject:      SUBJECT_UNSUB,
+				IpAddress:    h.req.GetIpAddress(),
+				Payload:      "",
 			},
 		)
 

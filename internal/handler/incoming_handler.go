@@ -848,7 +848,7 @@ func (h *IncomingHandler) ConfirmStop(c *fiber.Ctx) error {
 		"{{.url}}", c.BaseURL(),
 		"{{.version}}", API_VERSION,
 		"{{.slug}}", req.GetSlug(),
-		"{{.title}}", req.GetTitle(),
+		"{{.title}}", req.GetTitleQueryEscape(),
 		"{{.category}}", req.GetCategory(),
 		"{{.code}}", service.GetCode(),
 		"{{.unique_code}}", req.GetUniqueCode(),

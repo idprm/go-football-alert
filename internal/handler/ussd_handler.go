@@ -471,6 +471,22 @@ func (h *UssdHandler) StopAlerteCompetition(league *entity.League) {
 			},
 		)
 
+		h.transactionService.Save(
+			&entity.Transaction{
+				TrxId:        sub.GetLatestTrxId(),
+				ServiceID:    sub.GetServiceId(),
+				Msisdn:       h.req.GetMsisdn(),
+				Code:         service.GetCode(),
+				Keyword:      service.GetCode(),
+				Status:       STATUS_SUCCESS,
+				StatusCode:   "",
+				StatusDetail: "",
+				Subject:      SUBJECT_UNSUB,
+				IpAddress:    "",
+				Payload:      "",
+			},
+		)
+
 		h.historyService.Save(
 			&entity.History{
 				SubscriptionID: sub.GetId(),
@@ -568,6 +584,22 @@ func (h *UssdHandler) StopAlerteEquipe(team *entity.Team) {
 				LatestNote:    "",
 				UnsubAt:       time.Now(),
 				TotalUnsub:    sub.TotalUnsub + 1,
+			},
+		)
+
+		h.transactionService.Save(
+			&entity.Transaction{
+				TrxId:        sub.GetLatestTrxId(),
+				ServiceID:    sub.GetServiceId(),
+				Msisdn:       h.req.GetMsisdn(),
+				Code:         service.GetCode(),
+				Keyword:      service.GetCode(),
+				Status:       STATUS_SUCCESS,
+				StatusCode:   "",
+				StatusDetail: "",
+				Subject:      SUBJECT_UNSUB,
+				IpAddress:    "",
+				Payload:      "",
 			},
 		)
 
