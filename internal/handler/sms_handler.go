@@ -147,6 +147,19 @@ func (h *SMSHandler) Registration() {
 		} else {
 			// h.AlreadySubLiveMatch()
 		}
+	} else if h.req.IsFlashNews() {
+		if !h.IsActiveSubByCategory(CATEGORY_FLASHNEWS, "") {
+
+		} else {
+			// h.AlreadySubLiveMatch()
+		}
+	} else if h.req.IsProno() {
+		// Pronostic Safe Sub
+		if !h.IsActiveSubByCategory(CATEGORY_PRONOSTIC, "") {
+			h.SubSafe()
+		} else {
+			h.AlreadySubSafe()
+		}
 	} else if h.leagueService.IsLeagueByName(h.req.GetSMS()) {
 		league, err := h.leagueService.GetByName(h.req.GetSMS())
 		if err != nil {
@@ -171,13 +184,6 @@ func (h *SMSHandler) Registration() {
 		}
 	} else if h.req.IsInfo() {
 		h.Info()
-	} else if h.req.IsProno() {
-		// Pronostic Safe Sub
-		if !h.IsActiveSubByCategory(CATEGORY_PRONOSTIC, "") {
-			h.SubSafe()
-		} else {
-			h.AlreadySubSafe()
-		}
 	} else if h.req.IsTicket() {
 		// Pronostic Combined Sub
 		if !h.IsActiveSubByCategory(CATEGORY_PRONOSTIC_COMBINED, "") {
@@ -197,6 +203,35 @@ func (h *SMSHandler) Registration() {
 		if h.req.IsStopAlive() {
 			if h.IsActiveSubByNonSMSAlerte(CATEGORY_LIVEMATCH) {
 				h.Unsub(CATEGORY_LIVEMATCH)
+			}
+		}
+
+		// Stop flashnews ussd
+		if h.req.IsStopFlashNews() {
+			if h.IsActiveSubByNonSMSAlerte(CATEGORY_FLASHNEWS) {
+				h.Unsub(CATEGORY_FLASHNEWS)
+			}
+		}
+
+		// Stop prono (safe)
+		if h.req.IsStopProno() {
+			if h.IsActiveSubByNonSMSAlerte(CATEGORY_PRONOSTIC) {
+				h.StopPronostic(CATEGORY_PRONOSTIC)
+			}
+
+		}
+
+		// Stop ticket (combined)
+		if h.req.IsStopTicket() {
+			if h.IsActiveSubByNonSMSAlerte(CATEGORY_PRONOSTIC_COMBINED) {
+				h.StopPronostic(CATEGORY_PRONOSTIC_COMBINED)
+			}
+		}
+
+		// Stop VIP
+		if h.req.IsStopVIP() {
+			if h.IsActiveSubByNonSMSAlerte(CATEGORY_PRONOSTIC_VIP) {
+				h.StopPronostic(CATEGORY_PRONOSTIC_VIP)
 			}
 		}
 
@@ -231,34 +266,6 @@ func (h *SMSHandler) Registration() {
 			}
 		}
 
-		// Stop flashnews ussd
-		if h.req.IsStopFlashNews() {
-			if h.IsActiveSubByNonSMSAlerte(CATEGORY_FLASHNEWS) {
-				h.Unsub(CATEGORY_FLASHNEWS)
-			}
-		}
-
-		// Stop prono (safe)
-		if h.req.IsStopProno() {
-			if h.IsActiveSubByNonSMSAlerte(CATEGORY_PRONOSTIC) {
-				h.StopPronostic(CATEGORY_PRONOSTIC)
-			}
-
-		}
-
-		// Stop ticket (combined)
-		if h.req.IsStopTicket() {
-			if h.IsActiveSubByNonSMSAlerte(CATEGORY_PRONOSTIC_COMBINED) {
-				h.StopPronostic(CATEGORY_PRONOSTIC_COMBINED)
-			}
-		}
-
-		// Stop VIP
-		if h.req.IsStopVIP() {
-			if h.IsActiveSubByNonSMSAlerte(CATEGORY_PRONOSTIC_VIP) {
-				h.StopPronostic(CATEGORY_PRONOSTIC_VIP)
-			}
-		}
 	} else {
 		h.Unvalid(SMS_FOLLOW_UNVALID_SUB)
 	}
@@ -783,6 +790,23 @@ func (h *SMSHandler) SubLivematch() {
 	code := service.GetCode()
 
 	h.Firstpush(CATEGORY_LIVEMATCH, service, code, content)
+}
+
+func (h *SMSHandler) SubFlashNews() {
+	service, err := h.getServiceLiveMatchDaily()
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	content, err := h.getContentFlashNews(SMS_FLASH_NEWS_SUB, service)
+	if err != nil {
+		log.Println(err)
+	}
+
+	// GET_CODE
+	code := service.GetCode()
+
+	h.Firstpush(CATEGORY_FLASHNEWS, service, code, content)
 }
 
 func (h *SMSHandler) SubSafe() {
@@ -1606,6 +1630,10 @@ func (h *SMSHandler) getServiceLiveMatchDaily() (*entity.Service, error) {
 	return h.serviceService.Get("LM1")
 }
 
+func (h *SMSHandler) getServiceFlashNewsDaily() (*entity.Service, error) {
+	return h.serviceService.Get("FN1")
+}
+
 func (h *SMSHandler) getServicePronosticSafeDaily() (*entity.Service, error) {
 	return h.serviceService.Get("PS1")
 }
@@ -1684,6 +1712,17 @@ func (h *SMSHandler) getContentUnFollowTeam(service *entity.Service, team *entit
 		}, nil
 	}
 	return h.contentService.GetUnSubFollowTeam(SMS_FOLLOW_TEAM_STOP, service, team)
+}
+
+func (h *SMSHandler) getContentFlashNews(v string, service *entity.Service) (*entity.Content, error) {
+	if !h.contentService.IsContent(v) {
+		return &entity.Content{
+			Category: "CATEGORY",
+			Channel:  "SMS",
+			Value:    "SAMPLE_TEXT",
+		}, nil
+	}
+	return h.contentService.GetFlashNews(v, service)
 }
 
 func (h *SMSHandler) getContentPronostic(v string, service *entity.Service) (*entity.Content, error) {

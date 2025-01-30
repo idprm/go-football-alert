@@ -193,6 +193,10 @@ func (m *MORequest) IsLive() bool {
 	return m.GetSMS() == "FOOT"
 }
 
+func (m *MORequest) IsFlashNews() bool {
+	return m.GetSMS() == "ACTU"
+}
+
 func (m *MORequest) IsProno() bool {
 	return m.GetSMS() == "PRONO"
 }
@@ -214,7 +218,7 @@ func (m *MORequest) IsStopAlive() bool {
 }
 
 func (m *MORequest) IsStopFlashNews() bool {
-	return strings.Contains(m.GetSMS(), "STOP FLASH")
+	return strings.Contains(m.GetSMS(), "STOP ACTU")
 }
 
 func (m *MORequest) IsStopProno() bool {
