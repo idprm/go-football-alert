@@ -149,7 +149,7 @@ func (h *SMSHandler) Registration() {
 		}
 	} else if h.req.IsFlashNews() {
 		if !h.IsActiveSubByCategory(CATEGORY_FLASHNEWS, "") {
-
+			h.SubFlashNews()
 		} else {
 			// h.AlreadySubLiveMatch()
 		}
