@@ -189,16 +189,40 @@ func (m *MORequest) IsStop() bool {
 	return index[0] == "STOP" && (strings.Contains(m.GetSMS(), "STOP"))
 }
 
-func (m *MORequest) IsLive() bool {
-	return m.GetSMS() == "FOOT"
+func (m *MORequest) HasLive() bool {
+	return strings.HasPrefix(m.GetSMS(), "FOOT")
+}
+
+func (m *MORequest) IsLiveDaily() bool {
+	return m.GetSMS() == "FOOT1"
+}
+
+func (m *MORequest) IsLiveWeekly() bool {
+	return m.GetSMS() == "FOOT7"
+}
+
+func (m *MORequest) IsLiveMonthly() bool {
+	return m.GetSMS() == "FOOT30"
 }
 
 func (m *MORequest) IsFlashNews() bool {
 	return m.GetSMS() == "ACTU"
 }
 
-func (m *MORequest) IsProno() bool {
-	return m.GetSMS() == "PRONO"
+func (m *MORequest) HasProno() bool {
+	return strings.HasPrefix(m.GetSMS(), "PRONO")
+}
+
+func (m *MORequest) IsPronoDaily() bool {
+	return m.GetSMS() == "PRONO1"
+}
+
+func (m *MORequest) IsPronoWeekly() bool {
+	return m.GetSMS() == "PRONO7"
+}
+
+func (m *MORequest) IsPronoMonthly() bool {
+	return m.GetSMS() == "PRONO30"
 }
 
 func (m *MORequest) IsTicket() bool {

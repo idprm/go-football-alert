@@ -42,13 +42,33 @@ func (r *SummaryRepository) Count(serviceId int, date time.Time) (int64, error) 
 
 func (r *SummaryRepository) GetAllPaginate(p *entity.Pagination) (*entity.Pagination, error) {
 	var summaries []*entity.Summary
-	err := r.db.Where("DATE(created_at) BETWEEN DATE(?) AND DATE(?)", p.GetStartDate(), p.GetEndDate()).Scopes(Paginate(summaries, p, r.db)).Find(&summaries).Error
+	err := r.db.Select(
+		"DATE(created_at) as created_at",
+		"SUM(total_sub) as total_sub",
+		"SUM(total_unsub) as total_unsub",
+		"SUM(total_renewal) as total_renewal",
+		"SUM(total_active_sub) as total_active_sub",
+		"SUM(total_charge_success) as total_charge_success",
+		"SUM(total_charge_failed) as total_charge_failed",
+		"SUM(total_revenue) as total_revenue",
+	).Where("DATE(created_at) BETWEEN DATE(?) AND DATE(?)", p.GetStartDate(), p.GetEndDate()).Group("DATE(created_at)").Scopes(Paginate(summaries, p, r.db)).Find(&summaries).Error
 	if err != nil {
 		return nil, err
 	}
 	p.Rows = summaries
 	return p, nil
 }
+
+// SELECT DATE(created_at),
+// SUM(total_sub) as total_sub,
+// SUM(total_unsub) as total_unsub,
+// SUM(total_renewal) as total_renewal,
+// SUM(total_active_sub) as total_active_sub,
+// SUM(total_charge_success) as total_charge_success,
+// SUM(total_charge_failed) as total_charge_failed,
+// SUM(total_revenue) as total_revenue
+// FROM fb_alert_test.summaries
+// GROUP BY DATE(created_at) ORDER BY DATE(created_at) DESC;
 
 func (r *SummaryRepository) Get(serviceId int, date time.Time) (*entity.Summary, error) {
 	var c entity.Summary

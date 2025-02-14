@@ -140,10 +140,20 @@ func (h *SMSHandler) Registration() {
 	l := h.logger.Init("sms", true)
 	l.WithFields(logrus.Fields{"request": h.req}).Info("SMS")
 
-	if h.req.IsLive() {
-		// Pronostic Safe Sub
+	if h.req.HasLive() {
+		// Livematch or Foot
 		if !h.IsActiveSubByCategory(CATEGORY_LIVEMATCH, "") {
-			h.SubLivematch()
+
+			if h.req.IsLiveDaily() {
+				h.SubLivematch("")
+			} else if h.req.IsLiveWeekly() {
+				h.SubLivematch("")
+			} else if h.req.IsLiveMonthly() {
+				h.SubLivematch("")
+			} else {
+				//
+			}
+
 		} else {
 			// h.AlreadySubLiveMatch()
 		}
@@ -153,10 +163,19 @@ func (h *SMSHandler) Registration() {
 		} else {
 			// h.AlreadySubLiveMatch()
 		}
-	} else if h.req.IsProno() {
+	} else if h.req.HasProno() {
 		// Pronostic Safe Sub
 		if !h.IsActiveSubByCategory(CATEGORY_PRONOSTIC, "") {
-			h.SubSafe()
+			// pronostic general
+			if h.req.IsPronoDaily() {
+				h.SubSafe()
+			} else if h.req.IsPronoMonthly() {
+				h.SubSafe()
+			} else if h.req.IsPronoMonthly() {
+				h.SubSafe()
+			} else {
+				// if not match
+			}
 		} else {
 			h.AlreadySubSafe()
 		}
@@ -775,8 +794,8 @@ func (h *SMSHandler) AlreadySubAlerteEquipe(team *entity.Team) {
 	)
 }
 
-func (h *SMSHandler) SubLivematch() {
-	service, err := h.getServiceLiveMatchDaily()
+func (h *SMSHandler) SubLivematch(p string) {
+	service, err := h.getServiceLiveMatch(p)
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -793,7 +812,7 @@ func (h *SMSHandler) SubLivematch() {
 }
 
 func (h *SMSHandler) SubFlashNews() {
-	service, err := h.getServiceLiveMatchDaily()
+	service, err := h.getServiceFlashNewsDaily()
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -863,7 +882,7 @@ func (h *SMSHandler) SubVIP() {
 func (h *SMSHandler) AlreadySubLiveMatch() {
 	trxId := utils.GenerateTrxId()
 
-	service, err := h.getServiceLiveMatchDaily()
+	service, err := h.getServiceLiveMatch("")
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -1626,8 +1645,8 @@ func (h *SMSHandler) getServiceSMSAlerteEquipeDaily() (*entity.Service, error) {
 	return h.serviceService.Get("SAE1")
 }
 
-func (h *SMSHandler) getServiceLiveMatchDaily() (*entity.Service, error) {
-	return h.serviceService.Get("LM1")
+func (h *SMSHandler) getServiceLiveMatch(p string) (*entity.Service, error) {
+	return h.serviceService.GetByPackage("LIVEMATCH", p)
 }
 
 func (h *SMSHandler) getServiceFlashNewsDaily() (*entity.Service, error) {
