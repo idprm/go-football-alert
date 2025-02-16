@@ -124,6 +124,8 @@ const (
 	SMS_PRONOSTIC_VIP_SUB                string = "PRONOSTIC_VIP_SUB"
 	SMS_PRONOSTIC_VIP_ALREADY_SUB        string = "PRONOSTIC_VIP_ALREADY_SUB"
 	SMS_PRONOSTIC_STOP                   string = "PRONOSTIC_STOP"
+	SMS_PRONOSTIC_UNVALID_SUB            string = "PRONOSTIC_UNVALID_SUB"
+	SMS_LIVE_MATCH_UNVALID_SUB           string = "LIVEMATCH_UNVALID_SUB"
 	SMS_CONFIRMATION                     string = "CONFIRMATION"
 	SMS_SUCCESS_CHARGING                 string = "SUCCESS_CHARGING"
 	SMS_SUCCESS_CHARGING_SMS_ALERTE      string = "SUCCESS_CHARGING_SMS_ALERTE"
@@ -145,17 +147,16 @@ func (h *SMSHandler) Registration() {
 		if !h.IsActiveSubByCategory(CATEGORY_LIVEMATCH, "") {
 
 			if h.req.IsLiveDaily() {
-				h.SubLivematch("")
+				h.SubLivematch("jour")
 			} else if h.req.IsLiveWeekly() {
-				h.SubLivematch("")
+				h.SubLivematch("semaine")
 			} else if h.req.IsLiveMonthly() {
-				h.SubLivematch("")
+				h.SubLivematch("mois")
 			} else {
-				//
+				h.UnvalidSub(SMS_LIVE_MATCH_UNVALID_SUB)
 			}
-
 		} else {
-			// h.AlreadySubLiveMatch()
+			h.AlreadySubLiveMatch()
 		}
 	} else if h.req.IsFlashNews() {
 		if !h.IsActiveSubByCategory(CATEGORY_FLASHNEWS, "") {
@@ -169,12 +170,12 @@ func (h *SMSHandler) Registration() {
 			// pronostic general
 			if h.req.IsPronoDaily() {
 				h.SubProno("jour")
-			} else if h.req.IsPronoMonthly() {
+			} else if h.req.IsPronoWeekly() {
 				h.SubProno("semaine")
 			} else if h.req.IsPronoMonthly() {
 				h.SubProno("mois")
 			} else {
-				// if not match
+				h.UnvalidSub(SMS_PRONOSTIC_UNVALID_SUB)
 			}
 		} else {
 			h.AlreadySubSafe()
@@ -1156,6 +1157,38 @@ func (h *SMSHandler) UnvalidEquipe(v string) {
 		log.Println(err.Error())
 	}
 
+	mt := &model.MTRequest{
+		Smsc:    h.req.GetTo(),
+		Keyword: h.req.GetSMS(),
+		Service: &entity.Service{
+			UrlMT:  URL_MT,
+			UserMT: USER_MT,
+			PassMT: PASS_MT,
+		},
+		Subscription: &entity.Subscription{Msisdn: h.req.GetMsisdn()},
+		Content:      content,
+	}
+	mt.SetTrxId(trxId)
+
+	jsonData, err := json.Marshal(mt)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	h.rmq.IntegratePublish(
+		RMQ_MT_EXCHANGE,
+		RMQ_MT_QUEUE,
+		RMQ_DATA_TYPE, "", string(jsonData),
+	)
+}
+
+func (h *SMSHandler) UnvalidSub(v string) {
+	trxId := utils.GenerateTrxId()
+
+	content, err := h.getContent(v)
+	if err != nil {
+		log.Println(err.Error())
+	}
 	mt := &model.MTRequest{
 		Smsc:    h.req.GetTo(),
 		Keyword: h.req.GetSMS(),
