@@ -40,8 +40,8 @@ func (s *ServiceService) IsServiceById(id int) bool {
 	return count > 0
 }
 
-func (s *ServiceService) IsServiceByPackage(category, pkg string) bool {
-	count, _ := s.serviceRepo.CountByPackage(category, pkg)
+func (s *ServiceService) IsServiceByPackage(category, p string) bool {
+	count, _ := s.serviceRepo.CountByPackage(category, p)
 	return count > 0
 }
 

@@ -168,11 +168,11 @@ func (h *SMSHandler) Registration() {
 		if !h.IsActiveSubByCategory(CATEGORY_PRONOSTIC, "") {
 			// pronostic general
 			if h.req.IsPronoDaily() {
-				h.SubSafe()
+				h.SubProno("jour")
 			} else if h.req.IsPronoMonthly() {
-				h.SubSafe()
+				h.SubProno("semaine")
 			} else if h.req.IsPronoMonthly() {
-				h.SubSafe()
+				h.SubProno("mois")
 			} else {
 				// if not match
 			}
@@ -828,8 +828,8 @@ func (h *SMSHandler) SubFlashNews() {
 	h.Firstpush(CATEGORY_FLASHNEWS, service, code, content)
 }
 
-func (h *SMSHandler) SubSafe() {
-	service, err := h.getServicePronosticSafeDaily()
+func (h *SMSHandler) SubProno(p string) {
+	service, err := h.getServicePronostic(p)
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -1647,6 +1647,10 @@ func (h *SMSHandler) getServiceSMSAlerteEquipeDaily() (*entity.Service, error) {
 
 func (h *SMSHandler) getServiceLiveMatch(p string) (*entity.Service, error) {
 	return h.serviceService.GetByPackage("LIVEMATCH", p)
+}
+
+func (h *SMSHandler) getServicePronostic(p string) (*entity.Service, error) {
+	return h.serviceService.GetByPackage("PRONOSTIC", p)
 }
 
 func (h *SMSHandler) getServiceFlashNewsDaily() (*entity.Service, error) {
