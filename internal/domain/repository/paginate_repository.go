@@ -149,3 +149,16 @@ func PaginateMTs(value interface{}, pagination *entity.Pagination, db *gorm.DB) 
 		return db.Offset(pagination.GetOffset()).Limit(pagination.GetLimit()).Order(pagination.GetSort())
 	}
 }
+
+func PaginateSummary(value interface{}, p *entity.Pagination, db *gorm.DB) func(db *gorm.DB) *gorm.DB {
+	var totalRows int64
+	db.Model(value).Where("DATE(created_at) BETWEEN DATE(?) AND DATE(?)", p.GetStartDate(), p.GetEndDate()).Group("DATE(created_at)").Count(&totalRows)
+
+	p.TotalRows = totalRows
+	totalPages := int(math.Ceil(float64(totalRows) / float64(p.Limit)))
+	p.TotalPages = totalPages
+
+	return func(db *gorm.DB) *gorm.DB {
+		return db.Offset(p.GetOffset()).Limit(p.GetLimit()).Order(p.GetSort())
+	}
+}
