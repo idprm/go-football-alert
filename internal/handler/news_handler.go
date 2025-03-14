@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"log"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/idprm/go-football-alert/internal/domain/entity"
@@ -379,23 +378,23 @@ func (h *NewsHandler) SMSAlerteLeague(leagueId int64) {
 	if len(*subs) > 0 {
 		for _, s := range *subs {
 			// is time
-			if h.IsTime() {
-				// counter
-				h.subscriptionFollowLeagueService.Sent(&entity.SubscriptionFollowLeague{SubscriptionID: s.SubscriptionID, LeagueID: leagueId})
-				// limit
-				if h.subscriptionFollowLeagueService.IsLimit(s.SubscriptionID, leagueId) {
-					jsonData, err := json.Marshal(&entity.SMSAlerte{SubscriptionID: s.SubscriptionID, NewsID: h.news.GetId()})
-					if err != nil {
-						log.Println(err.Error())
-					}
-
-					h.rmq.IntegratePublish(
-						RMQ_SMS_ALERTE_EXCHANGE,
-						RMQ_SMS_ALERTE_QUEUE,
-						RMQ_DATA_TYPE, "", string(jsonData),
-					)
+			// if h.IsTime() {
+			// counter
+			h.subscriptionFollowLeagueService.Sent(&entity.SubscriptionFollowLeague{SubscriptionID: s.SubscriptionID, LeagueID: leagueId})
+			// limit
+			if h.subscriptionFollowLeagueService.IsLimit(s.SubscriptionID, leagueId) {
+				jsonData, err := json.Marshal(&entity.SMSAlerte{SubscriptionID: s.SubscriptionID, NewsID: h.news.GetId()})
+				if err != nil {
+					log.Println(err.Error())
 				}
+
+				h.rmq.IntegratePublish(
+					RMQ_SMS_ALERTE_EXCHANGE,
+					RMQ_SMS_ALERTE_QUEUE,
+					RMQ_DATA_TYPE, "", string(jsonData),
+				)
 			}
+			//}
 
 		}
 	}
@@ -408,38 +407,39 @@ func (h *NewsHandler) SMSAlerteTeam(teamId int64) {
 	if len(*subs) > 0 {
 		for _, s := range *subs {
 			// is time
-			if h.IsTime() {
-				// counter
-				h.subscriptionFollowTeamService.Sent(&entity.SubscriptionFollowTeam{SubscriptionID: s.SubscriptionID, TeamID: teamId})
-				// limit
-				if h.subscriptionFollowTeamService.IsLimit(s.SubscriptionID, teamId) {
-					jsonData, err := json.Marshal(&entity.SMSAlerte{SubscriptionID: s.SubscriptionID, NewsID: h.news.GetId()})
-					if err != nil {
-						log.Println(err.Error())
-					}
-
-					h.rmq.IntegratePublish(
-						RMQ_SMS_ALERTE_EXCHANGE,
-						RMQ_SMS_ALERTE_QUEUE,
-						RMQ_DATA_TYPE, "", string(jsonData),
-					)
+			// if h.IsTime() {
+			// counter
+			h.subscriptionFollowTeamService.Sent(&entity.SubscriptionFollowTeam{SubscriptionID: s.SubscriptionID, TeamID: teamId})
+			// limit
+			if h.subscriptionFollowTeamService.IsLimit(s.SubscriptionID, teamId) {
+				jsonData, err := json.Marshal(&entity.SMSAlerte{SubscriptionID: s.SubscriptionID, NewsID: h.news.GetId()})
+				if err != nil {
+					log.Println(err.Error())
 				}
+
+				h.rmq.IntegratePublish(
+					RMQ_SMS_ALERTE_EXCHANGE,
+					RMQ_SMS_ALERTE_QUEUE,
+					RMQ_DATA_TYPE, "", string(jsonData),
+				)
 			}
+			// }
 		}
 	}
 }
 
-func (h *NewsHandler) IsTime() bool {
-	// from 9am to 10pm
-	start, _ := time.Parse("15:04", "09:00")
-	end, _ := time.Parse("15:04", "22:00")
+// disable schedules
+// func (h *NewsHandler) IsTime() bool {
+// 	// from 9am to 10pm
+// 	start, _ := time.Parse("15:04", "09:00")
+// 	end, _ := time.Parse("15:04", "22:00")
 
-	t, err := time.Parse("15:04", time.Now().Format("15:04"))
-	if err != nil {
-		log.Fatal(err)
-	}
-	return start.Before(t) && end.After(t)
-}
+// 	t, err := time.Parse("15:04", time.Now().Format("15:04"))
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	return start.Before(t) && end.After(t)
+// }
 
 func (h *NewsHandler) GetAllPaginate(c *fiber.Ctx) error {
 	req := new(entity.Pagination)

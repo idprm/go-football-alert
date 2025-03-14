@@ -17,6 +17,12 @@ func NewSummaryRepository(db *gorm.DB) *SummaryRepository {
 	}
 }
 
+var (
+	queryCountSummaryPaginate   = "SELECT COUNT(*) FROM summaries"
+	querySelectSummaryPaginate  = "SELECT * FROM summaries WHERE DATE(created_at) BETWEEN DATE(?) AND DATE(?) GROUP BY DATE(created_at) ORDER BY DATE(created_at) DESC"
+	querySelectSummaryPaginate2 = "SELECT * FROM summaries LIMIT ? OFFSET ?"
+)
+
 type ISummaryRepository interface {
 	Count(int, time.Time) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
@@ -42,7 +48,7 @@ func (r *SummaryRepository) Count(serviceId int, date time.Time) (int64, error) 
 
 func (r *SummaryRepository) GetAllPaginate(p *entity.Pagination) (*entity.Pagination, error) {
 	var summaries []*entity.Summary
-	err := r.db.Where("DATE(created_at) BETWEEN DATE(?) AND DATE(?)", p.GetStartDate(), p.GetEndDate()).Group("DATE(created_at)").Scopes(PaginateSummary(summaries, p, r.db)).Find(&summaries).Error
+	err := r.db.Select("DATE(created_at) as created_at").Where("DATE(created_at) BETWEEN DATE(?) AND DATE(?)", p.GetStartDate(), p.GetEndDate()).Group("DATE(created_at)").Scopes(PaginateSummary(summaries, p, r.db)).Find(&summaries).Error
 	if err != nil {
 		return nil, err
 	}
