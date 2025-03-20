@@ -319,7 +319,7 @@ func (r *SubscriptionRepository) PredictWin() (*[]entity.Subscription, error) {
 
 func (r *SubscriptionRepository) Prono() (*[]entity.Subscription, error) {
 	var sub []entity.Subscription
-	err := r.db.Where("(category = 'PRONOSTIC_SAFE' OR category = 'PRONOSTIC_COMBINED' OR category = 'PRONOSTIC_VIP') AND is_retry = false AND is_active = true").Find(&sub).Error
+	err := r.db.Where("category = 'PRONOSTIC' AND is_retry = false AND is_active = true").Find(&sub).Error
 	if err != nil {
 		return nil, err
 	}
