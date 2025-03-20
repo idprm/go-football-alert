@@ -1028,7 +1028,9 @@ func (h *DCBHandler) SavePronostic(c *fiber.Ctx) error {
 
 		h.pronosticService.Save(prono)
 
-		h.SMSPronostic(prono.GetId())
+		p, _ := h.pronosticService.Get(startAt)
+
+		h.SMSPronostic(p.GetId())
 
 		return c.Status(fiber.StatusCreated).JSON(
 			&model.WebResponse{

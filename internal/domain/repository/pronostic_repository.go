@@ -20,6 +20,7 @@ func NewPronosticRepository(db *gorm.DB) *PronosticRepository {
 type IPronosticRepository interface {
 	CountByStartAt(time.Time) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
+	Get(time.Time) (*entity.Pronostic, error)
 	GetById(int64) (*entity.Pronostic, error)
 	Save(*entity.Pronostic) error
 	Update(*entity.Pronostic) error
@@ -43,6 +44,15 @@ func (r *PronosticRepository) GetAllPaginate(pagination *entity.Pagination) (*en
 	}
 	pagination.Rows = pronostics
 	return pagination, nil
+}
+
+func (r *PronosticRepository) Get(start time.Time) (*entity.Pronostic, error) {
+	var c entity.Pronostic
+	err := r.db.Where("start_at = ?", start).Take(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return &c, nil
 }
 
 func (r *PronosticRepository) GetById(id int64) (*entity.Pronostic, error) {

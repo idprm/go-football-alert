@@ -20,6 +20,7 @@ func NewPronosticService(pronosticRepo repository.IPronosticRepository) *Pronost
 type IPronosticService interface {
 	IsPronosticByStartAt(time.Time) bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
+	Get(time.Time) (*entity.Pronostic, error)
 	GetById(int64) (*entity.Pronostic, error)
 	Save(*entity.Pronostic) error
 	Update(*entity.Pronostic) error
@@ -33,6 +34,10 @@ func (s *PronosticService) IsPronosticByStartAt(startAt time.Time) bool {
 
 func (s *PronosticService) GetAllPaginate(p *entity.Pagination) (*entity.Pagination, error) {
 	return s.pronosticRepo.GetAllPaginate(p)
+}
+
+func (s *PronosticService) Get(startAt time.Time) (*entity.Pronostic, error) {
+	return s.pronosticRepo.Get(startAt)
 }
 
 func (s *PronosticService) GetById(id int64) (*entity.Pronostic, error) {
