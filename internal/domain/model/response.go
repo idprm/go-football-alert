@@ -292,6 +292,19 @@ type MobimiumNewsItemResponse struct {
 	PublicationDate string `xml:"publication_date"`
 }
 
+type MobimiumNewsRSSResponse struct {
+	Channel struct {
+		Item []MobimiumNewsItemRSS `xml:"item"`
+	} `xml:"channel"`
+}
+
+type MobimiumNewsItemRSS struct {
+	Title       string `xml:"title"`
+	Link        string `xml:"link"`
+	Description string `xml:"description"`
+	PubDate     string `xml:"pubDate"`
+}
+
 func (m *MobimiumNewsItemResponse) GetTitle() string {
 	return m.Title
 }

@@ -742,16 +742,19 @@ func (h *ScraperHandler) MobimiumNews() {
 		log.Println(err.Error())
 	}
 
-	var resp model.MobimiumNewsResponse
+	var resp model.MobimiumNewsRSSResponse
 	xml.Unmarshal(n, &resp)
 
-	for _, el := range resp.Url.News {
-		d, _ := time.Parse(time.RFC3339, el.GetPublicationDate())
-		if !h.newsService.IsNews(d, slug.Make(el.GetTitle())) {
+	for _, el := range resp.Channel.Item {
+
+		d, _ := time.Parse(time.RFC1123Z, el.PubDate)
+
+		if !h.newsService.IsNews(d, slug.Make(el.Title)) {
+
 			news := &entity.News{
-				Title:       el.GetTitle(),
-				Slug:        slug.Make(el.GetTitle()),
-				Description: el.GetPublicationDate(),
+				Title:       el.Title,
+				Slug:        slug.Make(el.Title),
+				Description: "-",
 				Source:      SRC_MOBIMIUMNEWS,
 				PublishAt:   d,
 			}
