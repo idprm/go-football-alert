@@ -121,6 +121,10 @@ func (e *News) IsFootMercato() bool {
 	return e.Source == "FOOTMERCATO"
 }
 
+func (e *News) IsMobimiumNews() bool {
+	return e.Source == "MOBIMIUMNEWS"
+}
+
 func (m *News) IsFilteredKeyword(v string) bool {
 	return v == "OL"
 }

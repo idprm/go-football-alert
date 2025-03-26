@@ -281,6 +281,25 @@ type RmcSportItem struct {
 	PubDate     string `xml:"pubDate"`
 }
 
+type MobimiumNewsResponse struct {
+	Url struct {
+		News []MobimiumNewsItemResponse `xml:"news"`
+	} `xml:"url"`
+}
+
+type MobimiumNewsItemResponse struct {
+	Title           string `xml:"title"`
+	PublicationDate string `xml:"publication_date"`
+}
+
+func (m *MobimiumNewsItemResponse) GetTitle() string {
+	return m.Title
+}
+
+func (m *MobimiumNewsItemResponse) GetPublicationDate() string {
+	return m.PublicationDate
+}
+
 type UnsubRequest struct {
 	ID int `validate:"required" json:"id"`
 }

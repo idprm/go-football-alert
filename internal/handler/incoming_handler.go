@@ -49,6 +49,7 @@ var (
 	URL_FOOTMERCATO     string = utils.GetEnv("URL_FOOTMERCATO")
 	URL_MADEINFOOT      string = utils.GetEnv("URL_MADEINFOOT")
 	URL_RMCSPORT        string = utils.GetEnv("URL_RMCSPORT")
+	URL_MOBIMIUMNEWS    string = utils.GetEnv("URL_RMCSPORT")
 )
 
 var (
@@ -1555,6 +1556,10 @@ func (h *IncomingHandler) MySubscription(baseUrl, msisdn string, page int) strin
 		servicesString = "Vous n'etes pas encore abonne"
 	}
 	return servicesString
+}
+
+func (h *IncomingHandler) LandingPage(c *fiber.Ctx) error {
+	return c.Render("/", fiber.Map{"": ""})
 }
 
 func (h *IncomingHandler) TestBalance(c *fiber.Ctx) error {

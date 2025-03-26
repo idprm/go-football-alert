@@ -55,6 +55,7 @@ type Subscription struct {
 	BeforeBalance        float64   `gorm:"default:0" json:"before_balance,omitempty"`
 	AfterBalance         float64   `gorm:"default:0" json:"after_balance,omitempty"`
 	IpAddress            string    `gorm:"size:25" json:"ip_address"`
+	AttempSuccess        int       `gorm:"size:3;default:1" json:"attemp_success"`
 	IsFollowTeam         bool      `gorm:"type:boolean;column:is_follow_team" json:"is_follow_team,omitempty"`
 	IsFollowLeague       bool      `gorm:"type:boolean;column:is_follow_competition" json:"is_follow_competition,omitempty"`
 	IsPredictWin         bool      `gorm:"type:boolean;column:is_predict_win" json:"is_predict_win,omitempty"`
@@ -108,6 +109,10 @@ func (s *Subscription) GetLatestStatus() string {
 
 func (s *Subscription) GetIpAddress() string {
 	return s.IpAddress
+}
+
+func (s *Subscription) GetAttempSuccess() int {
+	return s.AttempSuccess
 }
 
 func (s *Subscription) SetLatestTrxId(v string) {

@@ -23,6 +23,7 @@ const (
 	SRC_AFRICATOPSPORTS string = "AFRICATOPSPORTS"
 	SRC_FOOTMERCATO     string = "FOOTMERCATO"
 	SRC_RMCSPORT        string = "RMCSPORT"
+	SRC_MOBIMIUMNEWS    string = "MOBIMIUMNEWS"
 )
 
 type ScraperHandler struct {
@@ -732,4 +733,41 @@ func (h *ScraperHandler) NewsRmcSport() {
 
 	}
 
+}
+
+func (h *ScraperHandler) MobimiumNews() {
+	m := rss.NewNewsRSS()
+	n, err := m.GetNews(URL_MOBIMIUMNEWS)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	var resp model.MobimiumNewsResponse
+	xml.Unmarshal(n, &resp)
+
+	for _, el := range resp.Url.News {
+		d, _ := time.Parse(time.RFC3339, el.GetPublicationDate())
+		if !h.newsService.IsNews(d, slug.Make(el.GetTitle())) {
+			news := &entity.News{
+				Title:       el.GetTitle(),
+				Slug:        slug.Make(el.GetTitle()),
+				Description: el.GetPublicationDate(),
+				Source:      SRC_MOBIMIUMNEWS,
+				PublishAt:   d,
+			}
+
+			h.newsService.Save(news)
+
+			jsonData, err := json.Marshal(news)
+			if err != nil {
+				log.Println(err.Error())
+			}
+
+			h.rmq.IntegratePublish(
+				RMQ_NEWS_EXCHANGE,
+				RMQ_NEWS_QUEUE,
+				RMQ_DATA_TYPE, "", string(jsonData),
+			)
+		}
+	}
 }
