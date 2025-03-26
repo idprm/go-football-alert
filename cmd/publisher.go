@@ -907,6 +907,7 @@ func scrapingNews(db *gorm.DB, rmq rmqp.AMQP) {
 	// h.NewsFootMercato()
 	// rmcsport
 	// h.NewsRmcSport()
+
 	// mobimiumnews
 	h.MobimiumNews()
 }
