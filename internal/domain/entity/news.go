@@ -97,6 +97,10 @@ func (e *News) GetAwayTeam() string {
 	return strings.TrimSpace(e.GetParseTitleLeft()[strings.IndexByte(e.GetParseTitleLeft(), '-')+1:])
 }
 
+func (e *News) SetId(v int64) {
+	e.ID = v
+}
+
 func (e *News) IsHeadTitle() bool {
 	return strings.Contains(e.GetTitle(), ":")
 }

@@ -559,7 +559,13 @@ func (h *ScraperHandler) NewsMaxiFoot() {
 				PublishAt:   d,
 			}
 			h.newsService.Save(news)
-			jsonData, err := json.Marshal(news)
+
+			t, err := h.newsService.Get(d, slug.Make(el.Title))
+			if err != nil {
+				log.Println(err.Error())
+			}
+
+			jsonData, err := json.Marshal(t)
 			if err != nil {
 				log.Println(err.Error())
 			}
@@ -599,7 +605,12 @@ func (h *ScraperHandler) NewsMadeInFoot() {
 
 			h.newsService.Save(news)
 
-			jsonData, err := json.Marshal(news)
+			t, err := h.newsService.Get(d, slug.Make(el.Title))
+			if err != nil {
+				log.Println(err.Error())
+			}
+
+			jsonData, err := json.Marshal(t)
 			if err != nil {
 				log.Println(err.Error())
 			}
@@ -641,7 +652,12 @@ func (h *ScraperHandler) NewsAfricaTopSports() {
 
 			h.newsService.Save(news)
 
-			jsonData, err := json.Marshal(news)
+			t, err := h.newsService.Get(d, slug.Make(el.Title))
+			if err != nil {
+				log.Println(err.Error())
+			}
+
+			jsonData, err := json.Marshal(t)
 			if err != nil {
 				log.Println(err.Error())
 			}
@@ -678,7 +694,12 @@ func (h *ScraperHandler) NewsFootMercato() {
 
 			h.newsService.Save(news)
 
-			jsonData, err := json.Marshal(news)
+			t, err := h.newsService.Get(d, slug.Make(el.Title))
+			if err != nil {
+				log.Println(err.Error())
+			}
+
+			jsonData, err := json.Marshal(t)
 			if err != nil {
 				log.Println(err.Error())
 			}
@@ -761,7 +782,12 @@ func (h *ScraperHandler) MobimiumNews() {
 
 			h.newsService.Save(news)
 
-			jsonData, err := json.Marshal(news)
+			t, err := h.newsService.Get(d, slug.Make(el.Title))
+			if err != nil {
+				log.Println(err.Error())
+			}
+
+			jsonData, err := json.Marshal(t)
 			if err != nil {
 				log.Println(err.Error())
 			}

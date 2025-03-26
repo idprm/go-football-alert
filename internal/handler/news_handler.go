@@ -431,8 +431,8 @@ func (h *NewsHandler) SMSAlerteTeam(teamId int64) {
 
 func (h *NewsHandler) IsTime() bool {
 	// from 9am to 10pm
-	start, _ := time.Parse("15:04", "09:00")
-	end, _ := time.Parse("15:04", "22:00")
+	start, _ := time.Parse("15:04", "08:00")
+	end, _ := time.Parse("15:04", "22:30")
 
 	t, err := time.Parse("15:04", time.Now().Format("15:04"))
 	if err != nil {
