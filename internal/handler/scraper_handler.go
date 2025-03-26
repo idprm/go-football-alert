@@ -740,7 +740,13 @@ func (h *ScraperHandler) NewsRmcSport() {
 				PublishAt:   d,
 			}
 			h.newsService.Save(news)
-			jsonData, err := json.Marshal(news)
+
+			t, err := h.newsService.Get(d, slug.Make(el.Title))
+			if err != nil {
+				log.Println(err.Error())
+			}
+
+			jsonData, err := json.Marshal(t)
 			if err != nil {
 				log.Println(err.Error())
 			}
