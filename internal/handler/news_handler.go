@@ -123,20 +123,20 @@ func (h *NewsHandler) Filter() {
 					h.SMSAlerteTeam(team.GetId())
 
 					// assign league by team
-					if h.teamService.IsLeagueByTeam(int(team.GetId())) {
-						l, err := h.teamService.GetLeagueByTeam(int(team.GetId()))
-						if err != nil {
-							log.Println(err.Error())
-						}
+					// if h.teamService.IsLeagueByTeam(int(team.GetId())) {
+					// 	l, err := h.teamService.GetLeagueByTeam(int(team.GetId()))
+					// 	if err != nil {
+					// 		log.Println(err.Error())
+					// 	}
 
-						h.newsService.SaveNewsLeague(
-							&entity.NewsLeagues{
-								NewsID:   h.news.GetId(),
-								LeagueID: l.League.GetId(),
-							},
-						)
-						h.SMSAlerteLeague(l.League.GetId())
-					}
+					// 	h.newsService.SaveNewsLeague(
+					// 		&entity.NewsLeagues{
+					// 			NewsID:   h.news.GetId(),
+					// 			LeagueID: l.League.GetId(),
+					// 		},
+					// 	)
+					// 	h.SMSAlerteLeague(l.League.GetId())
+					// }
 				}
 
 			}
@@ -219,20 +219,20 @@ func (h *NewsHandler) Filter() {
 					h.SMSAlerteTeam(team.GetId())
 
 					// assign league by team
-					if h.teamService.IsLeagueByTeam(int(team.GetId())) {
-						l, err := h.teamService.GetLeagueByTeam(int(team.GetId()))
-						if err != nil {
-							log.Println(err.Error())
-						}
+					// if h.teamService.IsLeagueByTeam(int(team.GetId())) {
+					// 	l, err := h.teamService.GetLeagueByTeam(int(team.GetId()))
+					// 	if err != nil {
+					// 		log.Println(err.Error())
+					// 	}
 
-						h.newsService.SaveNewsLeague(
-							&entity.NewsLeagues{
-								NewsID:   h.news.GetId(),
-								LeagueID: l.League.GetId(),
-							},
-						)
-						h.SMSAlerteLeague(l.League.GetId())
-					}
+					// 	h.newsService.SaveNewsLeague(
+					// 		&entity.NewsLeagues{
+					// 			NewsID:   h.news.GetId(),
+					// 			LeagueID: l.League.GetId(),
+					// 		},
+					// 	)
+					// 	h.SMSAlerteLeague(l.League.GetId())
+					// }
 				}
 			}
 
@@ -254,20 +254,20 @@ func (h *NewsHandler) Filter() {
 					h.SMSAlerteTeam(team.GetId())
 
 					// assign league by team
-					if h.teamService.IsLeagueByTeam(int(team.GetId())) {
-						l, err := h.teamService.GetLeagueByTeam(int(team.GetId()))
-						if err != nil {
-							log.Println(err.Error())
-						}
+					// if h.teamService.IsLeagueByTeam(int(team.GetId())) {
+					// 	l, err := h.teamService.GetLeagueByTeam(int(team.GetId()))
+					// 	if err != nil {
+					// 		log.Println(err.Error())
+					// 	}
 
-						h.newsService.SaveNewsLeague(
-							&entity.NewsLeagues{
-								NewsID:   h.news.GetId(),
-								LeagueID: l.League.GetId(),
-							},
-						)
-						h.SMSAlerteLeague(l.League.GetId())
-					}
+					// 	h.newsService.SaveNewsLeague(
+					// 		&entity.NewsLeagues{
+					// 			NewsID:   h.news.GetId(),
+					// 			LeagueID: l.League.GetId(),
+					// 		},
+					// 	)
+					// 	h.SMSAlerteLeague(l.League.GetId())
+					// }
 				}
 			}
 
@@ -289,20 +289,20 @@ func (h *NewsHandler) Filter() {
 					h.SMSAlerteTeam(team.GetId())
 
 					// assign league by team
-					if h.teamService.IsLeagueByTeam(int(team.GetId())) {
-						l, err := h.teamService.GetLeagueByTeam(int(team.GetId()))
-						if err != nil {
-							log.Println(err.Error())
-						}
+					// if h.teamService.IsLeagueByTeam(int(team.GetId())) {
+					// 	l, err := h.teamService.GetLeagueByTeam(int(team.GetId()))
+					// 	if err != nil {
+					// 		log.Println(err.Error())
+					// 	}
 
-						h.newsService.SaveNewsLeague(
-							&entity.NewsLeagues{
-								NewsID:   h.news.GetId(),
-								LeagueID: l.League.GetId(),
-							},
-						)
-						h.SMSAlerteLeague(l.League.GetId())
-					}
+					// 	h.newsService.SaveNewsLeague(
+					// 		&entity.NewsLeagues{
+					// 			NewsID:   h.news.GetId(),
+					// 			LeagueID: l.League.GetId(),
+					// 		},
+					// 	)
+					// 	h.SMSAlerteLeague(l.League.GetId())
+					// }
 				}
 			}
 
@@ -353,20 +353,20 @@ func (h *NewsHandler) Filter() {
 				h.SMSAlerteTeam(team.GetId())
 
 				// assign league by team
-				if h.teamService.IsLeagueByTeam(int(team.GetId())) {
-					l, err := h.teamService.GetLeagueByTeam(int(team.GetId()))
-					if err != nil {
-						log.Println(err.Error())
-					}
+				// if h.teamService.IsLeagueByTeam(int(team.GetId())) {
+				// 	l, err := h.teamService.GetLeagueByTeam(int(team.GetId()))
+				// 	if err != nil {
+				// 		log.Println(err.Error())
+				// 	}
 
-					h.newsService.SaveNewsLeague(
-						&entity.NewsLeagues{
-							NewsID:   h.news.GetId(),
-							LeagueID: l.League.GetId(),
-						},
-					)
-					h.SMSAlerteLeague(l.League.GetId())
-				}
+				// 	h.newsService.SaveNewsLeague(
+				// 		&entity.NewsLeagues{
+				// 			NewsID:   h.news.GetId(),
+				// 			LeagueID: l.League.GetId(),
+				// 		},
+				// 	)
+				// 	h.SMSAlerteLeague(l.League.GetId())
+				// }
 			}
 		}
 	}

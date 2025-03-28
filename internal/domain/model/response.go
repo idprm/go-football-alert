@@ -1,5 +1,13 @@
 package model
 
+import (
+	"unicode"
+
+	"golang.org/x/text/runes"
+	"golang.org/x/text/transform"
+	"golang.org/x/text/unicode/norm"
+)
+
 type WebResponse struct {
 	Error       bool   `json:"error,omitempty"`
 	StatusCode  int    `json:"status_code,omitempty"`
@@ -187,6 +195,12 @@ type LeagueResp struct {
 	Logo string `json:"logo,omitempty"`
 }
 
+func (m *LeagueResp) GetNameWithoutAccents() string {
+	t := transform.Chain(norm.NFD, runes.Remove(runes.In(unicode.Mn)), norm.NFC)
+	result, _, _ := transform.String(t, m.Name)
+	return result
+}
+
 type CountryResp struct {
 	Name string `json:"name,omitempty"`
 	Code string `json:"code,omitempty"`
@@ -214,6 +228,12 @@ type TeamResp struct {
 	Logo    string `json:"logo,omitempty"`
 	Founded int    `json:"founded,omitempty"`
 	Country string `json:"country,omitempty"`
+}
+
+func (m *TeamResp) GetNameWithoutAccents() string {
+	t := transform.Chain(norm.NFD, runes.Remove(runes.In(unicode.Mn)), norm.NFC)
+	result, _, _ := transform.String(t, m.Name)
+	return result
 }
 
 type MaxfootRSSResponse struct {

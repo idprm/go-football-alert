@@ -79,8 +79,8 @@ func (h *ScraperHandler) Leagues() {
 			h.leagueService.Save(
 				&entity.League{
 					PrimaryID: int64(el.League.ID),
-					Name:      el.League.Name,
-					Slug:      slug.Make(el.League.Name),
+					Name:      el.League.GetNameWithoutAccents(),
+					Slug:      slug.Make(el.League.GetNameWithoutAccents()),
 					Logo:      el.League.Logo,
 					Country:   el.Country.Name,
 				},
@@ -89,7 +89,8 @@ func (h *ScraperHandler) Leagues() {
 			h.leagueService.UpdateByPrimaryId(
 				&entity.League{
 					PrimaryID: int64(el.League.ID),
-					Slug:      slug.Make(el.League.Name),
+					Name:      el.League.GetNameWithoutAccents(),
+					Slug:      slug.Make(el.League.GetNameWithoutAccents()),
 					Logo:      el.League.Logo,
 					Country:   el.Country.Name,
 				},
@@ -123,8 +124,8 @@ func (h *ScraperHandler) Teams() {
 					h.teamService.Save(
 						&entity.Team{
 							PrimaryID: int64(el.Team.ID),
-							Name:      el.Team.Name,
-							Slug:      slug.Make(el.Team.Name),
+							Name:      el.Team.GetNameWithoutAccents(),
+							Slug:      slug.Make(el.Team.GetNameWithoutAccents()),
 							Code:      el.Team.Code,
 							Logo:      el.Team.Logo,
 							Founded:   el.Team.Founded,
@@ -147,7 +148,8 @@ func (h *ScraperHandler) Teams() {
 					h.teamService.UpdateByPrimaryId(
 						&entity.Team{
 							PrimaryID: int64(el.Team.ID),
-							Slug:      slug.Make(el.Team.Name),
+							Name:      el.Team.GetNameWithoutAccents(),
+							Slug:      slug.Make(el.Team.GetNameWithoutAccents()),
 							Code:      el.Team.Code,
 							Logo:      el.Team.Logo,
 							Founded:   el.Team.Founded,
@@ -308,10 +310,11 @@ func (h *ScraperHandler) LiveMatches() {
 					if h.fixtureService.IsFixtureByPastTime() {
 						h.fixtureService.UpdateByPrimaryId(
 							&entity.Fixture{
-								PrimaryID: int64(el.Fixtures.ID),
-								IsDone:    true,
-								Goal:      strconv.Itoa(el.Goals.Home) + "-" + strconv.Itoa(el.Goals.Away),
-								Elapsed:   el.Fixtures.Status.Elapsed,
+								PrimaryID:   int64(el.Fixtures.ID),
+								IsDone:      true,
+								FixtureDate: fixtureDate,
+								Goal:        strconv.Itoa(el.Goals.Home) + "-" + strconv.Itoa(el.Goals.Away),
+								Elapsed:     el.Fixtures.Status.Elapsed,
 							},
 						)
 					}
