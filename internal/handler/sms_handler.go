@@ -686,52 +686,54 @@ func (h *SMSHandler) AlreadySubAlerteCompetition(league *entity.League) {
 		log.Println(err)
 	}
 
-	sub, err := h.subscriptionService.Get(service.GetId(), h.req.GetMsisdn(), league.GetCode())
-	if err != nil {
-		log.Println(err.Error())
-	}
+	if h.subscriptionService.IsSubscription(service.GetId(), h.req.GetMsisdn(), league.GetCode()) {
+		sub, err := h.subscriptionService.Get(service.GetId(), h.req.GetMsisdn(), league.GetCode())
+		if err != nil {
+			log.Println(err.Error())
+		}
 
-	if !h.subscriptionFollowLeagueService.IsSub(sub.GetId(), league.GetId()) {
-		// insert follow league
-		h.subscriptionFollowLeagueService.Save(
-			&entity.SubscriptionFollowLeague{
-				SubscriptionID: sub.GetId(),
-				LeagueID:       league.GetId(),
-				LimitPerDay:    LIMIT_PER_DAY,
-				IsActive:       true,
-			},
+		if !h.subscriptionFollowLeagueService.IsSub(sub.GetId(), league.GetId()) {
+			// insert follow league
+			h.subscriptionFollowLeagueService.Save(
+				&entity.SubscriptionFollowLeague{
+					SubscriptionID: sub.GetId(),
+					LeagueID:       league.GetId(),
+					LimitPerDay:    LIMIT_PER_DAY,
+					IsActive:       true,
+				},
+			)
+		} else {
+			// update follow league
+			h.subscriptionFollowLeagueService.Update(
+				&entity.SubscriptionFollowLeague{
+					SubscriptionID: sub.GetId(),
+					LeagueID:       league.GetId(),
+					LimitPerDay:    LIMIT_PER_DAY,
+					IsActive:       true,
+				},
+			)
+		}
+
+		mt := &model.MTRequest{
+			Smsc:         h.req.GetTo(),
+			Keyword:      h.req.GetSMS(),
+			Service:      service,
+			Subscription: sub,
+			Content:      content,
+		}
+		mt.SetTrxId(trxId)
+
+		jsonData, err := json.Marshal(mt)
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		h.rmq.IntegratePublish(
+			RMQ_MT_EXCHANGE,
+			RMQ_MT_QUEUE,
+			RMQ_DATA_TYPE, "", string(jsonData),
 		)
-	} else {
-		// update follow league
-		h.subscriptionFollowLeagueService.Update(
-			&entity.SubscriptionFollowLeague{
-				SubscriptionID: sub.GetId(),
-				LeagueID:       league.GetId(),
-				LimitPerDay:    LIMIT_PER_DAY,
-				IsActive:       true,
-			},
-		)
 	}
-
-	mt := &model.MTRequest{
-		Smsc:         h.req.GetTo(),
-		Keyword:      h.req.GetSMS(),
-		Service:      service,
-		Subscription: sub,
-		Content:      content,
-	}
-	mt.SetTrxId(trxId)
-
-	jsonData, err := json.Marshal(mt)
-	if err != nil {
-		log.Println(err.Error())
-	}
-
-	h.rmq.IntegratePublish(
-		RMQ_MT_EXCHANGE,
-		RMQ_MT_QUEUE,
-		RMQ_DATA_TYPE, "", string(jsonData),
-	)
 }
 
 func (h *SMSHandler) AlreadySubAlerteEquipe(team *entity.Team) {
@@ -747,52 +749,54 @@ func (h *SMSHandler) AlreadySubAlerteEquipe(team *entity.Team) {
 		log.Println(err)
 	}
 
-	sub, err := h.subscriptionService.Get(service.GetId(), h.req.GetMsisdn(), team.GetCode())
-	if err != nil {
-		log.Println(err.Error())
-	}
+	if h.subscriptionService.IsSubscription(service.GetId(), h.req.GetMsisdn(), team.GetCode()) {
+		sub, err := h.subscriptionService.Get(service.GetId(), h.req.GetMsisdn(), team.GetCode())
+		if err != nil {
+			log.Println(err.Error())
+		}
 
-	if !h.subscriptionFollowTeamService.IsSub(sub.GetId(), team.GetId()) {
-		// insert follow team
-		h.subscriptionFollowTeamService.Save(
-			&entity.SubscriptionFollowTeam{
-				SubscriptionID: sub.GetId(),
-				TeamID:         team.GetId(),
-				LimitPerDay:    LIMIT_PER_DAY,
-				IsActive:       true,
-			},
+		if !h.subscriptionFollowTeamService.IsSub(sub.GetId(), team.GetId()) {
+			// insert follow team
+			h.subscriptionFollowTeamService.Save(
+				&entity.SubscriptionFollowTeam{
+					SubscriptionID: sub.GetId(),
+					TeamID:         team.GetId(),
+					LimitPerDay:    LIMIT_PER_DAY,
+					IsActive:       true,
+				},
+			)
+		} else {
+			// update follow team
+			h.subscriptionFollowTeamService.Update(
+				&entity.SubscriptionFollowTeam{
+					SubscriptionID: sub.GetId(),
+					TeamID:         team.GetId(),
+					LimitPerDay:    LIMIT_PER_DAY,
+					IsActive:       true,
+				},
+			)
+		}
+
+		mt := &model.MTRequest{
+			Smsc:         h.req.GetTo(),
+			Keyword:      h.req.GetSMS(),
+			Service:      service,
+			Subscription: sub,
+			Content:      content,
+		}
+		mt.SetTrxId(trxId)
+
+		jsonData, err := json.Marshal(mt)
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		h.rmq.IntegratePublish(
+			RMQ_MT_EXCHANGE,
+			RMQ_MT_QUEUE,
+			RMQ_DATA_TYPE, "", string(jsonData),
 		)
-	} else {
-		// update follow team
-		h.subscriptionFollowTeamService.Update(
-			&entity.SubscriptionFollowTeam{
-				SubscriptionID: sub.GetId(),
-				TeamID:         team.GetId(),
-				LimitPerDay:    LIMIT_PER_DAY,
-				IsActive:       true,
-			},
-		)
 	}
-
-	mt := &model.MTRequest{
-		Smsc:         h.req.GetTo(),
-		Keyword:      h.req.GetSMS(),
-		Service:      service,
-		Subscription: sub,
-		Content:      content,
-	}
-	mt.SetTrxId(trxId)
-
-	jsonData, err := json.Marshal(mt)
-	if err != nil {
-		log.Println(err.Error())
-	}
-
-	h.rmq.IntegratePublish(
-		RMQ_MT_EXCHANGE,
-		RMQ_MT_QUEUE,
-		RMQ_DATA_TYPE, "", string(jsonData),
-	)
 }
 
 func (h *SMSHandler) SubLivematch(p string) {
