@@ -226,8 +226,12 @@ func (h *ScraperHandler) Fixtures() {
 						if h.fixtureService.IsFixtureByPastTime() {
 							h.fixtureService.UpdateByPrimaryId(
 								&entity.Fixture{
-									PrimaryID: int64(el.Fixtures.ID),
-									IsDone:    true,
+									PrimaryID:   int64(el.Fixtures.ID),
+									Timezone:    el.Fixtures.TimeZone,
+									FixtureDate: fixtureDate,
+									TimeStamp:   el.Fixtures.Timestamp,
+									IsDone:      true,
+									Goal:        strconv.Itoa(el.Goals.Home) + "-" + strconv.Itoa(el.Goals.Away),
 								},
 							)
 						}
@@ -248,8 +252,12 @@ func (h *ScraperHandler) Fixtures() {
 						if h.fixtureService.IsFixtureByPastTime() {
 							h.fixtureService.UpdateByPrimaryId(
 								&entity.Fixture{
-									PrimaryID: int64(el.Fixtures.ID),
-									IsDone:    true,
+									PrimaryID:   int64(el.Fixtures.ID),
+									Timezone:    el.Fixtures.TimeZone,
+									FixtureDate: fixtureDate,
+									TimeStamp:   el.Fixtures.Timestamp,
+									IsDone:      true,
+									Goal:        strconv.Itoa(el.Goals.Home) + "-" + strconv.Itoa(el.Goals.Away),
 								},
 							)
 						}
@@ -302,6 +310,8 @@ func (h *ScraperHandler) LiveMatches() {
 							&entity.Fixture{
 								PrimaryID: int64(el.Fixtures.ID),
 								IsDone:    true,
+								Goal:      strconv.Itoa(el.Goals.Home) + "-" + strconv.Itoa(el.Goals.Away),
+								Elapsed:   el.Fixtures.Status.Elapsed,
 							},
 						)
 					}

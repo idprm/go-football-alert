@@ -355,7 +355,7 @@ var publisherScrapingFixturesCmd = &cobra.Command{
 		/**
 		 * Looping schedule
 		 */
-		timeDuration := time.Duration(6)
+		timeDuration := time.Duration(10)
 
 		for {
 
