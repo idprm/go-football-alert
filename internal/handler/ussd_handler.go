@@ -706,6 +706,38 @@ func (h *UssdHandler) Firstpush(category string, service *entity.Service, code s
 				IsFree:        true,
 			},
 		)
+
+		h.transactionService.Save(
+			&entity.Transaction{
+				TrxId:        trxId,
+				ServiceID:    service.GetId(),
+				Msisdn:       h.req.GetMsisdn(),
+				Code:         code,
+				Channel:      CHANNEL_USSD,
+				Keyword:      code,
+				Amount:       service.GetPrice(),
+				Status:       STATUS_SUCCESS,
+				StatusCode:   "",
+				StatusDetail: "",
+				Subject:      SUBJECT_FREEPUSH,
+				Payload:      "-",
+				Note:         note,
+			},
+		)
+
+		h.historyService.Save(
+			&entity.History{
+				SubscriptionID: sub.GetId(),
+				ServiceID:      service.GetId(),
+				Msisdn:         h.req.GetMsisdn(),
+				Code:           code,
+				Channel:        CHANNEL_USSD,
+				Keyword:        code,
+				Subject:        SUBJECT_FREEPUSH,
+				Status:         STATUS_SUCCESS,
+			},
+		)
+
 	} else {
 		// charging if free day >= 1
 		t := telco.NewTelco(h.logger, service, subscription, trxId)

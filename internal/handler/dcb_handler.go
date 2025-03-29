@@ -1112,3 +1112,7 @@ func (h *DCBHandler) SMSPronostic(pronoId int64) {
 		}
 	}
 }
+
+func (h *DCBHandler) ReportDaily(c *fiber.Ctx) error {
+	return c.Render("", "")
+}
