@@ -329,6 +329,7 @@ var publisherScrapingMasterCmd = &cobra.Command{
 		for {
 
 			go func() {
+				scrapingLeagues(db)
 				scrapingTeams(db)
 				scrapingStandings(db)
 			}()
@@ -355,7 +356,7 @@ var publisherScrapingFixturesCmd = &cobra.Command{
 		/**
 		 * Looping schedule
 		 */
-		timeDuration := time.Duration(10)
+		timeDuration := time.Duration(30)
 
 		for {
 
@@ -363,7 +364,7 @@ var publisherScrapingFixturesCmd = &cobra.Command{
 				scrapingFixtures(db)
 			}()
 
-			time.Sleep(timeDuration * time.Hour)
+			time.Sleep(timeDuration * time.Minute)
 		}
 	},
 }

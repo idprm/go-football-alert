@@ -64,7 +64,7 @@ func NewScraperHandler(
 
 func (h *ScraperHandler) Leagues() {
 	fb := apifb.NewApiFb()
-	f, err := fb.GetLeagues()
+	f, err := fb.GetLeagues(2024)
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -111,7 +111,7 @@ func (h *ScraperHandler) Teams() {
 
 		for _, l := range leagues {
 
-			f, err := fb.GetTeams(int(l.PrimaryID))
+			f, err := fb.GetTeams(int(l.PrimaryID), l.GetSeason())
 			if err != nil {
 				log.Println(err.Error())
 			}
@@ -186,7 +186,7 @@ func (h *ScraperHandler) Fixtures() {
 
 	if len(leagues) > 0 {
 		for _, l := range leagues {
-			f, err := fb.GetFixtures(int(l.PrimaryID))
+			f, err := fb.GetFixtures(int(l.PrimaryID), l.GetSeason())
 			if err != nil {
 				log.Println(err.Error())
 			}
@@ -281,7 +281,7 @@ func (h *ScraperHandler) LiveMatches() {
 
 	if len(leagues) > 0 {
 		for _, l := range leagues {
-			f, err := fb.GetLiveMatch(int(l.PrimaryID))
+			f, err := fb.GetLiveMatch(int(l.PrimaryID), l.GetSeason())
 			if err != nil {
 				log.Println(err.Error())
 			}
@@ -421,7 +421,7 @@ func (h *ScraperHandler) Standings() {
 				log.Println(err.Error())
 			}
 
-			f, err := fb.GetStandings(int(l.PrimaryID))
+			f, err := fb.GetStandings(int(l.PrimaryID), l.GetSeason())
 			if err != nil {
 				log.Println(err.Error())
 			}

@@ -23,14 +23,14 @@ func NewApiFb() *ApiFb {
 	return &ApiFb{}
 }
 
-func (p *ApiFb) GetLeagues() ([]byte, error) {
+func (p *ApiFb) GetLeagues(season int) ([]byte, error) {
 	req, err := http.NewRequest("GET", API_FOOTBALL_URL+"/leagues", nil)
 	if err != nil {
 		return nil, errors.New(err.Error())
 	}
 
 	q := req.URL.Query()
-	q.Add("season", strconv.Itoa(time.Now().Year()))
+	q.Add("season", strconv.Itoa(season))
 
 	req.URL.RawQuery = q.Encode()
 
@@ -62,7 +62,7 @@ func (p *ApiFb) GetLeagues() ([]byte, error) {
 	return body, nil
 }
 
-func (p *ApiFb) GetTeams(leagueId int) ([]byte, error) {
+func (p *ApiFb) GetTeams(leagueId, season int) ([]byte, error) {
 	req, err := http.NewRequest("GET", API_FOOTBALL_URL+"/teams", nil)
 	if err != nil {
 		return nil, errors.New(err.Error())
@@ -70,8 +70,7 @@ func (p *ApiFb) GetTeams(leagueId int) ([]byte, error) {
 
 	q := req.URL.Query()
 	q.Add("league", strconv.Itoa(leagueId))
-	// q.Add("season", strconv.Itoa(time.Now().Year()))
-	q.Add("season", "2024")
+	q.Add("season", strconv.Itoa(season))
 
 	req.URL.RawQuery = q.Encode()
 
@@ -103,14 +102,14 @@ func (p *ApiFb) GetTeams(leagueId int) ([]byte, error) {
 	return body, nil
 }
 
-func (p *ApiFb) GetFixtures(leagueId int) ([]byte, error) {
+func (p *ApiFb) GetFixtures(leagueId, season int) ([]byte, error) {
 	req, err := http.NewRequest("GET", API_FOOTBALL_URL+"/fixtures", nil)
 	if err != nil {
 		return nil, errors.New(err.Error())
 	}
 
 	q := req.URL.Query()
-	q.Add("season", strconv.Itoa(time.Now().Year()))
+	q.Add("season", strconv.Itoa(season))
 	q.Add("league", strconv.Itoa(leagueId))
 	req.URL.RawQuery = q.Encode()
 	req.Header.Set("x-rapidapi-key", API_FOOTBALL_KEY)
@@ -141,14 +140,14 @@ func (p *ApiFb) GetFixtures(leagueId int) ([]byte, error) {
 	return body, nil
 }
 
-func (p *ApiFb) GetLiveMatch(leagueId int) ([]byte, error) {
+func (p *ApiFb) GetLiveMatch(leagueId, season int) ([]byte, error) {
 	req, err := http.NewRequest("GET", API_FOOTBALL_URL+"/fixtures", nil)
 	if err != nil {
 		return nil, errors.New(err.Error())
 	}
 
 	q := req.URL.Query()
-	q.Add("season", strconv.Itoa(time.Now().Year()))
+	q.Add("season", strconv.Itoa(season))
 	q.Add("league", strconv.Itoa(leagueId))
 	q.Add("live", "all")
 	req.URL.RawQuery = q.Encode()
@@ -217,14 +216,14 @@ func (p *ApiFb) GetPredictions(fixtureId int) ([]byte, error) {
 	return body, nil
 }
 
-func (p *ApiFb) GetStandings(leagueId int) ([]byte, error) {
+func (p *ApiFb) GetStandings(leagueId, season int) ([]byte, error) {
 	req, err := http.NewRequest("GET", API_FOOTBALL_URL+"/standings", nil)
 	if err != nil {
 		return nil, errors.New(err.Error())
 	}
 
 	q := req.URL.Query()
-	q.Add("season", strconv.Itoa(time.Now().Year()))
+	q.Add("season", strconv.Itoa(season))
 	q.Add("league", strconv.Itoa(leagueId))
 	req.URL.RawQuery = q.Encode()
 	req.Header.Set("x-rapidapi-key", API_FOOTBALL_KEY)
@@ -292,14 +291,14 @@ func (p *ApiFb) GetFixturesLineups(fixtureId int) ([]byte, error) {
 	return body, nil
 }
 
-func (p *ApiFb) GetFixtureByLeague(leagueId int) ([]byte, error) {
+func (p *ApiFb) GetFixtureByLeague(leagueId, season int) ([]byte, error) {
 	req, err := http.NewRequest("GET", API_FOOTBALL_URL+"/fixtures", nil)
 	if err != nil {
 		return nil, errors.New(err.Error())
 	}
 
 	q := req.URL.Query()
-	q.Add("season", strconv.Itoa(time.Now().Year()))
+	q.Add("season", strconv.Itoa(season))
 	// primary league
 	q.Add("league", strconv.Itoa(leagueId))
 	req.URL.RawQuery = q.Encode()
@@ -409,7 +408,3 @@ func (p *ApiFb) GetFixtureByHeadToHead(h2h string) ([]byte, error) {
 
 	return body, nil
 }
-
-// func (p *ApiFb) GetOdds() ([]byte, error) {
-
-// }
