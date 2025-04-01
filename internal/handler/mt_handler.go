@@ -34,27 +34,30 @@ func NewMTHandler(
 }
 
 func (h *MTHandler) MessageTerminated() {
-	k := kannel.NewKannel(
-		h.logger,
-		h.req.Service,
-		h.req.Content,
-		h.req.Subscription,
-		h.req.TrxId,
-	)
-	statusCode, sms, err := k.SMS(h.req.Smsc)
-	if err != nil {
-		log.Println(err.Error())
+
+	if h.req.Content != nil {
+		k := kannel.NewKannel(
+			h.logger,
+			h.req.Service,
+			h.req.Content,
+			h.req.Subscription,
+			h.req.TrxId,
+		)
+		statusCode, sms, err := k.SMS(h.req.Smsc)
+		if err != nil {
+			log.Println(err.Error())
+		}
+		h.mtService.Save(
+			&entity.MT{
+				TrxId:      h.req.TrxId,
+				Msisdn:     h.req.Subscription.GetMsisdn(),
+				Keyword:    h.req.Keyword,
+				Content:    h.req.Content.GetValue(),
+				StatusCode: statusCode,
+				StatusText: http.StatusText(statusCode),
+				Payload:    string(sms),
+			},
+		)
 	}
-	h.mtService.Save(
-		&entity.MT{
-			TrxId:      h.req.TrxId,
-			Msisdn:     h.req.Subscription.GetMsisdn(),
-			Keyword:    h.req.Keyword,
-			Content:    h.req.Content.GetValue(),
-			StatusCode: statusCode,
-			StatusText: http.StatusText(statusCode),
-			Payload:    string(sms),
-		},
-	)
 
 }
