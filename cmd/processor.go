@@ -237,6 +237,8 @@ func (p *Processor) News(wg *sync.WaitGroup, message []byte) {
 	teamService := services.NewTeamService(teamRepo)
 	newsRepo := repository.NewNewsRepository(p.db)
 	newsService := services.NewNewsService(newsRepo)
+	subscriptionRepo := repository.NewSubscriptionRepository(p.db)
+	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
 	subscriptionFollowLeagueRepo := repository.NewSubscriptionFollowLeagueRepository(p.db)
 	subscriptionFollowLeagueService := services.NewSubscriptionFollowLeagueService(subscriptionFollowLeagueRepo)
 	subscriptionFollowTeamRepo := repository.NewSubscriptionFollowTeamRepository(p.db)
@@ -251,6 +253,7 @@ func (p *Processor) News(wg *sync.WaitGroup, message []byte) {
 		leagueService,
 		teamService,
 		newsService,
+		subscriptionService,
 		subscriptionFollowLeagueService,
 		subscriptionFollowTeamService,
 		news,
@@ -296,6 +299,39 @@ func (p *Processor) SMSAlerte(wg *sync.WaitGroup, message []byte) {
 
 	// Send SMS Alerte
 	h.SMSAlerte()
+
+	wg.Done()
+}
+
+func (p *Processor) SMSActu(wg *sync.WaitGroup, message []byte) {
+	/**
+	 * load repo
+	 */
+	serviceRepo := repository.NewServiceRepository(p.db)
+	serviceService := services.NewServiceService(serviceRepo)
+	subscriptionRepo := repository.NewSubscriptionRepository(p.db)
+	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+	newsRepo := repository.NewNewsRepository(p.db)
+	newsService := services.NewNewsService(newsRepo)
+	smsActuRepo := repository.NewSMSActuRespository(p.db)
+	smsActuService := services.NewSMSActuService(smsActuRepo)
+
+	// parsing json to string
+	var smsActu *entity.SMSActu
+	json.Unmarshal(message, &smsActu)
+
+	h := handler.NewSMSActuHandler(
+		p.rmq,
+		p.logger,
+		serviceService,
+		subscriptionService,
+		newsService,
+		smsActuService,
+		smsActu,
+	)
+
+	// Send SMS Actu
+	h.SMSActu()
 
 	wg.Done()
 }

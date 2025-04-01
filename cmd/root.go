@@ -51,6 +51,8 @@ const (
 	RMQ_NEWS_QUEUE            string = "Q_NEWS"
 	RMQ_SMS_ALERTE_EXCHANGE   string = "E_SMS_ALERTE"
 	RMQ_SMS_ALERTE_QUEUE      string = "Q_SMS_ALERTE"
+	RMQ_SMS_ACTU_EXCHANGE     string = "E_SMS_ACTU"
+	RMQ_SMS_ACTU_QUEUE        string = "Q_SMS_ACTU"
 	RMQ_SMS_PRONO_EXCHANGE    string = "E_SMS_PRONO"
 	RMQ_SMS_PRONO_QUEUE       string = "Q_SMS_PRONO"
 	RMQ_PREDICT_WIN_EXCHANGE  string = "E_PREDICT_WIN"
@@ -159,6 +161,7 @@ func init() {
 	rootCmd.AddCommand(consumerMOCmd)
 	rootCmd.AddCommand(consumerNewsCmd)
 	rootCmd.AddCommand(consumerSMSAlerteCmd)
+	rootCmd.AddCommand(consumerSMSActuCmd)
 	rootCmd.AddCommand(consumerSMSPronoCmd)
 	rootCmd.AddCommand(consumerCreditGoalCmd)
 	rootCmd.AddCommand(consumerPredictWinCmd)

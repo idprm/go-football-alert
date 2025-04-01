@@ -17,6 +17,7 @@ type NewsHandler struct {
 	leagueService                   services.ILeagueService
 	teamService                     services.ITeamService
 	newsService                     services.INewsService
+	subscriptionService             services.ISubscriptionService
 	subscriptionFollowLeagueService services.ISubscriptionFollowLeagueService
 	subscriptionFollowTeamService   services.ISubscriptionFollowTeamService
 	news                            *entity.News
@@ -27,6 +28,7 @@ func NewNewsHandler(
 	leagueService services.ILeagueService,
 	teamService services.ITeamService,
 	newsService services.INewsService,
+	subscriptionService services.ISubscriptionService,
 	subscriptionFollowLeagueService services.ISubscriptionFollowLeagueService,
 	subscriptionFollowTeamService services.ISubscriptionFollowTeamService,
 	news *entity.News,
@@ -36,6 +38,7 @@ func NewNewsHandler(
 		leagueService:                   leagueService,
 		teamService:                     teamService,
 		newsService:                     newsService,
+		subscriptionService:             subscriptionService,
 		subscriptionFollowLeagueService: subscriptionFollowLeagueService,
 		subscriptionFollowTeamService:   subscriptionFollowTeamService,
 		news:                            news,
@@ -142,6 +145,16 @@ func (h *NewsHandler) Filter() {
 			}
 
 		} else {
+
+			// filtered
+			if !h.news.IsFilteredKeyword(h.news.GetWithoutAccent(h.news.GetParseTitleLeft())) {
+
+				if h.news.IsActu(h.news.GetWithoutAccent(h.news.GetParseTitleLeft())) {
+					// actu
+					h.SMSActu()
+				}
+			}
+
 			// filtered
 			if !h.news.IsFilteredKeyword(h.news.GetWithoutAccent(h.news.GetParseTitleLeft())) {
 				// league
@@ -427,6 +440,33 @@ func (h *NewsHandler) SMSAlerteTeam(teamId int64) {
 			}
 		}
 	}
+}
+
+func (h *NewsHandler) SMSActu() {
+
+	subs, err := h.subscriptionService.GetAllSubBySMSAlerte()
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	if len(*subs) > 0 {
+		for _, s := range *subs {
+			// is time
+			if h.IsTime() {
+				jsonData, err := json.Marshal(&entity.SMSActu{Msisdn: s.GetMsisdn(), NewsID: h.news.GetId()})
+				if err != nil {
+					log.Println(err.Error())
+				}
+
+				h.rmq.IntegratePublish(
+					RMQ_SMS_ACTU_EXCHANGE,
+					RMQ_SMS_ACTU_QUEUE,
+					RMQ_DATA_TYPE, "", string(jsonData),
+				)
+			}
+		}
+	}
+
 }
 
 func (h *NewsHandler) IsTime() bool {

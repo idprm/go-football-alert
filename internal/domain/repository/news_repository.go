@@ -21,6 +21,7 @@ type INewsRepository interface {
 	Count(time.Time, string) (int64, error)
 	CountNewsLeague(int64) (int64, error)
 	CountNewsTeam(int64) (int64, error)
+	CountNewsActu(int64) (int64, error)
 	CountById(int64) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetAllUSSD(int) ([]*entity.News, error)
@@ -60,6 +61,15 @@ func (r *NewsRepository) CountNewsLeague(leagueId int64) (int64, error) {
 func (r *NewsRepository) CountNewsTeam(teamId int64) (int64, error) {
 	var count int64
 	err := r.db.Model(&entity.NewsTeams{}).Where("team_id = ?", teamId).Where("DATE(created_at) = DATE(NOW())").Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *NewsRepository) CountNewsActu(newsId int64) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.NewsActu{}).Where("news_id = ?", newsId).Count(&count).Error
 	if err != nil {
 		return count, err
 	}

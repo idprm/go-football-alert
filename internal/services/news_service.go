@@ -21,6 +21,7 @@ type INewsService interface {
 	IsNews(time.Time, string) bool
 	IsNewsLeague(leagueId int64) bool
 	IsNewsTeam(teamId int64) bool
+	IsNewsActu(newsId int64) bool
 	IsNewsById(int64) bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetAllUSSD(int) ([]*entity.News, error)
@@ -51,6 +52,11 @@ func (s *NewsService) IsNewsLeague(leagueId int64) bool {
 
 func (s *NewsService) IsNewsTeam(teamId int64) bool {
 	count, _ := s.newsRepo.CountNewsTeam(teamId)
+	return count > 0
+}
+
+func (s *NewsService) IsNewsActu(newsId int64) bool {
+	count, _ := s.newsRepo.CountNewsActu(newsId)
 	return count > 0
 }
 

@@ -21,6 +21,7 @@ type ISubscriptionRepository interface {
 	CountActiveByCategory(string, string, string) (int64, error)
 	CountActiveByNonSMSAlerte(string, string) (int64, error)
 	CountActiveBySubId(int64) (int64, error)
+	CountActiveBySMSAlerteMsisdn(string) (int64, error)
 	CountActiveAllByMsisdn(string) (int64, error)
 	CountRenewal(int, string, string) (int64, error)
 	CountRetry(int, string, string) (int64, error)
@@ -30,6 +31,7 @@ type ISubscriptionRepository interface {
 	GetActiveByCategory(string, string, string) (*entity.Subscription, error)
 	GetByNonSMSAlerte(string, string) (*entity.Subscription, error)
 	GetActiveByNonSMSAlerte(string, string) (*entity.Subscription, error)
+	GetActiveBySMSAlerteMsisdn(string) (*entity.Subscription, error)
 	GetBySubId(int64) (*entity.Subscription, error)
 	GetActiveAllByMsisdnUSSD(string, int) (*[]entity.Subscription, error)
 	Get(int, string, string) (*entity.Subscription, error)
@@ -51,6 +53,7 @@ type ISubscriptionRepository interface {
 	Retry() (*[]entity.Subscription, error)
 	Reminder() (*[]entity.Subscription, error)
 	CountActiveSub(int) (int64, error)
+	GetAllSubBySMSAlerte() (*[]entity.Subscription, error)
 }
 
 func (r *SubscriptionRepository) Count(serviceId int, msisdn, code string) (int64, error) {
@@ -83,6 +86,15 @@ func (r *SubscriptionRepository) CountActiveByCategory(category, msisdn, code st
 func (r *SubscriptionRepository) CountActiveByNonSMSAlerte(category, msisdn string) (int64, error) {
 	var count int64
 	err := r.db.Model(&entity.Subscription{}).Where("category = ? AND msisdn = ?", category, msisdn).Where("is_active = ?", true).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *SubscriptionRepository) CountActiveBySMSAlerteMsisdn(msisdn string) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Subscription{}).Where("category IN('SMSALERTE_COMPETITION', 'SMSALERTE_EQUIPE') AND msisdn = ?", msisdn).Where("is_retry = false AND is_active = true").Count(&count).Error
 	if err != nil {
 		return count, err
 	}
@@ -174,6 +186,15 @@ func (r *SubscriptionRepository) GetByNonSMSAlerte(category, msisdn string) (*en
 func (r *SubscriptionRepository) GetActiveByNonSMSAlerte(category, msisdn string) (*entity.Subscription, error) {
 	var c entity.Subscription
 	err := r.db.Where("category = ? AND msisdn = ? AND is_active = true", category, msisdn).Take(&c).Error
+	if err != nil {
+		return nil, err
+	}
+	return &c, nil
+}
+
+func (r *SubscriptionRepository) GetActiveBySMSAlerteMsisdn(msisdn string) (*entity.Subscription, error) {
+	var c entity.Subscription
+	err := r.db.Where("category IN('SMSALERTE_COMPETITION', 'SMSALERTE_EQUIPE') AND msisdn = ? AND is_active = true", msisdn).Take(&c).Error
 	if err != nil {
 		return nil, err
 	}
@@ -364,4 +385,14 @@ func (r *SubscriptionRepository) CountActiveSub(serviceId int) (int64, error) {
 		return count, err
 	}
 	return count, nil
+}
+
+func (r *SubscriptionRepository) GetAllSubBySMSAlerte() (*[]entity.Subscription, error) {
+	var sub []entity.Subscription
+	err := r.db.Where("category IN('SMSALERTE_COMPETITION','SMSALERTE_EQUIPE') AND is_active = true").Group("msisdn").Find(&sub).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &sub, nil
 }

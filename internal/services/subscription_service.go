@@ -24,6 +24,7 @@ type ISubscriptionService interface {
 	IsActiveSubscription(int, string, string) bool
 	IsActiveSubscriptionByCategory(string, string, string) bool
 	IsActiveSubscriptionByNonSMSAlerte(string, string) bool
+	IsActiveSubscriptionBySMSAlerteMsisdn(string) bool
 	IsActiveSubscriptionBySubId(int64) bool
 	IsActiveAllByMsisdn(string) bool
 	IsRenewal(int, string, string) bool
@@ -33,6 +34,7 @@ type ISubscriptionService interface {
 	GetByCategory(string, string, string) (*entity.Subscription, error)
 	GetActiveByCategory(string, string, string) (*entity.Subscription, error)
 	GetActiveByNonSMSAlerte(string, string) (*entity.Subscription, error)
+	GetActiveBySMSAlerteMsisdn(string) (*entity.Subscription, error)
 	GetByNonSMSAlerte(string, string) (*entity.Subscription, error)
 	GetBySubId(int64) (*entity.Subscription, error)
 	GetActiveAllByMsisdnUSSD(string, int) (*[]entity.Subscription, error)
@@ -54,6 +56,7 @@ type ISubscriptionService interface {
 	Retry() *[]entity.Subscription
 	Reminder() *[]entity.Subscription
 	CountActiveSub(int) (int, error)
+	GetAllSubBySMSAlerte() (*[]entity.Subscription, error)
 }
 
 func (s *SubscriptionService) IsSubscription(serviceId int, msisdn, code string) bool {
@@ -73,6 +76,11 @@ func (s *SubscriptionService) IsActiveSubscriptionByCategory(category, msisdn, c
 
 func (s *SubscriptionService) IsActiveSubscriptionByNonSMSAlerte(category, msisdn string) bool {
 	count, _ := s.subscriptionRepo.CountActiveByNonSMSAlerte(category, msisdn)
+	return count > 0
+}
+
+func (s *SubscriptionService) IsActiveSubscriptionBySMSAlerteMsisdn(msisdn string) bool {
+	count, _ := s.subscriptionRepo.CountActiveBySMSAlerteMsisdn(msisdn)
 	return count > 0
 }
 
@@ -119,6 +127,10 @@ func (s *SubscriptionService) GetByNonSMSAlerte(category, msisdn string) (*entit
 
 func (s *SubscriptionService) GetActiveByNonSMSAlerte(category, msisdn string) (*entity.Subscription, error) {
 	return s.subscriptionRepo.GetActiveByNonSMSAlerte(category, msisdn)
+}
+
+func (s *SubscriptionService) GetActiveBySMSAlerteMsisdn(msisdn string) (*entity.Subscription, error) {
+	return s.subscriptionRepo.GetActiveBySMSAlerteMsisdn(msisdn)
 }
 
 func (s *SubscriptionService) GetBySubId(subId int64) (*entity.Subscription, error) {
@@ -231,4 +243,12 @@ func (s *SubscriptionService) CountActiveSub(serviceId int) (int, error) {
 		return 0, err
 	}
 	return int(r), nil
+}
+
+func (s *SubscriptionService) GetAllSubBySMSAlerte() (*[]entity.Subscription, error) {
+	subs, err := s.subscriptionRepo.GetAllSubBySMSAlerte()
+	if err != nil {
+		return nil, err
+	}
+	return subs, nil
 }

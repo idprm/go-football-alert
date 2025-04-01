@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"log"
 
 	"github.com/idprm/go-football-alert/internal/domain/entity"
 	"github.com/idprm/go-football-alert/internal/domain/model"
@@ -48,10 +47,9 @@ func NewSMSAlerteHandler(
 	}
 }
 
-func (h *SMSAlerteHandler) SMSAlerte() {
+func (h *SMSAlerteHandler) SMSAlerte() error {
 
 	if !h.smsAlerteService.ISMSAlerte(h.sub.SubscriptionID, h.sub.NewsID) {
-
 		if h.subscriptionService.IsActiveSubscriptionBySubId(h.sub.SubscriptionID) {
 			// save
 			h.smsAlerteService.Save(
@@ -65,17 +63,17 @@ func (h *SMSAlerteHandler) SMSAlerte() {
 
 			sub, err := h.subscriptionService.GetBySubId(h.sub.SubscriptionID)
 			if err != nil {
-				log.Println(err.Error())
+				return err
 			}
 
 			news, err := h.newsService.GetById(h.sub.NewsID)
 			if err != nil {
-				log.Println(err.Error())
+				return err
 			}
 
 			service, err := h.serviceService.GetById(sub.GetServiceId())
 			if err != nil {
-				log.Println(err.Error())
+				return err
 			}
 
 			mt := &model.MTRequest{
@@ -89,7 +87,7 @@ func (h *SMSAlerteHandler) SMSAlerte() {
 
 			jsonData, err := json.Marshal(mt)
 			if err != nil {
-				log.Println(err.Error())
+				return err
 			}
 
 			h.rmq.IntegratePublish(
@@ -98,6 +96,7 @@ func (h *SMSAlerteHandler) SMSAlerte() {
 				RMQ_DATA_TYPE, "", string(jsonData),
 			)
 		}
-
 	}
+
+	return nil
 }

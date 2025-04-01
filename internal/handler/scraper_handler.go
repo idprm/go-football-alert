@@ -62,11 +62,11 @@ func NewScraperHandler(
 	}
 }
 
-func (h *ScraperHandler) Leagues() {
+func (h *ScraperHandler) Leagues() error {
 	fb := apifb.NewApiFb()
 	f, err := fb.GetLeagues(2024)
 	if err != nil {
-		log.Println(err.Error())
+		return err
 	}
 	log.Println(string(f))
 
@@ -97,14 +97,15 @@ func (h *ScraperHandler) Leagues() {
 			)
 		}
 	}
+	return nil
 }
 
-func (h *ScraperHandler) Teams() {
+func (h *ScraperHandler) Teams() error {
 	fb := apifb.NewApiFb()
 
 	leagues, err := h.leagueService.GetAllByActive()
 	if err != nil {
-		log.Println(err.Error())
+		return err
 	}
 
 	if len(leagues) > 0 {
@@ -113,7 +114,7 @@ func (h *ScraperHandler) Teams() {
 
 			f, err := fb.GetTeams(int(l.PrimaryID), l.GetSeason())
 			if err != nil {
-				log.Println(err.Error())
+				return err
 			}
 
 			var resp model.TeamResult
@@ -134,7 +135,10 @@ func (h *ScraperHandler) Teams() {
 					)
 
 					if !h.teamService.IsTeamByPrimaryId(el.Team.ID) {
-						team, _ := h.teamService.GetByPrimaryId(el.Team.ID)
+						team, err := h.teamService.GetByPrimaryId(el.Team.ID)
+						if err != nil {
+							return err
+						}
 						h.teamService.SaveLeagueTeam(
 							&entity.LeagueTeam{
 								LeagueID: l.ID,
@@ -156,7 +160,10 @@ func (h *ScraperHandler) Teams() {
 							Country:   el.Team.Country,
 						},
 					)
-					team, _ := h.teamService.GetByPrimaryId(el.Team.ID)
+					team, err := h.teamService.GetByPrimaryId(el.Team.ID)
+					if err != nil {
+						return err
+					}
 					if h.teamService.IsLeagueTeam(&entity.LeagueTeam{LeagueID: l.ID, TeamID: team.GetId()}) {
 						h.teamService.UpdateLeagueTeam(
 							&entity.LeagueTeam{
@@ -174,21 +181,22 @@ func (h *ScraperHandler) Teams() {
 		}
 	}
 
+	return nil
 }
 
-func (h *ScraperHandler) Fixtures() {
+func (h *ScraperHandler) Fixtures() error {
 	fb := apifb.NewApiFb()
 
 	leagues, err := h.leagueService.GetAllByActive()
 	if err != nil {
-		log.Println(err.Error())
+		return err
 	}
 
 	if len(leagues) > 0 {
 		for _, l := range leagues {
 			f, err := fb.GetFixtures(int(l.PrimaryID), l.GetSeason())
 			if err != nil {
-				log.Println(err.Error())
+				return err
 			}
 			log.Println(string(f))
 
@@ -202,12 +210,12 @@ func (h *ScraperHandler) Fixtures() {
 
 					home, err := h.teamService.GetByPrimaryId(el.Teams.Home.ID)
 					if err != nil {
-						log.Println(err.Error())
+						return err
 					}
 
 					away, err := h.teamService.GetByPrimaryId(el.Teams.Away.ID)
 					if err != nil {
-						log.Println(err.Error())
+						return err
 					}
 
 					fixtureDate, _ := time.Parse(time.RFC3339, el.Fixtures.Date)
@@ -266,24 +274,23 @@ func (h *ScraperHandler) Fixtures() {
 					}
 				}
 			}
-
 		}
 	}
+	return nil
 }
 
-func (h *ScraperHandler) LiveMatches() {
+func (h *ScraperHandler) LiveMatches() error {
 	fb := apifb.NewApiFb()
 
 	leagues, err := h.leagueService.GetAllByActive()
 	if err != nil {
-		log.Println(err.Error())
+		return err
 	}
-
 	if len(leagues) > 0 {
 		for _, l := range leagues {
 			f, err := fb.GetLiveMatch(int(l.PrimaryID), l.GetSeason())
 			if err != nil {
-				log.Println(err.Error())
+				return err
 			}
 			log.Println(string(f))
 
@@ -296,7 +303,10 @@ func (h *ScraperHandler) LiveMatches() {
 
 				if h.fixtureService.IsFixtureByPrimaryId(el.Fixtures.ID) {
 
-					fixture, _ := h.fixtureService.GetByPrimaryId(el.Fixtures.ID)
+					fixture, err := h.fixtureService.GetByPrimaryId(el.Fixtures.ID)
+					if err != nil {
+						return err
+					}
 
 					h.fixtureService.Update(
 						&entity.Fixture{
@@ -324,15 +334,15 @@ func (h *ScraperHandler) LiveMatches() {
 
 		}
 	}
-
+	return nil
 }
 
-func (h *ScraperHandler) Predictions() {
+func (h *ScraperHandler) Predictions() error {
 	fb := apifb.NewApiFb()
 
 	fixtures, err := h.fixtureService.GetAllByFixtureDate(time.Now())
 	if err != nil {
-		log.Println(err.Error())
+		return err
 	}
 
 	if len(fixtures) > 0 {
@@ -341,7 +351,7 @@ func (h *ScraperHandler) Predictions() {
 			if !h.predictionService.IsPredictionByFixtureId(int(l.ID)) {
 				f, err := fb.GetPredictions(int(l.PrimaryID))
 				if err != nil {
-					log.Println(err.Error())
+					return err
 				}
 
 				var resp model.PredictionResult
@@ -351,7 +361,7 @@ func (h *ScraperHandler) Predictions() {
 				for _, el := range resp.Response {
 					team, err := h.teamService.GetByPrimaryId(el.Prediction.Winner.PrimaryID)
 					if err != nil {
-						log.Println(err.Error())
+						return err
 					}
 
 					h.predictionService.Save(
@@ -371,7 +381,7 @@ func (h *ScraperHandler) Predictions() {
 			} else {
 				f, err := fb.GetPredictions(int(l.PrimaryID))
 				if err != nil {
-					log.Println(err.Error())
+					return err
 				}
 
 				var resp model.PredictionResult
@@ -381,7 +391,7 @@ func (h *ScraperHandler) Predictions() {
 				for _, el := range resp.Response {
 					team, err := h.teamService.GetByPrimaryId(el.Prediction.Winner.PrimaryID)
 					if err != nil {
-						log.Println(err.Error())
+						return err
 					}
 
 					h.predictionService.UpdateByFixtureId(
@@ -399,18 +409,18 @@ func (h *ScraperHandler) Predictions() {
 					)
 				}
 			}
-
 			time.Sleep(45 * time.Second)
 		}
 	}
+	return nil
 }
 
-func (h *ScraperHandler) Standings() {
+func (h *ScraperHandler) Standings() error {
 	fb := apifb.NewApiFb()
 
 	leagues, err := h.leagueService.GetAllUSSDByActive()
 	if err != nil {
-		log.Println(err.Error())
+		return err
 	}
 
 	if len(leagues) > 0 {
@@ -418,12 +428,12 @@ func (h *ScraperHandler) Standings() {
 		for _, l := range leagues {
 			league, err := h.leagueService.GetByPrimaryId(int(l.PrimaryID))
 			if err != nil {
-				log.Println(err.Error())
+				return err
 			}
 
 			f, err := fb.GetStandings(int(l.PrimaryID), l.GetSeason())
 			if err != nil {
-				log.Println(err.Error())
+				return err
 			}
 			log.Println(string(f))
 			var resp model.StandingResult
@@ -434,7 +444,7 @@ func (h *ScraperHandler) Standings() {
 					for _, e := range l {
 						team, err := h.teamService.GetByPrimaryId(e.Team.PrimaryID)
 						if err != nil {
-							log.Println(err.Error())
+							return err
 						}
 
 						if !h.standingService.IsRank(int(league.GetId()), e.Rank) {
@@ -487,15 +497,15 @@ func (h *ScraperHandler) Standings() {
 			}
 		}
 	}
-
+	return nil
 }
 
-func (h *ScraperHandler) Lineups() {
+func (h *ScraperHandler) Lineups() error {
 	fb := apifb.NewApiFb()
 
 	fixtures, err := h.fixtureService.GetAllByFixtureDate(time.Now())
 	if err != nil {
-		log.Println(err.Error())
+		return err
 	}
 
 	if len(fixtures) > 0 {
@@ -504,7 +514,7 @@ func (h *ScraperHandler) Lineups() {
 
 			f, err := fb.GetFixturesLineups(int(l.PrimaryID))
 			if err != nil {
-				log.Println(err.Error())
+				return err
 			}
 
 			var resp model.LineupResult
@@ -515,7 +525,7 @@ func (h *ScraperHandler) Lineups() {
 
 				team, err := h.teamService.GetByPrimaryId(el.Team.PrimaryID)
 				if err != nil {
-					log.Println(err.Error())
+					return err
 				}
 
 				// rate limit is 10 requests per minute.
@@ -547,13 +557,14 @@ func (h *ScraperHandler) Lineups() {
 		}
 	}
 
+	return nil
 }
 
-func (h *ScraperHandler) NewsMaxiFoot() {
+func (h *ScraperHandler) NewsMaxiFoot() error {
 	mf := rss.NewNewsRSS()
 	n, err := mf.GetNews(URL_MAXFOOT)
 	if err != nil {
-		log.Println(err.Error())
+		return err
 	}
 
 	var resp model.MaxfootRSSResponse
@@ -575,12 +586,12 @@ func (h *ScraperHandler) NewsMaxiFoot() {
 
 			t, err := h.newsService.Get(d, slug.Make(el.Title))
 			if err != nil {
-				log.Println(err.Error())
+				return err
 			}
 
 			jsonData, err := json.Marshal(t)
 			if err != nil {
-				log.Println(err.Error())
+				return err
 			}
 
 			h.rmq.IntegratePublish(
@@ -589,15 +600,16 @@ func (h *ScraperHandler) NewsMaxiFoot() {
 				RMQ_DATA_TYPE, "", string(jsonData),
 			)
 		}
-
 	}
+
+	return nil
 }
 
-func (h *ScraperHandler) NewsMadeInFoot() {
+func (h *ScraperHandler) NewsMadeInFoot() error {
 	mf := rss.NewNewsRSS()
 	n, err := mf.GetNews(URL_MADEINFOOT)
 	if err != nil {
-		log.Println(err.Error())
+		return err
 	}
 
 	var resp model.MadeInFootRSSResponse
@@ -620,12 +632,12 @@ func (h *ScraperHandler) NewsMadeInFoot() {
 
 			t, err := h.newsService.Get(d, slug.Make(el.Title))
 			if err != nil {
-				log.Println(err.Error())
+				return err
 			}
 
 			jsonData, err := json.Marshal(t)
 			if err != nil {
-				log.Println(err.Error())
+				return err
 			}
 
 			h.rmq.IntegratePublish(
@@ -635,15 +647,16 @@ func (h *ScraperHandler) NewsMadeInFoot() {
 			)
 
 		}
-
 	}
+
+	return nil
 }
 
-func (h *ScraperHandler) NewsAfricaTopSports() {
+func (h *ScraperHandler) NewsAfricaTopSports() error {
 	m := rss.NewNewsRSS()
 	n, err := m.GetNews(URL_AFRICATOPSPORTS)
 	if err != nil {
-		log.Println(err.Error())
+		return err
 	}
 
 	var resp model.AfricaTopSportsRSSResponse
@@ -667,12 +680,12 @@ func (h *ScraperHandler) NewsAfricaTopSports() {
 
 			t, err := h.newsService.Get(d, slug.Make(el.Title))
 			if err != nil {
-				log.Println(err.Error())
+				return err
 			}
 
 			jsonData, err := json.Marshal(t)
 			if err != nil {
-				log.Println(err.Error())
+				return err
 			}
 
 			h.rmq.IntegratePublish(
@@ -682,13 +695,15 @@ func (h *ScraperHandler) NewsAfricaTopSports() {
 			)
 		}
 	}
+
+	return nil
 }
 
-func (h *ScraperHandler) NewsFootMercato() {
+func (h *ScraperHandler) NewsFootMercato() error {
 	m := rss.NewNewsRSS()
 	n, err := m.GetNews(URL_FOOTMERCATO)
 	if err != nil {
-		log.Println(err.Error())
+		return err
 	}
 
 	var resp model.FootMercatoSitemapResponse
@@ -709,12 +724,12 @@ func (h *ScraperHandler) NewsFootMercato() {
 
 			t, err := h.newsService.Get(d, slug.Make(el.Title))
 			if err != nil {
-				log.Println(err.Error())
+				return err
 			}
 
 			jsonData, err := json.Marshal(t)
 			if err != nil {
-				log.Println(err.Error())
+				return err
 			}
 
 			h.rmq.IntegratePublish(
@@ -724,13 +739,15 @@ func (h *ScraperHandler) NewsFootMercato() {
 			)
 		}
 	}
+
+	return nil
 }
 
-func (h *ScraperHandler) NewsRmcSport() {
+func (h *ScraperHandler) NewsRmcSport() error {
 	m := rss.NewNewsRSS()
 	n, err := m.GetNews(URL_RMCSPORT)
 	if err != nil {
-		log.Println(err.Error())
+		return err
 	}
 
 	var resp model.RmcSportRSSResponse
@@ -756,12 +773,12 @@ func (h *ScraperHandler) NewsRmcSport() {
 
 			t, err := h.newsService.Get(d, slug.Make(el.Title))
 			if err != nil {
-				log.Println(err.Error())
+				return err
 			}
 
 			jsonData, err := json.Marshal(t)
 			if err != nil {
-				log.Println(err.Error())
+				return err
 			}
 
 			h.rmq.IntegratePublish(
@@ -773,13 +790,15 @@ func (h *ScraperHandler) NewsRmcSport() {
 
 	}
 
+	return nil
+
 }
 
-func (h *ScraperHandler) MobimiumNews() {
+func (h *ScraperHandler) MobimiumNews() error {
 	m := rss.NewNewsRSS()
 	n, err := m.GetNews(URL_MOBIMIUMNEWS)
 	if err != nil {
-		log.Println(err.Error())
+		return err
 	}
 
 	var resp model.MobimiumNewsRSSResponse
@@ -803,12 +822,12 @@ func (h *ScraperHandler) MobimiumNews() {
 
 			t, err := h.newsService.Get(d, slug.Make(el.Title))
 			if err != nil {
-				log.Println(err.Error())
+				return err
 			}
 
 			jsonData, err := json.Marshal(t)
 			if err != nil {
-				log.Println(err.Error())
+				return err
 			}
 
 			h.rmq.IntegratePublish(
@@ -818,4 +837,6 @@ func (h *ScraperHandler) MobimiumNews() {
 			)
 		}
 	}
+
+	return nil
 }

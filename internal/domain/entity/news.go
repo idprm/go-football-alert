@@ -133,6 +133,10 @@ func (m *News) IsFilteredKeyword(v string) bool {
 	return v == "OL"
 }
 
+func (m *News) IsActu(v string) bool {
+	return strings.ToUpper(v) == "ACTU"
+}
+
 type NewsLeagues struct {
 	ID         int64   `gorm:"primaryKey" json:"id"`
 	NewsID     int64   `json:"news_id"`
@@ -148,5 +152,12 @@ type NewsTeams struct {
 	News       *News `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"news,omitempty"`
 	TeamID     int64 `json:"team_id"`
 	Team       *Team `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"team,omitempty"`
+	gorm.Model `json:"-"`
+}
+
+type NewsActu struct {
+	ID         int64 `gorm:"primaryKey" json:"id"`
+	NewsID     int64 `json:"news_id"`
+	News       *News `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"news,omitempty"`
 	gorm.Model `json:"-"`
 }

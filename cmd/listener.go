@@ -88,6 +88,7 @@ var listenerCmd = &cobra.Command{
 			&entity.MT{},
 			&entity.Pronostic{},
 			&entity.SMSProno{},
+			&entity.SMSActu{},
 		)
 
 		/**
@@ -275,6 +276,7 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 		leagueService,
 		teamService,
 		newsService,
+		subscriptionService,
 		subscriptionFollowLeagueService,
 		subscriptionFollowTeamService,
 		&entity.News{},
