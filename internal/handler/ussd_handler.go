@@ -813,6 +813,32 @@ func (h *UssdHandler) Firstpush(category string, service *entity.Service, code s
 						Status:         STATUS_SUCCESS,
 					},
 				)
+
+				content, err = h.getContentService(SMS_SUCCESS_CHARGING, service)
+				if err != nil {
+					log.Println(err.Error())
+				}
+
+				// send notif success charge
+				mt := &model.MTRequest{
+					Smsc:         service.ScSubMT,
+					Service:      service,
+					Keyword:      code,
+					Subscription: sub,
+					Content:      content,
+				}
+				mt.SetTrxId(trxId)
+
+				jsonData, err := json.Marshal(mt)
+				if err != nil {
+					log.Println(err.Error())
+				}
+
+				h.rmq.IntegratePublish(
+					RMQ_MT_EXCHANGE,
+					RMQ_MT_QUEUE,
+					RMQ_DATA_TYPE, "", string(jsonData),
+				)
 			}
 
 			if respDeduct.IsFailed() {
