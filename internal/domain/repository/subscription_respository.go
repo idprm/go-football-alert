@@ -368,10 +368,14 @@ func (r *SubscriptionRepository) Retry() (*[]entity.Subscription, error) {
 	return &sub, nil
 }
 
-// SELECT (renewal_at = NOW() + INTERVAL 49 HOUR)
+// SELECT *
+// FROM fb_alert_test.subscriptions
+// WHERE is_active = true
+// AND renewal_at > DATE_SUB(NOW(), INTERVAL 48 HOUR)
+// AND renewal_at < DATE_SUB(NOW(), INTERVAL 49 HOUR)
 func (r *SubscriptionRepository) Reminder() (*[]entity.Subscription, error) {
 	var sub []entity.Subscription
-	err := r.db.Where("is_active = true AND renewal_at = NOW() + INTERVAL 49 HOUR").Order("DATE(created_at) DESC").Find(&sub).Error
+	err := r.db.Where("is_active = true AND renewal_at > DATE_SUB(NOW(), INTERVAL 48 HOUR) AND renewal_at < DATE_SUB(NOW(), INTERVAL 49 HOUR)").Order("DATE(created_at) DESC").Find(&sub).Error
 	if err != nil {
 		return nil, err
 	}

@@ -40,7 +40,7 @@ type ITelco interface {
 }
 
 func (p *Telco) QueryProfileAndBal() ([]byte, error) {
-	l := p.logger.Init("mt", true)
+	l := p.logger.Init("telco", true)
 	start := time.Now()
 
 	var reqXml model.QueryProfileAndBalRequest
@@ -109,7 +109,7 @@ func (p *Telco) QueryProfileAndBal() ([]byte, error) {
 }
 
 func (p *Telco) DeductFee() ([]byte, error) {
-	l := p.logger.Init("mt", true)
+	l := p.logger.Init("telco", true)
 	start := time.Now()
 
 	var reqXml model.DeductRequest

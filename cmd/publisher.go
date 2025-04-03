@@ -89,7 +89,7 @@ var publisherRetryCmd = &cobra.Command{
 		)
 
 		/**
-		 * Looping schedule per 4 hours
+		 * Looping schedule per 3 hours
 		 */
 		timeDuration := time.Duration(3)
 
