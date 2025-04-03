@@ -41,9 +41,9 @@ var publisherRenewalCmd = &cobra.Command{
 		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_RENEWAL_EXCHANGE, true, RMQ_RENEWAL_QUEUE)
 
 		/**
-		 * Looping schedule per 1 hour
+		 * Looping schedule per 5 minute
 		 */
-		timeDuration := time.Duration(20)
+		timeDuration := time.Duration(5)
 
 		for {
 
