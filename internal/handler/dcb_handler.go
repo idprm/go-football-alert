@@ -31,6 +31,7 @@ type DCBHandler struct {
 	subscriptionFollowTeamService   services.ISubscriptionFollowTeamService
 	transactionService              services.ITransactionService
 	historyService                  services.IHistoryService
+	moService                       services.IMOService
 	mtService                       services.IMTService
 	smsAlerteService                services.ISMSAlerteService
 	pronosticService                services.IPronosticService
@@ -53,6 +54,7 @@ func NewDCBHandler(
 	subscriptionFollowTeamService services.ISubscriptionFollowTeamService,
 	transactionService services.ITransactionService,
 	historyService services.IHistoryService,
+	moService services.IMOService,
 	mtService services.IMTService,
 	smsAlerteService services.ISMSAlerteService,
 	pronosticService services.IPronosticService,
@@ -74,6 +76,7 @@ func NewDCBHandler(
 		subscriptionFollowTeamService:   subscriptionFollowTeamService,
 		transactionService:              transactionService,
 		historyService:                  historyService,
+		moService:                       moService,
 		mtService:                       mtService,
 		smsAlerteService:                smsAlerteService,
 		pronosticService:                pronosticService,
@@ -906,6 +909,33 @@ func (h *DCBHandler) GetAllHistoryPaginate(c *fiber.Ctx) error {
 		)
 	}
 	return c.Status(fiber.StatusOK).JSON(histories)
+}
+
+func (h *DCBHandler) GetAllMOPaginate(c *fiber.Ctx) error {
+	req := new(entity.Pagination)
+
+	err := c.QueryParser(req)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusBadRequest,
+				Message:    err.Error(),
+			},
+		)
+	}
+
+	mos, err := h.moService.GetAllPaginate(req)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusInternalServerError,
+				Message:    err.Error(),
+			},
+		)
+	}
+	return c.Status(fiber.StatusOK).JSON(mos)
 }
 
 func (h *DCBHandler) GetAllMTPaginate(c *fiber.Ctx) error {

@@ -228,6 +228,9 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	ussdRepo := repository.NewUssdRepository(db, rds)
 	ussdService := services.NewUssdService(ussdRepo)
 
+	moRepo := repository.NewMORepository(db)
+	moService := services.NewMOService(moRepo)
+
 	mtRepo := repository.NewMTRepository(db)
 	mtService := services.NewMTService(mtRepo)
 
@@ -302,6 +305,7 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 		subscriptionFollowTeamService,
 		transactionService,
 		historyService,
+		moService,
 		mtService,
 		smsAlerteService,
 		pronosticService,
@@ -410,6 +414,10 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	// histories
 	histories := dcb.Group("histories")
 	histories.Get("/", dcbHandler.GetAllHistoryPaginate)
+
+	// message originated
+	mo := dcb.Group("mo")
+	mo.Get("/", dcbHandler.GetAllMOPaginate)
 
 	// message terminated
 	mt := dcb.Group("mt")

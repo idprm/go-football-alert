@@ -21,12 +21,12 @@ type IMORepository interface {
 }
 
 func (r *MORepository) GetAllPaginate(p *entity.Pagination) (*entity.Pagination, error) {
-	var mts []*entity.MT
-	err := r.db.Where("UPPER(msisdn) LIKE UPPER(?) OR UPPER(keyword) LIKE UPPER(?) OR UPPER(content) LIKE UPPER(?)", "%"+p.GetSearch()+"%", "%"+p.GetSearch()+"%", "%"+p.GetSearch()+"%").Scopes(PaginateMTs(mts, p, r.db)).Find(&mts).Error
+	var mos []*entity.MO
+	err := r.db.Where("UPPER(msisdn) LIKE UPPER(?) OR UPPER(keyword) LIKE UPPER(?)", "%"+p.GetSearch()+"%", "%"+p.GetSearch()+"%").Scopes(PaginateMTs(mos, p, r.db)).Find(&mos).Error
 	if err != nil {
 		return nil, err
 	}
-	p.Rows = mts
+	p.Rows = mos
 	return p, nil
 }
 
