@@ -183,14 +183,6 @@ var consumerMOCmd = &cobra.Command{
 		}
 
 		/**
-		 * connect redis
-		 */
-		rds, err := connectRedis()
-		if err != nil {
-			panic(err)
-		}
-
-		/**
 		 * connect rabbitmq
 		 */
 		rmq, err := connectRabbitMq()
@@ -210,8 +202,6 @@ var consumerMOCmd = &cobra.Command{
 		 * SETUP CHANNEL
 		 */
 		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_MO_EXCHANGE, true, RMQ_MO_QUEUE)
-		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_MT_EXCHANGE, true, RMQ_MT_QUEUE)
-		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_PB_MO_EXCHANGE, true, RMQ_PB_MO_QUEUE)
 
 		messagesData, errSub := rmq.Subscribe(1, false, RMQ_MO_QUEUE, RMQ_MO_EXCHANGE, RMQ_MO_QUEUE)
 		if errSub != nil {
@@ -224,7 +214,7 @@ var consumerMOCmd = &cobra.Command{
 		// Loop forever listening incoming data
 		forever := make(chan bool)
 
-		p := NewProcessor(db, rds, rmq, logger)
+		p := NewProcessor(db, &redis.Client{}, rmq, logger)
 
 		// Set into goroutine this listener
 		go func() {

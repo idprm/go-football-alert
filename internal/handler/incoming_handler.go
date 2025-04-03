@@ -12,6 +12,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"github.com/idprm/go-football-alert/internal/domain/entity"
 	"github.com/idprm/go-football-alert/internal/domain/model"
 	"github.com/idprm/go-football-alert/internal/logger"
 	"github.com/idprm/go-football-alert/internal/services"
@@ -60,6 +61,8 @@ var (
 	RMQ_SMS_QUEUE           string = "Q_SMS"
 	RMQ_WAP_EXCHANGE        string = "E_WAP"
 	RMQ_WAP_QUEUE           string = "Q_WAP"
+	RMQ_MO_EXCHANGE         string = "E_MO"
+	RMQ_MO_QUEUE            string = "Q_MO"
 	RMQ_MT_EXCHANGE         string = "E_MT"
 	RMQ_MT_QUEUE            string = "Q_MT"
 	RMQ_PB_MO_EXCHANGE      string = "E_POSTBACK_MO"
@@ -292,6 +295,24 @@ func (h *IncomingHandler) MessageOriginated(c *fiber.Ctx) error {
 		RMQ_SMS_EXCHANGE,
 		RMQ_SMS_QUEUE,
 		RMQ_DATA_TYPE, "", string(jsonData),
+	)
+
+	jsonMOData, err := json.Marshal(
+		&entity.MO{
+			TrxId:   utils.GenerateTrxId(),
+			Msisdn:  req.GetMsisdn(),
+			Channel: CHANNEL_SMS,
+			Keyword: req.GetSMS(),
+			Action:  req.GetAction(),
+		})
+	if err != nil {
+		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
+	}
+
+	h.rmq.IntegratePublish(
+		RMQ_MO_EXCHANGE,
+		RMQ_MO_QUEUE,
+		RMQ_DATA_TYPE, "", string(jsonMOData),
 	)
 
 	return c.Status(fiber.StatusOK).SendString("OK")
@@ -897,6 +918,24 @@ func (h *IncomingHandler) Buy(c *fiber.Ctx) error {
 		RMQ_DATA_TYPE, "", string(jsonData),
 	)
 
+	jsonMOData, err := json.Marshal(
+		&entity.MO{
+			TrxId:   utils.GenerateTrxId(),
+			Msisdn:  req.GetMsisdn(),
+			Channel: CHANNEL_USSD,
+			Keyword: req.GetCode(),
+			Action:  req.GetAction(),
+		})
+	if err != nil {
+		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
+	}
+
+	h.rmq.IntegratePublish(
+		RMQ_MO_EXCHANGE,
+		RMQ_MO_QUEUE,
+		RMQ_DATA_TYPE, "", string(jsonMOData),
+	)
+
 	replacer := strings.NewReplacer(
 		"{{.url}}", c.BaseURL(),
 		"{{.version}}", API_VERSION,
@@ -958,6 +997,24 @@ func (h *IncomingHandler) Stop(c *fiber.Ctx) error {
 		RMQ_USSD_EXCHANGE,
 		RMQ_USSD_QUEUE,
 		RMQ_DATA_TYPE, "", string(jsonData),
+	)
+
+	jsonMOData, err := json.Marshal(
+		&entity.MO{
+			TrxId:   utils.GenerateTrxId(),
+			Msisdn:  req.GetMsisdn(),
+			Channel: CHANNEL_USSD,
+			Keyword: req.GetCode(),
+			Action:  req.GetAction(),
+		})
+	if err != nil {
+		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
+	}
+
+	h.rmq.IntegratePublish(
+		RMQ_MO_EXCHANGE,
+		RMQ_MO_QUEUE,
+		RMQ_DATA_TYPE, "", string(jsonMOData),
 	)
 
 	replacer := strings.NewReplacer(

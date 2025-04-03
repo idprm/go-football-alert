@@ -89,6 +89,7 @@ var listenerCmd = &cobra.Command{
 			&entity.Pronostic{},
 			&entity.SMSProno{},
 			&entity.SMSActu{},
+			&entity.MO{},
 		)
 
 		/**
@@ -99,9 +100,11 @@ var listenerCmd = &cobra.Command{
 		/**
 		 * Setup channel
 		 */
+
 		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_USSD_EXCHANGE, true, RMQ_USSD_QUEUE)
 		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_SMS_EXCHANGE, true, RMQ_SMS_QUEUE)
 		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_SMS_PRONO_EXCHANGE, true, RMQ_SMS_PRONO_QUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_MO_EXCHANGE, true, RMQ_MO_QUEUE)
 
 		r := routeUrlListener(db, rds, rmq, logger)
 		log.Fatal(r.Listen(":" + APP_PORT))

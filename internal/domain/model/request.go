@@ -273,6 +273,13 @@ func (m *MORequest) IsFollowLeague(s *entity.Service) bool {
 	return m.GetTo() == s.ScSubMT
 }
 
+func (m *MORequest) GetAction() string {
+	if m.IsStop() {
+		return "STOP"
+	}
+	return "REG"
+}
+
 type MTRequest struct {
 	TrxId        string               `json:"trx_id,omitempty"`
 	Smsc         string               `json:"smsc,omitempty"`

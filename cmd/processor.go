@@ -154,55 +154,19 @@ func (p *Processor) SMS(wg *sync.WaitGroup, message []byte) {
 
 func (p *Processor) MO(wg *sync.WaitGroup, message []byte) {
 
-	serviceRepo := repository.NewServiceRepository(p.db)
-	serviceService := services.NewServiceService(serviceRepo)
-	contentRepo := repository.NewContentRepository(p.db)
-	contentService := services.NewContentService(contentRepo)
-	subscriptionRepo := repository.NewSubscriptionRepository(p.db)
-	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
-	transactionRepo := repository.NewTransactionRepository(p.db)
-	transactionService := services.NewTransactionService(transactionRepo)
-	historyRepo := repository.NewHistoryRepository(p.db)
-	historyService := services.NewHistoryService(historyRepo)
-	summaryRepo := repository.NewSummaryRepository(p.db)
-	summaryService := services.NewSummaryService(summaryRepo)
-	leagueRepo := repository.NewLeagueRepository(p.db)
-	leagueService := services.NewLeagueService(leagueRepo)
-	teamRepo := repository.NewTeamRepository(p.db)
-	teamService := services.NewTeamService(teamRepo)
-	subscriptionCreditGoalRepo := repository.NewSubscriptionCreditGoalRepository(p.db)
-	subscriptionCreditGoalService := services.NewSubscriptionCreditGoalService(subscriptionCreditGoalRepo)
-	subscriptionPredictWinRepo := repository.NewSubscriptionPredictWinRepository(p.db)
-	subscriptionPredictWinService := services.NewSubscriptionPredictWinService(subscriptionPredictWinRepo)
-	subscriptionFollowLeagueRepo := repository.NewSubscriptionFollowLeagueRepository(p.db)
-	subscriptionFollowLeagueService := services.NewSubscriptionFollowLeagueService(subscriptionFollowLeagueRepo)
-	subscriptionFollowTeamRepo := repository.NewSubscriptionFollowTeamRepository(p.db)
-	subscriptionFollowTeamService := services.NewSubscriptionFollowTeamService(subscriptionFollowTeamRepo)
-	verifyRepo := repository.NewVerifyRepository(p.rds)
-	verifyService := services.NewVerifyService(verifyRepo)
+	moRepo := repository.NewMORepository(p.db)
+	moService := services.NewMOService(moRepo)
+
+	var req *entity.MO
+	json.Unmarshal([]byte(message), &req)
 
 	h := handler.NewMOHandler(
-		p.rmq,
-		p.rds,
 		p.logger,
-		serviceService,
-		contentService,
-		subscriptionService,
-		transactionService,
-		historyService,
-		summaryService,
-		leagueService,
-		teamService,
-		subscriptionCreditGoalService,
-		subscriptionPredictWinService,
-		subscriptionFollowLeagueService,
-		subscriptionFollowTeamService,
-		verifyService,
+		moService,
+		req,
 	)
 
-	h.Firstpush()
-
-	h.Unsub()
+	h.Insert()
 
 	wg.Done()
 }
