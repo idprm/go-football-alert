@@ -27,6 +27,7 @@ type ISubscriptionService interface {
 	IsActiveSubscriptionBySMSAlerteMsisdn(string) bool
 	IsActiveSubscriptionBySubId(int64) bool
 	IsActiveAllByMsisdn(string) bool
+	IsAfter24Hour(int, string, string) bool
 	IsRenewal(int, string, string) bool
 	IsRetry(int, string, string) bool
 	GetTotalActiveSubscription() int
@@ -91,6 +92,11 @@ func (s *SubscriptionService) IsActiveSubscriptionBySubId(subId int64) bool {
 
 func (s *SubscriptionService) IsActiveAllByMsisdn(msisdn string) bool {
 	count, _ := s.subscriptionRepo.CountActiveAllByMsisdn(msisdn)
+	return count > 0
+}
+
+func (s *SubscriptionService) IsAfter24Hour(serviceId int, msisdn, code string) bool {
+	count, _ := s.subscriptionRepo.CountAfter24Hour(serviceId, msisdn, code)
 	return count > 0
 }
 

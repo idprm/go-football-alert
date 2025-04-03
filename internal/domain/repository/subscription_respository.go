@@ -23,6 +23,7 @@ type ISubscriptionRepository interface {
 	CountActiveBySubId(int64) (int64, error)
 	CountActiveBySMSAlerteMsisdn(string) (int64, error)
 	CountActiveAllByMsisdn(string) (int64, error)
+	CountAfter24Hour(int, string, string) (int64, error)
 	CountRenewal(int, string, string) (int64, error)
 	CountRetry(int, string, string) (int64, error)
 	CountTotalActiveSub() (int64, error)
@@ -113,6 +114,15 @@ func (r *SubscriptionRepository) CountActiveBySubId(subId int64) (int64, error) 
 func (r *SubscriptionRepository) CountActiveAllByMsisdn(msisdn string) (int64, error) {
 	var count int64
 	err := r.db.Model(&entity.Subscription{}).Where("msisdn = ? AND is_active = true", msisdn).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *SubscriptionRepository) CountAfter24Hour(serviceId int, msisdn, code string) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Subscription{}).Where("service_id = ? AND msisdn = ? AND code = ? AND HOUR(TIMEDIFF(NOW(), created_at)) > 24", serviceId, msisdn, code).Count(&count).Error
 	if err != nil {
 		return count, err
 	}

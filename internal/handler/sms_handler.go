@@ -333,7 +333,7 @@ func (h *SMSHandler) Firstpush(category string, service *entity.Service, code st
 		log.Println(err.Error())
 	}
 
-	if sub.IsFirstFreeDay() {
+	if !h.subscriptionService.IsAfter24Hour(service.GetId(), h.req.GetMsisdn(), code) {
 		// free 1 day
 		h.subscriptionService.Update(
 			&entity.Subscription{

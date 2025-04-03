@@ -211,12 +211,6 @@ func (s *Subscription) IsRenewal() bool {
 	return s.GetLatestSubject() == "RENEWAL"
 }
 
-func (e *Subscription) IsFirstFreeDay() bool {
-	t := e.CreatedAt.Add(time.Hour * 24)
-	diff := t.Sub(e.CreatedAt)
-	return diff <= 24*time.Hour
-}
-
 func (e *Subscription) ISMSAlerte() bool {
 	return e.Category == CATEGORY_SMSALERTE_COMPETITION || e.Category == CATEGORY_SMSALERTE_EQUIPE
 }
