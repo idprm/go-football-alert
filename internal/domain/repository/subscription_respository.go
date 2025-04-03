@@ -385,7 +385,7 @@ func (r *SubscriptionRepository) Retry() (*[]entity.Subscription, error) {
 // AND renewal_at < DATE_SUB(NOW(), INTERVAL 49 HOUR)
 func (r *SubscriptionRepository) Reminder() (*[]entity.Subscription, error) {
 	var sub []entity.Subscription
-	err := r.db.Where("is_active = true AND renewal_at > DATE_SUB(NOW(), INTERVAL 48 HOUR) AND renewal_at < DATE_SUB(NOW(), INTERVAL 49 HOUR)").Order("DATE(created_at) DESC").Find(&sub).Error
+	err := r.db.Where("is_active = true AND HOUR(TIMEDIFF(NOW(), renewal_at)) > 48 AND HOUR(TIMEDIFF(NOW(), renewal_at)) < 49").Order("DATE(created_at) DESC").Find(&sub).Error
 	if err != nil {
 		return nil, err
 	}
@@ -408,5 +408,20 @@ func (r *SubscriptionRepository) GetAllSubBySMSAlerte() (*[]entity.Subscription,
 		return nil, err
 	}
 
-	return &sub, nil
+	var subs []entity.Subscription
+	if len(sub) > 0 {
+		for _, a := range sub {
+			sub := entity.Subscription{
+				Category:      a.Category,
+				ServiceID:     a.ServiceID,
+				Msisdn:        a.Msisdn,
+				Code:          a.Code,
+				Channel:       a.Channel,
+				LatestSubject: a.LatestSubject,
+			}
+			subs = append(subs, sub)
+		}
+	}
+
+	return &subs, nil
 }
