@@ -125,6 +125,7 @@ func (h *RetryHandler) Firstpush() {
 							ServiceID:    service.GetId(),
 							Msisdn:       h.sub.GetMsisdn(),
 							Code:         h.sub.GetCode(),
+							Channel:      h.sub.GetChannel(),
 							Keyword:      sub.GetLatestKeyword(),
 							Amount:       service.GetPrice(),
 							Discount:     0,

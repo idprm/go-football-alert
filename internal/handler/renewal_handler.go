@@ -258,6 +258,7 @@ func (h *RenewalHandler) Dailypush() {
 						ServiceID:    service.GetId(),
 						Msisdn:       h.sub.GetMsisdn(),
 						Code:         h.sub.GetCode(),
+						Channel:      h.sub.GetChannel(),
 						Keyword:      h.sub.GetLatestKeyword(),
 						Status:       STATUS_FAILED,
 						StatusCode:   "",
