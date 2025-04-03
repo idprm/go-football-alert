@@ -715,7 +715,7 @@ func (h *UssdHandler) Firstpush(category string, service *entity.Service, code s
 				Code:         code,
 				Channel:      CHANNEL_USSD,
 				Keyword:      code,
-				Amount:       service.GetPrice(),
+				Amount:       0,
 				Status:       STATUS_SUCCESS,
 				StatusCode:   "",
 				StatusDetail: "",
