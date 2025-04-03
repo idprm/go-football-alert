@@ -403,7 +403,7 @@ func (r *SubscriptionRepository) CountActiveSub(serviceId int) (int64, error) {
 
 func (r *SubscriptionRepository) GetAllSubBySMSAlerte() (*[]entity.Subscription, error) {
 	var sub []entity.Subscription
-	err := r.db.Where("category IN('SMSALERTE_COMPETITION','SMSALERTE_EQUIPE') AND is_active = true").Group("msisdn").Find(&sub).Error
+	err := r.db.Select("category, service_id, msisdn, code, channel, latest_subject").Where("category IN('SMSALERTE_COMPETITION','SMSALERTE_EQUIPE') AND is_active = true").Group("msisdn").Find(&sub).Error
 	if err != nil {
 		return nil, err
 	}
