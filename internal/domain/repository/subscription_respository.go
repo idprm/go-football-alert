@@ -36,6 +36,7 @@ type ISubscriptionRepository interface {
 	GetBySubId(int64) (*entity.Subscription, error)
 	GetActiveAllByMsisdnUSSD(string, int) (*[]entity.Subscription, error)
 	Get(int, string, string) (*entity.Subscription, error)
+	GetLongRetry(int, string, string) (int, error)
 	Save(*entity.Subscription) (*entity.Subscription, error)
 	Update(*entity.Subscription) (*entity.Subscription, error)
 	Delete(*entity.Subscription) error
@@ -236,6 +237,15 @@ func (r *SubscriptionRepository) Get(serviceId int, msisdn, code string) (*entit
 		return nil, err
 	}
 	return &c, nil
+}
+
+func (r *SubscriptionRepository) GetLongRetry(serviceId int, msisdn, code string) (int, error) {
+	var c entity.Subscription
+	err := r.db.Select("ROUND((UNIX_TIMESTAMP(NOW() + INTERVAL 1 DAY) - UNIX_TIMESTAMP(renewal_at)) / 3600) as long_retry").Where("service_id = ? AND msisdn = ? AND code = ?", serviceId, msisdn, code).Take(&c).Error
+	if err != nil {
+		return 0, err
+	}
+	return c.LongRetry, nil
 }
 
 func (r *SubscriptionRepository) Save(c *entity.Subscription) (*entity.Subscription, error) {

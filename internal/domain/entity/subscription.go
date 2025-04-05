@@ -54,8 +54,9 @@ type Subscription struct {
 	TotalAmountRenewal   float64   `gorm:"default:0" json:"total_amount_renewal"`
 	BeforeBalance        float64   `gorm:"default:0" json:"before_balance,omitempty"`
 	AfterBalance         float64   `gorm:"default:0" json:"after_balance,omitempty"`
-	IpAddress            string    `gorm:"size:25" json:"ip_address"`
-	AttempSuccess        int       `gorm:"size:3;default:1" json:"attemp_success"`
+	IpAddress            string    `gorm:"size:25" json:"ip_address,omitempty"`
+	AttempSuccess        int       `gorm:"size:3;default:1" json:"attemp_success,omitempty"`
+	LongRetry            int       `gorm:"size:3;default:0" json:"long_retry,omitempty"`
 	IsFollowTeam         bool      `gorm:"type:boolean;column:is_follow_team" json:"is_follow_team,omitempty"`
 	IsFollowLeague       bool      `gorm:"type:boolean;column:is_follow_competition" json:"is_follow_competition,omitempty"`
 	IsPredictWin         bool      `gorm:"type:boolean;column:is_predict_win" json:"is_predict_win,omitempty"`

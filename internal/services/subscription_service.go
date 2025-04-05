@@ -40,6 +40,7 @@ type ISubscriptionService interface {
 	GetBySubId(int64) (*entity.Subscription, error)
 	GetActiveAllByMsisdnUSSD(string, int) (*[]entity.Subscription, error)
 	Get(int, string, string) (*entity.Subscription, error)
+	GetLongRetry(int, string, string) (int, error)
 	Save(*entity.Subscription) (*entity.Subscription, error)
 	Update(*entity.Subscription) (*entity.Subscription, error)
 	Delete(*entity.Subscription) error
@@ -149,6 +150,10 @@ func (s *SubscriptionService) GetActiveAllByMsisdnUSSD(msisdn string, page int) 
 
 func (s *SubscriptionService) Get(serviceId int, msisdn, code string) (*entity.Subscription, error) {
 	return s.subscriptionRepo.Get(serviceId, msisdn, code)
+}
+
+func (s *SubscriptionService) GetLongRetry(serviceId int, msisdn, code string) (int, error) {
+	return s.subscriptionRepo.GetLongRetry(serviceId, msisdn, code)
 }
 
 func (s *SubscriptionService) Save(a *entity.Subscription) (*entity.Subscription, error) {

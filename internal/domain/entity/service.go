@@ -126,8 +126,8 @@ func (e *Service) SetUrlMT(smsc, username, password, from, to, content string) {
 	e.UrlMT = replacer.Replace(e.UrlMT)
 }
 
-func (s *Service) SetPriceWithDiscount(discountPercentage int) {
-	s.Price = s.GetPrice() - (s.GetPrice() * float64(discountPercentage) / 100)
+func (s *Service) SetPriceWithDiscount(discountPercentage float64) {
+	s.Price = s.Price - (s.Price * discountPercentage)
 }
 
 func (s *Service) IsSmsAlerteCompetition() bool {

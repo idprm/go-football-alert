@@ -14,7 +14,7 @@ type Transaction struct {
 	Channel      string   `gorm:"size:15" json:"channel,omitempty"`
 	Keyword      string   `gorm:"size:50" json:"keyword"`
 	Amount       float64  `gorm:"size:10;default:0" json:"amount"`
-	Discount     float64  `gorm:"size:10;default:0" json:"discount"`
+	Discount     float64  `gorm:"size:3;default:0" json:"discount"`
 	Status       string   `gorm:"size:25" json:"status,omitempty"`
 	StatusCode   string   `gorm:"size:85" json:"status_code,omitempty"`
 	StatusDetail string   `gorm:"size:85" json:"status_detail,omitempty"`
@@ -22,6 +22,7 @@ type Transaction struct {
 	IpAddress    string   `gorm:"size:30" json:"ip_address,omitempty"`
 	Payload      string   `gorm:"type:text" json:"payload,omitempty"`
 	Note         string   `gorm:"type:text" json:"note,omitempty"`
+	IsDiscount   bool     `gorm:"type:boolean;default:false;column:is_discount" json:"is_discount,omitempty"`
 	gorm.Model
 }
 
