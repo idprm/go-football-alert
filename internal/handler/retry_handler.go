@@ -173,7 +173,7 @@ func (h *RetryHandler) Firstpush() {
 						}
 					}
 
-					if discount > 0 {
+					if discount == 0 {
 						mt := &model.MTRequest{
 							Smsc:         service.ScSubMT,
 							Service:      service,
@@ -318,7 +318,7 @@ func (h *RetryHandler) Dailypush() {
 						}
 					}
 
-					if discount > 0 {
+					if discount == 0 {
 						mt := &model.MTRequest{
 							Smsc:         service.ScSubMT,
 							Service:      service,
