@@ -108,7 +108,7 @@ func (h *RenewalHandler) Dailypush() {
 							LatestSubject:      SUBJECT_RENEWAL,
 							LatestStatus:       STATUS_SUCCESS,
 							LatestKeyword:      h.sub.GetLatestKeyword(),
-							TotalAmount:        service.GetPrice(),
+							TotalAmount:        sub.TotalAmount + service.GetPrice(),
 							RenewalAt:          time.Now().AddDate(0, 0, service.GetRenewalDay()),
 							ChargeAt:           time.Now(),
 							TotalSuccess:       sub.TotalSuccess + 1,
