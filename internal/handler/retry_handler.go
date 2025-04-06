@@ -382,13 +382,13 @@ func (h *RetryHandler) smartBilling(s *entity.Subscription) float64 {
 	case hours <= 2:
 		// no discount
 		return 0
-	case hours >= 3, hours <= 10:
+	case hours >= 3 && hours <= 10:
 		// discount 25%
 		return 0.25
-	case hours >= 11, hours <= 17:
+	case hours >= 11 && hours <= 17:
 		// discount 50%
 		return 0.5
-	case hours >= 18, hours <= 24:
+	case hours >= 18 && hours <= 24:
 		// discount 75%
 		return 0.75
 	default:
