@@ -75,7 +75,7 @@ func (r *TransactionRepository) Update(c *entity.Transaction) error {
 }
 
 func (r *TransactionRepository) Delete(c *entity.Transaction) error {
-	err := r.db.Where("service_id = ? AND msisdn = ? AND code = ? AND subject = ? AND status = ? AND DATE(created_at) = DATE(NOW())", c.ServiceID, c.Msisdn, c.Code, c.Subject, c.Status).Delete(&c, c.ID).Error
+	err := r.db.Where("service_id = ? AND msisdn = ? AND code = ? AND subject = ? AND status = ? AND DATE(created_at) = DATE(NOW())", c.ServiceID, c.Msisdn, c.Code, c.Subject, c.Status).Delete(&c).Error
 	if err != nil {
 		return err
 	}
