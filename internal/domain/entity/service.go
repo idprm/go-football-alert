@@ -79,7 +79,7 @@ func (s *Service) GetDiscount(discountPercentage int) float64 {
 }
 
 func (s *Service) GetPriceToString() string {
-	return strconv.FormatFloat(s.GetPrice(), 'f', 0, 64)
+	return strconv.FormatFloat(s.GetPrice(), 'f', -1, 64)
 }
 
 func (s *Service) GetPackagePriceToString() string {
