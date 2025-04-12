@@ -115,6 +115,9 @@ func (h *ReminderHandler) RemindAfterTrialEnds() {
 		}
 		mt.SetTrxId(trxId)
 
+		// is_free set to false
+		h.subscriptionService.UpdateNotFree(sub)
+
 		jsonData, err := json.Marshal(mt)
 		if err != nil {
 			log.Println(err.Error())
