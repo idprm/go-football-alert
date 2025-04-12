@@ -40,6 +40,8 @@ jobs:
             image: idprm/fb-alert-retry-underpayment-service
           - dockerfile: ./Dockerfile.reminder
             image: idprm/fb-alert-reminder-service
+          - dockerfile: ./Dockerfile.reminder_after_trial_ends
+            image: idprm/fb-alert-reminder-after-trial-ends-service
           - dockerfile: ./Dockerfile.mt
             image: idprm/fb-alert-mt-service
           # - dockerfile: ./Dockerfile.postback_mo
@@ -70,6 +72,8 @@ jobs:
             image: idprm/fb-alert-pub-retry-underpayment-service
           - dockerfile: ./Dockerfile.pub_reminder
             image: idprm/fb-alert-pub-reminder-service
+          - dockerfile: ./Dockerfile.pub_reminder_after_trial_ends
+            image: idprm/fb-alert-pub-reminder-after-trial-ends-service
 
     permissions:
       contents: read
