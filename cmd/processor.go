@@ -545,7 +545,7 @@ func (p *Processor) RetryUnderpayment(wg *sync.WaitGroup, message []byte) {
 	wg.Done()
 }
 
-func (p *Processor) Reminder(wg *sync.WaitGroup, message []byte) {
+func (p *Processor) Reminder48HBeforeCharging(wg *sync.WaitGroup, message []byte) {
 
 	/**
 	 * load repo
@@ -572,7 +572,7 @@ func (p *Processor) Reminder(wg *sync.WaitGroup, message []byte) {
 		transactionService,
 	)
 
-	h.Remindpush()
+	h.Remind48HBeforeCharging()
 
 	wg.Done()
 }

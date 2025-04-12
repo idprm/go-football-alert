@@ -152,9 +152,9 @@ var publisherRetryUnderpaymentCmd = &cobra.Command{
 	},
 }
 
-var publisherReminderCmd = &cobra.Command{
-	Use:   "pub_reminder",
-	Short: "Reminder CLI",
+var publisherReminder48HBeforeChargingCmd = &cobra.Command{
+	Use:   "pub_reminder_48h_before_charging",
+	Short: "Publisher Reminder 48H Before Charging CLI",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		/**
@@ -179,9 +179,9 @@ var publisherReminderCmd = &cobra.Command{
 		rmq.SetUpChannel(
 			RMQ_EXCHANGE_TYPE,
 			true,
-			RMQ_REMINDER_EXCHANGE,
+			RMQ_REMINDER_48H_BEFORE_CHARGING_EXCHANGE,
 			true,
-			RMQ_REMINDER_QUEUE,
+			RMQ_REMINDER_48H_BEFORE_CHARGING_QUEUE,
 		)
 
 		/**
@@ -192,7 +192,7 @@ var publisherReminderCmd = &cobra.Command{
 		for {
 
 			go func() {
-				populateReminder(db, rmq)
+				populateReminder48HBeforeCharging(db, rmq)
 			}()
 
 			time.Sleep(timeDuration * time.Hour)
@@ -714,11 +714,11 @@ func populateCreditGoal(db *gorm.DB, rmq rmqp.AMQP) {
 	}
 }
 
-func populateReminder(db *gorm.DB, rmq rmqp.AMQP) {
+func populateReminder48HBeforeCharging(db *gorm.DB, rmq rmqp.AMQP) {
 	subscriptionRepo := repository.NewSubscriptionRepository(db)
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
 
-	subs := subscriptionService.Reminder()
+	subs := subscriptionService.Reminder48HBeforeCharging()
 
 	if len(*subs) > 0 {
 		for _, s := range *subs {
@@ -736,7 +736,7 @@ func populateReminder(db *gorm.DB, rmq rmqp.AMQP) {
 
 			json, _ := json.Marshal(sub)
 
-			rmq.IntegratePublish(RMQ_REMINDER_EXCHANGE, RMQ_REMINDER_QUEUE, RMQ_DATA_TYPE, "", string(json))
+			rmq.IntegratePublish(RMQ_REMINDER_48H_BEFORE_CHARGING_EXCHANGE, RMQ_REMINDER_48H_BEFORE_CHARGING_QUEUE, RMQ_DATA_TYPE, "", string(json))
 
 			time.Sleep(100 * time.Microsecond)
 		}

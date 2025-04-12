@@ -59,7 +59,7 @@ type ISubscriptionService interface {
 	Renewal() *[]entity.Subscription
 	Retry() *[]entity.Subscription
 	RetryUnderpayment() *[]entity.Subscription
-	Reminder() *[]entity.Subscription
+	Reminder48HBeforeCharging() *[]entity.Subscription
 	ReminderAfterTrialEnds() *[]entity.Subscription
 	CountActiveSub(int) (int, error)
 	GetAllSubBySMSAlerte() (*[]entity.Subscription, error)
@@ -261,8 +261,8 @@ func (s *SubscriptionService) RetryUnderpayment() *[]entity.Subscription {
 	return subs
 }
 
-func (s *SubscriptionService) Reminder() *[]entity.Subscription {
-	subs, err := s.subscriptionRepo.Reminder()
+func (s *SubscriptionService) Reminder48HBeforeCharging() *[]entity.Subscription {
+	subs, err := s.subscriptionRepo.Reminder48HBeforeCharging()
 	if err != nil {
 		log.Println(err)
 	}

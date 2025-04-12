@@ -554,9 +554,9 @@ var consumerRetryUnderpaymentCmd = &cobra.Command{
 	},
 }
 
-var consumerReminderCmd = &cobra.Command{
-	Use:   "reminder",
-	Short: "Consumer Reminder Service CLI",
+var consumerReminder48HBeforeChargingCmd = &cobra.Command{
+	Use:   "reminder_48h_before_charging",
+	Short: "Consumer Reminder 48H Before Charging Service CLI",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		/**
@@ -586,10 +586,10 @@ var consumerReminderCmd = &cobra.Command{
 		/**
 		 * SETUP CHANNEL
 		 */
-		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_REMINDER_EXCHANGE, true, RMQ_REMINDER_QUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_REMINDER_48H_BEFORE_CHARGING_EXCHANGE, true, RMQ_REMINDER_48H_BEFORE_CHARGING_QUEUE)
 		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_MT_EXCHANGE, true, RMQ_MT_QUEUE)
 
-		messagesData, errSub := rmq.Subscribe(1, false, RMQ_REMINDER_QUEUE, RMQ_REMINDER_EXCHANGE, RMQ_REMINDER_QUEUE)
+		messagesData, errSub := rmq.Subscribe(1, false, RMQ_REMINDER_48H_BEFORE_CHARGING_QUEUE, RMQ_REMINDER_48H_BEFORE_CHARGING_EXCHANGE, RMQ_REMINDER_48H_BEFORE_CHARGING_QUEUE)
 		if errSub != nil {
 			panic(errSub)
 		}
@@ -609,7 +609,7 @@ var consumerReminderCmd = &cobra.Command{
 			for d := range messagesData {
 
 				wg.Add(1)
-				p.Reminder(&wg, d.Body)
+				p.Reminder48HBeforeCharging(&wg, d.Body)
 				wg.Wait()
 
 				// Manual consume queue

@@ -43,7 +43,7 @@ func NewReminderHandler(
 	}
 }
 
-func (h *ReminderHandler) Remindpush() {
+func (h *ReminderHandler) Remind48HBeforeCharging() {
 	// check is active
 	if h.subscriptionService.IsActiveSubscription(h.sub.GetServiceId(), h.sub.GetMsisdn(), h.sub.GetCode()) {
 		trxId := utils.GenerateTrxId()
@@ -58,7 +58,7 @@ func (h *ReminderHandler) Remindpush() {
 			log.Println(err.Error())
 		}
 
-		content, err := h.getContentService(SMS_REMINDER_48H, service)
+		content, err := h.getContentService(SMS_REMINDER_48H_BEFORE_CHARGING, service)
 		if err != nil {
 			log.Println(err.Error())
 		}
