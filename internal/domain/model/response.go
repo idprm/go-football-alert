@@ -340,3 +340,17 @@ type UnsubRequest struct {
 func (m *UnsubRequest) GetId() int {
 	return m.ID
 }
+
+type RevenueResponse struct {
+	CreatedAt string  `json:"created_at"`
+	Subject   string  `json:"subject"`
+	Status    string  `json:"status"`
+	Total     int     `json:"total"`
+	Revenue   float64 `json:"revenue"`
+}
+
+type SummaryRevenueResponse struct {
+	StartDate string      `json:"start_date"`
+	EndDate   string      `json:"end_date"`
+	Results   interface{} `json:"results"`
+}

@@ -114,6 +114,9 @@ func (h *RetryHandler) Firstpush() {
 						AfterBalance:         respDeduct.GetAfterBalanceToFloat(),
 						LatestPayload:        string(resp),
 					}
+					if discount > 0 {
+						s.IsUnderpayment = true
+					}
 					h.subscriptionService.Update(s)
 
 					// is_retry set to false
@@ -258,6 +261,10 @@ func (h *RetryHandler) Dailypush() {
 						AfterBalance:       respDeduct.GetAfterBalanceToFloat(),
 						LatestPayload:      string(resp),
 					}
+					if discount > 0 {
+						s.TotalUnderpayment = sub.TotalUnderpayment
+						s.IsUnderpayment = true
+					}
 					h.subscriptionService.Update(s)
 
 					// is_retry set to false
@@ -343,6 +350,27 @@ func (h *RetryHandler) Dailypush() {
 				}
 
 			}
+		}
+	}
+}
+
+func (h *RetryHandler) Underpayment() {
+	// check if active sub
+	if h.subscriptionService.IsActiveSubscription(h.sub.GetServiceId(), h.sub.GetMsisdn(), h.sub.GetCode()) {
+		// check is retry underpayment
+		if h.subscriptionService.IsRetryUnderpayment(h.sub.GetServiceId(), h.sub.GetMsisdn(), h.sub.GetCode()) {
+			// trxId := utils.GenerateTrxId()
+
+			// sub, err := h.subscriptionService.Get(h.sub.GetServiceId(), h.sub.GetMsisdn(), h.sub.GetCode())
+			// if err != nil {
+			// 	log.Println(err.Error())
+			// }
+
+			// service, err := h.serviceService.GetById(h.sub.GetServiceId())
+			// if err != nil {
+			// 	log.Println(err.Error())
+			// }
+
 		}
 	}
 }

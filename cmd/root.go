@@ -39,55 +39,59 @@ var (
 )
 
 const (
-	RMQ_EXCHANGE_TYPE         string = "direct"
-	RMQ_DATA_TYPE             string = "application/json"
-	RMQ_USSD_EXCHANGE         string = "E_USSD"
-	RMQ_USSD_QUEUE            string = "Q_USSD"
-	RMQ_SMS_EXCHANGE          string = "E_SMS"
-	RMQ_SMS_QUEUE             string = "Q_SMS"
-	RMQ_MO_EXCHANGE           string = "E_MO"
-	RMQ_MO_QUEUE              string = "Q_MO"
-	RMQ_NEWS_EXCHANGE         string = "E_NEWS"
-	RMQ_NEWS_QUEUE            string = "Q_NEWS"
-	RMQ_SMS_ALERTE_EXCHANGE   string = "E_SMS_ALERTE"
-	RMQ_SMS_ALERTE_QUEUE      string = "Q_SMS_ALERTE"
-	RMQ_SMS_ACTU_EXCHANGE     string = "E_SMS_ACTU"
-	RMQ_SMS_ACTU_QUEUE        string = "Q_SMS_ACTU"
-	RMQ_SMS_PRONO_EXCHANGE    string = "E_SMS_PRONO"
-	RMQ_SMS_PRONO_QUEUE       string = "Q_SMS_PRONO"
-	RMQ_PREDICT_WIN_EXCHANGE  string = "E_PREDICT_WIN"
-	RMQ_PREDICT_WIN_QUEUE     string = "Q_PREDICT_WIN"
-	RMQ_CREDIT_GOAL_EXCHANGE  string = "E_CREDIT_GOAL"
-	RMQ_CREDIT_GOAL_QUEUE     string = "Q_CREDIT_GOAL"
-	RMQ_REMINDER_48H_EXCHANGE string = "E_REMINDER_48H"
-	RMQ_REMINDER_48H_QUEUE    string = "Q_REMINDER_48H"
-	RMQ_RENEWAL_EXCHANGE      string = "E_RENEWAL"
-	RMQ_RENEWAL_QUEUE         string = "Q_RENEWAL"
-	RMQ_RETRY_EXCHANGE        string = "E_RETRY"
-	RMQ_RETRY_QUEUE           string = "Q_RETRY"
-	RMQ_NOTIF_EXCHANGE        string = "E_NOTIF"
-	RMQ_NOTIF_QUEUE           string = "Q_NOTIF"
-	RMQ_MT_EXCHANGE           string = "E_MT"
-	RMQ_MT_QUEUE              string = "Q_MT"
-	RMQ_PB_MO_EXCHANGE        string = "E_POSTBACK_MO"
-	RMQ_PB_MO_QUEUE           string = "Q_POSTBACK_MO"
-	ACT_USSD                  string = "USSD"
-	ACT_SMS                   string = "SMS"
-	ACT_CONFIRMATION          string = "CONFIRMATION"
-	ACT_NOTIFICATION          string = "NOTIFICATION"
-	ACT_MO                    string = "MO"
-	ACT_FIRSTPUSH             string = "FIRSTPUSH"
-	ACT_RENEWAL               string = "RENEWAL"
-	ACT_RETRY                 string = "RETRY"
-	ACT_SMS_ALERTE            string = "SMS_ALERTE"
-	ACT_CREDIT_GOAL           string = "CREDIT_GOAL"
-	ACT_PRONOSTIC             string = "PRONOSTIC"
-	ACT_PREDICT_WIN           string = "PREDICT_WIN"
-	ACT_SUB                   string = "SUB"
-	ACT_UNSUB                 string = "UNSUB"
-	ACT_USER_LOSES            string = "USER_LOSES"
-	ACT_PREDICTION            string = "PREDICTION"
-	ACT_SCRAPING              string = "SCRAPING"
+	RMQ_EXCHANGE_TYPE                      string = "direct"
+	RMQ_DATA_TYPE                          string = "application/json"
+	RMQ_USSD_EXCHANGE                      string = "E_USSD"
+	RMQ_USSD_QUEUE                         string = "Q_USSD"
+	RMQ_SMS_EXCHANGE                       string = "E_SMS"
+	RMQ_SMS_QUEUE                          string = "Q_SMS"
+	RMQ_MO_EXCHANGE                        string = "E_MO"
+	RMQ_MO_QUEUE                           string = "Q_MO"
+	RMQ_NEWS_EXCHANGE                      string = "E_NEWS"
+	RMQ_NEWS_QUEUE                         string = "Q_NEWS"
+	RMQ_SMS_ALERTE_EXCHANGE                string = "E_SMS_ALERTE"
+	RMQ_SMS_ALERTE_QUEUE                   string = "Q_SMS_ALERTE"
+	RMQ_SMS_ACTU_EXCHANGE                  string = "E_SMS_ACTU"
+	RMQ_SMS_ACTU_QUEUE                     string = "Q_SMS_ACTU"
+	RMQ_SMS_PRONO_EXCHANGE                 string = "E_SMS_PRONO"
+	RMQ_SMS_PRONO_QUEUE                    string = "Q_SMS_PRONO"
+	RMQ_PREDICT_WIN_EXCHANGE               string = "E_PREDICT_WIN"
+	RMQ_PREDICT_WIN_QUEUE                  string = "Q_PREDICT_WIN"
+	RMQ_CREDIT_GOAL_EXCHANGE               string = "E_CREDIT_GOAL"
+	RMQ_CREDIT_GOAL_QUEUE                  string = "Q_CREDIT_GOAL"
+	RMQ_REMINDER_EXCHANGE                  string = "E_REMINDER"
+	RMQ_REMINDER_QUEUE                     string = "Q_REMINDER"
+	RMQ_REMINDER_AFTER_TRIAL_ENDS_EXCHANGE string = "E_REMINDER_AFTER_TRIAL_ENDS"
+	RMQ_REMINDER_AFTER_TRIAL_ENDS_QUEUE    string = "Q_REMINDER_AFTER_TRIAL_ENDS"
+	RMQ_RENEWAL_EXCHANGE                   string = "E_RENEWAL"
+	RMQ_RENEWAL_QUEUE                      string = "Q_RENEWAL"
+	RMQ_RETRY_EXCHANGE                     string = "E_RETRY"
+	RMQ_RETRY_QUEUE                        string = "Q_RETRY"
+	RMQ_RETRY_UP_EXCHANGE                  string = "E_RETRY_UNDERPAYMENT"
+	RMQ_RETRY_UP_QUEUE                     string = "Q_RETRY_UNDERPAYMENT"
+	RMQ_NOTIF_EXCHANGE                     string = "E_NOTIF"
+	RMQ_NOTIF_QUEUE                        string = "Q_NOTIF"
+	RMQ_MT_EXCHANGE                        string = "E_MT"
+	RMQ_MT_QUEUE                           string = "Q_MT"
+	RMQ_PB_MO_EXCHANGE                     string = "E_POSTBACK_MO"
+	RMQ_PB_MO_QUEUE                        string = "Q_POSTBACK_MO"
+	ACT_USSD                               string = "USSD"
+	ACT_SMS                                string = "SMS"
+	ACT_CONFIRMATION                       string = "CONFIRMATION"
+	ACT_NOTIFICATION                       string = "NOTIFICATION"
+	ACT_MO                                 string = "MO"
+	ACT_FIRSTPUSH                          string = "FIRSTPUSH"
+	ACT_RENEWAL                            string = "RENEWAL"
+	ACT_RETRY                              string = "RETRY"
+	ACT_SMS_ALERTE                         string = "SMS_ALERTE"
+	ACT_CREDIT_GOAL                        string = "CREDIT_GOAL"
+	ACT_PRONOSTIC                          string = "PRONOSTIC"
+	ACT_PREDICT_WIN                        string = "PREDICT_WIN"
+	ACT_SUB                                string = "SUB"
+	ACT_UNSUB                              string = "UNSUB"
+	ACT_USER_LOSES                         string = "USER_LOSES"
+	ACT_PREDICTION                         string = "PREDICTION"
+	ACT_SCRAPING                           string = "SCRAPING"
 )
 
 const (
@@ -166,8 +170,10 @@ func init() {
 	rootCmd.AddCommand(consumerCreditGoalCmd)
 	rootCmd.AddCommand(consumerPredictWinCmd)
 	rootCmd.AddCommand(consumerReminderCmd)
+	rootCmd.AddCommand(consumerReminderAfterTrialEndsCmd)
 	rootCmd.AddCommand(consumerRenewalCmd)
 	rootCmd.AddCommand(consumerRetryCmd)
+	rootCmd.AddCommand(consumerRetryUnderpaymentCmd)
 	rootCmd.AddCommand(consumerMTCmd)
 	rootCmd.AddCommand(consumerPostbackMOCmd)
 
@@ -183,8 +189,10 @@ func init() {
 	rootCmd.AddCommand(publisherCreditGoalCmd)
 	rootCmd.AddCommand(publisherPredictWinCmd)
 	rootCmd.AddCommand(publisherReminderCmd)
+	rootCmd.AddCommand(publisherReminderAfterTrialEndsCmd)
 	rootCmd.AddCommand(publisherRenewalCmd)
 	rootCmd.AddCommand(publisherRetryCmd)
+	rootCmd.AddCommand(publisherRetryUnderpaymentCmd)
 
 	// Test command
 	rootCmd.AddCommand(consumerTestLeagueCmd)

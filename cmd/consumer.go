@@ -475,11 +475,26 @@ var consumerRetryCmd = &cobra.Command{
 	},
 }
 
-var consumerReminderCmd = &cobra.Command{
-	Use:   "reminder",
-	Short: "Consumer Reminder Service CLI",
+var consumerRetryUnderpaymentCmd = &cobra.Command{
+	Use:   "retry_underpayment",
+	Short: "Consumer Retry Underpayment Service CLI",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
+		/**
+		 * connect mysql
+		 */
+		db, err := connectDb()
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * connect redis
+		 */
+		rds, err := connectRedis()
+		if err != nil {
+			panic(err)
+		}
 
 		/**
 		 * connect rabbitmq
@@ -489,6 +504,9 @@ var consumerReminderCmd = &cobra.Command{
 			panic(err)
 		}
 
+		// DEBUG ON CONSOLE
+		db.Logger = loggerDb.Default.LogMode(loggerDb.Info)
+
 		/**
 		 * SETUP LOG
 		 */
@@ -497,10 +515,152 @@ var consumerReminderCmd = &cobra.Command{
 		/**
 		 * SETUP CHANNEL
 		 */
-		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_REMINDER_48H_EXCHANGE, true, RMQ_REMINDER_48H_QUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_RETRY_UP_EXCHANGE, true, RMQ_RETRY_UP_QUEUE)
 		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_MT_EXCHANGE, true, RMQ_MT_QUEUE)
 
-		messagesData, errSub := rmq.Subscribe(1, false, RMQ_REMINDER_48H_QUEUE, RMQ_REMINDER_48H_EXCHANGE, RMQ_REMINDER_48H_QUEUE)
+		messagesData, errSub := rmq.Subscribe(1, false, RMQ_RETRY_UP_QUEUE, RMQ_RETRY_UP_EXCHANGE, RMQ_RETRY_UP_QUEUE)
+		if errSub != nil {
+			panic(errSub)
+		}
+
+		// Initial sync waiting group
+		var wg sync.WaitGroup
+
+		// Loop forever listening incoming data
+		forever := make(chan bool)
+
+		p := NewProcessor(db, rds, rmq, logger)
+
+		// Set into goroutine this listener
+		go func() {
+
+			// Loop every incoming data
+			for d := range messagesData {
+
+				wg.Add(1)
+				p.RetryUnderpayment(&wg, d.Body)
+				wg.Wait()
+
+				// Manual consume queue
+				d.Ack(false)
+
+			}
+
+		}()
+
+		fmt.Println("[*] Waiting for data...")
+
+		<-forever
+	},
+}
+
+var consumerReminderCmd = &cobra.Command{
+	Use:   "reminder",
+	Short: "Consumer Reminder Service CLI",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		/**
+		 * connect mysql
+		 */
+		db, err := connectDb()
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * connect rabbitmq
+		 */
+		rmq, err := connectRabbitMq()
+		if err != nil {
+			panic(err)
+		}
+
+		// DEBUG ON CONSOLE
+		db.Logger = loggerDb.Default.LogMode(loggerDb.Info)
+
+		/**
+		 * SETUP LOG
+		 */
+		logger := logger.NewLogger()
+
+		/**
+		 * SETUP CHANNEL
+		 */
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_REMINDER_EXCHANGE, true, RMQ_REMINDER_QUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_MT_EXCHANGE, true, RMQ_MT_QUEUE)
+
+		messagesData, errSub := rmq.Subscribe(1, false, RMQ_REMINDER_QUEUE, RMQ_REMINDER_EXCHANGE, RMQ_REMINDER_QUEUE)
+		if errSub != nil {
+			panic(errSub)
+		}
+
+		// Initial sync waiting group
+		var wg sync.WaitGroup
+
+		// Loop forever listening incoming data
+		forever := make(chan bool)
+
+		p := NewProcessor(db, &redis.Client{}, rmq, logger)
+
+		// Set into goroutine this listener
+		go func() {
+
+			// Loop every incoming data
+			for d := range messagesData {
+
+				wg.Add(1)
+				p.Reminder(&wg, d.Body)
+				wg.Wait()
+
+				// Manual consume queue
+				d.Ack(false)
+
+			}
+
+		}()
+
+		fmt.Println("[*] Waiting for data...")
+
+		<-forever
+	},
+}
+
+var consumerReminderAfterTrialEndsCmd = &cobra.Command{
+	Use:   "reminder_after_trial_ends",
+	Short: "Consumer Reminder After Trial Ends Service CLI",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		/**
+		 * connect mysql
+		 */
+		db, err := connectDb()
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * connect rabbitmq
+		 */
+		rmq, err := connectRabbitMq()
+		if err != nil {
+			panic(err)
+		}
+
+		// DEBUG ON CONSOLE
+		db.Logger = loggerDb.Default.LogMode(loggerDb.Info)
+
+		/**
+		 * SETUP LOG
+		 */
+		logger := logger.NewLogger()
+
+		/**
+		 * SETUP CHANNEL
+		 */
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_REMINDER_AFTER_TRIAL_ENDS_EXCHANGE, true, RMQ_REMINDER_AFTER_TRIAL_ENDS_QUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_MT_EXCHANGE, true, RMQ_MT_QUEUE)
+
+		messagesData, errSub := rmq.Subscribe(1, false, RMQ_REMINDER_AFTER_TRIAL_ENDS_QUEUE, RMQ_REMINDER_AFTER_TRIAL_ENDS_EXCHANGE, RMQ_REMINDER_AFTER_TRIAL_ENDS_QUEUE)
 		if errSub != nil {
 			panic(errSub)
 		}
@@ -520,7 +680,7 @@ var consumerReminderCmd = &cobra.Command{
 			for d := range messagesData {
 
 				wg.Add(1)
-				p.Reminder(&wg, d.Body)
+				p.ReminderAfterTrialEnds(&wg, d.Body)
 				wg.Wait()
 
 				// Manual consume queue

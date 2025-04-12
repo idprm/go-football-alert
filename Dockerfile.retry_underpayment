@@ -8,6 +8,7 @@ LABEL author="Indra Pramana"
 
 RUN mkdir -p /logs/http
 RUN mkdir -p /logs/mt
+RUN mkdir -p /logs/telco
 
 WORKDIR /app
 COPY . .
@@ -27,4 +28,4 @@ COPY --from=golang /bin/sh /bin/sh
 
 COPY --from=golang /fb-alert .
 
-CMD ["/fb-alert", "credit_goal"]
+CMD ["/fb-alert", "retry_underpayment"]

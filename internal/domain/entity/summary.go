@@ -47,3 +47,11 @@ func (e *Summary) SetTotalRevenue(v float64) {
 func (e *Summary) GetCreatedAt() time.Time {
 	return e.CreatedAt
 }
+
+type SummaryRevenue struct {
+	CreatedAt string  `json:"created_at"`
+	Subject   string  `json:"subject"`
+	Status    string  `json:"status"`
+	Total     int     `json:"total"`
+	Revenue   float64 `json:"revenue"`
+}

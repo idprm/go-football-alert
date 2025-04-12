@@ -26,6 +26,7 @@ type ISubscriptionRepository interface {
 	CountAfter24Hour(int, string, string) (int64, error)
 	CountRenewal(int, string, string) (int64, error)
 	CountRetry(int, string, string) (int64, error)
+	CountRetryUnderpayment(int, string, string) (int64, error)
 	CountTotalActiveSub() (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetByCategory(string, string, string) (*entity.Subscription, error)
@@ -43,6 +44,7 @@ type ISubscriptionRepository interface {
 	UpdateNotActive(*entity.Subscription) (*entity.Subscription, error)
 	UpdateNotFree(*entity.Subscription) (*entity.Subscription, error)
 	UpdateNotRetry(*entity.Subscription) (*entity.Subscription, error)
+	UpdateNotUnderpayment(*entity.Subscription) (*entity.Subscription, error)
 	UpdateNotFollowTeam(*entity.Subscription) (*entity.Subscription, error)
 	UpdateNotFollowLeague(*entity.Subscription) (*entity.Subscription, error)
 	UpdateNotPredictWin(*entity.Subscription) (*entity.Subscription, error)
@@ -53,7 +55,9 @@ type ISubscriptionRepository interface {
 	Prono() (*[]entity.Subscription, error)
 	Renewal() (*[]entity.Subscription, error)
 	Retry() (*[]entity.Subscription, error)
+	RetryUnderpayment() (*[]entity.Subscription, error)
 	Reminder() (*[]entity.Subscription, error)
+	ReminderAfterTrialEnds() (*[]entity.Subscription, error)
 	CountActiveSub(int) (int64, error)
 	GetAllSubBySMSAlerte() (*[]entity.Subscription, error)
 }
@@ -142,6 +146,15 @@ func (r *SubscriptionRepository) CountRenewal(serviceId int, msisdn, code string
 func (r *SubscriptionRepository) CountRetry(serviceId int, msisdn, code string) (int64, error) {
 	var count int64
 	err := r.db.Model(&entity.Subscription{}).Where("service_id = ? AND msisdn = ? AND code = ?", serviceId, msisdn, code).Where("is_active = true AND is_retry = true AND (UNIX_TIMESTAMP(NOW() + INTERVAL 1 DAY) - UNIX_TIMESTAMP(renewal_at)) / 3600 > 0").Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *SubscriptionRepository) CountRetryUnderpayment(serviceId int, msisdn, code string) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Subscription{}).Where("service_id = ? AND msisdn = ? AND code = ?", serviceId, msisdn, code).Where("is_active = true AND is_underpayment = true AND total_underpayment > 0").Count(&count).Error
 	if err != nil {
 		return count, err
 	}
@@ -288,6 +301,14 @@ func (r *SubscriptionRepository) UpdateNotRetry(c *entity.Subscription) (*entity
 	return c, nil
 }
 
+func (r *SubscriptionRepository) UpdateNotUnderpayment(c *entity.Subscription) (*entity.Subscription, error) {
+	err := r.db.Model(c).Where("service_id = ? AND msisdn = ? AND code = ?", c.ServiceID, c.Msisdn, c.Code).Update("is_underpayment", false).Error
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
 func (r *SubscriptionRepository) UpdateNotFree(c *entity.Subscription) (*entity.Subscription, error) {
 	err := r.db.Model(c).Where("service_id = ? AND msisdn = ? AND code = ?", c.ServiceID, c.Msisdn, c.Code).Update("is_free", false).Error
 	if err != nil {
@@ -388,6 +409,16 @@ func (r *SubscriptionRepository) Retry() (*[]entity.Subscription, error) {
 	return &sub, nil
 }
 
+// SELECT (UNIX_TIMESTAMP("2017-06-10 18:30:10" + INTERVAL 1 DAY)-UNIX_TIMESTAMP("2017-06-10 18:40:10"))/3600 hour_diff (tommorow)
+func (r *SubscriptionRepository) RetryUnderpayment() (*[]entity.Subscription, error) {
+	var sub []entity.Subscription
+	err := r.db.Where("is_active = true AND is_underpayment = true AND total_underpayment > 0").Order("DATE(created_at) DESC").Find(&sub).Error
+	if err != nil {
+		return nil, err
+	}
+	return &sub, nil
+}
+
 // SELECT *
 // FROM fb_alert_test.subscriptions
 // WHERE is_active = true
@@ -396,6 +427,15 @@ func (r *SubscriptionRepository) Retry() (*[]entity.Subscription, error) {
 func (r *SubscriptionRepository) Reminder() (*[]entity.Subscription, error) {
 	var sub []entity.Subscription
 	err := r.db.Where("is_active = true AND HOUR(TIMEDIFF(NOW(), renewal_at)) > 48 AND HOUR(TIMEDIFF(NOW(), renewal_at)) < 49").Order("DATE(created_at) DESC").Find(&sub).Error
+	if err != nil {
+		return nil, err
+	}
+	return &sub, nil
+}
+
+func (r *SubscriptionRepository) ReminderAfterTrialEnds() (*[]entity.Subscription, error) {
+	var sub []entity.Subscription
+	err := r.db.Where("is_active = true AND HOUR(TIMEDIFF(NOW(), free_at)) BETWEEN 23 AND 24 AND is_free = true AND service_id IN(2, 3, 5, 6, 8, 9, 11, 12, 14, 15, 17, 18, 20, 21)").Order("DATE(created_at) DESC").Find(&sub).Error
 	if err != nil {
 		return nil, err
 	}

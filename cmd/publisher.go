@@ -104,6 +104,54 @@ var publisherRetryCmd = &cobra.Command{
 	},
 }
 
+var publisherRetryUnderpaymentCmd = &cobra.Command{
+	Use:   "pub_retry_underpayment",
+	Short: "Pub Retry Underpayment CLI",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		/**
+		 * connect mysql
+		 */
+		db, err := connectDb()
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * connect rabbitmq
+		 */
+		rmq, err := connectRabbitMq()
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * SETUP CHANNEL
+		 */
+		rmq.SetUpChannel(
+			RMQ_EXCHANGE_TYPE,
+			true,
+			RMQ_RETRY_UP_EXCHANGE,
+			true,
+			RMQ_RETRY_UP_QUEUE,
+		)
+
+		/**
+		 * Looping schedule per 3 hours
+		 */
+		timeDuration := time.Duration(3)
+
+		for {
+
+			go func() {
+				populateRetryUnderpayment(db, rmq)
+			}()
+
+			time.Sleep(timeDuration * time.Hour)
+		}
+	},
+}
+
 var publisherReminderCmd = &cobra.Command{
 	Use:   "pub_reminder",
 	Short: "Reminder CLI",
@@ -131,9 +179,9 @@ var publisherReminderCmd = &cobra.Command{
 		rmq.SetUpChannel(
 			RMQ_EXCHANGE_TYPE,
 			true,
-			RMQ_REMINDER_48H_EXCHANGE,
+			RMQ_REMINDER_EXCHANGE,
 			true,
-			RMQ_REMINDER_48H_QUEUE,
+			RMQ_REMINDER_QUEUE,
 		)
 
 		/**
@@ -145,6 +193,54 @@ var publisherReminderCmd = &cobra.Command{
 
 			go func() {
 				populateReminder(db, rmq)
+			}()
+
+			time.Sleep(timeDuration * time.Hour)
+		}
+	},
+}
+
+var publisherReminderAfterTrialEndsCmd = &cobra.Command{
+	Use:   "pub_reminder_after_trial_ends",
+	Short: "Pub Reminder After Trial Ends CLI",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		/**
+		 * connect mysql
+		 */
+		db, err := connectDb()
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * connect rabbitmq
+		 */
+		rmq, err := connectRabbitMq()
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * SETUP CHANNEL
+		 */
+		rmq.SetUpChannel(
+			RMQ_EXCHANGE_TYPE,
+			true,
+			RMQ_REMINDER_AFTER_TRIAL_ENDS_EXCHANGE,
+			true,
+			RMQ_REMINDER_AFTER_TRIAL_ENDS_QUEUE,
+		)
+
+		/**
+		 * Looping schedule per 1 hour
+		 */
+		timeDuration := time.Duration(1)
+
+		for {
+
+			go func() {
+				populateReminderAfterTrialEnds(db, rmq)
 			}()
 
 			time.Sleep(timeDuration * time.Hour)
@@ -533,6 +629,31 @@ func populateRetry(db *gorm.DB, rmq rmqp.AMQP) {
 	}
 }
 
+func populateRetryUnderpayment(db *gorm.DB, rmq rmqp.AMQP) {
+	subscriptionRepo := repository.NewSubscriptionRepository(db)
+	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+
+	subs := subscriptionService.RetryUnderpayment()
+
+	for _, s := range *subs {
+		var sub entity.Subscription
+
+		sub.ID = s.ID
+		sub.ServiceID = s.ServiceID
+		sub.Msisdn = s.Msisdn
+		sub.Code = s.Code
+		sub.LatestKeyword = s.LatestKeyword
+		sub.LatestSubject = s.LatestSubject
+		sub.CreatedAt = s.CreatedAt
+
+		json, _ := json.Marshal(sub)
+
+		rmq.IntegratePublish(RMQ_RETRY_UP_EXCHANGE, RMQ_RETRY_UP_QUEUE, RMQ_DATA_TYPE, "", string(json))
+
+		time.Sleep(100 * time.Microsecond)
+	}
+}
+
 func populatePredictWin(db *gorm.DB, rmq rmqp.AMQP) {
 	subscriptionRepo := repository.NewSubscriptionRepository(db)
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
@@ -598,11 +719,40 @@ func populateReminder(db *gorm.DB, rmq rmqp.AMQP) {
 		sub.Code = s.Code
 		sub.LatestKeyword = s.LatestKeyword
 		sub.LatestSubject = s.LatestSubject
+		sub.FreeAt = s.FreeAt
+		sub.RenewalAt = s.RenewalAt
 		sub.CreatedAt = s.CreatedAt
 
 		json, _ := json.Marshal(sub)
 
-		rmq.IntegratePublish(RMQ_REMINDER_48H_EXCHANGE, RMQ_REMINDER_48H_QUEUE, RMQ_DATA_TYPE, "", string(json))
+		rmq.IntegratePublish(RMQ_REMINDER_EXCHANGE, RMQ_REMINDER_QUEUE, RMQ_DATA_TYPE, "", string(json))
+
+		time.Sleep(100 * time.Microsecond)
+	}
+}
+
+func populateReminderAfterTrialEnds(db *gorm.DB, rmq rmqp.AMQP) {
+	subscriptionRepo := repository.NewSubscriptionRepository(db)
+	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+
+	subs := subscriptionService.ReminderAfterTrialEnds()
+
+	for _, s := range *subs {
+		var sub entity.Subscription
+
+		sub.ID = s.ID
+		sub.ServiceID = s.ServiceID
+		sub.Msisdn = s.Msisdn
+		sub.Code = s.Code
+		sub.LatestKeyword = s.LatestKeyword
+		sub.LatestSubject = s.LatestSubject
+		sub.FreeAt = s.FreeAt
+		sub.RenewalAt = s.RenewalAt
+		sub.CreatedAt = s.CreatedAt
+
+		json, _ := json.Marshal(sub)
+
+		rmq.IntegratePublish(RMQ_REMINDER_AFTER_TRIAL_ENDS_EXCHANGE, RMQ_REMINDER_AFTER_TRIAL_ENDS_QUEUE, RMQ_DATA_TYPE, "", string(json))
 
 		time.Sleep(100 * time.Microsecond)
 	}

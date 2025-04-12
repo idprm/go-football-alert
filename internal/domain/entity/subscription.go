@@ -52,6 +52,7 @@ type Subscription struct {
 	TotalUnsub           int       `gorm:"default:0" json:"total_unsub"`
 	TotalAmountFirstpush float64   `gorm:"default:0" json:"total_amount_firstpush"`
 	TotalAmountRenewal   float64   `gorm:"default:0" json:"total_amount_renewal"`
+	TotalUnderpayment    float64   `gorm:"default:0" json:"total_underpayment"`
 	BeforeBalance        float64   `gorm:"default:0" json:"before_balance,omitempty"`
 	AfterBalance         float64   `gorm:"default:0" json:"after_balance,omitempty"`
 	IpAddress            string    `gorm:"size:25" json:"ip_address,omitempty"`
@@ -64,6 +65,7 @@ type Subscription struct {
 	IsPronostic          bool      `gorm:"type:boolean;column:is_prono" json:"is_prono,omitempty"`
 	IsRetry              bool      `gorm:"type:boolean;column:is_retry" json:"is_retry,omitempty"`
 	IsFree               bool      `gorm:"type:boolean;column:is_free" json:"is_free,omitempty"`
+	IsUnderpayment       bool      `gorm:"type:boolean;default:false;column:is_underpayment" json:"is_underpayment,omitempty"`
 	IsActive             bool      `gorm:"type:boolean;default:false;column:is_active" json:"is_active,omitempty"`
 	gorm.Model
 }

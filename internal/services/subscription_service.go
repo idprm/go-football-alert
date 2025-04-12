@@ -30,6 +30,7 @@ type ISubscriptionService interface {
 	IsAfter24Hour(int, string, string) bool
 	IsRenewal(int, string, string) bool
 	IsRetry(int, string, string) bool
+	IsRetryUnderpayment(int, string, string) bool
 	GetTotalActiveSubscription() int
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetByCategory(string, string, string) (*entity.Subscription, error)
@@ -47,6 +48,7 @@ type ISubscriptionService interface {
 	UpdateNotActive(*entity.Subscription) (*entity.Subscription, error)
 	UpdateNotFree(*entity.Subscription) (*entity.Subscription, error)
 	UpdateNotRetry(*entity.Subscription) (*entity.Subscription, error)
+	UpdateNotUnderpayment(*entity.Subscription) (*entity.Subscription, error)
 	UpdateNotFollowTeam(*entity.Subscription) (*entity.Subscription, error)
 	UpdateNotFollowLeague(*entity.Subscription) (*entity.Subscription, error)
 	UpdateNotPredictWin(*entity.Subscription) (*entity.Subscription, error)
@@ -56,7 +58,9 @@ type ISubscriptionService interface {
 	Prono() *[]entity.Subscription
 	Renewal() *[]entity.Subscription
 	Retry() *[]entity.Subscription
+	RetryUnderpayment() *[]entity.Subscription
 	Reminder() *[]entity.Subscription
+	ReminderAfterTrialEnds() *[]entity.Subscription
 	CountActiveSub(int) (int, error)
 	GetAllSubBySMSAlerte() (*[]entity.Subscription, error)
 }
@@ -108,6 +112,11 @@ func (s *SubscriptionService) IsRenewal(serviceId int, msisdn, code string) bool
 
 func (s *SubscriptionService) IsRetry(serviceId int, msisdn, code string) bool {
 	count, _ := s.subscriptionRepo.CountRetry(serviceId, msisdn, code)
+	return count > 0
+}
+
+func (s *SubscriptionService) IsRetryUnderpayment(serviceId int, msisdn, code string) bool {
+	count, _ := s.subscriptionRepo.CountRetryUnderpayment(serviceId, msisdn, code)
 	return count > 0
 }
 
@@ -180,6 +189,10 @@ func (s *SubscriptionService) UpdateNotRetry(a *entity.Subscription) (*entity.Su
 	return s.subscriptionRepo.UpdateNotRetry(a)
 }
 
+func (s *SubscriptionService) UpdateNotUnderpayment(a *entity.Subscription) (*entity.Subscription, error) {
+	return s.subscriptionRepo.UpdateNotUnderpayment(a)
+}
+
 func (s *SubscriptionService) UpdateNotFollowTeam(a *entity.Subscription) (*entity.Subscription, error) {
 	return s.subscriptionRepo.UpdateNotFollowTeam(a)
 }
@@ -240,8 +253,24 @@ func (s *SubscriptionService) Retry() *[]entity.Subscription {
 	return subs
 }
 
+func (s *SubscriptionService) RetryUnderpayment() *[]entity.Subscription {
+	subs, err := s.subscriptionRepo.RetryUnderpayment()
+	if err != nil {
+		log.Println(err)
+	}
+	return subs
+}
+
 func (s *SubscriptionService) Reminder() *[]entity.Subscription {
 	subs, err := s.subscriptionRepo.Reminder()
+	if err != nil {
+		log.Println(err)
+	}
+	return subs
+}
+
+func (s *SubscriptionService) ReminderAfterTrialEnds() *[]entity.Subscription {
+	subs, err := s.subscriptionRepo.ReminderAfterTrialEnds()
 	if err != nil {
 		log.Println(err)
 	}

@@ -130,6 +130,7 @@ const (
 	SMS_SUCCESS_CHARGING                 string = "SUCCESS_CHARGING"
 	SMS_SUCCESS_CHARGING_SMS_ALERTE      string = "SUCCESS_CHARGING_SMS_ALERTE"
 	SMS_REMINDER_48H                     string = "REMINDER_48H"
+	SMS_REMINDER_AFTER_TRIAL_ENDS        string = "REMINDER_AFTER_TRIAL_ENDS"
 	SMS_INFO                             string = "INFO"
 	SMS_STOP                             string = "STOP"
 )

@@ -86,6 +86,48 @@ func (h *ReminderHandler) Remindpush() {
 
 }
 
+func (h *ReminderHandler) RemindAfterTrialEnds() {
+	// check is active
+	if h.subscriptionService.IsActiveSubscription(h.sub.GetServiceId(), h.sub.GetMsisdn(), h.sub.GetCode()) {
+		trxId := utils.GenerateTrxId()
+
+		sub, err := h.subscriptionService.Get(h.sub.GetServiceId(), h.sub.GetMsisdn(), h.sub.GetCode())
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		service, err := h.serviceService.GetById(h.sub.GetServiceId())
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		content, err := h.getContentService(SMS_REMINDER_AFTER_TRIAL_ENDS, service)
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		mt := &model.MTRequest{
+			Smsc:         service.ScSubMT,
+			Service:      service,
+			Keyword:      sub.GetLatestKeyword(),
+			Subscription: sub,
+			Content:      content,
+		}
+		mt.SetTrxId(trxId)
+
+		jsonData, err := json.Marshal(mt)
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		h.rmq.IntegratePublish(
+			RMQ_MT_EXCHANGE,
+			RMQ_MT_QUEUE,
+			RMQ_DATA_TYPE, "", string(jsonData),
+		)
+	}
+}
+
 func (h *ReminderHandler) getContentService(name string, service *entity.Service) (*entity.Content, error) {
 	// if data not exist in table contents
 	if !h.contentService.IsContent(name) {

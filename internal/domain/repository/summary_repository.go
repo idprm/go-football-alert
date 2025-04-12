@@ -18,9 +18,15 @@ func NewSummaryRepository(db *gorm.DB) *SummaryRepository {
 }
 
 var (
-	queryCountSummaryPaginate   = "SELECT COUNT(*) FROM summaries"
-	querySelectSummaryPaginate  = "SELECT * FROM summaries WHERE DATE(created_at) BETWEEN DATE(?) AND DATE(?) GROUP BY DATE(created_at) ORDER BY DATE(created_at) DESC"
-	querySelectSummaryPaginate2 = "SELECT * FROM summaries LIMIT ? OFFSET ?"
+	queryCountSummaryPaginate       = "SELECT COUNT(*) FROM summaries"
+	querySelectSummaryPaginate      = "SELECT * FROM summaries WHERE DATE(created_at) BETWEEN DATE(?) AND DATE(?) GROUP BY DATE(created_at) ORDER BY DATE(created_at) DESC"
+	querySelectSummaryPaginate2     = "SELECT * FROM summaries LIMIT ? OFFSET ?"
+	querySelectRevenueInTransaction = "SELECT DATE(created_at) as created_at, subject, status,  COUNT(1) as total, SUM(amount) as revenue FROM transactions WHERE DATE(created_at) BETWEEN DATE(?) AND DATE(?) GROUP BY DATE(created_at), subject, status ORDER BY DATE(created_at) DESC"
+	// SELECT DATE(created_at), subject, status,  COUNT(1), SUM(amount) as revenue
+// FROM fb_alert_test.transactions
+// WHERE DATE(created_at) BETWEEN DATE('2025-03-01') AND DATE(NOW())
+// GROUP BY  DATE(created_at) , subject, status
+// ORDER BY DATE(created_at) DESC;
 )
 
 type ISummaryRepository interface {
@@ -35,6 +41,9 @@ type ISummaryRepository interface {
 	Save(*entity.Summary) (*entity.Summary, error)
 	Update(*entity.Summary) (*entity.Summary, error)
 	Delete(*entity.Summary) error
+	CountSummaryRevenue(*entity.SummaryRevenue) (int64, error)
+	SaveSummaryRevenue(*entity.SummaryRevenue) error
+	UpdateSummaryRevenue(*entity.SummaryRevenue) error
 }
 
 func (r *SummaryRepository) Count(serviceId int, date time.Time) (int64, error) {
@@ -128,6 +137,31 @@ func (r *SummaryRepository) Update(c *entity.Summary) (*entity.Summary, error) {
 
 func (r *SummaryRepository) Delete(c *entity.Summary) error {
 	err := r.db.Delete(&c, c.ID).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *SummaryRepository) CountSummaryRevenue(c *entity.SummaryRevenue) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.SummaryRevenue{}).Where("DATE(created_at) = DATE(?) AND subject = ? AND status = ?", c.CreatedAt, c.Subject, c.Status).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *SummaryRepository) SaveSummaryRevenue(c *entity.SummaryRevenue) error {
+	err := r.db.Create(&c).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *SummaryRepository) UpdateSummaryRevenue(c *entity.SummaryRevenue) error {
+	err := r.db.Where("DATE(created_at) = DATE(?) AND subject = ? AND status = ?", c.CreatedAt, c.Subject, c.Status).Updates(&c).Error
 	if err != nil {
 		return err
 	}
