@@ -671,7 +671,7 @@ var consumerReminderAfterTrialEndsCmd = &cobra.Command{
 		// Loop forever listening incoming data
 		forever := make(chan bool)
 
-		p := NewProcessor(&gorm.DB{}, &redis.Client{}, rmq, logger)
+		p := NewProcessor(db, &redis.Client{}, rmq, logger)
 
 		// Set into goroutine this listener
 		go func() {

@@ -591,6 +591,7 @@ func (p *Processor) ReminderAfterTrialEnds(wg *sync.WaitGroup, message []byte) {
 	transactionRepo := repository.NewTransactionRepository(p.db)
 	transactionService := services.NewTransactionService(transactionRepo)
 
+	// parsing json to string
 	var sub *entity.Subscription
 	json.Unmarshal(message, &sub)
 
