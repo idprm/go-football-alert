@@ -27,4 +27,4 @@ COPY --from=golang /bin/sh /bin/sh
 
 COPY --from=golang /fb-alert .
 
-CMD ["/fb-alert", "reminder"]
+CMD ["/fb-alert", "reminder_after_trial_ends"]
