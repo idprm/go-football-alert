@@ -1143,6 +1143,30 @@ func (h *DCBHandler) SMSPronostic(pronoId int64) {
 	}
 }
 
-func (h *DCBHandler) ReportDaily(c *fiber.Ctx) error {
-	return c.Render("", "")
+func (h *DCBHandler) ReportRevenueDaily(c *fiber.Ctx) error {
+
+	req := new(entity.Pagination)
+
+	err := c.QueryParser(req)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusBadRequest,
+				Message:    err.Error(),
+			},
+		)
+	}
+
+	mts, err := h.mtService.GetAllPaginate(req)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusInternalServerError,
+				Message:    err.Error(),
+			},
+		)
+	}
+	return c.Status(fiber.StatusOK).JSON(mts)
 }

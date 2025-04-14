@@ -1092,6 +1092,85 @@ var consumerCreditGoalCmd = &cobra.Command{
 	},
 }
 
+var consumerCreditScoreCmd = &cobra.Command{
+	Use:   "credit_score",
+	Short: "Consumer Credit Score Service CLI",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		/**
+		 * connect mysql
+		 */
+		db, err := connectDb()
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * connect redis
+		 */
+		rds, err := connectRedis()
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * connect rabbitmq
+		 */
+		rmq, err := connectRabbitMq()
+		if err != nil {
+			panic(err)
+		}
+
+		// DEBUG ON CONSOLE
+		db.Logger = loggerDb.Default.LogMode(loggerDb.Info)
+
+		/**
+		 * SETUP LOG
+		 */
+		logger := logger.NewLogger()
+
+		/**
+		 * SETUP CHANNEL
+		 */
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_CREDIT_GOAL_EXCHANGE, true, RMQ_CREDIT_GOAL_QUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_MT_EXCHANGE, true, RMQ_MT_QUEUE)
+
+		messagesData, errSub := rmq.Subscribe(1, false, RMQ_CREDIT_GOAL_QUEUE, RMQ_CREDIT_GOAL_EXCHANGE, RMQ_CREDIT_GOAL_QUEUE)
+		if errSub != nil {
+			panic(errSub)
+		}
+
+		// Initial sync waiting group
+		var wg sync.WaitGroup
+
+		// Loop forever listening incoming data
+		forever := make(chan bool)
+
+		p := NewProcessor(db, rds, rmq, logger)
+
+		// Set into goroutine this listener
+		go func() {
+
+			// Loop every incoming data
+			for d := range messagesData {
+
+				wg.Add(1)
+				p.CreditScore(&wg, d.Body)
+				wg.Wait()
+
+				// Manual consume queue
+				d.Ack(false)
+
+			}
+
+		}()
+
+		fmt.Println("[*] Waiting for data...")
+
+		<-forever
+	},
+}
+
 var consumerPredictWinCmd = &cobra.Command{
 	Use:   "predict_win",
 	Short: "Consumer Predict Win Service CLI",

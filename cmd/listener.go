@@ -91,6 +91,7 @@ var listenerCmd = &cobra.Command{
 			&entity.SMSActu{},
 			&entity.MO{},
 			&entity.SummaryRevenue{},
+			&entity.Country{},
 		)
 
 		/**

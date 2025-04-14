@@ -1,0 +1,48 @@
+package handler
+
+import (
+	"github.com/idprm/go-football-alert/internal/domain/entity"
+	"github.com/idprm/go-football-alert/internal/logger"
+	"github.com/idprm/go-football-alert/internal/services"
+	"github.com/wiliehidayat87/rmqp"
+)
+
+type CreditScoreHandler struct {
+	rmq                 rmqp.AMQP
+	logger              *logger.Logger
+	sub                 *entity.Subscription
+	serviceService      services.IServiceService
+	contentService      services.IContentService
+	subscriptionService services.ISubscriptionService
+	transactionService  services.ITransactionService
+	bettingService      services.IBettingService
+	summaryService      services.ISummaryService
+}
+
+func NewCreditScoreHandler(
+	rmq rmqp.AMQP,
+	logger *logger.Logger,
+	sub *entity.Subscription,
+	serviceService services.IServiceService,
+	contentService services.IContentService,
+	subscriptionService services.ISubscriptionService,
+	transactionService services.ITransactionService,
+	bettingService services.IBettingService,
+	summaryService services.ISummaryService,
+) *CreditScoreHandler {
+	return &CreditScoreHandler{
+		rmq:                 rmq,
+		logger:              logger,
+		sub:                 sub,
+		serviceService:      serviceService,
+		contentService:      contentService,
+		subscriptionService: subscriptionService,
+		transactionService:  transactionService,
+		bettingService:      bettingService,
+		summaryService:      summaryService,
+	}
+}
+
+func (h *CreditScoreHandler) CreditScore() {
+
+}

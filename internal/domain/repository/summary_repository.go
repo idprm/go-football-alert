@@ -18,11 +18,11 @@ func NewSummaryRepository(db *gorm.DB) *SummaryRepository {
 }
 
 var (
-	queryCountSummaryPaginate       = "SELECT COUNT(*) FROM summaries"
-	querySelectSummaryPaginate      = "SELECT * FROM summaries WHERE DATE(created_at) BETWEEN DATE(?) AND DATE(?) GROUP BY DATE(created_at) ORDER BY DATE(created_at) DESC"
-	querySelectSummaryPaginate2     = "SELECT * FROM summaries LIMIT ? OFFSET ?"
-	querySelectRevenueInTransaction = "SELECT DATE(created_at) as created_at, subject, status,  COUNT(1) as total, SUM(amount) as revenue FROM transactions WHERE DATE(created_at) BETWEEN DATE(?) AND DATE(?) GROUP BY DATE(created_at), subject, status ORDER BY DATE(created_at) DESC"
-	// SELECT DATE(created_at), subject, status,  COUNT(1), SUM(amount) as revenue
+// queryCountSummaryPaginate       = "SELECT COUNT(*) FROM summaries"
+// querySelectSummaryPaginate      = "SELECT * FROM summaries WHERE DATE(created_at) BETWEEN DATE(?) AND DATE(?) GROUP BY DATE(created_at) ORDER BY DATE(created_at) DESC"
+// querySelectSummaryPaginate2     = "SELECT * FROM summaries LIMIT ? OFFSET ?"
+// querySelectRevenueInTransaction = "SELECT DATE(created_at) as created_at, subject, status,  COUNT(1) as total, SUM(amount) as revenue FROM transactions WHERE DATE(created_at) BETWEEN DATE(?) AND DATE(?) GROUP BY DATE(created_at), subject, status ORDER BY DATE(created_at) DESC"
+// SELECT DATE(created_at), subject, status,  COUNT(1), SUM(amount) as revenue
 // FROM fb_alert_test.transactions
 // WHERE DATE(created_at) BETWEEN DATE('2025-03-01') AND DATE(NOW())
 // GROUP BY  DATE(created_at) , subject, status
@@ -117,6 +117,15 @@ func (r *SummaryRepository) GetRevenue(start, end time.Time) (float64, error) {
 		return 0, err
 	}
 	return c.TotalRevenue, nil
+}
+
+func (r *SummaryRepository) GetRevenueDaily() (*entity.Transaction, error) {
+	var t entity.Transaction
+	err := r.db.Table("transactions").Select("").Where("").Scan(&t).Error
+	if err != nil {
+		return nil, err
+	}
+	return &t, nil
 }
 
 func (r *SummaryRepository) Save(c *entity.Summary) (*entity.Summary, error) {

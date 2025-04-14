@@ -59,6 +59,8 @@ const (
 	RMQ_PREDICT_WIN_QUEUE                     string = "Q_PREDICT_WIN"
 	RMQ_CREDIT_GOAL_EXCHANGE                  string = "E_CREDIT_GOAL"
 	RMQ_CREDIT_GOAL_QUEUE                     string = "Q_CREDIT_GOAL"
+	RMQ_CREDIT_SCORE_EXCHANGE                 string = "E_CREDIT_SCORE"
+	RMQ_CREDIT_SCORE_QUEUE                    string = "Q_CREDIT_SCORE"
 	RMQ_REMINDER_48H_BEFORE_CHARGING_EXCHANGE string = "E_REMINDER_48H_BEFORE_CHARGING"
 	RMQ_REMINDER_48H_BEFORE_CHARGING_QUEUE    string = "Q_REMINDER_48H_BEFORE_CHARGING"
 	RMQ_REMINDER_AFTER_TRIAL_ENDS_EXCHANGE    string = "E_REMINDER_AFTER_TRIAL_ENDS"
@@ -169,6 +171,7 @@ func init() {
 	rootCmd.AddCommand(consumerSMSActuCmd)
 	rootCmd.AddCommand(consumerSMSPronoCmd)
 	rootCmd.AddCommand(consumerCreditGoalCmd)
+	rootCmd.AddCommand(consumerCreditScoreCmd)
 	rootCmd.AddCommand(consumerPredictWinCmd)
 	rootCmd.AddCommand(consumerReminder48HBeforeChargingCmd)
 	rootCmd.AddCommand(consumerReminderAfterTrialEndsCmd)
