@@ -343,6 +343,8 @@ func (p *Processor) CreditGoal(wg *sync.WaitGroup, message []byte) {
 	contentService := services.NewContentService(contentRepo)
 	subscriptionRepo := repository.NewSubscriptionRepository(p.db)
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+	subscriptionCreditGoalRepo := repository.NewSubscriptionCreditGoalRepository(p.db)
+	subscriptionCreditGoalService := services.NewSubscriptionCreditGoalService(subscriptionCreditGoalRepo)
 	transactionRepo := repository.NewTransactionRepository(p.db)
 	transactionService := services.NewTransactionService(transactionRepo)
 	bettingRepo := repository.NewBettingRepository(p.db)
@@ -361,6 +363,7 @@ func (p *Processor) CreditGoal(wg *sync.WaitGroup, message []byte) {
 		serviceService,
 		contentService,
 		subscriptionService,
+		subscriptionCreditGoalService,
 		transactionService,
 		bettingService,
 		summaryService,
@@ -382,6 +385,8 @@ func (p *Processor) CreditScore(wg *sync.WaitGroup, message []byte) {
 	contentService := services.NewContentService(contentRepo)
 	subscriptionRepo := repository.NewSubscriptionRepository(p.db)
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+	subscriptionCreditScoreRepo := repository.NewSubscriptionCreditScoreRepository(p.db)
+	subscriptionCreditScoreService := services.NewSubscriptionCreditScoreService(subscriptionCreditScoreRepo)
 	transactionRepo := repository.NewTransactionRepository(p.db)
 	transactionService := services.NewTransactionService(transactionRepo)
 	bettingRepo := repository.NewBettingRepository(p.db)
@@ -400,6 +405,7 @@ func (p *Processor) CreditScore(wg *sync.WaitGroup, message []byte) {
 		serviceService,
 		contentService,
 		subscriptionService,
+		subscriptionCreditScoreService,
 		transactionService,
 		bettingService,
 		summaryService,

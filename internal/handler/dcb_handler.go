@@ -16,6 +16,7 @@ import (
 
 type DCBHandler struct {
 	rmq                             rmqp.AMQP
+	userService                     services.IUserService
 	summaryService                  services.ISummaryService
 	leagueService                   services.ILeagueService
 	teamService                     services.ITeamService
@@ -39,6 +40,7 @@ type DCBHandler struct {
 
 func NewDCBHandler(
 	rmq rmqp.AMQP,
+	userService services.IUserService,
 	summaryService services.ISummaryService,
 	leagueService services.ILeagueService,
 	teamService services.ITeamService,
@@ -61,6 +63,7 @@ func NewDCBHandler(
 ) *DCBHandler {
 	return &DCBHandler{
 		rmq:                             rmq,
+		userService:                     userService,
 		summaryService:                  summaryService,
 		leagueService:                   leagueService,
 		teamService:                     teamService,
@@ -81,6 +84,10 @@ func NewDCBHandler(
 		smsAlerteService:                smsAlerteService,
 		pronosticService:                pronosticService,
 	}
+}
+
+func (h *DCBHandler) Login(c *fiber.Ctx) error {
+	return nil
 }
 
 func (h *DCBHandler) GetAllSummaryPaginate(c *fiber.Ctx) error {

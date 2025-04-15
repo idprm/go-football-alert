@@ -8,15 +8,16 @@ import (
 )
 
 type CreditScoreHandler struct {
-	rmq                 rmqp.AMQP
-	logger              *logger.Logger
-	sub                 *entity.Subscription
-	serviceService      services.IServiceService
-	contentService      services.IContentService
-	subscriptionService services.ISubscriptionService
-	transactionService  services.ITransactionService
-	bettingService      services.IBettingService
-	summaryService      services.ISummaryService
+	rmq                            rmqp.AMQP
+	logger                         *logger.Logger
+	sub                            *entity.Subscription
+	serviceService                 services.IServiceService
+	contentService                 services.IContentService
+	subscriptionService            services.ISubscriptionService
+	subscriptionCreditScoreService services.ISubscriptionCreditScoreService
+	transactionService             services.ITransactionService
+	bettingService                 services.IBettingService
+	summaryService                 services.ISummaryService
 }
 
 func NewCreditScoreHandler(
@@ -26,20 +27,22 @@ func NewCreditScoreHandler(
 	serviceService services.IServiceService,
 	contentService services.IContentService,
 	subscriptionService services.ISubscriptionService,
+	subscriptionCreditScoreService services.ISubscriptionCreditScoreService,
 	transactionService services.ITransactionService,
 	bettingService services.IBettingService,
 	summaryService services.ISummaryService,
 ) *CreditScoreHandler {
 	return &CreditScoreHandler{
-		rmq:                 rmq,
-		logger:              logger,
-		sub:                 sub,
-		serviceService:      serviceService,
-		contentService:      contentService,
-		subscriptionService: subscriptionService,
-		transactionService:  transactionService,
-		bettingService:      bettingService,
-		summaryService:      summaryService,
+		rmq:                            rmq,
+		logger:                         logger,
+		sub:                            sub,
+		serviceService:                 serviceService,
+		contentService:                 contentService,
+		subscriptionService:            subscriptionService,
+		subscriptionCreditScoreService: subscriptionCreditScoreService,
+		transactionService:             transactionService,
+		bettingService:                 bettingService,
+		summaryService:                 summaryService,
 	}
 }
 

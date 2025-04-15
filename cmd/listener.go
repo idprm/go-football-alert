@@ -92,6 +92,7 @@ var listenerCmd = &cobra.Command{
 			&entity.MO{},
 			&entity.SummaryRevenue{},
 			&entity.Country{},
+			&entity.User{},
 		)
 
 		/**
@@ -163,6 +164,9 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	r.Static(PATH_STATIC, path+"/public")
 
 	r.Use(cors.New())
+
+	userRepo := repository.NewUserRepository(db)
+	userService := services.NewUserService(userRepo)
 
 	summaryRepo := repository.NewSummaryRepository(db)
 	summaryService := services.NewSummaryService(summaryRepo)
@@ -292,6 +296,7 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 
 	dcbHandler := handler.NewDCBHandler(
 		rmq,
+		userService,
 		summaryService,
 		leagueService,
 		teamService,
@@ -380,6 +385,10 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	p.Get("/alertesms", h.LPAlerteSMS)
 	p.Get("/alertesms/:code/sub", h.Sub)
 	p.Get("/alertesms/:code/unsub", h.UnSub)
+
+	// auth
+	auth := v1.Group("auth")
+	auth.Post("/login", dcbHandler.Login)
 
 	// summaries
 	summaries := dcb.Group("summaries")

@@ -132,3 +132,16 @@ User Get SMS MT
 please confirm,
 REMINDER_48H : Votre abonnement au service (Service_Name) arrive à échéance dans 48h et sera renouvelé automatiquement
 SUCCESS_CHARGE : Votre abonnement au service (Service_Name) a été renouvelé avec succés
+
+
+
+
+Credit Score : 
+Exemple : Real vs Barca 
+If i chose Real, if real win, i win the defined amount
+
+-------------------
+Credit Goal 
+Exemple : Real vs Barca 
+If i chose Barca and the score is 4-3 
+Mean barca loose but scored 3 Goal, so i win the amount defined by goal * number of goal

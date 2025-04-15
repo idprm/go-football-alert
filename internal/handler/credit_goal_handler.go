@@ -8,15 +8,16 @@ import (
 )
 
 type CreditGoalHandler struct {
-	rmq                 rmqp.AMQP
-	logger              *logger.Logger
-	sub                 *entity.Subscription
-	serviceService      services.IServiceService
-	contentService      services.IContentService
-	subscriptionService services.ISubscriptionService
-	transactionService  services.ITransactionService
-	bettingService      services.IBettingService
-	summaryService      services.ISummaryService
+	rmq                           rmqp.AMQP
+	logger                        *logger.Logger
+	sub                           *entity.Subscription
+	serviceService                services.IServiceService
+	contentService                services.IContentService
+	subscriptionService           services.ISubscriptionService
+	subscriptionCreditGoalService services.ISubscriptionCreditGoalService
+	transactionService            services.ITransactionService
+	bettingService                services.IBettingService
+	summaryService                services.ISummaryService
 }
 
 func NewCreditGoalHandler(
@@ -26,20 +27,22 @@ func NewCreditGoalHandler(
 	serviceService services.IServiceService,
 	contentService services.IContentService,
 	subscriptionService services.ISubscriptionService,
+	subscriptionCreditGoalService services.ISubscriptionCreditGoalService,
 	transactionService services.ITransactionService,
 	bettingService services.IBettingService,
 	summaryService services.ISummaryService,
 ) *CreditGoalHandler {
 	return &CreditGoalHandler{
-		rmq:                 rmq,
-		logger:              logger,
-		sub:                 sub,
-		serviceService:      serviceService,
-		contentService:      contentService,
-		subscriptionService: subscriptionService,
-		transactionService:  transactionService,
-		bettingService:      bettingService,
-		summaryService:      summaryService,
+		rmq:                           rmq,
+		logger:                        logger,
+		sub:                           sub,
+		serviceService:                serviceService,
+		contentService:                contentService,
+		subscriptionService:           subscriptionService,
+		subscriptionCreditGoalService: subscriptionCreditGoalService,
+		transactionService:            transactionService,
+		bettingService:                bettingService,
+		summaryService:                summaryService,
 	}
 }
 
