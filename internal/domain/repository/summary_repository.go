@@ -12,7 +12,7 @@ import (
 const (
 	querySelectTotalActiveSub  = "SELECT COUNT(1) as total_sub FROM subscriptions WHERE is_active = true"
 	querySelectTotalRevenue    = "SELECT SUM(total_amount) as total_revenue FROM subscriptions"
-	querySelectPopulateRevenue = "SELECT DATE(created_at) as created_at, subject, status, COUNT(1) as total, SUM(amount) as revenue FROM transactions WHERE DATE(created_at) BETWEEN DATE('2025-01-01') AND DATE(NOW()) GROUP BY DATE(created_at), subject, status ORDER BY DATE(created_at) ASC"
+	querySelectPopulateRevenue = "SELECT DATE(created_at) as created_at, subject, status, COUNT(1) as total, SUM(amount) as revenue FROM transactions WHERE DATE(created_at) BETWEEN DATE_ADD(NOW(), INTERVAL -1 DAY) AND DATE(NOW()) GROUP BY DATE(created_at), subject, status ORDER BY DATE(created_at) ASC"
 )
 
 type SummaryDashboardRepository struct {
