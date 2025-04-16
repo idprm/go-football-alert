@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/idprm/go-football-alert/internal/domain/entity"
+	"github.com/idprm/go-football-alert/internal/domain/model"
 	"gorm.io/gorm"
 )
 
@@ -52,6 +53,7 @@ type ISummaryDashboardRepository interface {
 type ISummaryRevenueRepository interface {
 	Count(time.Time, string, string) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
+	GetAllByRange(*model.RangeDateRequest) ([]*entity.SummaryRevenue, error)
 	Get(time.Time, string, string) (*entity.SummaryRevenue, error)
 	Save(*entity.SummaryRevenue) error
 	Update(*entity.SummaryRevenue) error
@@ -128,6 +130,15 @@ func (r *SummaryRevenueRepository) GetAllPaginate(p *entity.Pagination) (*entity
 	}
 	p.Rows = summaries
 	return p, nil
+}
+
+func (r *SummaryRevenueRepository) GetAllByRange(p *model.RangeDateRequest) ([]*entity.SummaryRevenue, error) {
+	var summaries []*entity.SummaryRevenue
+	err := r.db.Where("subject IN('FIRSTPUSH', 'RENEWAL') AND status = 'SUCCESS' AND DATE(created_at) BETWEEN DATE(?) AND DATE(?)", p.GetStartDate(), p.GetEndDate()).Order("DATE(created_at) DESC").Find(&summaries).Error
+	if err != nil {
+		return nil, err
+	}
+	return summaries, nil
 }
 
 func (r *SummaryRevenueRepository) Get(date time.Time, subject, status string) (*entity.SummaryRevenue, error) {

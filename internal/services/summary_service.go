@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/idprm/go-football-alert/internal/domain/entity"
+	"github.com/idprm/go-football-alert/internal/domain/model"
 	"github.com/idprm/go-football-alert/internal/domain/repository"
 )
 
@@ -45,6 +46,7 @@ type ISummaryDashboardService interface {
 type ISummaryRevenueService interface {
 	IsSummary(time.Time, string, string) bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
+	GetAllByRange(*model.RangeDateRequest) ([]*entity.SummaryRevenue, error)
 	Get(time.Time, string, string) (*entity.SummaryRevenue, error)
 	Save(*entity.SummaryRevenue) error
 	Update(*entity.SummaryRevenue) error
@@ -95,6 +97,10 @@ func (s *SummaryRevenueService) IsSummary(date time.Time, subject, status string
 
 func (s *SummaryRevenueService) GetAllPaginate(p *entity.Pagination) (*entity.Pagination, error) {
 	return s.summaryRevenueRepo.GetAllPaginate(p)
+}
+
+func (s *SummaryRevenueService) GetAllByRange(p *model.RangeDateRequest) ([]*entity.SummaryRevenue, error) {
+	return s.summaryRevenueRepo.GetAllByRange(p)
 }
 
 func (s *SummaryRevenueService) Get(date time.Time, subject, status string) (*entity.SummaryRevenue, error) {

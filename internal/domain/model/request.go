@@ -3,6 +3,7 @@ package model
 import (
 	"net/url"
 	"strings"
+	"time"
 	"unicode"
 
 	"github.com/idprm/go-football-alert/internal/domain/entity"
@@ -564,4 +565,19 @@ type PronosticRequest struct {
 	Value    string `validate:"required" json:"value"`
 	StartAt  string `validate:"required" json:"start_at"`
 	ExpireAt string `validate:"required" json:"expire_at"`
+}
+
+type RangeDateRequest struct {
+	StartDate string `json:"start_date" query:"start_date"`
+	EndDate   string `json:"end_date" query:"end_date"`
+}
+
+func (p *RangeDateRequest) GetStartDate() time.Time {
+	date, _ := time.Parse("2006-01-02", p.StartDate)
+	return date
+}
+
+func (p *RangeDateRequest) GetEndDate() time.Time {
+	date, _ := time.Parse("2006-01-02", p.EndDate)
+	return date
 }

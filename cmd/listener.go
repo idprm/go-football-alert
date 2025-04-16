@@ -401,6 +401,10 @@ func routeUrlListener(db *gorm.DB, sqlDb *sql.DB, rds *redis.Client, rmq rmqp.AM
 	summaries.Get("/dashboard", dcbHandler.GetAllSummaryDashboardPaginate)
 	summaries.Get("/revenue", dcbHandler.GetAllSummaryRevenuePaginate)
 
+	// charts
+	charts := dcb.Group("charts")
+	charts.Get("/revenue", dcbHandler.GetAllChartRevenue)
+
 	// menus
 	menus := dcb.Group("menus")
 	menus.Get("/", dcbHandler.GetAllMenuPaginate)

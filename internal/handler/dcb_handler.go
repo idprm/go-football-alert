@@ -1130,3 +1130,30 @@ func (h *DCBHandler) GetAllSummaryRevenuePaginate(c *fiber.Ctx) error {
 	}
 	return c.Status(fiber.StatusOK).JSON(summaries)
 }
+
+func (h *DCBHandler) GetAllChartRevenue(c *fiber.Ctx) error {
+	req := new(model.RangeDateRequest)
+
+	err := c.QueryParser(req)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusBadRequest,
+				Message:    err.Error(),
+			},
+		)
+	}
+
+	summaries, err := h.summaryRevenueService.GetAllByRange(req)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusInternalServerError,
+				Message:    err.Error(),
+			},
+		)
+	}
+	return c.Status(fiber.StatusOK).JSON(summaries)
+}
