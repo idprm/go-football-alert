@@ -117,7 +117,7 @@ var listenerCmd = &cobra.Command{
 	},
 }
 
-func routeUrlListener(db *gorm.DB, sqlDB *sql.DB, rds *redis.Client, rmq rmqp.AMQP, logger *logger.Logger) *fiber.App {
+func routeUrlListener(db *gorm.DB, sqlDb *sql.DB, rds *redis.Client, rmq rmqp.AMQP, logger *logger.Logger) *fiber.App {
 
 	path, err := os.Getwd()
 	if err != nil {
@@ -245,10 +245,10 @@ func routeUrlListener(db *gorm.DB, sqlDB *sql.DB, rds *redis.Client, rmq rmqp.AM
 	pronosticRepo := repository.NewPronosticRepository(db)
 	pronosticService := services.NewPronosticService(pronosticRepo)
 
-	summaryDashboardRepo := repository.NewSummaryDashboardRepository(db)
+	summaryDashboardRepo := repository.NewSummaryDashboardRepository(db, sqlDb)
 	summaryDashboardService := services.NewSummaryDashboardService(summaryDashboardRepo)
 
-	summaryRevenueRepo := repository.NewSummaryRevenueRepository(db, sqlDB)
+	summaryRevenueRepo := repository.NewSummaryRevenueRepository(db, sqlDb)
 	summaryRevenueService := services.NewSummaryRevenueService(summaryRevenueRepo)
 
 	h := handler.NewIncomingHandler(

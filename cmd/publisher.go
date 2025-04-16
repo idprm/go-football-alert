@@ -787,7 +787,7 @@ func populateReport(db *gorm.DB, sqlDb *sql.DB) {
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
 	transactionRepo := repository.NewTransactionRepository(db)
 	transactionService := services.NewTransactionService(transactionRepo)
-	summaryDashboardRepo := repository.NewSummaryDashboardRepository(db)
+	summaryDashboardRepo := repository.NewSummaryDashboardRepository(db, sqlDb)
 	summaryDashboardService := services.NewSummaryDashboardService(summaryDashboardRepo)
 	summaryRevenueRepo := repository.NewSummaryRevenueRepository(db, sqlDb)
 	summaryRevenueService := services.NewSummaryRevenueService(summaryRevenueRepo)
@@ -801,8 +801,9 @@ func populateReport(db *gorm.DB, sqlDb *sql.DB) {
 	)
 
 	// based sub
-	h.TotalAllActiveSub()
-	h.TotalAllRevenue()
+	h.GetTotalActiveSub()
+	h.GetTotalRevenue()
+
 	// based trans
 	h.PopulateRevenue()
 }

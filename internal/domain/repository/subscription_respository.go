@@ -58,8 +58,6 @@ type ISubscriptionRepository interface {
 	RetryUnderpayment() (*[]entity.Subscription, error)
 	Reminder48HBeforeCharging() (*[]entity.Subscription, error)
 	ReminderAfterTrialEnds() (*[]entity.Subscription, error)
-	CountAllActiveSub() (int64, error)
-	CountAllRevenueSub() (float64, error)
 	GetAllSubBySMSAlerte() (*[]entity.Subscription, error)
 }
 
@@ -436,27 +434,6 @@ func (r *SubscriptionRepository) ReminderAfterTrialEnds() (*[]entity.Subscriptio
 		return nil, err
 	}
 	return &sub, nil
-}
-
-func (r *SubscriptionRepository) CountAllActiveSub() (int64, error) {
-	var count int64
-	err := r.db.Model(&entity.Subscription{}).Where("is_active = ?", true).Count(&count).Error
-	if err != nil {
-		return count, err
-	}
-	return count, nil
-}
-
-func (r *SubscriptionRepository) CountAllRevenueSub() (float64, error) {
-	type NResult struct {
-		N float64 // or int, or some else
-	}
-	var n NResult
-	err := r.db.Table("subscriptions").Select("SUM(total_amount) as n").Scan(&n).Error
-	if err != nil {
-		return n.N, err
-	}
-	return n.N, nil
 }
 
 func (r *SubscriptionRepository) GetAllSubBySMSAlerte() (*[]entity.Subscription, error) {

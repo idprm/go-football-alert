@@ -9,11 +9,14 @@ import (
 )
 
 const (
+	querySelectTotalActiveSub  = "SELECT COUNT(1) as total_sub FROM subscriptions WHERE is_active = true"
+	querySelectTotalRevenue    = "SELECT SUM(total_amount) as total_revenue FROM subscriptions"
 	querySelectPopulateRevenue = "SELECT DATE(created_at) as created_at, subject, status, COUNT(1) as total, SUM(amount) as revenue FROM transactions WHERE DATE(created_at) BETWEEN DATE('2025-03-01') AND DATE(NOW()) GROUP BY DATE(created_at), subject, status ORDER BY DATE(created_at) DESC"
 )
 
 type SummaryDashboardRepository struct {
-	db *gorm.DB
+	db    *gorm.DB
+	sqlDB *sql.DB
 }
 
 type SummaryRevenueRepository struct {
@@ -21,9 +24,10 @@ type SummaryRevenueRepository struct {
 	sqlDB *sql.DB
 }
 
-func NewSummaryDashboardRepository(db *gorm.DB) *SummaryDashboardRepository {
+func NewSummaryDashboardRepository(db *gorm.DB, sqlDB *sql.DB) *SummaryDashboardRepository {
 	return &SummaryDashboardRepository{
-		db: db,
+		db:    db,
+		sqlDB: sqlDB,
 	}
 }
 
@@ -41,6 +45,8 @@ type ISummaryDashboardRepository interface {
 	Save(*entity.SummaryDashboard) error
 	Update(*entity.SummaryDashboard) error
 	Delete(*entity.SummaryDashboard) error
+	GetTotalActiveSub() (int, error)
+	GetTotalRevenue() (float64, error)
 }
 
 type ISummaryRevenueRepository interface {
@@ -155,6 +161,25 @@ func (r *SummaryRevenueRepository) Delete(c *entity.SummaryRevenue) error {
 		return err
 	}
 	return nil
+
+}
+
+func (r *SummaryDashboardRepository) GetTotalActiveSub() (int, error) {
+	var count int
+	err := r.sqlDB.QueryRow(querySelectTotalActiveSub).Scan(&count)
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *SummaryDashboardRepository) GetTotalRevenue() (float64, error) {
+	var total float64
+	err := r.sqlDB.QueryRow(querySelectTotalRevenue).Scan(&total)
+	if err != nil {
+		return total, err
+	}
+	return total, nil
 }
 
 func (r *SummaryRevenueRepository) SelectRevenue() (*[]entity.SummaryRevenue, error) {

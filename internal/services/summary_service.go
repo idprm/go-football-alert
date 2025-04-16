@@ -38,6 +38,8 @@ type ISummaryDashboardService interface {
 	Save(*entity.SummaryDashboard) error
 	Update(*entity.SummaryDashboard) error
 	Delete(*entity.SummaryDashboard) error
+	GetTotalActiveSub() (int, error)
+	GetTotalRevenue() (float64, error)
 }
 
 type ISummaryRevenueService interface {
@@ -76,6 +78,14 @@ func (s *SummaryDashboardService) Update(a *entity.SummaryDashboard) error {
 
 func (s *SummaryDashboardService) Delete(a *entity.SummaryDashboard) error {
 	return s.summaryDashboardRepo.Delete(a)
+}
+
+func (s *SummaryDashboardService) GetTotalActiveSub() (int, error) {
+	return s.summaryDashboardRepo.GetTotalActiveSub()
+}
+
+func (s *SummaryDashboardService) GetTotalRevenue() (float64, error) {
+	return s.summaryDashboardRepo.GetTotalRevenue()
 }
 
 func (s *SummaryRevenueService) IsSummary(date time.Time, subject, status string) bool {

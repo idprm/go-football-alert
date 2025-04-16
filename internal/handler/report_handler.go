@@ -32,8 +32,8 @@ func NewReportHandler(
 	}
 }
 
-func (h *ReportHandler) TotalAllActiveSub() {
-	count, err := h.subscriptionService.CountAllActiveSub()
+func (h *ReportHandler) GetTotalActiveSub() {
+	count, err := h.summaryDashboardService.GetTotalActiveSub()
 	if err != nil {
 		log.Println(err)
 	}
@@ -42,12 +42,13 @@ func (h *ReportHandler) TotalAllActiveSub() {
 		&entity.SummaryDashboard{
 			TotalActiveSub: count,
 			CreatedAt:      time.Now(),
+			UpdatedAt:      time.Now(),
 		},
 	)
 }
 
-func (h *ReportHandler) TotalAllRevenue() {
-	total, err := h.subscriptionService.CountAllRevenueSub()
+func (h *ReportHandler) GetTotalRevenue() {
+	total, err := h.summaryDashboardService.GetTotalRevenue()
 	if err != nil {
 		log.Println(err)
 	}
@@ -56,6 +57,7 @@ func (h *ReportHandler) TotalAllRevenue() {
 		&entity.SummaryDashboard{
 			TotalRevenue: total,
 			CreatedAt:    time.Now(),
+			UpdatedAt:    time.Now(),
 		},
 	)
 }
@@ -65,9 +67,19 @@ func (h *ReportHandler) PopulateRevenue() {
 	if err != nil {
 		log.Println(err.Error())
 	}
+
 	if len(*summs) > 0 {
 		for _, s := range *summs {
-			h.summaryRevenueService.Save(&s)
+			h.summaryRevenueService.Save(
+				&entity.SummaryRevenue{
+					Subject:   s.Subject,
+					Status:    s.Status,
+					Total:     s.Total,
+					Revenue:   s.Revenue,
+					CreatedAt: s.CreatedAt,
+					UpdatedAt: time.Now(),
+				},
+			)
 		}
 	}
 }
