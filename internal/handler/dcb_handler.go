@@ -1157,3 +1157,26 @@ func (h *DCBHandler) GetAllChartRevenue(c *fiber.Ctx) error {
 	}
 	return c.Status(fiber.StatusOK).JSON(summaries)
 }
+
+func (h *DCBHandler) GetBadgeDashboard(c *fiber.Ctx) error {
+	if !h.summaryDashboardService.IsSummary(time.Now()) {
+		return c.Status(fiber.StatusNotFound).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusNotFound,
+				Message:    "not_found",
+			},
+		)
+	}
+	summary, err := h.summaryDashboardService.Get(time.Now())
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusInternalServerError,
+				Message:    err.Error(),
+			},
+		)
+	}
+	return c.Status(fiber.StatusOK).JSON(summary)
+}

@@ -96,7 +96,7 @@ func (r *FixtureRepository) CountLiveMatchLaterUSSD() (int64, error) {
 
 func (r *FixtureRepository) GetAllPaginate(p *entity.Pagination) (*entity.Pagination, error) {
 	var fixtures []*entity.Fixture
-	err := r.db.Scopes(Paginate(fixtures, p, r.db)).Preload("Home").Preload("Away").Find(&fixtures).Error
+	err := r.db.Where("DATE(fixture_date) <= DATE_ADD(NOW(), INTERVAL 3 DAY)").Scopes(Paginate(fixtures, p, r.db)).Preload("Home").Preload("Away").Find(&fixtures).Error
 	if err != nil {
 		return nil, err
 	}
