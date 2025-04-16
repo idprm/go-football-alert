@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"database/sql"
 	"encoding/json"
 	"time"
 
@@ -559,6 +560,12 @@ var publisherReportCmd = &cobra.Command{
 			panic(err)
 		}
 
+		// connect sqldb
+		sqlDb, err := connectSqlDb()
+		if err != nil {
+			panic(err)
+		}
+
 		// DEBUG ON CONSOLE
 		db.Logger = loggerDb.Default.LogMode(loggerDb.Info)
 
@@ -570,7 +577,7 @@ var publisherReportCmd = &cobra.Command{
 		for {
 
 			go func() {
-				populateReport(db)
+				populateReport(db, sqlDb)
 			}()
 
 			time.Sleep(timeDuration * time.Minute)
@@ -772,7 +779,7 @@ func populateReminderAfterTrialEnds(db *gorm.DB, rmq rmqp.AMQP) {
 	}
 }
 
-func populateReport(db *gorm.DB) {
+func populateReport(db *gorm.DB, sqlDb *sql.DB) {
 
 	serviceRepo := repository.NewServiceRepository(db)
 	serviceService := services.NewServiceService(serviceRepo)
@@ -780,25 +787,24 @@ func populateReport(db *gorm.DB) {
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
 	transactionRepo := repository.NewTransactionRepository(db)
 	transactionService := services.NewTransactionService(transactionRepo)
-	summaryRepo := repository.NewSummaryRepository(db)
-	summaryService := services.NewSummaryService(summaryRepo)
+	summaryDashboardRepo := repository.NewSummaryDashboardRepository(db)
+	summaryDashboardService := services.NewSummaryDashboardService(summaryDashboardRepo)
+	summaryRevenueRepo := repository.NewSummaryRevenueRepository(db, sqlDb)
+	summaryRevenueService := services.NewSummaryRevenueService(summaryRevenueRepo)
 
 	h := handler.NewReportHandler(
 		serviceService,
 		subscriptionService,
 		transactionService,
-		summaryService,
+		summaryDashboardService,
+		summaryRevenueService,
 	)
 
 	// based sub
-	h.TotalActiveSub()
+	h.TotalAllActiveSub()
+	h.TotalAllRevenue()
 	// based trans
-	h.TotalReg()
-	h.TotalUnreg()
-	h.TotalRenewal()
-	h.TotalRevenue()
-	h.TotalSuccess()
-	h.TotalFailed()
+	h.PopulateRevenue()
 }
 
 func scrapingLeagues(db *gorm.DB) {

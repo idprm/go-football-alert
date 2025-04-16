@@ -24,12 +24,6 @@ type ITransactionService interface {
 	Save(*entity.Transaction) error
 	Update(*entity.Transaction) error
 	Delete(*entity.Transaction) error
-	CountSubByDay(int) (int, error)
-	CountUnSubByDay(int) (int, error)
-	CountRenewalByDay(int) (int, error)
-	CountSuccessByDay(int) (int, error)
-	CountFailedByDay(int) (int, error)
-	TotalRevenueByDay(int) (float64, error)
 }
 
 func (s *TransactionService) IsTransaction(serviceId int, msisdn, code, date string) bool {
@@ -73,48 +67,4 @@ func (s *TransactionService) Update(a *entity.Transaction) error {
 
 func (s *TransactionService) Delete(a *entity.Transaction) error {
 	return s.transactionRepo.Delete(a)
-}
-
-func (s *TransactionService) CountSubByDay(serviceId int) (int, error) {
-	r, err := s.transactionRepo.CountSubByDay(serviceId)
-	if err != nil {
-		return 0, err
-	}
-	return int(r), nil
-}
-
-func (s *TransactionService) CountUnSubByDay(serviceId int) (int, error) {
-	r, err := s.transactionRepo.CountUnSubByDay(serviceId)
-	if err != nil {
-		return 0, err
-	}
-	return int(r), nil
-}
-
-func (s *TransactionService) CountRenewalByDay(serviceId int) (int, error) {
-	r, err := s.transactionRepo.CountRenewalByDay(serviceId)
-	if err != nil {
-		return 0, err
-	}
-	return int(r), nil
-}
-
-func (s *TransactionService) CountSuccessByDay(serviceId int) (int, error) {
-	r, err := s.transactionRepo.CountSuccessByDay(serviceId)
-	if err != nil {
-		return 0, err
-	}
-	return int(r), nil
-}
-
-func (s *TransactionService) CountFailedByDay(serviceId int) (int, error) {
-	r, err := s.transactionRepo.CountFailedByDay(serviceId)
-	if err != nil {
-		return 0, err
-	}
-	return int(r), nil
-}
-
-func (s *TransactionService) TotalRevenueByDay(serviceId int) (float64, error) {
-	return s.transactionRepo.TotalRevenueByDay(serviceId)
 }

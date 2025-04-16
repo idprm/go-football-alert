@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"database/sql"
 	"log"
 	"net/http"
 	"os"
@@ -84,7 +85,6 @@ var listenerCmd = &cobra.Command{
 			&entity.Transaction{},
 			&entity.History{},
 			&entity.Betting{},
-			&entity.Summary{},
 			&entity.MT{},
 			&entity.Pronostic{},
 			&entity.SMSProno{},
@@ -93,6 +93,8 @@ var listenerCmd = &cobra.Command{
 			&entity.SummaryRevenue{},
 			&entity.Country{},
 			&entity.User{},
+			&entity.SummaryDashboard{},
+			&entity.SummaryRevenue{},
 		)
 
 		/**
@@ -109,13 +111,13 @@ var listenerCmd = &cobra.Command{
 		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_SMS_PRONO_EXCHANGE, true, RMQ_SMS_PRONO_QUEUE)
 		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_MO_EXCHANGE, true, RMQ_MO_QUEUE)
 
-		r := routeUrlListener(db, rds, rmq, logger)
+		r := routeUrlListener(db, &sql.DB{}, rds, rmq, logger)
 		log.Fatal(r.Listen(":" + APP_PORT))
 
 	},
 }
 
-func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *logger.Logger) *fiber.App {
+func routeUrlListener(db *gorm.DB, sqlDB *sql.DB, rds *redis.Client, rmq rmqp.AMQP, logger *logger.Logger) *fiber.App {
 
 	path, err := os.Getwd()
 	if err != nil {
@@ -167,9 +169,6 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 
 	userRepo := repository.NewUserRepository(db)
 	userService := services.NewUserService(userRepo)
-
-	summaryRepo := repository.NewSummaryRepository(db)
-	summaryService := services.NewSummaryService(summaryRepo)
 
 	menuRepo := repository.NewMenuRepository(db, rds)
 	menuService := services.NewMenuService(menuRepo)
@@ -246,6 +245,12 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	pronosticRepo := repository.NewPronosticRepository(db)
 	pronosticService := services.NewPronosticService(pronosticRepo)
 
+	summaryDashboardRepo := repository.NewSummaryDashboardRepository(db)
+	summaryDashboardService := services.NewSummaryDashboardService(summaryDashboardRepo)
+
+	summaryRevenueRepo := repository.NewSummaryRevenueRepository(db, sqlDB)
+	summaryRevenueService := services.NewSummaryRevenueService(summaryRevenueRepo)
+
 	h := handler.NewIncomingHandler(
 		rds,
 		rmq,
@@ -297,7 +302,6 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 	dcbHandler := handler.NewDCBHandler(
 		rmq,
 		userService,
-		summaryService,
 		leagueService,
 		teamService,
 		menuService,
@@ -316,6 +320,8 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 		mtService,
 		smsAlerteService,
 		pronosticService,
+		summaryDashboardService,
+		summaryRevenueService,
 	)
 
 	r.Get("/mo", h.MessageOriginated)
@@ -392,7 +398,8 @@ func routeUrlListener(db *gorm.DB, rds *redis.Client, rmq rmqp.AMQP, logger *log
 
 	// summaries
 	summaries := dcb.Group("summaries")
-	summaries.Get("/", dcbHandler.GetAllSummaryPaginate)
+	summaries.Get("/dashboard", dcbHandler.GetAllSummaryDashboardPaginate)
+	summaries.Get("/revenue", dcbHandler.GetAllSummaryRevenuePaginate)
 
 	// menus
 	menus := dcb.Group("menus")

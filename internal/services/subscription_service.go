@@ -61,7 +61,8 @@ type ISubscriptionService interface {
 	RetryUnderpayment() *[]entity.Subscription
 	Reminder48HBeforeCharging() *[]entity.Subscription
 	ReminderAfterTrialEnds() *[]entity.Subscription
-	CountActiveSub(int) (int, error)
+	CountAllActiveSub() (int, error)
+	CountAllRevenueSub() (float64, error)
 	GetAllSubBySMSAlerte() (*[]entity.Subscription, error)
 }
 
@@ -277,12 +278,20 @@ func (s *SubscriptionService) ReminderAfterTrialEnds() *[]entity.Subscription {
 	return subs
 }
 
-func (s *SubscriptionService) CountActiveSub(serviceId int) (int, error) {
-	r, err := s.subscriptionRepo.CountActiveSub(serviceId)
+func (s *SubscriptionService) CountAllActiveSub() (int, error) {
+	r, err := s.subscriptionRepo.CountAllActiveSub()
 	if err != nil {
 		return 0, err
 	}
 	return int(r), nil
+}
+
+func (s *SubscriptionService) CountAllRevenueSub() (float64, error) {
+	r, err := s.subscriptionRepo.CountAllRevenueSub()
+	if err != nil {
+		return 0, err
+	}
+	return r, nil
 }
 
 func (s *SubscriptionService) GetAllSubBySMSAlerte() (*[]entity.Subscription, error) {

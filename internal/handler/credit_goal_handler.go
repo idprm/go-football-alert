@@ -17,7 +17,6 @@ type CreditGoalHandler struct {
 	subscriptionCreditGoalService services.ISubscriptionCreditGoalService
 	transactionService            services.ITransactionService
 	bettingService                services.IBettingService
-	summaryService                services.ISummaryService
 }
 
 func NewCreditGoalHandler(
@@ -30,7 +29,6 @@ func NewCreditGoalHandler(
 	subscriptionCreditGoalService services.ISubscriptionCreditGoalService,
 	transactionService services.ITransactionService,
 	bettingService services.IBettingService,
-	summaryService services.ISummaryService,
 ) *CreditGoalHandler {
 	return &CreditGoalHandler{
 		rmq:                           rmq,
@@ -42,7 +40,6 @@ func NewCreditGoalHandler(
 		subscriptionCreditGoalService: subscriptionCreditGoalService,
 		transactionService:            transactionService,
 		bettingService:                bettingService,
-		summaryService:                summaryService,
 	}
 }
 

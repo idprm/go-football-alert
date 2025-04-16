@@ -52,8 +52,6 @@ func (p *Processor) USSD(wg *sync.WaitGroup, message []byte) {
 	transactionService := services.NewTransactionService(transactionRepo)
 	historyRepo := repository.NewHistoryRepository(p.db)
 	historyService := services.NewHistoryService(historyRepo)
-	summaryRepo := repository.NewSummaryRepository(p.db)
-	summaryService := services.NewSummaryService(summaryRepo)
 	leagueRepo := repository.NewLeagueRepository(p.db)
 	leagueService := services.NewLeagueService(leagueRepo)
 	teamRepo := repository.NewTeamRepository(p.db)
@@ -76,7 +74,6 @@ func (p *Processor) USSD(wg *sync.WaitGroup, message []byte) {
 		subscriptionService,
 		transactionService,
 		historyService,
-		summaryService,
 		leagueService,
 		teamService,
 		subscriptionFollowLeagueService,
@@ -107,8 +104,6 @@ func (p *Processor) SMS(wg *sync.WaitGroup, message []byte) {
 	transactionService := services.NewTransactionService(transactionRepo)
 	historyRepo := repository.NewHistoryRepository(p.db)
 	historyService := services.NewHistoryService(historyRepo)
-	summaryRepo := repository.NewSummaryRepository(p.db)
-	summaryService := services.NewSummaryService(summaryRepo)
 	leagueRepo := repository.NewLeagueRepository(p.db)
 	leagueService := services.NewLeagueService(leagueRepo)
 	teamRepo := repository.NewTeamRepository(p.db)
@@ -136,7 +131,6 @@ func (p *Processor) SMS(wg *sync.WaitGroup, message []byte) {
 		subscriptionService,
 		transactionService,
 		historyService,
-		summaryService,
 		leagueService,
 		teamService,
 		subscriptionCreditGoalService,
@@ -349,8 +343,6 @@ func (p *Processor) CreditGoal(wg *sync.WaitGroup, message []byte) {
 	transactionService := services.NewTransactionService(transactionRepo)
 	bettingRepo := repository.NewBettingRepository(p.db)
 	bettingService := services.NewBettingService(bettingRepo)
-	summaryRepo := repository.NewSummaryRepository(p.db)
-	summaryService := services.NewSummaryService(summaryRepo)
 
 	// parsing json to string
 	var sub *entity.Subscription
@@ -366,7 +358,6 @@ func (p *Processor) CreditGoal(wg *sync.WaitGroup, message []byte) {
 		subscriptionCreditGoalService,
 		transactionService,
 		bettingService,
-		summaryService,
 	)
 
 	// send credit goal
@@ -391,8 +382,6 @@ func (p *Processor) CreditScore(wg *sync.WaitGroup, message []byte) {
 	transactionService := services.NewTransactionService(transactionRepo)
 	bettingRepo := repository.NewBettingRepository(p.db)
 	bettingService := services.NewBettingService(bettingRepo)
-	summaryRepo := repository.NewSummaryRepository(p.db)
-	summaryService := services.NewSummaryService(summaryRepo)
 
 	// parsing json to string
 	var sub *entity.Subscription
@@ -408,7 +397,6 @@ func (p *Processor) CreditScore(wg *sync.WaitGroup, message []byte) {
 		subscriptionCreditScoreService,
 		transactionService,
 		bettingService,
-		summaryService,
 	)
 
 	// send credit goal
@@ -469,8 +457,6 @@ func (p *Processor) Renewal(wg *sync.WaitGroup, message []byte) {
 	subscriptionFollowTeamService := services.NewSubscriptionFollowTeamService(subscriptionFollowTeamRepo)
 	transactionRepo := repository.NewTransactionRepository(p.db)
 	transactionService := services.NewTransactionService(transactionRepo)
-	summaryRepo := repository.NewSummaryRepository(p.db)
-	summaryService := services.NewSummaryService(summaryRepo)
 	leagueRepo := repository.NewLeagueRepository(p.db)
 	leagueService := services.NewLeagueService(leagueRepo)
 	teamRepo := repository.NewTeamRepository(p.db)
@@ -490,7 +476,6 @@ func (p *Processor) Renewal(wg *sync.WaitGroup, message []byte) {
 		subscriptionFollowLeagueService,
 		subscriptionFollowTeamService,
 		transactionService,
-		summaryService,
 		leagueService,
 		teamService,
 	)
@@ -513,8 +498,6 @@ func (p *Processor) Retry(wg *sync.WaitGroup, message []byte) {
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
 	transactionRepo := repository.NewTransactionRepository(p.db)
 	transactionService := services.NewTransactionService(transactionRepo)
-	summaryRepo := repository.NewSummaryRepository(p.db)
-	summaryService := services.NewSummaryService(summaryRepo)
 	leagueRepo := repository.NewLeagueRepository(p.db)
 	leagueService := services.NewLeagueService(leagueRepo)
 	teamRepo := repository.NewTeamRepository(p.db)
@@ -532,7 +515,6 @@ func (p *Processor) Retry(wg *sync.WaitGroup, message []byte) {
 		contentService,
 		subscriptionService,
 		transactionService,
-		summaryService,
 		leagueService,
 		teamService,
 	)
@@ -561,8 +543,6 @@ func (p *Processor) RetryUnderpayment(wg *sync.WaitGroup, message []byte) {
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
 	transactionRepo := repository.NewTransactionRepository(p.db)
 	transactionService := services.NewTransactionService(transactionRepo)
-	summaryRepo := repository.NewSummaryRepository(p.db)
-	summaryService := services.NewSummaryService(summaryRepo)
 	leagueRepo := repository.NewLeagueRepository(p.db)
 	leagueService := services.NewLeagueService(leagueRepo)
 	teamRepo := repository.NewTeamRepository(p.db)
@@ -580,7 +560,6 @@ func (p *Processor) RetryUnderpayment(wg *sync.WaitGroup, message []byte) {
 		contentService,
 		subscriptionService,
 		transactionService,
-		summaryService,
 		leagueService,
 		teamService,
 	)

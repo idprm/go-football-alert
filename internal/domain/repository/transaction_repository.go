@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"time"
+
 	"github.com/idprm/go-football-alert/internal/domain/entity"
 	"gorm.io/gorm"
 )
@@ -23,12 +25,6 @@ type ITransactionRepository interface {
 	Save(*entity.Transaction) error
 	Update(*entity.Transaction) error
 	Delete(*entity.Transaction) error
-	CountSubByDay(int) (int64, error)
-	CountUnSubByDay(int) (int64, error)
-	CountRenewalByDay(int) (int64, error)
-	CountSuccessByDay(int) (int64, error)
-	CountFailedByDay(int) (int64, error)
-	TotalRevenueByDay(int) (float64, error)
 }
 
 func (r *TransactionRepository) Count(serviceId int, msisdn, code, date string) (int64, error) {
@@ -93,56 +89,18 @@ func (r *TransactionRepository) Delete(c *entity.Transaction) error {
 	return nil
 }
 
-func (r *TransactionRepository) CountSubByDay(serviceId int) (int64, error) {
-	var count int64
-	err := r.db.Model(&entity.Transaction{}).Where("service_id = ? AND DATE(created_at) = DATE(NOW()) AND subject = 'FREE'", serviceId).Count(&count).Error
-	if err != nil {
-		return count, err
+func (r *TransactionRepository) SelectRevenue() (time.Time, string, string, int, float64, error) {
+	type NResult struct {
+		CreatedAt time.Time
+		Subject   string
+		Status    string
+		Total     int
+		Revenue   float64
 	}
-	return count, nil
-}
-
-func (r *TransactionRepository) CountUnSubByDay(serviceId int) (int64, error) {
-	var count int64
-	err := r.db.Model(&entity.Transaction{}).Where("service_id = ? AND DATE(created_at) = DATE(NOW()) AND subject = 'UNSUB'", serviceId).Count(&count).Error
+	var n NResult
+	err := r.db.Table("transactions").Select("DATE(created_at) as created_at, subject, status, total, SUM(amount) as revenue").Where("DATE(created_at) = DATE(NOW())").Group("DATE(created_at), subject, status").Order("DATE(created_at) ASC").Scan(&n).Error
 	if err != nil {
-		return count, err
+		return time.Time{}, "", "", 0, 0, err
 	}
-	return count, nil
-}
-
-func (r *TransactionRepository) CountRenewalByDay(serviceId int) (int64, error) {
-	var count int64
-	err := r.db.Model(&entity.Transaction{}).Where("service_id = ? AND DATE(created_at) = DATE(NOW()) AND subject = 'RENEWAL'", serviceId).Count(&count).Error
-	if err != nil {
-		return count, err
-	}
-	return count, nil
-}
-
-func (r *TransactionRepository) CountSuccessByDay(serviceId int) (int64, error) {
-	var count int64
-	err := r.db.Model(&entity.Transaction{}).Where("service_id = ? AND DATE(created_at) = DATE(NOW()) AND status = 'SUCCESS'", serviceId).Count(&count).Error
-	if err != nil {
-		return count, err
-	}
-	return count, nil
-}
-
-func (r *TransactionRepository) CountFailedByDay(serviceId int) (int64, error) {
-	var count int64
-	err := r.db.Model(&entity.Transaction{}).Where("service_id = ? AND DATE(created_at) = DATE(NOW()) AND status = 'FAILED'", serviceId).Count(&count).Error
-	if err != nil {
-		return count, err
-	}
-	return count, nil
-}
-
-func (r *TransactionRepository) TotalRevenueByDay(serviceId int) (float64, error) {
-	var c entity.Transaction
-	err := r.db.Table("transactions").Select("SUM(amount) as amount").Where("service_id = ? AND DATE(created_at) = DATE(NOW())", serviceId).Scan(&c).Error
-	if err != nil {
-		return 0, err
-	}
-	return c.Amount, nil
+	return n.CreatedAt, n.Subject, n.Status, n.Total, n.Revenue, nil
 }

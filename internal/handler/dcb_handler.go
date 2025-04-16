@@ -17,7 +17,6 @@ import (
 type DCBHandler struct {
 	rmq                             rmqp.AMQP
 	userService                     services.IUserService
-	summaryService                  services.ISummaryService
 	leagueService                   services.ILeagueService
 	teamService                     services.ITeamService
 	menuService                     services.IMenuService
@@ -36,12 +35,13 @@ type DCBHandler struct {
 	mtService                       services.IMTService
 	smsAlerteService                services.ISMSAlerteService
 	pronosticService                services.IPronosticService
+	summaryDashboardService         services.ISummaryDashboardService
+	summaryRevenueService           services.ISummaryRevenueService
 }
 
 func NewDCBHandler(
 	rmq rmqp.AMQP,
 	userService services.IUserService,
-	summaryService services.ISummaryService,
 	leagueService services.ILeagueService,
 	teamService services.ITeamService,
 	menuService services.IMenuService,
@@ -60,11 +60,12 @@ func NewDCBHandler(
 	mtService services.IMTService,
 	smsAlerteService services.ISMSAlerteService,
 	pronosticService services.IPronosticService,
+	summaryDashboardService services.ISummaryDashboardService,
+	summaryRevenueService services.ISummaryRevenueService,
 ) *DCBHandler {
 	return &DCBHandler{
 		rmq:                             rmq,
 		userService:                     userService,
-		summaryService:                  summaryService,
 		leagueService:                   leagueService,
 		teamService:                     teamService,
 		menuService:                     menuService,
@@ -83,115 +84,13 @@ func NewDCBHandler(
 		mtService:                       mtService,
 		smsAlerteService:                smsAlerteService,
 		pronosticService:                pronosticService,
+		summaryDashboardService:         summaryDashboardService,
+		summaryRevenueService:           summaryRevenueService,
 	}
 }
 
 func (h *DCBHandler) Login(c *fiber.Ctx) error {
 	return nil
-}
-
-func (h *DCBHandler) GetAllSummaryPaginate(c *fiber.Ctx) error {
-	req := new(entity.Pagination)
-
-	err := c.QueryParser(req)
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(
-			&model.WebResponse{
-				Error:      true,
-				StatusCode: fiber.StatusBadRequest,
-				Message:    err.Error(),
-			},
-		)
-	}
-
-	if !req.IsDate() {
-		return c.Status(fiber.StatusBadRequest).JSON(
-			&model.WebResponse{
-				Error:      true,
-				StatusCode: fiber.StatusBadRequest,
-				Message:    "please set start_date and end_date",
-			},
-		)
-	}
-
-	summaries, err := h.summaryService.GetAllPaginate(req)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(
-			&model.WebResponse{
-				Error:      true,
-				StatusCode: fiber.StatusInternalServerError,
-				Message:    err.Error(),
-			},
-		)
-	}
-
-	totalActiveSub, err := h.summaryService.GetActiveSub()
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(
-			&model.WebResponse{
-				Error:      true,
-				StatusCode: fiber.StatusInternalServerError,
-				Message:    err.Error(),
-			},
-		)
-	}
-
-	totalSub, err := h.summaryService.GetSub(req.GetStartDate(), req.GetEndDate())
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(
-			&model.WebResponse{
-				Error:      true,
-				StatusCode: fiber.StatusInternalServerError,
-				Message:    err.Error(),
-			},
-		)
-	}
-
-	totalUnsub, err := h.summaryService.GetUnSub(req.GetStartDate(), req.GetEndDate())
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(
-			&model.WebResponse{
-				Error:      true,
-				StatusCode: fiber.StatusInternalServerError,
-				Message:    err.Error(),
-			},
-		)
-	}
-
-	totalRenewal, err := h.summaryService.GetRenewal(req.GetStartDate(), req.GetEndDate())
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(
-			&model.WebResponse{
-				Error:      true,
-				StatusCode: fiber.StatusInternalServerError,
-				Message:    err.Error(),
-			},
-		)
-	}
-
-	totalRevenue, err := h.summaryService.GetRevenue(req.GetStartDate(), req.GetEndDate())
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(
-			&model.WebResponse{
-				Error:      true,
-				StatusCode: fiber.StatusInternalServerError,
-				Message:    err.Error(),
-			},
-		)
-	}
-
-	return c.Status(fiber.StatusOK).JSON(
-		&model.SummaryResponse{
-			StartDate:      req.GetStartDate().String(),
-			EndDate:        req.GetEndDate().String(),
-			TotalActiveSub: totalActiveSub,
-			TotalSub:       totalSub,
-			TotalUnsub:     totalUnsub,
-			TotalRenewal:   totalRenewal,
-			TotalRevenue:   totalRevenue,
-			Results:        summaries,
-		},
-	)
 }
 
 func (h *DCBHandler) GetAllMenuPaginate(c *fiber.Ctx) error {
@@ -1176,4 +1075,58 @@ func (h *DCBHandler) ReportRevenueDaily(c *fiber.Ctx) error {
 		)
 	}
 	return c.Status(fiber.StatusOK).JSON(mts)
+}
+
+func (h *DCBHandler) GetAllSummaryDashboardPaginate(c *fiber.Ctx) error {
+	req := new(entity.Pagination)
+
+	err := c.QueryParser(req)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusBadRequest,
+				Message:    err.Error(),
+			},
+		)
+	}
+
+	summaries, err := h.summaryDashboardService.GetAllPaginate(req)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusInternalServerError,
+				Message:    err.Error(),
+			},
+		)
+	}
+	return c.Status(fiber.StatusOK).JSON(summaries)
+}
+
+func (h *DCBHandler) GetAllSummaryRevenuePaginate(c *fiber.Ctx) error {
+	req := new(entity.Pagination)
+
+	err := c.QueryParser(req)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusBadRequest,
+				Message:    err.Error(),
+			},
+		)
+	}
+
+	summaries, err := h.summaryRevenueService.GetAllPaginate(req)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusInternalServerError,
+				Message:    err.Error(),
+			},
+		)
+	}
+	return c.Status(fiber.StatusOK).JSON(summaries)
 }

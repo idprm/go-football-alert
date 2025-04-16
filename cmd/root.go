@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"database/sql"
 	"log"
 	"os"
 	"strconv"
@@ -230,6 +231,15 @@ func connectDb() (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
+	return db, nil
+}
+
+func connectSqlDb() (*sql.DB, error) {
+	db, err := sql.Open("mysql", URI_MYSQL)
+	if err != nil {
+		return nil, err
+	}
+
 	return db, nil
 }
 

@@ -26,7 +26,6 @@ type UssdHandler struct {
 	subscriptionService             services.ISubscriptionService
 	transactionService              services.ITransactionService
 	historyService                  services.IHistoryService
-	summaryService                  services.ISummaryService
 	leagueService                   services.ILeagueService
 	teamService                     services.ITeamService
 	subscriptionFollowLeagueService services.ISubscriptionFollowLeagueService
@@ -44,7 +43,6 @@ func NewUssdHandler(
 	subscriptionService services.ISubscriptionService,
 	transactionService services.ITransactionService,
 	historyService services.IHistoryService,
-	summaryService services.ISummaryService,
 	leagueService services.ILeagueService,
 	teamService services.ITeamService,
 	subscriptionFollowLeagueService services.ISubscriptionFollowLeagueService,
@@ -61,7 +59,6 @@ func NewUssdHandler(
 		subscriptionService:             subscriptionService,
 		transactionService:              transactionService,
 		historyService:                  historyService,
-		summaryService:                  summaryService,
 		leagueService:                   leagueService,
 		teamService:                     teamService,
 		subscriptionFollowLeagueService: subscriptionFollowLeagueService,

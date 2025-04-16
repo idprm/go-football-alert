@@ -27,7 +27,6 @@ type SMSHandler struct {
 	subscriptionService             services.ISubscriptionService
 	transactionService              services.ITransactionService
 	historyService                  services.IHistoryService
-	summaryService                  services.ISummaryService
 	leagueService                   services.ILeagueService
 	teamService                     services.ITeamService
 	subscriptionCreditGoalService   services.ISubscriptionCreditGoalService
@@ -47,7 +46,6 @@ func NewSMSHandler(
 	subscriptionService services.ISubscriptionService,
 	transactionService services.ITransactionService,
 	historyService services.IHistoryService,
-	summaryService services.ISummaryService,
 	leagueService services.ILeagueService,
 	teamService services.ITeamService,
 	subscriptionCreditGoalService services.ISubscriptionCreditGoalService,
@@ -66,7 +64,6 @@ func NewSMSHandler(
 		subscriptionService:             subscriptionService,
 		transactionService:              transactionService,
 		historyService:                  historyService,
-		summaryService:                  summaryService,
 		leagueService:                   leagueService,
 		teamService:                     teamService,
 		subscriptionCreditGoalService:   subscriptionCreditGoalService,

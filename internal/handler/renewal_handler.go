@@ -25,7 +25,6 @@ type RenewalHandler struct {
 	subscriptionFollowLeagueService services.ISubscriptionFollowLeagueService
 	subscriptionFollowTeamService   services.ISubscriptionFollowTeamService
 	transactionService              services.ITransactionService
-	summaryService                  services.ISummaryService
 	leagueService                   services.ILeagueService
 	teamService                     services.ITeamService
 }
@@ -40,7 +39,6 @@ func NewRenewalHandler(
 	subscriptionFollowLeagueService services.ISubscriptionFollowLeagueService,
 	subscriptionFollowTeamService services.ISubscriptionFollowTeamService,
 	transactionService services.ITransactionService,
-	summaryService services.ISummaryService,
 	leagueService services.ILeagueService,
 	teamService services.ITeamService,
 ) *RenewalHandler {
@@ -54,7 +52,6 @@ func NewRenewalHandler(
 		subscriptionFollowLeagueService: subscriptionFollowLeagueService,
 		subscriptionFollowTeamService:   subscriptionFollowTeamService,
 		transactionService:              transactionService,
-		summaryService:                  summaryService,
 		leagueService:                   leagueService,
 		teamService:                     teamService,
 	}

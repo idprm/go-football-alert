@@ -7,111 +7,105 @@ import (
 	"github.com/idprm/go-football-alert/internal/domain/repository"
 )
 
-type SummaryService struct {
-	summaryRepo repository.ISummaryRepository
+type SummaryDashboardService struct {
+	summaryDashboardRepo repository.ISummaryDashboardRepository
 }
 
-func NewSummaryService(
-	summaryRepo repository.ISummaryRepository,
-) *SummaryService {
-	return &SummaryService{
-		summaryRepo: summaryRepo,
+type SummaryRevenueService struct {
+	summaryRevenueRepo repository.ISummaryRevenueRepository
+}
+
+func NewSummaryDashboardService(
+	summaryDashboardRepo repository.ISummaryDashboardRepository,
+) *SummaryDashboardService {
+	return &SummaryDashboardService{
+		summaryDashboardRepo: summaryDashboardRepo,
 	}
 }
 
-type ISummaryService interface {
-	IsSummary(int, time.Time) bool
-	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
-	Get(int, time.Time) (*entity.Summary, error)
-	GetActiveSub() (int, error)
-	GetSub(time.Time, time.Time) (int, error)
-	GetUnSub(time.Time, time.Time) (int, error)
-	GetRenewal(time.Time, time.Time) (int, error)
-	GetRevenue(time.Time, time.Time) (float64, error)
-	Save(*entity.Summary) (*entity.Summary, error)
-	Update(*entity.Summary) (*entity.Summary, error)
-	UpdateRetry(*entity.Summary) (*entity.Summary, error)
-	Delete(*entity.Summary) error
+func NewSummaryRevenueService(
+	summaryRevenueRepo repository.ISummaryRevenueRepository,
+) *SummaryRevenueService {
+	return &SummaryRevenueService{
+		summaryRevenueRepo: summaryRevenueRepo,
+	}
 }
 
-func (s *SummaryService) IsSummary(serviceId int, date time.Time) bool {
-	count, _ := s.summaryRepo.Count(serviceId, date)
+type ISummaryDashboardService interface {
+	IsSummary(time.Time) bool
+	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
+	Get(time.Time) (*entity.SummaryDashboard, error)
+	Save(*entity.SummaryDashboard) error
+	Update(*entity.SummaryDashboard) error
+	Delete(*entity.SummaryDashboard) error
+}
+
+type ISummaryRevenueService interface {
+	IsSummary(time.Time, string, string) bool
+	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
+	Get(time.Time, string, string) (*entity.SummaryRevenue, error)
+	Save(*entity.SummaryRevenue) error
+	Update(*entity.SummaryRevenue) error
+	Delete(*entity.SummaryRevenue) error
+	SelectRevenue() (*[]entity.SummaryRevenue, error)
+}
+
+func (s *SummaryDashboardService) IsSummary(date time.Time) bool {
+	count, _ := s.summaryDashboardRepo.Count(date)
 	return count > 0
 }
 
-func (s *SummaryService) GetAllPaginate(pagination *entity.Pagination) (*entity.Pagination, error) {
-	return s.summaryRepo.GetAllPaginate(pagination)
+func (s *SummaryDashboardService) GetAllPaginate(p *entity.Pagination) (*entity.Pagination, error) {
+	return s.summaryDashboardRepo.GetAllPaginate(p)
 }
 
-func (s *SummaryService) Get(serviceId int, date time.Time) (*entity.Summary, error) {
-	return s.summaryRepo.Get(serviceId, date)
+func (s *SummaryDashboardService) Get(date time.Time) (*entity.SummaryDashboard, error) {
+	return s.summaryDashboardRepo.Get(date)
 }
 
-func (s *SummaryService) GetActiveSub() (int, error) {
-	return s.summaryRepo.GetActiveSub()
-}
-
-func (s *SummaryService) GetSub(start, end time.Time) (int, error) {
-	return s.summaryRepo.GetSub(start, end)
-}
-
-func (s *SummaryService) GetUnSub(start, end time.Time) (int, error) {
-	return s.summaryRepo.GetUnSub(start, end)
-}
-
-func (s *SummaryService) GetRenewal(start, end time.Time) (int, error) {
-	return s.summaryRepo.GetRenewal(start, end)
-}
-
-func (s *SummaryService) GetRevenue(start, end time.Time) (float64, error) {
-	return s.summaryRepo.GetRevenue(start, end)
-}
-
-func (s *SummaryService) Save(a *entity.Summary) (*entity.Summary, error) {
-	if s.IsSummary(a.ServiceID, a.CreatedAt) {
-		summ, err := s.Get(a.ServiceID, a.CreatedAt)
-		if err != nil {
-			return nil, err
-		}
-		return s.summaryRepo.Update(
-			&entity.Summary{
-				ServiceID:          a.ServiceID,
-				CreatedAt:          a.CreatedAt,
-				TotalSub:           summ.TotalSub + a.TotalSub,
-				TotalUnsub:         summ.TotalUnsub + a.TotalUnsub,
-				TotalRenewal:       summ.TotalRenewal + a.TotalRenewal,
-				TotalChargeSuccess: summ.TotalChargeSuccess + a.TotalChargeSuccess,
-				TotalChargeFailed:  summ.TotalChargeFailed + a.TotalChargeFailed,
-				TotalRevenue:       summ.TotalRevenue + a.TotalRevenue,
-			},
-		)
+func (s *SummaryDashboardService) Save(a *entity.SummaryDashboard) error {
+	if s.IsSummary(a.CreatedAt) {
+		return s.Update(a)
 	}
-	return s.summaryRepo.Save(a)
+	return s.summaryDashboardRepo.Save(a)
 }
 
-func (s *SummaryService) Update(a *entity.Summary) (*entity.Summary, error) {
-	return s.summaryRepo.Update(a)
+func (s *SummaryDashboardService) Update(a *entity.SummaryDashboard) error {
+	return s.summaryDashboardRepo.Update(a)
 }
 
-func (s *SummaryService) UpdateRetry(a *entity.Summary) (*entity.Summary, error) {
-	if s.IsSummary(a.ServiceID, a.CreatedAt) {
-		summ, err := s.Get(a.ServiceID, a.CreatedAt)
-		if err != nil {
-			return nil, err
-		}
-		return s.summaryRepo.Update(
-			&entity.Summary{
-				ServiceID:          a.ServiceID,
-				CreatedAt:          a.CreatedAt,
-				TotalChargeSuccess: summ.TotalChargeSuccess + a.TotalChargeSuccess,
-				TotalChargeFailed:  summ.TotalChargeFailed - 1,
-				TotalRevenue:       summ.TotalRevenue + a.TotalRevenue,
-			},
-		)
+func (s *SummaryDashboardService) Delete(a *entity.SummaryDashboard) error {
+	return s.summaryDashboardRepo.Delete(a)
+}
+
+func (s *SummaryRevenueService) IsSummary(date time.Time, subject, status string) bool {
+	count, _ := s.summaryRevenueRepo.Count(date, subject, status)
+	return count > 0
+}
+
+func (s *SummaryRevenueService) GetAllPaginate(p *entity.Pagination) (*entity.Pagination, error) {
+	return s.summaryRevenueRepo.GetAllPaginate(p)
+}
+
+func (s *SummaryRevenueService) Get(date time.Time, subject, status string) (*entity.SummaryRevenue, error) {
+	return s.summaryRevenueRepo.Get(date, subject, status)
+}
+
+func (s *SummaryRevenueService) Save(a *entity.SummaryRevenue) error {
+	if s.IsSummary(a.CreatedAt, a.Subject, a.Status) {
+		return s.Update(a)
 	}
-	return s.summaryRepo.Save(a)
+	return s.summaryRevenueRepo.Save(a)
 }
 
-func (s *SummaryService) Delete(a *entity.Summary) error {
-	return s.summaryRepo.Delete(a)
+func (s *SummaryRevenueService) Update(a *entity.SummaryRevenue) error {
+	return s.summaryRevenueRepo.Update(a)
+}
+
+func (s *SummaryRevenueService) Delete(a *entity.SummaryRevenue) error {
+	return s.summaryRevenueRepo.Delete(a)
+}
+
+func (s *SummaryRevenueService) SelectRevenue() (*[]entity.SummaryRevenue, error) {
+	return s.summaryRevenueRepo.SelectRevenue()
 }

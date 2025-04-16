@@ -17,7 +17,6 @@ type CreditScoreHandler struct {
 	subscriptionCreditScoreService services.ISubscriptionCreditScoreService
 	transactionService             services.ITransactionService
 	bettingService                 services.IBettingService
-	summaryService                 services.ISummaryService
 }
 
 func NewCreditScoreHandler(
@@ -30,7 +29,6 @@ func NewCreditScoreHandler(
 	subscriptionCreditScoreService services.ISubscriptionCreditScoreService,
 	transactionService services.ITransactionService,
 	bettingService services.IBettingService,
-	summaryService services.ISummaryService,
 ) *CreditScoreHandler {
 	return &CreditScoreHandler{
 		rmq:                            rmq,
@@ -42,7 +40,6 @@ func NewCreditScoreHandler(
 		subscriptionCreditScoreService: subscriptionCreditScoreService,
 		transactionService:             transactionService,
 		bettingService:                 bettingService,
-		summaryService:                 summaryService,
 	}
 }
 
