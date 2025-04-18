@@ -71,14 +71,14 @@ func (h *MTHandler) MessageTerminated() {
 				Content:    h.req.Content.GetValue(),
 				StatusCode: http.StatusNoContent,
 				StatusText: http.StatusText(http.StatusNoContent),
-				Payload:    "FROM_9AM_TO_10PM_NO_CONTENT_SEND",
+				Payload:    "FROM_8:00AM_TO_10:30PM_NO_CONTENT_SEND",
 			},
 		)
 	}
 }
 
 func (h *MTHandler) IsTime() bool {
-	// from 9am to 10pm
+	// from 8:00am to 10:30pm
 	start, _ := time.Parse("15:04", "08:00")
 	end, _ := time.Parse("15:04", "22:30")
 
