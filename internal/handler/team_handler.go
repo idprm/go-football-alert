@@ -95,6 +95,10 @@ func (h *TeamHandler) Update(c *fiber.Ctx) error {
 	)
 }
 
+func (h *TeamHandler) EnableDisable(c *fiber.Ctx) error {
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "OK"})
+}
+
 func (h *TeamHandler) Delete(c *fiber.Ctx) error {
 	req := new(model.TeamRequest)
 

@@ -347,6 +347,7 @@ func routeUrlListener(db *gorm.DB, sqlDb *sql.DB, rds *redis.Client, rmq rmqp.AM
 	teams.Get("/", teamHandler.GetAllPaginate)
 	teams.Get("/:slug", teamHandler.GetBySlug)
 	teams.Put("/", teamHandler.Update)
+	teams.Put("/toggle", teamHandler.Update)
 	teams.Delete("/", teamHandler.Delete)
 
 	fixtures := v1.Group("fixtures")
