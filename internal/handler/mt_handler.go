@@ -71,7 +71,7 @@ func (h *MTHandler) MessageTerminated() {
 				Content:    h.req.Content.GetValue(),
 				StatusCode: http.StatusNoContent,
 				StatusText: http.StatusText(http.StatusNoContent),
-				Payload:    "NO_CONTENT_SEND",
+				Payload:    "FROM_9AM_TO_10PM_NO_CONTENT_SEND",
 			},
 		)
 	}
