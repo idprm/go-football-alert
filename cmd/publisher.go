@@ -657,6 +657,7 @@ func populateRetryUnderpayment(db *gorm.DB, rmq rmqp.AMQP) {
 			sub.LatestKeyword = s.LatestKeyword
 			sub.LatestSubject = s.LatestSubject
 			sub.CreatedAt = s.CreatedAt
+			sub.TotalUnderpayment = s.TotalUnderpayment
 
 			json, _ := json.Marshal(sub)
 

@@ -564,7 +564,15 @@ func (p *Processor) RetryUnderpayment(wg *sync.WaitGroup, message []byte) {
 		teamService,
 	)
 
-	h.Underpayment()
+	if sub.IsFirstpush() {
+		if sub.IsRetryAtToday() {
+			h.FirstpushUnderpayment()
+		} else {
+			h.DailypushUnderpayment()
+		}
+	} else {
+		h.DailypushUnderpayment()
+	}
 
 	wg.Done()
 }

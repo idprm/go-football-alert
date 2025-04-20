@@ -130,10 +130,18 @@ func (s *Service) SetPriceWithDiscount(discountPercentage float64) {
 	s.Price = s.Price - (s.Price * discountPercentage)
 }
 
+func (s *Service) SetPriceWithUnderpayment(underpayment float64) {
+	s.Price = underpayment
+}
+
 func (s *Service) IsSmsAlerteCompetition() bool {
 	return s.GetCategory() == "SMSALERTE_COMPETITION"
 }
 
 func (s *Service) IsSmsAlerteEquipe() bool {
 	return s.GetCategory() == "SMSALERTE_EQUIPE"
+}
+
+func (s *Service) IsWeeklyAndMonthly() bool {
+	return s.GetPackage() == "semaine" || s.GetPackage() == "mois"
 }

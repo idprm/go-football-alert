@@ -153,7 +153,7 @@ func (r *SubscriptionRepository) CountRetry(serviceId int, msisdn, code string) 
 
 func (r *SubscriptionRepository) CountRetryUnderpayment(serviceId int, msisdn, code string) (int64, error) {
 	var count int64
-	err := r.db.Model(&entity.Subscription{}).Where("service_id = ? AND msisdn = ? AND code = ?", serviceId, msisdn, code).Where("is_active = true AND is_underpayment = true AND total_underpayment > 0").Count(&count).Error
+	err := r.db.Model(&entity.Subscription{}).Where("service_id = ? AND msisdn = ? AND code = ?", serviceId, msisdn, code).Where("is_active = true AND is_retry = false AND is_underpayment = true AND total_underpayment > 0").Count(&count).Error
 	if err != nil {
 		return count, err
 	}
@@ -408,10 +408,9 @@ func (r *SubscriptionRepository) Retry() (*[]entity.Subscription, error) {
 	return &sub, nil
 }
 
-// SELECT (UNIX_TIMESTAMP("2017-06-10 18:30:10" + INTERVAL 1 DAY)-UNIX_TIMESTAMP("2017-06-10 18:40:10"))/3600 hour_diff (tommorow)
 func (r *SubscriptionRepository) RetryUnderpayment() (*[]entity.Subscription, error) {
 	var sub []entity.Subscription
-	err := r.db.Where("is_active = true AND is_underpayment = true AND total_underpayment > 0").Order("DATE(created_at) DESC").Find(&sub).Error
+	err := r.db.Where("is_active = true AND is_retry = false AND is_underpayment = true AND total_underpayment > 0").Order("DATE(created_at) DESC").Find(&sub).Error
 	if err != nil {
 		return nil, err
 	}
