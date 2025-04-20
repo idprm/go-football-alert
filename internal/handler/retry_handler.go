@@ -444,7 +444,7 @@ func (h *RetryHandler) FirstpushUnderpayment() {
 						Note:         "RETRY_UNDERPAYMENT_SUCCESS",
 					}
 
-					h.transactionService.Update(t)
+					h.transactionService.Save(t)
 
 					var content *entity.Content
 
@@ -584,7 +584,7 @@ func (h *RetryHandler) DailypushUnderpayment() {
 						Note:         "RETRY_UNDERPAYMENT_SUCCESS",
 					}
 
-					h.transactionService.Update(t)
+					h.transactionService.Save(t)
 
 					var content *entity.Content
 
