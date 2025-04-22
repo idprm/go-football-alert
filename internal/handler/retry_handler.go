@@ -636,7 +636,6 @@ func (h *RetryHandler) DailypushUnderpayment() {
 						RMQ_MT_QUEUE,
 						RMQ_DATA_TYPE, "", string(jsonData),
 					)
-
 				}
 			}
 		}
