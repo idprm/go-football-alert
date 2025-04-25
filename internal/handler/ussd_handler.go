@@ -180,6 +180,18 @@ func (h *UssdHandler) Migration() {
 	l := h.logger.Init("ussd", true)
 	l.WithFields(logrus.Fields{"request": h.req}).Info("USSD")
 
+	if h.req.IsCatSMSAlerteCompetition() {
+		if h.leagueService.IsLeagueByCode(h.req.GetUniqueCode()) {
+			league, err := h.leagueService.GetByCode(h.req.GetUniqueCode())
+			if err != nil {
+				log.Println(err.Error())
+			}
+			if !h.IsActiveSubByCategory(CATEGORY_SMSALERTE_COMPETITION, league.GetCode()) {
+				h.MigrateSubAlerteCompetition(league)
+			}
+		}
+	}
+
 	if h.req.IsCatSMSAlerteEquipe() {
 		if h.teamService.IsTeamByCode(h.req.GetUniqueCode()) {
 			team, err := h.teamService.GetByCode(h.req.GetUniqueCode())
@@ -320,6 +332,48 @@ func (h *UssdHandler) SubAlerteEquipe(team *entity.Team) {
 			},
 		)
 	}
+}
+
+func (h *UssdHandler) MigrateSubAlerteCompetition(league *entity.League) {
+	service, err := h.getServiceByCode(h.req.GetCode())
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	content, err := h.getContentFollowTeamByMigrate(service, &entity.Team{})
+	if err != nil {
+		log.Println(err)
+	}
+
+	h.Firstpush(CATEGORY_SMSALERTE_COMPETITION, service, league.GetCode(), content)
+
+	sub, err := h.subscriptionService.Get(service.GetId(), h.req.GetMsisdn(), league.GetCode())
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	if !h.subscriptionFollowLeagueService.IsSub(sub.GetId(), league.GetId()) {
+		// insert follow league
+		h.subscriptionFollowLeagueService.Save(
+			&entity.SubscriptionFollowLeague{
+				SubscriptionID: sub.GetId(),
+				LeagueID:       league.GetId(),
+				LimitPerDay:    LIMIT_PER_DAY,
+				IsActive:       true,
+			},
+		)
+	} else {
+		// update follow league
+		h.subscriptionFollowLeagueService.Update(
+			&entity.SubscriptionFollowLeague{
+				SubscriptionID: sub.GetId(),
+				LeagueID:       league.GetId(),
+				LimitPerDay:    LIMIT_PER_DAY,
+				IsActive:       true,
+			},
+		)
+	}
+
 }
 
 func (h *UssdHandler) MigrateSubAlerteEquipe(team *entity.Team) {

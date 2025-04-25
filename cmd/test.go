@@ -261,11 +261,10 @@ var consumerTestMigrateSubCmd = &cobra.Command{
 			line := scanner.Text()
 			if len(line) > 0 {
 				msisdn := strings.TrimSpace(line)
-				m, err := migrateHttp(msisdn)
+				_, err := migrateHttp(msisdn)
 				if err != nil {
 					log.Println(err.Error())
 				}
-				log.Println(string(m))
 			}
 		}
 
@@ -304,7 +303,7 @@ func migrateHttp(msisdn string) ([]byte, error) {
 
 	defer resp.Body.Close()
 	body, err := io.ReadAll(resp.Body)
-	log.Println(body)
+	log.Println(string(body))
 	if err != nil {
 		return nil, errors.New(err.Error())
 	}
