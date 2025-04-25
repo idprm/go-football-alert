@@ -1,6 +1,16 @@
 package cmd
 
 import (
+	"bufio"
+	"errors"
+	"io"
+	"log"
+	"net/http"
+	"net/url"
+	"os"
+	"strings"
+	"time"
+
 	"github.com/idprm/go-football-alert/internal/domain/repository"
 	"github.com/idprm/go-football-alert/internal/handler"
 	"github.com/idprm/go-football-alert/internal/logger"
@@ -233,4 +243,70 @@ var consumerTestUpdateFalseCmd = &cobra.Command{
 		h.TestUpdateToFalse()
 
 	},
+}
+
+var consumerTestMigrateSubCmd = &cobra.Command{
+	Use:   "test_migrate_sub",
+	Short: "Consumer Test Migrate Service CLI",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		filename := "./logs/migrate_xxx.txt"
+
+		file, err := os.Open(filename)
+		if err != nil {
+			log.Fatal(err)
+		}
+		scanner := bufio.NewScanner(file)
+		for scanner.Scan() {
+			line := scanner.Text()
+			if len(line) > 0 {
+				msisdn := strings.TrimSpace(line)
+				m, err := migrateHttp(msisdn)
+				if err != nil {
+					log.Println(err.Error())
+				}
+				log.Println(string(m))
+			}
+		}
+
+	},
+}
+
+func migrateHttp(msisdn string) ([]byte, error) {
+	// http://165.22.122.64:9100/v1/migrate/sub?category=SMSALERTE_COMPETITION&code=SAC30&unique_code=PL&msisdn=
+	q := url.Values{}
+	q.Add("category", "SMSALERTE_COMPETITION")
+	q.Add("code", "SAC30")
+	q.Add("unique_code", "PL")
+	q.Add("msisdn", msisdn)
+
+	req, err := http.NewRequest("GET", "http://165.22.122.64:9100/v1/migrate/sub?"+q.Encode(), nil)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+
+	tr := &http.Transport{
+		MaxIdleConns:       30,
+		IdleConnTimeout:    60 * time.Second,
+		DisableCompression: true,
+	}
+
+	client := &http.Client{
+		Timeout:   60 * time.Second,
+		Transport: tr,
+	}
+
+	log.Println(req)
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	log.Println(body)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+	return body, nil
 }

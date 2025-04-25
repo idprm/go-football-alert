@@ -211,6 +211,7 @@ func init() {
 	rootCmd.AddCommand(consumerTestChargeCmd)
 	rootCmd.AddCommand(consumerTestChargeFailedCmd)
 	rootCmd.AddCommand(consumerTestUpdateFalseCmd)
+	rootCmd.AddCommand(consumerTestMigrateSubCmd)
 }
 
 func Execute() error {

@@ -389,7 +389,7 @@ func routeUrlListener(db *gorm.DB, sqlDb *sql.DB, rds *redis.Client, rmq rmqp.AM
 
 	// migrate
 	migrate := v1.Group("migrate")
-	migrate.Get("/sub", h.Buy)
+	migrate.Get("/sub", h.MigrateSub)
 
 	// landing page
 	p := v1.Group("p")
