@@ -81,7 +81,6 @@ func (h *UssdHandler) Registration() {
 	/**
 	 ** LiveMatch & FlashNews & SMSAlerte
 	 **/
-
 	if h.req.IsCatLiveMatch() {
 		if !h.IsActiveSubByNonSMSAlerte(CATEGORY_LIVEMATCH) {
 			h.SubLiveMatch()
@@ -172,6 +171,23 @@ func (h *UssdHandler) UnRegistration() {
 			}
 			if h.IsActiveSubByCategory(CATEGORY_SMSALERTE_EQUIPE, team.GetCode()) {
 				h.StopAlerteEquipe(team)
+			}
+		}
+	}
+}
+
+func (h *UssdHandler) Migration() {
+	l := h.logger.Init("ussd", true)
+	l.WithFields(logrus.Fields{"request": h.req}).Info("USSD")
+
+	if h.req.IsCatSMSAlerteEquipe() {
+		if h.teamService.IsTeamByCode(h.req.GetUniqueCode()) {
+			team, err := h.teamService.GetByCode(h.req.GetUniqueCode())
+			if err != nil {
+				log.Println(err.Error())
+			}
+			if !h.IsActiveSubByCategory(CATEGORY_SMSALERTE_EQUIPE, team.GetCode()) {
+				h.MigrateSubAlerteEquipe(team)
 			}
 		}
 	}
@@ -271,6 +287,48 @@ func (h *UssdHandler) SubAlerteEquipe(team *entity.Team) {
 	}
 
 	content, err := h.getContentFollowTeam(service, team)
+	if err != nil {
+		log.Println(err)
+	}
+
+	// firstpush
+	h.Firstpush(CATEGORY_SMSALERTE_EQUIPE, service, team.GetCode(), content)
+
+	sub, err := h.subscriptionService.Get(service.GetId(), h.req.GetMsisdn(), team.GetCode())
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	if !h.subscriptionFollowTeamService.IsSub(sub.GetId(), team.GetId()) {
+		// insert follow team
+		h.subscriptionFollowTeamService.Save(
+			&entity.SubscriptionFollowTeam{
+				SubscriptionID: sub.GetId(),
+				TeamID:         team.GetId(),
+				LimitPerDay:    LIMIT_PER_DAY,
+				IsActive:       true,
+			},
+		)
+	} else {
+		// update follow team
+		h.subscriptionFollowTeamService.Update(
+			&entity.SubscriptionFollowTeam{
+				SubscriptionID: sub.GetId(),
+				TeamID:         team.GetId(),
+				LimitPerDay:    LIMIT_PER_DAY,
+				IsActive:       true,
+			},
+		)
+	}
+}
+
+func (h *UssdHandler) MigrateSubAlerteEquipe(team *entity.Team) {
+	service, err := h.getServiceByCode(h.req.GetCode())
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	content, err := h.getContentFollowTeamByMigrate(service, team)
 	if err != nil {
 		log.Println(err)
 	}
@@ -1074,4 +1132,16 @@ func (h *UssdHandler) getContentUnFollowTeam(service *entity.Service, team *enti
 		}, nil
 	}
 	return h.contentService.GetUnSubFollowTeam(SMS_FOLLOW_TEAM_STOP, service, team)
+}
+
+// FOLLOW_TEAM_SUB_MIGRATE
+func (h *UssdHandler) getContentFollowTeamByMigrate(service *entity.Service, team *entity.Team) (*entity.Content, error) {
+	if !h.contentService.IsContent(SMS_FOLLOW_TEAM_SUB_MIGRATE) {
+		return &entity.Content{
+			Category: "CATEGORY",
+			Channel:  "SMS",
+			Value:    "SAMPLE_TEXT",
+		}, nil
+	}
+	return h.contentService.GetFollowTeam(SMS_FOLLOW_TEAM_SUB_MIGRATE, service, team)
 }

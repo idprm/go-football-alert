@@ -89,6 +89,10 @@ func (p *Processor) USSD(wg *sync.WaitGroup, message []byte) {
 		h.UnRegistration()
 	}
 
+	if req.IsMigrate() {
+		h.Migration()
+	}
+
 	wg.Done()
 }
 

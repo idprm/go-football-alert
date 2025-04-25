@@ -387,6 +387,10 @@ func routeUrlListener(db *gorm.DB, sqlDb *sql.DB, rds *redis.Client, rmq rmqp.AM
 	ussd.Get("/buy", h.Buy)
 	ussd.Get("/stop", h.Stop)
 
+	// migrate
+	migrate := v1.Group("migrate")
+	migrate.Get("/sub", h.Buy)
+
 	// landing page
 	p := v1.Group("p")
 	p.Get("/alertesms", h.LPAlerteSMS)

@@ -23,7 +23,7 @@ type UssdRequest struct {
 	SubId      int    `query:"sub_id" json:"sub_id,omitempty"`
 	LeagueId   int    `query:"league_id" json:"league_id,omitempty"`
 	TeamId     int    `query:"team_id" json:"team_id,omitempty"`
-	Msisdn     string `json:"msisdn,omitempty"`
+	Msisdn     string `query:"msisdn" json:"msisdn,omitempty"`
 	Page       int    `query:"page" json:"page,omitempty"`
 }
 
@@ -119,6 +119,10 @@ func (m *UssdRequest) IsREG() bool {
 
 func (m *UssdRequest) IsSTOP() bool {
 	return strings.ToUpper(m.GetAction()) == "STOP"
+}
+
+func (m *UssdRequest) IsMigrate() bool {
+	return strings.ToUpper(m.GetAction()) == "MIGRATE"
 }
 
 type SMSRequest struct {

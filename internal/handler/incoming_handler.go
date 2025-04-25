@@ -1621,6 +1621,60 @@ func (h *IncomingHandler) LandingPage(c *fiber.Ctx) error {
 	return c.Render("/", fiber.Map{"": ""})
 }
 
+func (h *IncomingHandler) MigrateSub(c *fiber.Ctx) error {
+	l := h.logger.Init("mo", true)
+	req := new(model.UssdRequest)
+
+	err := c.QueryParser(req)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).SendString(err.Error())
+	}
+
+	req.SetAction("MIGRATE")
+
+	// check if msisdn not found
+	if !req.IsMsisdn() {
+		return c.Status(fiber.StatusOK).SendString(h.MsisdnNotFound(c.BaseURL()))
+	}
+
+	// if service unavailable
+	if !h.serviceService.IsService(req.GetCode()) {
+		return c.Status(fiber.StatusOK).SendString(h.PageNotFound(c.BaseURL()))
+	}
+
+	jsonData, err := json.Marshal(req)
+	if err != nil {
+		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
+	}
+
+	l.WithFields(logrus.Fields{"request": req}).Info("MO")
+	h.rmq.IntegratePublish(
+		RMQ_USSD_EXCHANGE,
+		RMQ_USSD_QUEUE,
+		RMQ_DATA_TYPE, "", string(jsonData),
+	)
+
+	jsonMOData, err := json.Marshal(
+		&entity.MO{
+			TrxId:   utils.GenerateTrxId(),
+			Msisdn:  req.GetMsisdn(),
+			Channel: CHANNEL_USSD,
+			Keyword: req.GetCode(),
+			Action:  req.GetAction(),
+		})
+	if err != nil {
+		return c.Status(fiber.StatusBadGateway).SendString(err.Error())
+	}
+
+	h.rmq.IntegratePublish(
+		RMQ_MO_EXCHANGE,
+		RMQ_MO_QUEUE,
+		RMQ_DATA_TYPE, "", string(jsonMOData),
+	)
+
+	return c.Status(fiber.StatusOK).SendString("Migrated: " + req.GetMsisdn())
+}
+
 func (h *IncomingHandler) TestBalance(c *fiber.Ctx) error {
 	c.Set("Content-type", "text/xml; charset=iso-8859-1")
 	xmlFile, err := os.Open("./views/xml/ball_resp.xml")
