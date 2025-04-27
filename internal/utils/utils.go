@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"encoding/base64"
 	"fmt"
 	"log"
 	"os"
@@ -21,6 +22,11 @@ func GetEnv(key string) string {
 		log.Panicf("Error %v", key)
 	}
 	return value
+}
+
+func BasicAuth(username, password string) string {
+	auth := username + ":" + password
+	return base64.StdEncoding.EncodeToString([]byte(auth))
 }
 
 func EscapeChar(res []byte) []byte {

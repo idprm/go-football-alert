@@ -8,6 +8,19 @@ import (
 	"golang.org/x/text/unicode/norm"
 )
 
+type RabbitMQResponse struct {
+	Messages int    `json:"messages"`
+	Name     string `json:"name"`
+}
+
+func (r *RabbitMQResponse) IsRunning() bool {
+	return r.Messages > 0
+}
+
+func (r *RabbitMQResponse) GetName() string {
+	return r.Name
+}
+
 type WebResponse struct {
 	Error       bool   `json:"error,omitempty"`
 	StatusCode  int    `json:"status_code,omitempty"`

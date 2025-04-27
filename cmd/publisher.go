@@ -3,11 +3,14 @@ package cmd
 import (
 	"database/sql"
 	"encoding/json"
+	"log"
 	"time"
 
 	"github.com/idprm/go-football-alert/internal/domain/entity"
+	"github.com/idprm/go-football-alert/internal/domain/model"
 	"github.com/idprm/go-football-alert/internal/domain/repository"
 	"github.com/idprm/go-football-alert/internal/handler"
+	"github.com/idprm/go-football-alert/internal/providers/rabbit"
 	"github.com/idprm/go-football-alert/internal/services"
 	"github.com/spf13/cobra"
 	"github.com/wiliehidayat87/rmqp"
@@ -47,10 +50,26 @@ var publisherRenewalCmd = &cobra.Command{
 		timeDuration := time.Duration(5)
 
 		for {
+			/**
+			** Populate retry if queue message is zero or 0
+			**/
+			p := rabbit.NewRabbitMQ()
 
-			go func() {
-				populateRenewal(db, rmq)
-			}()
+			q, err := p.Queue(RMQ_RENEWAL_QUEUE)
+			if err != nil {
+				log.Println(err)
+			}
+
+			var res *model.RabbitMQResponse
+			json.Unmarshal(q, &res)
+
+			// if queue is empty
+			if !res.IsRunning() {
+
+				go func() {
+					populateRenewal(db, rmq)
+				}()
+			}
 
 			time.Sleep(timeDuration * time.Minute)
 		}

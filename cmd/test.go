@@ -250,7 +250,7 @@ var consumerTestMigrateSubCmd = &cobra.Command{
 	Short: "Consumer Test Migrate Service CLI",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		filename := "./logs/migrate_xxx.txt"
+		filename := "./logs/migrate_ofc_1.txt"
 
 		file, err := os.Open(filename)
 		if err != nil {
