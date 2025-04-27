@@ -31,6 +31,13 @@ type ISubscriptionService interface {
 	IsRenewal(int, string, string) bool
 	IsRetry(int, string, string) bool
 	IsRetryUnderpayment(int, string, string) bool
+
+	IsPopulateRenewal() bool
+	IsPopulateRetry() bool
+	IsPopulateRetryUnderpayment() bool
+	IsPopulateReminder48HBeforeCharging() bool
+	IsPopulateReminderAfterTrialEnds() bool
+
 	GetTotalActiveSubscription() int
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetByCategory(string, string, string) (*entity.Subscription, error)
@@ -116,6 +123,31 @@ func (s *SubscriptionService) IsRetry(serviceId int, msisdn, code string) bool {
 
 func (s *SubscriptionService) IsRetryUnderpayment(serviceId int, msisdn, code string) bool {
 	count, _ := s.subscriptionRepo.CountRetryUnderpayment(serviceId, msisdn, code)
+	return count > 0
+}
+
+func (s *SubscriptionService) IsPopulateRenewal() bool {
+	count, _ := s.subscriptionRepo.CountPopulateRenewal()
+	return count > 0
+}
+
+func (s *SubscriptionService) IsPopulateRetry() bool {
+	count, _ := s.subscriptionRepo.CountPopulateRetry()
+	return count > 0
+}
+
+func (s *SubscriptionService) IsPopulateRetryUnderpayment() bool {
+	count, _ := s.subscriptionRepo.CountPopulateRetryUnderpayment()
+	return count > 0
+}
+
+func (s *SubscriptionService) IsPopulateReminder48HBeforeCharging() bool {
+	count, _ := s.subscriptionRepo.CountPopulateReminder48HBeforeCharging()
+	return count > 0
+}
+
+func (s *SubscriptionService) IsPopulateReminderAfterTrialEnds() bool {
+	count, _ := s.subscriptionRepo.CountPopulateReminderAfterTrialEnds()
 	return count > 0
 }
 

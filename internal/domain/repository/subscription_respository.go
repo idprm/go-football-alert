@@ -28,6 +28,11 @@ type ISubscriptionRepository interface {
 	CountRetry(int, string, string) (int64, error)
 	CountRetryUnderpayment(int, string, string) (int64, error)
 	CountTotalActiveSub() (int64, error)
+	CountPopulateRenewal() (int64, error)
+	CountPopulateRetry() (int64, error)
+	CountPopulateRetryUnderpayment() (int64, error)
+	CountPopulateReminder48HBeforeCharging() (int64, error)
+	CountPopulateReminderAfterTrialEnds() (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
 	GetByCategory(string, string, string) (*entity.Subscription, error)
 	GetActiveByCategory(string, string, string) (*entity.Subscription, error)
@@ -163,6 +168,51 @@ func (r *SubscriptionRepository) CountRetryUnderpayment(serviceId int, msisdn, c
 func (r *SubscriptionRepository) CountTotalActiveSub() (int64, error) {
 	var count int64
 	err := r.db.Model(&entity.Subscription{}).Where("is_active = true").Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *SubscriptionRepository) CountPopulateRenewal() (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Subscription{}).Where("is_active = true AND (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(renewal_at)) / 3600 > 0").Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *SubscriptionRepository) CountPopulateRetry() (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Subscription{}).Where("is_active = true AND is_retry = true AND (UNIX_TIMESTAMP(NOW() + INTERVAL 1 DAY) - UNIX_TIMESTAMP(renewal_at)) / 3600 > 0").Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *SubscriptionRepository) CountPopulateRetryUnderpayment() (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Subscription{}).Where("is_active = true AND is_retry = false AND is_underpayment = true AND total_underpayment > 0").Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *SubscriptionRepository) CountPopulateReminder48HBeforeCharging() (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Subscription{}).Where("is_active = true AND HOUR(TIMEDIFF(NOW(), renewal_at)) = 48 AND is_free = false AND service_id IN(2, 3, 5, 6, 8, 9, 11, 12, 14, 15, 17, 18, 20, 21)").Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *SubscriptionRepository) CountPopulateReminderAfterTrialEnds() (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Subscription{}).Where("is_active = true AND HOUR(TIMEDIFF(NOW(), free_at)) BETWEEN 23 AND 24 AND is_free = true AND service_id IN(2, 3, 5, 6, 8, 9, 11, 12, 14, 15, 17, 18, 20, 21)").Count(&count).Error
 	if err != nil {
 		return count, err
 	}

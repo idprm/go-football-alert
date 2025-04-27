@@ -65,7 +65,6 @@ var publisherRenewalCmd = &cobra.Command{
 
 			// if queue is empty
 			if !res.IsRunning() {
-
 				go func() {
 					populateRenewal(db, rmq)
 				}()
@@ -292,7 +291,13 @@ var publisherCreditGoalCmd = &cobra.Command{
 		/**
 		 * SETUP CHANNEL
 		 */
-		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_CREDIT_GOAL_EXCHANGE, true, RMQ_CREDIT_GOAL_QUEUE)
+		rmq.SetUpChannel(
+			RMQ_EXCHANGE_TYPE,
+			true,
+			RMQ_CREDIT_GOAL_EXCHANGE,
+			true,
+			RMQ_CREDIT_GOAL_QUEUE,
+		)
 
 		/**
 		 * Looping schedule
@@ -348,7 +353,13 @@ var publisherPredictWinCmd = &cobra.Command{
 		/**
 		 * SETUP CHANNEL
 		 */
-		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_PREDICT_WIN_EXCHANGE, true, RMQ_PREDICT_WIN_QUEUE)
+		rmq.SetUpChannel(
+			RMQ_EXCHANGE_TYPE,
+			true,
+			RMQ_PREDICT_WIN_EXCHANGE,
+			true,
+			RMQ_PREDICT_WIN_QUEUE,
+		)
 
 		/**
 		 * Looping schedule
@@ -594,11 +605,12 @@ var publisherReportCmd = &cobra.Command{
 		timeDuration := time.Duration(1)
 
 		for {
-
-			go func() {
-				populateReport(db, sqlDb)
-			}()
-
+			timeNow := time.Now().Format("15:04")
+			if timeNow == "23:58" {
+				go func() {
+					populateReport(db, sqlDb)
+				}()
+			}
 			time.Sleep(timeDuration * time.Minute)
 		}
 
@@ -609,80 +621,91 @@ func populateRenewal(db *gorm.DB, rmq rmqp.AMQP) {
 	subscriptionRepo := repository.NewSubscriptionRepository(db)
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
 
-	subs := subscriptionService.Renewal()
+	if subscriptionService.IsPopulateRenewal() {
 
-	if len(*subs) > 0 {
-		for _, s := range *subs {
-			var sub entity.Subscription
+		subs := subscriptionService.Renewal()
 
-			sub.ID = s.ID
-			sub.ServiceID = s.ServiceID
-			sub.Msisdn = s.Msisdn
-			sub.Code = s.Code
-			sub.LatestKeyword = s.LatestKeyword
-			sub.LatestSubject = s.LatestSubject
-			sub.CreatedAt = s.CreatedAt
+		if len(*subs) > 0 {
+			for _, s := range *subs {
+				var sub entity.Subscription
 
-			json, _ := json.Marshal(sub)
+				sub.ID = s.ID
+				sub.ServiceID = s.ServiceID
+				sub.Msisdn = s.Msisdn
+				sub.Code = s.Code
+				sub.LatestKeyword = s.LatestKeyword
+				sub.LatestSubject = s.LatestSubject
+				sub.CreatedAt = s.CreatedAt
 
-			rmq.IntegratePublish(RMQ_RENEWAL_EXCHANGE, RMQ_RENEWAL_QUEUE, RMQ_DATA_TYPE, "", string(json))
+				json, _ := json.Marshal(sub)
 
-			time.Sleep(100 * time.Microsecond)
+				rmq.IntegratePublish(RMQ_RENEWAL_EXCHANGE, RMQ_RENEWAL_QUEUE, RMQ_DATA_TYPE, "", string(json))
+
+				time.Sleep(100 * time.Microsecond)
+			}
 		}
 	}
+
 }
 
 func populateRetry(db *gorm.DB, rmq rmqp.AMQP) {
 	subscriptionRepo := repository.NewSubscriptionRepository(db)
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
 
-	subs := subscriptionService.Retry()
+	if subscriptionService.IsPopulateRetry() {
 
-	if len(*subs) > 0 {
-		for _, s := range *subs {
-			var sub entity.Subscription
+		subs := subscriptionService.Retry()
 
-			sub.ID = s.ID
-			sub.ServiceID = s.ServiceID
-			sub.Msisdn = s.Msisdn
-			sub.Code = s.Code
-			sub.LatestKeyword = s.LatestKeyword
-			sub.LatestSubject = s.LatestSubject
-			sub.CreatedAt = s.CreatedAt
+		if len(*subs) > 0 {
+			for _, s := range *subs {
+				var sub entity.Subscription
 
-			json, _ := json.Marshal(sub)
+				sub.ID = s.ID
+				sub.ServiceID = s.ServiceID
+				sub.Msisdn = s.Msisdn
+				sub.Code = s.Code
+				sub.LatestKeyword = s.LatestKeyword
+				sub.LatestSubject = s.LatestSubject
+				sub.CreatedAt = s.CreatedAt
 
-			rmq.IntegratePublish(RMQ_RETRY_EXCHANGE, RMQ_RETRY_QUEUE, RMQ_DATA_TYPE, "", string(json))
+				json, _ := json.Marshal(sub)
 
-			time.Sleep(100 * time.Microsecond)
+				rmq.IntegratePublish(RMQ_RETRY_EXCHANGE, RMQ_RETRY_QUEUE, RMQ_DATA_TYPE, "", string(json))
+
+				time.Sleep(100 * time.Microsecond)
+			}
 		}
 	}
+
 }
 
 func populateRetryUnderpayment(db *gorm.DB, rmq rmqp.AMQP) {
 	subscriptionRepo := repository.NewSubscriptionRepository(db)
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
 
-	subs := subscriptionService.RetryUnderpayment()
+	if subscriptionService.IsPopulateRetryUnderpayment() {
 
-	if len(*subs) > 0 {
-		for _, s := range *subs {
-			var sub entity.Subscription
+		subs := subscriptionService.RetryUnderpayment()
 
-			sub.ID = s.ID
-			sub.ServiceID = s.ServiceID
-			sub.Msisdn = s.Msisdn
-			sub.Code = s.Code
-			sub.LatestKeyword = s.LatestKeyword
-			sub.LatestSubject = s.LatestSubject
-			sub.CreatedAt = s.CreatedAt
-			sub.TotalUnderpayment = s.TotalUnderpayment
+		if len(*subs) > 0 {
+			for _, s := range *subs {
+				var sub entity.Subscription
 
-			json, _ := json.Marshal(sub)
+				sub.ID = s.ID
+				sub.ServiceID = s.ServiceID
+				sub.Msisdn = s.Msisdn
+				sub.Code = s.Code
+				sub.LatestKeyword = s.LatestKeyword
+				sub.LatestSubject = s.LatestSubject
+				sub.CreatedAt = s.CreatedAt
+				sub.TotalUnderpayment = s.TotalUnderpayment
 
-			rmq.IntegratePublish(RMQ_RETRY_UP_EXCHANGE, RMQ_RETRY_UP_QUEUE, RMQ_DATA_TYPE, "", string(json))
+				json, _ := json.Marshal(sub)
 
-			time.Sleep(100 * time.Microsecond)
+				rmq.IntegratePublish(RMQ_RETRY_UP_EXCHANGE, RMQ_RETRY_UP_QUEUE, RMQ_DATA_TYPE, "", string(json))
+
+				time.Sleep(100 * time.Microsecond)
+			}
 		}
 	}
 }
@@ -745,58 +768,63 @@ func populateReminder48HBeforeCharging(db *gorm.DB, rmq rmqp.AMQP) {
 	subscriptionRepo := repository.NewSubscriptionRepository(db)
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
 
-	subs := subscriptionService.Reminder48HBeforeCharging()
+	if subscriptionService.IsPopulateReminder48HBeforeCharging() {
+		subs := subscriptionService.Reminder48HBeforeCharging()
+		if len(*subs) > 0 {
+			for _, s := range *subs {
+				var sub entity.Subscription
 
-	if len(*subs) > 0 {
-		for _, s := range *subs {
-			var sub entity.Subscription
+				sub.ID = s.ID
+				sub.ServiceID = s.ServiceID
+				sub.Msisdn = s.Msisdn
+				sub.Code = s.Code
+				sub.LatestKeyword = s.LatestKeyword
+				sub.LatestSubject = s.LatestSubject
+				sub.FreeAt = s.FreeAt
+				sub.RenewalAt = s.RenewalAt
+				sub.CreatedAt = s.CreatedAt
 
-			sub.ID = s.ID
-			sub.ServiceID = s.ServiceID
-			sub.Msisdn = s.Msisdn
-			sub.Code = s.Code
-			sub.LatestKeyword = s.LatestKeyword
-			sub.LatestSubject = s.LatestSubject
-			sub.FreeAt = s.FreeAt
-			sub.RenewalAt = s.RenewalAt
-			sub.CreatedAt = s.CreatedAt
+				json, _ := json.Marshal(sub)
 
-			json, _ := json.Marshal(sub)
+				rmq.IntegratePublish(RMQ_REMINDER_48H_BEFORE_CHARGING_EXCHANGE, RMQ_REMINDER_48H_BEFORE_CHARGING_QUEUE, RMQ_DATA_TYPE, "", string(json))
 
-			rmq.IntegratePublish(RMQ_REMINDER_48H_BEFORE_CHARGING_EXCHANGE, RMQ_REMINDER_48H_BEFORE_CHARGING_QUEUE, RMQ_DATA_TYPE, "", string(json))
-
-			time.Sleep(100 * time.Microsecond)
+				time.Sleep(100 * time.Microsecond)
+			}
 		}
 	}
+
 }
 
 func populateReminderAfterTrialEnds(db *gorm.DB, rmq rmqp.AMQP) {
 	subscriptionRepo := repository.NewSubscriptionRepository(db)
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
 
-	subs := subscriptionService.ReminderAfterTrialEnds()
+	if subscriptionService.IsPopulateReminderAfterTrialEnds() {
+		subs := subscriptionService.ReminderAfterTrialEnds()
 
-	if len(*subs) > 0 {
-		for _, s := range *subs {
-			var sub entity.Subscription
+		if len(*subs) > 0 {
+			for _, s := range *subs {
+				var sub entity.Subscription
 
-			sub.ID = s.ID
-			sub.ServiceID = s.ServiceID
-			sub.Msisdn = s.Msisdn
-			sub.Code = s.Code
-			sub.LatestKeyword = s.LatestKeyword
-			sub.LatestSubject = s.LatestSubject
-			sub.FreeAt = s.FreeAt
-			sub.RenewalAt = s.RenewalAt
-			sub.CreatedAt = s.CreatedAt
+				sub.ID = s.ID
+				sub.ServiceID = s.ServiceID
+				sub.Msisdn = s.Msisdn
+				sub.Code = s.Code
+				sub.LatestKeyword = s.LatestKeyword
+				sub.LatestSubject = s.LatestSubject
+				sub.FreeAt = s.FreeAt
+				sub.RenewalAt = s.RenewalAt
+				sub.CreatedAt = s.CreatedAt
 
-			json, _ := json.Marshal(sub)
+				json, _ := json.Marshal(sub)
 
-			rmq.IntegratePublish(RMQ_REMINDER_AFTER_TRIAL_ENDS_EXCHANGE, RMQ_REMINDER_AFTER_TRIAL_ENDS_QUEUE, RMQ_DATA_TYPE, "", string(json))
+				rmq.IntegratePublish(RMQ_REMINDER_AFTER_TRIAL_ENDS_EXCHANGE, RMQ_REMINDER_AFTER_TRIAL_ENDS_QUEUE, RMQ_DATA_TYPE, "", string(json))
 
-			time.Sleep(100 * time.Microsecond)
+				time.Sleep(100 * time.Microsecond)
+			}
 		}
 	}
+
 }
 
 func populateReport(db *gorm.DB, sqlDb *sql.DB) {
