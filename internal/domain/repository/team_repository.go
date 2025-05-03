@@ -20,6 +20,7 @@ type ITeamRepository interface {
 	CountByCode(string) (int64, error)
 	CountByPrimaryId(int) (int64, error)
 	CountActiveByPrimaryId(int) (int64, error)
+	CountActiveById(int) (int64, error)
 	CountByName(string) (int64, error)
 	CountByLeagueTeam(*entity.LeagueTeam) (int64, error)
 	CountLeagueByTeam(int) (int64, error)
@@ -69,6 +70,15 @@ func (r *TeamRepository) CountByPrimaryId(primaryId int) (int64, error) {
 func (r *TeamRepository) CountActiveByPrimaryId(primaryId int) (int64, error) {
 	var count int64
 	err := r.db.Model(&entity.Team{}).Where("primary_id = ? AND is_active = true", primaryId).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *TeamRepository) CountActiveById(id int) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.Team{}).Where("id = ? AND is_active = true", id).Count(&count).Error
 	if err != nil {
 		return count, err
 	}

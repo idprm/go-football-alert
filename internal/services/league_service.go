@@ -18,6 +18,7 @@ func NewLeagueService(leagueRepo repository.ILeagueRepository) *LeagueService {
 type ILeagueService interface {
 	IsLeague(string) bool
 	IsLeagueByCode(string) bool
+	IsLeagueActiveById(int) bool
 	IsLeagueByPrimaryId(int) bool
 	IsLeagueByName(string) bool
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
@@ -46,6 +47,11 @@ func (s *LeagueService) IsLeague(key string) bool {
 
 func (s *LeagueService) IsLeagueByCode(code string) bool {
 	count, _ := s.leagueRepo.CountByCode(code)
+	return count > 0
+}
+
+func (s *LeagueService) IsLeagueActiveById(id int) bool {
+	count, _ := s.leagueRepo.CountActiveById(id)
 	return count > 0
 }
 

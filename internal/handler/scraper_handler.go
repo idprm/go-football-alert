@@ -347,69 +347,75 @@ func (h *ScraperHandler) Predictions() error {
 
 	if len(fixtures) > 0 {
 		for _, l := range fixtures {
-			// rate limit is 10 requests per minute.
-			if !h.predictionService.IsPredictionByFixtureId(int(l.ID)) {
-				f, err := fb.GetPredictions(int(l.PrimaryID))
-				if err != nil {
-					return err
-				}
+			// checking league and team
+			if h.leagueService.IsLeagueActiveById(int(l.LeagueID)) {
 
-				var resp model.PredictionResult
-				json.Unmarshal(f, &resp)
-				log.Println(string(f))
+				if h.teamService.IsTeamActiveById(int(l.HomeID)) || h.teamService.IsTeamActiveById(int(l.AwayID)) {
+					// rate limit is 10 requests per minute.
+					if !h.predictionService.IsPredictionByFixtureId(int(l.ID)) {
+						f, err := fb.GetPredictions(int(l.PrimaryID))
+						if err != nil {
+							return err
+						}
 
-				for _, el := range resp.Response {
-					team, err := h.teamService.GetByPrimaryId(el.Prediction.Winner.PrimaryID)
-					if err != nil {
-						return err
+						var resp model.PredictionResult
+						json.Unmarshal(f, &resp)
+						log.Println(string(f))
+
+						for _, el := range resp.Response {
+							team, err := h.teamService.GetByPrimaryId(el.Prediction.Winner.PrimaryID)
+							if err != nil {
+								return err
+							}
+
+							h.predictionService.Save(
+								&entity.Prediction{
+									FixtureID:     l.ID,
+									FixtureDate:   l.FixtureDate,
+									WinnerID:      team.ID,
+									WinnerName:    el.Prediction.Winner.Name,
+									WinnerComment: el.Prediction.Winner.Comment,
+									Advice:        el.Prediction.Advice,
+									PercentHome:   el.Prediction.Percent.Home,
+									PercentDraw:   el.Prediction.Percent.Draw,
+									PercentAway:   el.Prediction.Percent.Away,
+								},
+							)
+						}
+					} else {
+						f, err := fb.GetPredictions(int(l.PrimaryID))
+						if err != nil {
+							return err
+						}
+
+						var resp model.PredictionResult
+						json.Unmarshal(f, &resp)
+						log.Println(string(f))
+
+						for _, el := range resp.Response {
+							team, err := h.teamService.GetByPrimaryId(el.Prediction.Winner.PrimaryID)
+							if err != nil {
+								return err
+							}
+
+							h.predictionService.UpdateByFixtureId(
+								&entity.Prediction{
+									FixtureID:     l.ID,
+									FixtureDate:   l.FixtureDate,
+									WinnerID:      team.ID,
+									WinnerName:    el.Prediction.Winner.Name,
+									WinnerComment: el.Prediction.Winner.Comment,
+									Advice:        el.Prediction.Advice,
+									PercentHome:   el.Prediction.Percent.Home,
+									PercentDraw:   el.Prediction.Percent.Draw,
+									PercentAway:   el.Prediction.Percent.Away,
+								},
+							)
+						}
 					}
-
-					h.predictionService.Save(
-						&entity.Prediction{
-							FixtureID:     l.ID,
-							FixtureDate:   l.FixtureDate,
-							WinnerID:      team.ID,
-							WinnerName:    el.Prediction.Winner.Name,
-							WinnerComment: el.Prediction.Winner.Comment,
-							Advice:        el.Prediction.Advice,
-							PercentHome:   el.Prediction.Percent.Home,
-							PercentDraw:   el.Prediction.Percent.Draw,
-							PercentAway:   el.Prediction.Percent.Away,
-						},
-					)
-				}
-			} else {
-				f, err := fb.GetPredictions(int(l.PrimaryID))
-				if err != nil {
-					return err
-				}
-
-				var resp model.PredictionResult
-				json.Unmarshal(f, &resp)
-				log.Println(string(f))
-
-				for _, el := range resp.Response {
-					team, err := h.teamService.GetByPrimaryId(el.Prediction.Winner.PrimaryID)
-					if err != nil {
-						return err
-					}
-
-					h.predictionService.UpdateByFixtureId(
-						&entity.Prediction{
-							FixtureID:     l.ID,
-							FixtureDate:   l.FixtureDate,
-							WinnerID:      team.ID,
-							WinnerName:    el.Prediction.Winner.Name,
-							WinnerComment: el.Prediction.Winner.Comment,
-							Advice:        el.Prediction.Advice,
-							PercentHome:   el.Prediction.Percent.Home,
-							PercentDraw:   el.Prediction.Percent.Draw,
-							PercentAway:   el.Prediction.Percent.Away,
-						},
-					)
+					time.Sleep(1 * time.Second)
 				}
 			}
-			time.Sleep(45 * time.Second)
 		}
 	}
 	return nil

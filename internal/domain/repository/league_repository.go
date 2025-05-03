@@ -18,6 +18,7 @@ func NewLeagueRepository(db *gorm.DB) *LeagueRepository {
 type ILeagueRepository interface {
 	Count(string) (int64, error)
 	CountByCode(string) (int64, error)
+	CountActiveById(int) (int64, error)
 	CountByPrimaryId(int) (int64, error)
 	CountByName(string) (int64, error)
 	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
@@ -52,6 +53,15 @@ func (r *LeagueRepository) Count(slug string) (int64, error) {
 func (r *LeagueRepository) CountByCode(code string) (int64, error) {
 	var count int64
 	err := r.db.Model(&entity.League{}).Where("code = ? AND is_active = true", code).Count(&count).Error
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *LeagueRepository) CountActiveById(id int) (int64, error) {
+	var count int64
+	err := r.db.Model(&entity.League{}).Where("id = ? AND is_active = true", id).Count(&count).Error
 	if err != nil {
 		return count, err
 	}
