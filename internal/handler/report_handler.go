@@ -97,12 +97,13 @@ func (h *ReportHandler) PopulateTotalDaily() {
 		for _, s := range *summs {
 			h.summaryTotalDailyService.Save(
 				&entity.SummaryTotalDaily{
-					TotalSub:     s.TotalSub,
-					TotalUnsub:   s.TotalUnsub,
-					TotalRenewal: s.TotalRenewal,
-					TotalRevenue: s.TotalRevenue,
-					CreatedAt:    s.CreatedAt,
-					UpdatedAt:    time.Now(),
+					TotalSub:       s.TotalSub,
+					TotalUnsub:     s.TotalUnsub,
+					TotalRenewal:   s.TotalRenewal,
+					TotalRevenue:   s.TotalRevenue,
+					TotalActiveSub: s.TotalActiveSub,
+					CreatedAt:      s.CreatedAt,
+					UpdatedAt:      time.Now(),
 				},
 			)
 		}
