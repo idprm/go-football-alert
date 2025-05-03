@@ -16,6 +16,10 @@ type SummaryRevenueService struct {
 	summaryRevenueRepo repository.ISummaryRevenueRepository
 }
 
+type SummaryTotalDailyService struct {
+	summaryTotalDailyRepo repository.ISummaryTotalDailyRepository
+}
+
 func NewSummaryDashboardService(
 	summaryDashboardRepo repository.ISummaryDashboardRepository,
 ) *SummaryDashboardService {
@@ -29,6 +33,14 @@ func NewSummaryRevenueService(
 ) *SummaryRevenueService {
 	return &SummaryRevenueService{
 		summaryRevenueRepo: summaryRevenueRepo,
+	}
+}
+
+func NewSummaryTotalDailyService(
+	summaryTotalDailyRepo repository.ISummaryTotalDailyRepository,
+) *SummaryTotalDailyService {
+	return &SummaryTotalDailyService{
+		summaryTotalDailyRepo: summaryTotalDailyRepo,
 	}
 }
 
@@ -52,6 +64,17 @@ type ISummaryRevenueService interface {
 	Update(*entity.SummaryRevenue) error
 	Delete(*entity.SummaryRevenue) error
 	SelectRevenue() (*[]entity.SummaryRevenue, error)
+}
+
+type ISummaryTotalDailyService interface {
+	IsSummary(time.Time) bool
+	GetAllPaginate(*entity.Pagination) (*entity.Pagination, error)
+	GetAllByRange(*model.RangeDateRequest) ([]*entity.SummaryTotalDaily, error)
+	Get(time.Time) (*entity.SummaryTotalDaily, error)
+	Save(*entity.SummaryTotalDaily) error
+	Update(*entity.SummaryTotalDaily) error
+	Delete(*entity.SummaryTotalDaily) error
+	SelectTotalDaily() (*[]entity.SummaryTotalDaily, error)
 }
 
 func (s *SummaryDashboardService) IsSummary(date time.Time) bool {
@@ -124,4 +147,39 @@ func (s *SummaryRevenueService) Delete(a *entity.SummaryRevenue) error {
 
 func (s *SummaryRevenueService) SelectRevenue() (*[]entity.SummaryRevenue, error) {
 	return s.summaryRevenueRepo.SelectRevenue()
+}
+
+func (s *SummaryTotalDailyService) IsSummary(date time.Time) bool {
+	count, _ := s.summaryTotalDailyRepo.Count(date)
+	return count > 0
+}
+
+func (s *SummaryTotalDailyService) GetAllPaginate(p *entity.Pagination) (*entity.Pagination, error) {
+	return s.summaryTotalDailyRepo.GetAllPaginate(p)
+}
+
+func (s *SummaryTotalDailyService) GetAllByRange(p *model.RangeDateRequest) ([]*entity.SummaryTotalDaily, error) {
+	return s.summaryTotalDailyRepo.GetAllByRange(p)
+}
+
+func (s *SummaryTotalDailyService) Get(date time.Time) (*entity.SummaryTotalDaily, error) {
+	return s.summaryTotalDailyRepo.Get(date)
+}
+
+func (s *SummaryTotalDailyService) Save(a *entity.SummaryTotalDaily) error {
+	if s.IsSummary(a.CreatedAt) {
+		return s.Update(a)
+	}
+	return s.summaryTotalDailyRepo.Save(a)
+}
+
+func (s *SummaryTotalDailyService) Update(a *entity.SummaryTotalDaily) error {
+	return s.summaryTotalDailyRepo.Update(a)
+}
+func (s *SummaryTotalDailyService) Delete(a *entity.SummaryTotalDaily) error {
+	return s.summaryTotalDailyRepo.Delete(a)
+}
+
+func (s *SummaryTotalDailyService) SelectTotalDaily() (*[]entity.SummaryTotalDaily, error) {
+	return s.summaryTotalDailyRepo.SelectTotalDaily()
 }

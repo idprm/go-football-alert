@@ -31,3 +31,13 @@ type SummaryRevenue struct {
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
+
+type SummaryTotalDaily struct {
+	ID           int64     `gorm:"primaryKey" json:"id"`
+	TotalSub     int       `gorm:"size:10:default:0" json:"total_sub"`
+	TotalUnsub   int       `gorm:"size:10:default:0" json:"total_unsub"`
+	TotalRenewal int       `gorm:"size:10:default:0" json:"total_renewal"`
+	TotalRevenue float64   `gorm:"size:15:default:0" json:"total_revenue"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
+}

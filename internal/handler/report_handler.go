@@ -9,11 +9,12 @@ import (
 )
 
 type ReportHandler struct {
-	serviceService          services.IServiceService
-	subscriptionService     services.ISubscriptionService
-	transactionService      services.ITransactionService
-	summaryDashboardService services.ISummaryDashboardService
-	summaryRevenueService   services.ISummaryRevenueService
+	serviceService           services.IServiceService
+	subscriptionService      services.ISubscriptionService
+	transactionService       services.ITransactionService
+	summaryDashboardService  services.ISummaryDashboardService
+	summaryRevenueService    services.ISummaryRevenueService
+	summaryTotalDailyService services.ISummaryTotalDailyService
 }
 
 func NewReportHandler(
@@ -22,13 +23,15 @@ func NewReportHandler(
 	transactionService services.ITransactionService,
 	summaryDashboardService services.ISummaryDashboardService,
 	summaryRevenueService services.ISummaryRevenueService,
+	summaryTotalDailyService services.ISummaryTotalDailyService,
 ) *ReportHandler {
 	return &ReportHandler{
-		serviceService:          serviceService,
-		subscriptionService:     subscriptionService,
-		transactionService:      transactionService,
-		summaryDashboardService: summaryDashboardService,
-		summaryRevenueService:   summaryRevenueService,
+		serviceService:           serviceService,
+		subscriptionService:      subscriptionService,
+		transactionService:       transactionService,
+		summaryDashboardService:  summaryDashboardService,
+		summaryRevenueService:    summaryRevenueService,
+		summaryTotalDailyService: summaryTotalDailyService,
 	}
 }
 
@@ -78,6 +81,28 @@ func (h *ReportHandler) PopulateRevenue() {
 					Revenue:   s.Revenue,
 					CreatedAt: s.CreatedAt,
 					UpdatedAt: time.Now(),
+				},
+			)
+		}
+	}
+}
+
+func (h *ReportHandler) PopulateTotalDaily() {
+	summs, err := h.summaryTotalDailyService.SelectTotalDaily()
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	if len(*summs) > 0 {
+		for _, s := range *summs {
+			h.summaryTotalDailyService.Save(
+				&entity.SummaryTotalDaily{
+					TotalSub:     s.TotalSub,
+					TotalUnsub:   s.TotalUnsub,
+					TotalRenewal: s.TotalRenewal,
+					TotalRevenue: s.TotalRevenue,
+					CreatedAt:    s.CreatedAt,
+					UpdatedAt:    time.Now(),
 				},
 			)
 		}

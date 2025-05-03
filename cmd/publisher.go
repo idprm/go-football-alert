@@ -839,6 +839,8 @@ func populateReport(db *gorm.DB, sqlDb *sql.DB) {
 	summaryDashboardService := services.NewSummaryDashboardService(summaryDashboardRepo)
 	summaryRevenueRepo := repository.NewSummaryRevenueRepository(db, sqlDb)
 	summaryRevenueService := services.NewSummaryRevenueService(summaryRevenueRepo)
+	summaryTotalDailyRepo := repository.NewSummaryTotalDailyRepository(db, sqlDb)
+	summaryTotalDailyService := services.NewSummaryTotalDailyService(summaryTotalDailyRepo)
 
 	h := handler.NewReportHandler(
 		serviceService,
@@ -846,6 +848,7 @@ func populateReport(db *gorm.DB, sqlDb *sql.DB) {
 		transactionService,
 		summaryDashboardService,
 		summaryRevenueService,
+		summaryTotalDailyService,
 	)
 
 	// based sub
@@ -854,6 +857,7 @@ func populateReport(db *gorm.DB, sqlDb *sql.DB) {
 
 	// based trans
 	h.PopulateRevenue()
+	//h.PopulateTotalDaily()
 }
 
 func scrapingLeagues(db *gorm.DB) {

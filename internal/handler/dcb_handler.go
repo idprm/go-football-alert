@@ -37,6 +37,7 @@ type DCBHandler struct {
 	pronosticService                services.IPronosticService
 	summaryDashboardService         services.ISummaryDashboardService
 	summaryRevenueService           services.ISummaryRevenueService
+	summaryTotalDailyService        services.ISummaryTotalDailyService
 }
 
 func NewDCBHandler(
@@ -62,6 +63,7 @@ func NewDCBHandler(
 	pronosticService services.IPronosticService,
 	summaryDashboardService services.ISummaryDashboardService,
 	summaryRevenueService services.ISummaryRevenueService,
+	summaryTotalDailyService services.ISummaryTotalDailyService,
 ) *DCBHandler {
 	return &DCBHandler{
 		rmq:                             rmq,
@@ -86,6 +88,7 @@ func NewDCBHandler(
 		pronosticService:                pronosticService,
 		summaryDashboardService:         summaryDashboardService,
 		summaryRevenueService:           summaryRevenueService,
+		summaryTotalDailyService:        summaryTotalDailyService,
 	}
 }
 
@@ -1119,6 +1122,33 @@ func (h *DCBHandler) GetAllSummaryRevenuePaginate(c *fiber.Ctx) error {
 	}
 
 	summaries, err := h.summaryRevenueService.GetAllPaginate(req)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusInternalServerError,
+				Message:    err.Error(),
+			},
+		)
+	}
+	return c.Status(fiber.StatusOK).JSON(summaries)
+}
+
+func (h *DCBHandler) GetAllSummaryTotalDailyPaginate(c *fiber.Ctx) error {
+	req := new(entity.Pagination)
+
+	err := c.QueryParser(req)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusBadRequest,
+				Message:    err.Error(),
+			},
+		)
+	}
+
+	summaries, err := h.summaryTotalDailyService.GetAllPaginate(req)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
 			&model.WebResponse{

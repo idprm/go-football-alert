@@ -95,6 +95,7 @@ var listenerCmd = &cobra.Command{
 			&entity.User{},
 			&entity.SummaryDashboard{},
 			&entity.SummaryRevenue{},
+			&entity.SummaryTotalDaily{},
 		)
 
 		/**
@@ -251,6 +252,9 @@ func routeUrlListener(db *gorm.DB, sqlDb *sql.DB, rds *redis.Client, rmq rmqp.AM
 	summaryRevenueRepo := repository.NewSummaryRevenueRepository(db, sqlDb)
 	summaryRevenueService := services.NewSummaryRevenueService(summaryRevenueRepo)
 
+	summaryTotalDailyRepo := repository.NewSummaryTotalDailyRepository(db, sqlDb)
+	summaryTotalDailyService := services.NewSummaryTotalDailyService(summaryTotalDailyRepo)
+
 	h := handler.NewIncomingHandler(
 		rds,
 		rmq,
@@ -322,6 +326,7 @@ func routeUrlListener(db *gorm.DB, sqlDb *sql.DB, rds *redis.Client, rmq rmqp.AM
 		pronosticService,
 		summaryDashboardService,
 		summaryRevenueService,
+		summaryTotalDailyService,
 	)
 
 	r.Get("/mo", h.MessageOriginated)
@@ -405,6 +410,7 @@ func routeUrlListener(db *gorm.DB, sqlDb *sql.DB, rds *redis.Client, rmq rmqp.AM
 	summaries := dcb.Group("summaries")
 	summaries.Get("/dashboard", dcbHandler.GetAllSummaryDashboardPaginate)
 	summaries.Get("/revenue", dcbHandler.GetAllSummaryRevenuePaginate)
+	summaries.Get("/totaldaily", dcbHandler.GetAllSummaryTotalDailyPaginate)
 
 	// charts
 	charts := dcb.Group("charts")
