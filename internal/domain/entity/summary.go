@@ -4,8 +4,8 @@ import "time"
 
 type SummaryDashboard struct {
 	ID             int64     `gorm:"primaryKey" json:"id"`
-	TotalActiveSub int64     `gorm:"size:10:default:0" json:"total_active_sub"`
-	TotalRevenue   float64   `gorm:"size:15:default:0" json:"total_revenue"`
+	TotalActiveSub int64     `gorm:"size:10;default:0" json:"total_active_sub"`
+	TotalRevenue   float64   `gorm:"size:15;default:0" json:"total_revenue"`
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
 }
@@ -26,7 +26,7 @@ type SummaryRevenue struct {
 	ID        int64     `gorm:"primaryKey" json:"id"`
 	Subject   string    `gorm:"size:45" json:"subject"`
 	Status    string    `gorm:"size:45" json:"status"`
-	Total     int64     `gorm:"size:10:default:0" json:"total"`
+	Total     int64     `gorm:"type:int(10);size:10;default:0" json:"total"`
 	Revenue   float64   `gorm:"size:15:default:0" json:"revenue"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
@@ -34,10 +34,10 @@ type SummaryRevenue struct {
 
 type SummaryTotalDaily struct {
 	ID           int64     `gorm:"primaryKey" json:"id"`
-	TotalSub     int64     `gorm:"size:10:default:0" json:"total_sub"`
-	TotalUnsub   int64     `gorm:"size:10:default:0" json:"total_unsub"`
-	TotalRenewal int64     `gorm:"size:10:default:0" json:"total_renewal"`
-	TotalRevenue float64   `gorm:"size:15:default:0" json:"total_revenue"`
+	TotalSub     int64     `gorm:"type:int(10);size:10;default:0" json:"total_sub"`
+	TotalUnsub   int64     `gorm:"type:int(10);size:10;default:0" json:"total_unsub"`
+	TotalRenewal int64     `gorm:"type:int(10);size:10;default:0" json:"total_renewal"`
+	TotalRevenue float64   `gorm:"size:15;default:0" json:"total_revenue"`
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
 }
