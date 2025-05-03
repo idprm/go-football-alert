@@ -43,7 +43,7 @@ func (h *ReportHandler) GetTotalActiveSub() {
 	// summary save
 	h.summaryDashboardService.Save(
 		&entity.SummaryDashboard{
-			TotalActiveSub: count,
+			TotalActiveSub: int64(count),
 			CreatedAt:      time.Now(),
 			UpdatedAt:      time.Now(),
 		},

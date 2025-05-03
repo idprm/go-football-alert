@@ -851,13 +851,14 @@ func populateReport(db *gorm.DB, sqlDb *sql.DB) {
 		summaryTotalDailyService,
 	)
 
+	// based trans
+	h.PopulateRevenue()
+
 	// based sub
 	h.GetTotalActiveSub()
 	h.GetTotalRevenue()
 
-	// based trans
-	h.PopulateRevenue()
-	//h.PopulateTotalDaily()
+	h.PopulateTotalDaily()
 }
 
 func scrapingLeagues(db *gorm.DB) {
