@@ -605,12 +605,12 @@ var publisherReportCmd = &cobra.Command{
 		timeDuration := time.Duration(1)
 
 		for {
-			timeNow := time.Now().Format("15:04")
-			if timeNow == "23:58" || timeNow == "16:00" || timeNow == "08:00" || timeNow == "03:00" {
-				go func() {
-					populateReport(db, sqlDb)
-				}()
-			}
+			// timeNow := time.Now().Format("15:04")
+			// if timeNow == "23:58" || timeNow == "16:00" || timeNow == "08:00" || timeNow == "03:00" {
+			go func() {
+				populateReport(db, sqlDb)
+			}()
+			//}
 			time.Sleep(timeDuration * time.Minute)
 		}
 
